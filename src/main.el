@@ -1555,7 +1555,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 
 ;; [[file:../Config.org::*persp-mode][persp-mode:1]]
 (leaf persp-mode
-  :disabled t
+  ;; :disabled t
   :bind-keymap
   ("C-c w w" . persp-key-map)
   ("C-c ." . persp-key-map)
