@@ -1,0 +1,6 @@
+
+
+* To do
+- another attempt at corfu, using company backends instead of combined capf, and hope it wont lag.
+  - failed...  corfu might be good for writing, but for coding, company takes the W (plus lsp-mode is a bitch)
+  - maybe consider using corfu only for org and text modes? and having company-mode exclusions?

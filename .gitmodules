@@ -1,0 +1,6 @@
+[submodule "submodules/no-littering"]
+	path = submodules/no-littering
+	url = https://github.com/emacscollective/no-littering.git
+[submodule "submodules/image-slicing"]
+	path = submodules/image-slicing
+	url = git@github.com:ginqi7/image-slicing.git
