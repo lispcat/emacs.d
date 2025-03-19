@@ -1696,11 +1696,11 @@ Optional WIDTH parameter determines total width (defaults to 70)."
                   lsp-ui-sideline-delay 0.4
                   lsp-ui-doc-enable nil))
     (with-eval-after-load 'lsp-mode
-      (setq-local lsp-idle-delay 0.6
+      (setq-local lsp-idle-delay 0.4
                   lsp-inlay-hint-enable t
                   lsp-eldoc-render-all t))
     (with-eval-after-load 'company
-      (setq-local company-idle-delay 0.5
+      (setq-local company-idle-delay 0.4
                   company-minimum-prefix-length 1))))
 
 ;; rustowl
@@ -2211,6 +2211,7 @@ https://github.com/Bad-ptr/persp-mode.el
 #+begin_src emacs-lisp
 
 (leaf persp-mode
+  ;; :disabled t
   :bind-keymap
   ("C-c w w" . persp-key-map)
   ("C-c ." . persp-key-map)
@@ -3468,6 +3469,10 @@ check out https://github.com/mwfogleman/.emacs.d/blob/master/michael.org
   (omni-quotes-fading-delay . 30)
   :config
   (omni-quotes-load-simple-quote-file "~/Notes/org/quotes.txt" "personal"))
+
+;; (defvar eldoc-doc-buffer-separator
+;;   (concat (propertize "\n" 'face '(:inherit separator-line :extend t)))
+;;   "String used to separate items in Eldoc documentation buffer.")
 
 
 ;;; Packages to install (check source code for malware for each first):

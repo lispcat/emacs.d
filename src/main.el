@@ -1102,11 +1102,11 @@ Optional WIDTH parameter determines total width (defaults to 70)."
                   lsp-ui-sideline-delay 0.4
                   lsp-ui-doc-enable nil))
     (with-eval-after-load 'lsp-mode
-      (setq-local lsp-idle-delay 0.6
+      (setq-local lsp-idle-delay 0.4
                   lsp-inlay-hint-enable t
                   lsp-eldoc-render-all t))
     (with-eval-after-load 'company
-      (setq-local company-idle-delay 0.5
+      (setq-local company-idle-delay 0.4
                   company-minimum-prefix-length 1))))
 
 ;; rustowl
@@ -1555,6 +1555,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 
 ;; [[file:../Config.org::*persp-mode][persp-mode:1]]
 (leaf persp-mode
+  :disabled t
   :bind-keymap
   ("C-c w w" . persp-key-map)
   ("C-c ." . persp-key-map)
@@ -2709,6 +2710,10 @@ a buffer-local variable `emms-playlistedit-orig-path'."
   :config
   (omni-quotes-load-simple-quote-file "~/Notes/org/quotes.txt" "personal"))
 
+;; (defvar eldoc-doc-buffer-separator
+;;   (concat (propertize "\n" 'face '(:inherit separator-line :extend t)))
+;;   "String used to separate items in Eldoc documentation buffer.")
+
 
 ;;; Packages to install (check source code for malware for each first):
 
@@ -2748,6 +2753,16 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 ;; hideshow-org?
 
 ;; wgrep
+
+;; look into different window strengths, lower C-h e 's strength
+
+;; undo-tree
+
+;; hyperbole
+
+;; tree sitter
+
+;; eglot?
 ;; to-sort:1 ends here
 
 ;; [[file:../Config.org::*ending][ending:1]]
