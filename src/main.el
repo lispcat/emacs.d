@@ -856,6 +856,9 @@
   ;; (lsp-ui-doc-side . 'right) ; def: right
   ;; (lsp-ui-doc-position . 'at-point)
 
+  ;; problematic: https://github.com/emacs-lsp/lsp-mode/issues/4113
+  (lsp-update-inlay-hints-on-scroll . nil)
+
   :bind-keymap
   ("C-c l" . lsp-command-map)
 
