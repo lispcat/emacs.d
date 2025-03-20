@@ -869,7 +869,14 @@
   ;;     "Face which apply to side line for symbols not used.
   ;; Possibly erroneously redundant of lsp-flycheck-info-unnecessary-face."
   ;;     :group 'lsp-ui-sideline)
-  )
+
+  :bind
+  (lsp-command-map
+   ("v i" . lsp-ui-imenu))
+
+  :config
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
 
 ;;; lsp-booster
 ;; use lsp-doctor for testing
@@ -1090,24 +1097,37 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (setq rustic-cargo-use-last-stored-arguments t
         rustic-format-on-save t
         lsp-rust-analyzer-cargo-watch-command "clippy"
-        lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
-        lsp-rust-analyzer-display-chaining-hints nil ; def: nil
-        lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil ; def: nil
         lsp-rust-analyzer-display-closure-return-type-hints t ; def: nil
-        lsp-rust-analyzer-display-parameter-hints nil ; def: nil
-        lsp-rust-analyzer-display-reborrow-hints t) ; def: never
+        lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
+        lsp-rust-analyzer-display-parameter-hints t ; def: nil (input param name)
+
+        ;; maybe
+        lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
+        lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t ; def: nil (?)
+
+        ;; experimenting
+        lsp-signature-auto-activate t ; def: '(:on-trigger-char :on-server-request)
+        )
 
   (add-hook 'rust-mode-hook #'my/rust-mode-hook)
 
   (defun my/rust-mode-hook ()
-    (with-eval-after-load 'lsp-ui
-      (setq-local lsp-ui-peek-always-show t
-                  lsp-ui-sideline-delay 0.4
-                  lsp-ui-doc-enable nil))
     (with-eval-after-load 'lsp-mode
       (setq-local lsp-idle-delay 0.4
                   lsp-inlay-hint-enable t
-                  lsp-eldoc-render-all t))
+                  lsp-ui-peek-always-show t
+                  lsp-ui-sideline-delay 0.4
+
+                  ;; lsp-eldoc-render-all t
+                  ;; lsp-ui-doc-enable nil
+
+                  lsp-eldoc-render-all nil
+                  lsp-ui-doc-enable t
+                  lsp-ui-doc-show-with-cursor t
+                  lsp-ui-doc-alignment 'window
+                  lsp-ui-doc-position 'top
+                  ;; lsp-ui-doc-position 'at-point
+                  ))
     (with-eval-after-load 'company
       (setq-local company-idle-delay 0.4
                   company-minimum-prefix-length 1))))
