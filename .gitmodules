@@ -4,3 +4,6 @@
 [submodule "submodules/image-slicing"]
 	path = submodules/image-slicing
 	url = git@github.com:ginqi7/image-slicing.git
+[submodule "submodules/eglot-booster"]
+	path = submodules/eglot-booster
+	url = git@github.com:jdtsmith/eglot-booster.git

@@ -79,13 +79,74 @@
 ;;   ("C-x C-b" . bufler-list)
 ;;   :init
 ;;   (bufler-workspace-mode 1))
+
+(defhydra hydra-window ()
+  "
+Movement^^        ^Split^         ^Switch^		^Resize^
+----------------------------------------------------------------
+_h_ ←       	_v_ertical    	_b_uffer		_q_ X←
+_j_ ↓        	_x_ horizontal	_f_ind files	_w_ X↓
+_k_ ↑        	_z_ undo      	_a_ce 1		_e_ X↑
+_l_ →        	_Z_ reset      	_s_wap		_r_ X→
+_F_ollow		_D_lt Other   	_S_ave		max_i_mize
+_SPC_ cancel	_o_nly this   	_d_elete
+"
+  ("h" windmove-left )
+  ("j" windmove-down )
+  ("k" windmove-up )
+  ("l" windmove-right )
+  ("q" hydra-move-splitter-left)
+  ("w" hydra-move-splitter-down)
+  ("e" hydra-move-splitter-up)
+  ("r" hydra-move-splitter-right)
+  ("b" helm-mini)
+  ("f" helm-find-files)
+  ("F" follow-mode)
+  ("a" (lambda ()
+         (interactive)
+         (ace-window 1)
+         (add-hook 'ace-window-end-once-hook
+                   'hydra-window/body))
+   )
+  ("v" (lambda ()
+         (interactive)
+         (split-window-right)
+         (windmove-right))
+   )
+  ("x" (lambda ()
+         (interactive)
+         (split-window-below)
+         (windmove-down))
+   )
+  ("s" (lambda ()
+         (interactive)
+         (ace-window 4)
+         (add-hook 'ace-window-end-once-hook
+                   'hydra-window/body)))
+  ("S" save-buffer)
+  ("d" delete-window)
+  ("D" (lambda ()
+         (interactive)
+         (ace-window 16)
+         (add-hook 'ace-window-end-once-hook
+                   'hydra-window/body))
+   )
+  ("o" delete-other-windows)
+  ("i" ace-maximize-window)
+  ("z" (progn
+         (winner-undo)
+         (setq this-command 'winner-undo))
+   )
+  ("Z" winner-redo)
+  ("SPC" nil)
+  )
 ;; window management:1 ends here
 
 ;; [[file:../Config.org::*dired][dired:1]]
-(defun my/open-my-emacs-src-dir ()
+(defun my/open-emacs-config-file ()
   "Open Dired in `my/emacs-src-dir'."
   (interactive)
-  (dired my/emacs-src-dir))
+  (find-file my/emacs-config-file))
 
 (leaf dired :ensure nil
   :setq
@@ -102,7 +163,7 @@
     "dj" 'dired-jump
     "f" '(:ignore t :which-key "files")
     "ff" 'find-file
-    "fp" 'my/open-my-emacs-src-dir)
+    "fp" 'my/open-emacs-config-file)
   :config
   ;; hide details by default
   (add-hook 'dired-mode-hook 'dired-hide-details-mode)
@@ -832,6 +893,11 @@
 ;;          ("C-c c e" . edit-abbrevs)))
 ;; abbrev (disabled):1 ends here
 
+;; [[file:../Config.org::*personal variables][personal variables:1]]
+(defvar prefer-eglot-mode? nil)
+(defvar prefer-lsp-mode? nil)
+;; personal variables:1 ends here
+
 ;; [[file:../Config.org::*generic tweaks for programming][generic tweaks for programming:1]]
 (setq-default indent-tabs-mode nil)
 (setq tab-always-indent t)
@@ -844,46 +910,86 @@
   :hook prog-mode-hook)
 ;; generic tweaks for programming:1 ends here
 
+;; [[file:../Config.org::*project.el][project.el:1]]
+(leaf project :ensure nil
+  :bind-keymap ("C-c P" . project-prefix-map)
+  :init
+  (defun project-compile-interactive ()
+    (declare (interactive-only compile))
+    (interactive)
+    (let ((current-prefix-arg '(4)))
+      (call-interactively #'project-compile)))
+  :bind
+  (project-prefix-map
+   ("C" . project-compile-interactive)))
+;; project.el:1 ends here
+
+;; [[file:../Config.org::*projectile][projectile:1]]
+(leaf projectile
+  :after
+  :init
+  (projectile-mode 1)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :config
+  (setq projectile-compile-use-comint-mode t))
+;; projectile:1 ends here
+
 ;; [[file:../Config.org::*lsp-mode][lsp-mode:1]]
 (leaf lsp-mode
-  :ensure lsp-ui
-  :commands (lsp lsp-deferred)
+  :commands
+  (lsp lsp-deferred)
 
-  ;; bind "C-c l" to lsp-command-map
-  :setq
-  (lsp-keymap-prefix . "C-c l")
-  ;; (lsp-ui-doc-show-with-cursor . t) ; def: nil
-  ;; (lsp-ui-doc-side . 'right) ; def: right
-  ;; (lsp-ui-doc-position . 'at-point)
-
-  ;; problematic: https://github.com/emacs-lsp/lsp-mode/issues/4113
-  (lsp-update-inlay-hints-on-scroll . nil)
+  :hook
+  (lsp-mode-hook . lsp-enable-which-key-integration)
 
   :bind-keymap
   ("C-c l" . lsp-command-map)
 
-  :hook
-  (lsp-mode-hook . lsp-enable-which-key-integration)
-  ;; :config
-  ;; (defface lsp-flycheck-warning-unnecessary '((t))
-  ;;     "Face which apply to side line for symbols not used.
-  ;; Possibly erroneously redundant of lsp-flycheck-info-unnecessary-face."
-  ;;     :group 'lsp-ui-sideline)
-
-  :bind
-  (lsp-command-map
-   ("v i" . lsp-ui-imenu))
-
   :config
-  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
+  (setq lsp-inlay-hint-enable t
+        ;; freq of refreshing highlights, lenses, links, etc
+        lsp-idle-delay 0.5
+        ;; bind "C-c l" to lsp-command-map
+        lsp-keymap-prefix "C-c l"
+        ;; problematic: https://github.com/emacs-lsp/lsp-mode/issues/4113
+        lsp-update-inlay-hints-on-scroll nil))
+;; lsp-mode:1 ends here
 
+;; [[file:../Config.org::*lsp-ui][lsp-ui:1]]
+(leaf lsp-ui
+  :bind
+  (lsp-ui-mode-map
+   ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+   ([remap xref-find-references]  . lsp-ui-peek-find-references))
+  (lsp-ui-doc-frame-mode-map
+   ("q" . lsp-ui-doc-hide)
+   ("u" . lsp-ui-doc-unfocus-frame))
+  :config
+  (setq lsp-ui-doc-delay 0.5
+        lsp-ui-doc-position 'top
+        ;; lsp-ui-doc-alignment 'window
+        lsp-ui-doc-alignment 'frame
+        ;; lsp-ui-doc-show-with-mouse nil
+        lsp-ui-doc-show-with-mouse t
+        lsp-ui-doc-show-with-cursor t
+
+        lsp-ui-sideline-delay 0.2
+
+        lsp-ui-imenu-auto-refresh-delay 1.0)
+
+  (with-eval-after-load 'lsp-mode
+    (define-key lsp-command-map (kbd "v i") #'lsp-ui-imenu)))
+;; lsp-ui:1 ends here
+
+;; [[file:../Config.org::*lsp-booster][lsp-booster:1]]
 ;;; lsp-booster
 ;; use lsp-doctor for testing
 ;; Steps:
 ;; - install emacs-lsp-booster
 ;; - use plist for deserialization (FOLLOW GUIDE)
-(progn
+(leaf emacs :ensure nil
+  :config
   (setq read-process-output-max (* 1024 1024)) ;; 1mb
   (defun lsp-booster--advice-json-parse (old-fn &rest args)
     "Try to parse bytecode instead of json."
@@ -914,58 +1020,23 @@
             (cons "emacs-lsp-booster" orig-result))
         orig-result)))
   (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
+;; lsp-booster:1 ends here
 
-;; TODO: move this to corfu ?
-;; if corfu is installed
-;; (https://github.com/minad/corfu/wiki#configuring-corfu-for-lsp-mode)
-;; (use-package lsp-mode :ensure nil
-;;   :commands (lsp lsp-deferred)
-;;   :after corfu
-;;   :custom
-;;   (lsp-completion-provider :none) ; use corfu!
-;;   :init
-;;   (defun my/orderless-dispatch-flex-first (_pattern index _total)
-;;     (and (eq index 0) 'orderless-flex))
+;; [[file:../Config.org::*eglot][eglot:1]]
+(leaf eglot
+  :config
+  ;; For signature activation
+  (setq eglot-ignored-server-capabilities '() ; Enable all capabilities
+        ;; eglot-autoshutdown t
+        ))
+;; eglot:1 ends here
 
-;;   (defun my/lsp-mode-setup-completion ()
-;;     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-;;           '(orderless))
-;;     ;; Optionally configure the first word as flex filtered.
-;;     (add-hook 'orderless-style-dispatchers #'my/orderless-dispatch-flex-first nil 'local)
-;;     ;; Optionally configure the cape-capf-buster.
-;;     (setq-local completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point))))
-
-;;   :hook
-;;   (lsp-completion-mode . my/lsp-mode-setup-completion))
-;; lsp-mode:1 ends here
-
-;; [[file:../Config.org::*project.el][project.el:1]]
-(leaf project :ensure nil
-  :bind-keymap ("C-c P" . project-prefix-map)
-  :init
-  (defun project-compile-interactive ()
-    (declare (interactive-only compile))
-    (interactive)
-    (let ((current-prefix-arg '(4)))
-      (call-interactively #'project-compile)))
-  :bind
-  (project-prefix-map
-   ("C" . project-compile-interactive)))
-;; project.el:1 ends here
-
-;; [[file:../Config.org::*projectile][projectile:1]]
-(leaf projectile
-  :after
-  :init
-  (projectile-mode 1)
-  :bind-keymap
-  ("C-c p" . projectile-command-map))
-;; projectile:1 ends here
-
-;; [[file:../Config.org::*hex colors][hex colors:1]]
-(leaf rainbow-mode
-  :hook prog-mode-hook)
-;; hex colors:1 ends here
+;; [[file:../Config.org::*eglot-booster][eglot-booster:1]]
+(leaf eglot-booster :ensure nil
+  :after eglot
+  :config
+  (eglot-booster-mode))
+;; eglot-booster:1 ends here
 
 ;; [[file:../Config.org::*generic code settings][generic code settings:1]]
 ;; for non-programming too
@@ -1041,6 +1112,93 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :after geiser)
 ;; scheme:1 ends here
 
+;; [[file:../Config.org::*rust][rust:1]]
+(leaf rustic
+  ;; :disabled t
+  ;; :mode ("\\.rs\\'" . rustic-mode)
+  :bind
+  (rustic-mode-map
+   ("C-c C-c M-r" . rustic-cargo-comint-run)
+   ("C-c C-c l" . flycheck-list-errors)
+   ("C-c C-c A" . rustic-cargo-add)
+   ("C-c C-c R" . rustic-cargo-rm))
+  :config
+  (setq rustic-cargo-use-last-stored-arguments t
+        rustic-format-on-save t)
+  :hook
+  (rust-mode-hook . (lambda ()
+                      (with-eval-after-load 'company
+                        (setq-local company-idle-delay 0.3
+                                    company-minimum-prefix-length 2)))))
+
+(leaf rustic :ensure nil
+  :bind
+  (rustic-mode-map
+   ("C-c C-c a" . lsp-execute-code-action)
+   ("C-c C-c r" . lsp-rename)
+   ("C-c C-c q" . lsp-workspace-restart)
+   ("C-c C-c Q" . lsp-workspace-shutdown)
+   ("C-c C-c s" . lsp-rust-analyzer-status)
+   ("C-c C-c h" . lsp-describe-thing-at-point))
+  :config
+  (setq lsp-rust-analyzer-cargo-watch-command "clippy"
+        lsp-rust-analyzer-display-closure-return-type-hints t ; def: nil
+        lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
+        lsp-rust-analyzer-display-parameter-hints t ; def: nil (input param name)
+
+        ;; maybe
+        lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
+        lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t ; def: nil (?)
+
+        ;; experimenting
+        lsp-signature-auto-activate t ; def: '(:on-trigger-char :on-server-request)
+        )
+  :hook
+  (rust-mode-hook . (lambda ()
+                      (with-eval-after-load 'lsp-mode
+                        (setq-local lsp-idle-delay 0.5
+                                    lsp-ui-sideline-delay 0.3
+                                    lsp-eldoc-render-all nil ; def: nil (minibuffer doc popup)
+                                    lsp-ui-doc-enable t ; def: t (ui-popup docs)
+                                    lsp-ui-doc-max-height 14 ; def: 13
+                                    )))))
+
+
+;; (leaf rustic :ensure nil
+;;   ;; :disabled t
+;;   :if use-eglot?
+;;   :init
+;;   (setq rustic-lsp-client 'eglot)
+;;   (with-eval-after-load 'eglot
+;;     (let ((rust-init-options
+;;            `(
+;;              :cargo       ( :buildScripts (:enable t) :features "all" )
+;;              :procMacro   ( :enable t )
+;;              :checkOnSave ( :command "clippy" )
+;;              :inlayHints  ( :typeHints t
+;;                             :parameterHints t
+;;                             :closureReturnTypeHints t
+;;                             :lifetimeElisionHints (:enable "skip_trivial" :useParameterNames t)
+;;                             :reborrowHints "mutable"
+;;                             ;; :chainingHints t
+;;                             )
+;;              )))
+;;       (add-to-list 'eglot-server-programs
+;;                    `(rustic-mode . ("rust-analyzer"
+;;                                     :initializationOptions ,rust-init-options)))))
+;;   ;; :config
+
+;;   )
+
+
+;; rustowl
+;; (straight-use-package
+;;  `(rustowlsp
+;;    :host github
+;;    :repo "cordx56/rustowl"
+;;    :files (:defaults "emacs/*")))
+;; rust:1 ends here
+
 ;; [[file:../Config.org::*C][C:1]]
 (leaf cc-mode :ensure nil
   :hook ((c-mode-hook . lsp)
@@ -1052,14 +1210,36 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :config
   (add-to-list 'c-default-style '(c-mode . "cc-mode"))
   (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
+
+;; (leaf cc-mode :ensure nil
+;;   :if use-eglot?
+;;   :hook ((c-mode-hook . eglot-ensure)
+;;          (c-mode-hook . (lambda ()
+;;                           ;; (setq-local lsp-idle-delay 0.1
+;;                           ;;             lsp-enable-indentation nil
+;;                           ;;             lsp-enable-on-type-formatting nil)
+;;                           (c-set-offset 'case-label '+))))
+;;   :config
+;;   (add-to-list 'c-default-style '(c-mode . "cc-mode"))
+;;   (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
 ;; C:1 ends here
 
 ;; [[file:../Config.org::*java][java:1]]
 (leaf lsp-java
-  :disabled t
   :mode "\\.java\\'"
   :config
   (add-hook 'java-mode-hook #'lsp))
+
+;; (leaf eglot-java
+;;   :hook java-mode-hook
+;;   :bind
+;;   (eglot-java-mode-map
+;;    ("C-c l n" . eglot-java-file-new)
+;;    ("C-c l x" . eglot-java-run-main)
+;;    ("C-c l t" . eglot-java-run-test)
+;;    ("C-c l N" . eglot-java-project-new)
+;;    ("C-c l T" . eglot-java-project-build-task)
+;;    ("C-c l R" . eglot-java-project-build-refresh)))
 ;; java:1 ends here
 
 ;; [[file:../Config.org::*markdown][markdown:1]]
@@ -1076,69 +1256,6 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   ;; (setq markdown-command "marked")
   (add-hook 'markdown-mode-hook #'my/setup-markdown-mode))
 ;; markdown:1 ends here
-
-;; [[file:../Config.org::*rust][rust:1]]
-;; https://robert.kra.hn/posts/rust-emacs-setup
-
-(leaf rustic
-  :mode ("\\.rs\\'" . rustic-mode)
-  :bind (rustic-mode-map
-         ("C-c C-c M-r" . rustic-cargo-comint-run)
-         ("C-c C-c l" . flycheck-list-errors)
-         ("C-c C-c a" . lsp-execute-code-action)
-         ("C-c C-c A" . rustic-cargo-add)
-         ("C-c C-c r" . lsp-rename)
-         ("C-c C-c R" . rustic-cargo-rm)
-         ("C-c C-c q" . lsp-workspace-restart)
-         ("C-c C-c Q" . lsp-workspace-shutdown)
-         ("C-c C-c s" . lsp-rust-analyzer-status)
-         ("C-c C-c h" . lsp-describe-thing-at-point))
-  :config
-  (setq rustic-cargo-use-last-stored-arguments t
-        rustic-format-on-save t
-        lsp-rust-analyzer-cargo-watch-command "clippy"
-        lsp-rust-analyzer-display-closure-return-type-hints t ; def: nil
-        lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
-        lsp-rust-analyzer-display-parameter-hints t ; def: nil (input param name)
-
-        ;; maybe
-        lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
-        lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t ; def: nil (?)
-
-        ;; experimenting
-        lsp-signature-auto-activate t ; def: '(:on-trigger-char :on-server-request)
-        )
-
-  (add-hook 'rust-mode-hook #'my/rust-mode-hook)
-
-  (defun my/rust-mode-hook ()
-    (with-eval-after-load 'lsp-mode
-      (setq-local lsp-idle-delay 0.4
-                  lsp-inlay-hint-enable t
-                  lsp-ui-peek-always-show t
-                  lsp-ui-sideline-delay 0.4
-
-                  ;; lsp-eldoc-render-all t
-                  ;; lsp-ui-doc-enable nil
-
-                  lsp-eldoc-render-all nil
-                  lsp-ui-doc-enable t
-                  lsp-ui-doc-show-with-cursor t
-                  lsp-ui-doc-alignment 'window
-                  lsp-ui-doc-position 'top
-                  ;; lsp-ui-doc-position 'at-point
-                  ))
-    (with-eval-after-load 'company
-      (setq-local company-idle-delay 0.4
-                  company-minimum-prefix-length 1))))
-
-;; rustowl
-;; (straight-use-package
-;;  `(rustowlsp
-;;    :host github
-;;    :repo "cordx56/rustowl"
-;;    :files (:defaults "emacs/*")))
-;; rust:1 ends here
 
 ;; [[file:../Config.org::*clojure][clojure:1]]
 (leaf clojure-mode
@@ -1182,6 +1299,11 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :init
   (direnv-mode 1))
 ;; direnv:1 ends here
+
+;; [[file:../Config.org::*hex colors][hex colors:1]]
+(leaf rainbow-mode
+  :hook prog-mode-hook)
+;; hex colors:1 ends here
 
 ;; [[file:../Config.org::*code-folding][code-folding:1]]
 (leaf hideshow :ensure nil
@@ -1235,7 +1357,8 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :setq
   (org-directory . "~/Notes/org")
   (org-tags-column . -55)          ; column where tags are indented to
-  (org-startup-folded . 'showall)  ; default folding mode
+  ;; (org-startup-folded . 'showall)  ; default folding mode
+  (org-startup-folded . 'showeverything)  ; default folding mode
   (org-startup-indented . t)       ; indent headings and its body
   (org-special-ctrl-a/e . t)
   (org-src-window-setup . 'current-window) ; edit code blocks in the same window
@@ -1265,11 +1388,13 @@ If in a list, inserts a new sublist after the current list."
   :defer-config
 
   ;; set org font sizes
-  (dolist (pair '((org-document-title :height 1.9 :weight bold)
-                  (org-level-1 :height 1.7 :weight bold)
-                  (org-level-2 :height 1.4 :weight bold)
-                  (org-level-2 :height 1.1)
-                  (org-level-3 :height 1.1)))
+  (dolist
+      ;; (pair '((org-document-title :height 1.9 :weight bold)
+      ;;         (org-level-1 :height 1.7 :weight bold)
+      ;;         (org-level-2 :height 1.4 :weight bold)
+      ;;         (org-level-2 :height 1.1)
+      ;;         (org-level-3 :height 1.1)))
+      (pair '((org-document-title :height 1.9)))
     (apply #'set-face-attribute (car pair) nil (cdr pair)))
 
   (require 'org-tempo)
@@ -1282,6 +1407,21 @@ If in a list, inserts a new sublist after the current list."
   (add-to-list 'org-structure-template-alist '("java" . "src java"))
   (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
   (add-to-list 'org-structure-template-alist '("clang" . "src c"))
+
+  ;; keywords override
+
+  (defun my/org-todo-color-override (&rest _)
+    "Set org-todo-keyword-faces only if not already set by the theme."
+    (setq org-todo-keyword-faces
+          `(("NEXT" :foreground ,(or (ignore-error
+                                         (face-attribute 'highlight :foreground nil 'default))
+                                     "yellow")))))
+
+  ;; Advise the load-theme function to run our color override
+  (advice-add 'load-theme :after #'my/org-todo-color-override)
+
+  ;; Run once immediately to set colors if no theme is loaded
+  (my/org-todo-color-override)
 
   )
 
@@ -1397,7 +1537,7 @@ If in a list, inserts a new sublist after the current list."
        ("a" "main agenda"
         ((agenda ""
                  ((org-agenda-show-future-repeats nil)
-                  ;; (org-agenda-start-on-weekday nil)
+                  (org-agenda-start-on-weekday nil)
                   (org-agenda-span 'week)
                   (org-habit-show-habits nil)
                   (org-agenda-skip-deadline-if-done t)
@@ -1420,9 +1560,24 @@ If in a list, inserts a new sublist after the current list."
 (leaf org-noter
   :after org
   :bind (("C-c o n" . org-noter)
-         ("C-c d n" . org-noter-start-from-dired))
+         ("C-c d n" . org-noter-start-from-dired)
+         ("C-c o p" . my/org-noter-set-prop-current-page))
   :setq
-  (org-noter-doc-split-fraction . '(0.7 . 0.6)))
+  (org-noter-doc-split-fraction . '(0.7 . 0.6))
+  :config
+  (defun my/org-noter-set-prop-current-page (arg)
+    "Set the property `NOTER_PAGE' of the current org heading to the current noter page.
+The property will be removed if ran with a \\[universal-argument]."
+    (interactive "P")
+    (org-noter--with-selected-notes-window
+     (if (equal arg '(4))
+         (org-delete-property "NOTER_PAGE")
+       (when-let ((vec (org-noter--get-current-view))
+                  (num (and (vectorp vec)
+                            (> (length vec) 1)
+                            (format "%s" (aref vec 1)))))
+         (message "meow: %s" num)
+         (org-entry-put (point) "NOTER_PAGE" num))))))
 ;; org-agenda:1 ends here
 
 ;; [[file:../Config.org::*org-capture][org-capture:1]]
@@ -1586,7 +1741,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
   :setq
   (wg-morph-on . nil)
   (persp-autokill-buffer-on-remove . 'kill-weak)
-  (persp-auto-resume-time . 1)
+  (persp-auto-resume-time . 0.1)
   ;; prevent issue with persp-special-last-buffer
   :hook
   (elpaca-after-init-hook . (lambda () (persp-mode 1)))
@@ -2109,7 +2264,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
       (server-start)
       (message "Emacsclient Server started!")))
   :hook
-  (elpaca-after-init-hook . my/start-server-if-not-running))
+  (emacs-startup-hook . my/start-server-if-not-running))
 ;; server:1 ends here
 
 ;; [[file:../Config.org::*html][html:1]]

@@ -12,6 +12,8 @@
 (defvar my/emacs-local-dir      (file-name-concat my/emacs-root-dir "local"))
 (defvar my/emacs-submodules-dir (file-name-concat my/emacs-root-dir "submodules"))
 
+(defvar my/emacs-config-file    (file-name-concat my/emacs-root-dir "Config.org"))
+
 ;; set local dir to local files
 (setq user-emacs-directory      my/emacs-local-dir)
 

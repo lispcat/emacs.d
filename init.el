@@ -19,8 +19,8 @@
 ;; [[file:Config.org::*custom-file][custom-file:1]]
 (defun my/log-customize-set-func (&rest args)
   (message "log: customized: %s" args))
-(advice-add 'custom-set-variables :before #'my/log-customize-set-func)
-(advice-add 'custom-set-faces     :before #'my/log-customize-set-func)
+;; (advice-add 'custom-set-variables :before #'my/log-customize-set-func)
+;; (advice-add 'custom-set-faces     :before #'my/log-customize-set-func)
 
 (add-hook 'elpaca-after-init-hook
           (lambda ()
