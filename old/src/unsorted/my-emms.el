@@ -287,7 +287,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
 
   :init
-  (+leader-bind
+  (general-my-map
     "e" '(:ignore t :which-key "emms")
     "e e" 'emms
     "e k" 'emms-playlist-current-kill

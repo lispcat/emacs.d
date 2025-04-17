@@ -12,7 +12,7 @@
 
 (leaf denote
   :init
-  (+leader-bind
+  (general-my-map
     "n" '(:ignore t :which-key "denote")
     "nn" 'denote
     "ns" 'denote-subdirectory
@@ -152,7 +152,7 @@
   :after org
   :bind ("M-s n" . consult-notes)
   :init
-  (+leader-bind
+  (general-my-map
     "nf" 'consult-notes
     "ng" 'consult-notes-search-in-all-notes)
   :config
@@ -189,7 +189,7 @@
 (leaf denote-explore
   :after denote
   :init
-  (+leader-bind
+  (general-my-map
     "ne" '(:ignore t :which-key "explore")
 
     ;; random walks
@@ -228,7 +228,7 @@
 (leaf denote-menu
   :after denote
   :init
-  (+leader-bind
+  (general-my-map
     "nm" 'list-denotes)
   :bind (denote-menu-mode-map
          ("c" . denote-menu-clear-filters)
@@ -243,7 +243,7 @@
   (setq denote-menu-title-column-width 50))
 
 ;;; set common keys
-;; (+leader-bind
+;; (general-my-map
 ;;   "nN" '(:ignore t :which-key "Favorites")
 ;;   "nNn" 'denote
 ;;   "")

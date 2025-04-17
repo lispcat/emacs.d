@@ -3,7 +3,7 @@
 ;; (debug-on-entry 'switch-to-buffer)
 ;; debugging:1 ends here
 
-;; [[file:../Config.org::*buffer reverting and management][buffer reverting and management:1]]
+;; [[file:../Config.org::*buffer auto-reverting and management][buffer auto-reverting and management:1]]
 ;; revert buffer when its file is changed on the filesystem
 (leaf autorevert :ensure nil
   :require t
@@ -15,7 +15,7 @@
   (auto-revert-use-notify . nil)
   (auto-revert-interval . 5))
 
-(+leader-bind
+(general-my-map
   "k" 'kill-current-buffer
   "b" '(:ignore t :which-key "buffer")
   "bk" 'kill-current-buffer
@@ -26,7 +26,7 @@
   "bs" 'save-buffer)
 
 (defalias 'my/last-selected-buffer 'mode-line-other-buffer)
-;; buffer reverting and management:1 ends here
+;; buffer auto-reverting and management:1 ends here
 
 ;; [[file:../Config.org::*history and recents][history and recents:1]]
 ;; remember recent files
@@ -54,7 +54,7 @@
   :bind
   ("M-o" . ace-window)
   :init
-  (+leader-bind
+  (general-my-map
     "w" '(:ignore t :which-key "window")
     "wd" 'delete-window
     "w+" 'balance-windows
@@ -144,9 +144,14 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 ;; [[file:../Config.org::*dired][dired:1]]
 (defun my/open-emacs-config-file ()
-  "Open Dired in `my/emacs-src-dir'."
+  "Open emacs config file."
   (interactive)
   (find-file my/emacs-config-file))
+
+(defun my/open-agenda-file ()
+  "Open agenda file."
+  (interactive)
+  (find-file "~/Notes/org/agenda.org"))
 
 (leaf dired :ensure nil
   :setq
@@ -157,13 +162,14 @@ _SPC_ cancel	_o_nly this   	_d_elete
          ("s" . dired-find-file)
          ("r" . dired-sort-toggle-or-edit))
   :init
-  (+leader-bind
+  (general-my-map
     "d" '(:ignore t :which-key "dired")
     "dd" 'find-file
     "dj" 'dired-jump
     "f" '(:ignore t :which-key "files")
     "ff" 'find-file
-    "fp" 'my/open-emacs-config-file)
+    "fp" 'my/open-emacs-config-file
+    "fa" 'my/open-agenda-file)
   :config
   ;; hide details by default
   (add-hook 'dired-mode-hook 'dired-hide-details-mode)
@@ -185,6 +191,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 ;; [[file:../Config.org::*helpful][helpful:1]]
 (leaf helpful
+  :commands helpful--bookmark-jump
   :setq
   (counsel-describe-function-function . #'helpful-callable)
   (counsel-describe-variable-function . #'helpful-variable)
@@ -213,7 +220,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (profiler-stop)
   (profiler-report))
 
-(+leader-bind
+(general-my-map
   "D" '(:ignore t :which-key "debug")
   "Ds" 'profiler-start
   "Dr" 'my/profiler-report)
@@ -430,7 +437,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;; avy
 (leaf avy
   :init
-  (+leader-bind
+  (general-my-map
     "j" '(:ignore t :which-key "avy")
     "jj" 'avy-goto-char-timer
     "jc" 'avy-goto-char-2
@@ -577,7 +584,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
           ("M-r" . consult-history)) ;; previous-matching-history-element
          )
   :init
-  (+leader-bind
+  (general-my-map
     "s" search-map
     "Tt" 'consult-theme
     "bb" 'consult-buffer
@@ -587,7 +594,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;; used to go to a file in a bookmarked dir n stuff (one ex)
 (leaf consult-dir
   :init
-  (+leader-bind
+  (general-my-map
     "fd" 'consult-dir)
   :bind (("C-x C-d" . consult-dir)      ; default?
          (vertico-map
@@ -1092,6 +1099,9 @@ Optional WIDTH parameter determines total width (defaults to 70)."
                     left-semis
                     text
                     right-semis))))
+
+(with-eval-after-load 'flycheck
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 ;; emacs-lisp:1 ends here
 
 ;; [[file:../Config.org::*scheme][scheme:1]]
@@ -1147,7 +1157,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
         lsp-rust-analyzer-display-parameter-hints t ; def: nil (input param name)
 
         ;; maybe
-        lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
+        ;; lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
         lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t ; def: nil (?)
 
         ;; experimenting
@@ -1294,6 +1304,11 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :mode "\\.yml\\'")
 ;; yaml:1 ends here
 
+;; [[file:../Config.org::*ron][ron:1]]
+(leaf ron-mode
+  :require t)
+;; ron:1 ends here
+
 ;; [[file:../Config.org::*direnv][direnv:1]]
 (leaf direnv
   :init
@@ -1347,7 +1362,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
     ("k" scroll-down-command "up")
     ("g" nil "quit")
     ("c" nil "close"))
-  (+leader-bind
+  (general-my-map
     "@" 'hydra-folding/body))
 ;; code-folding:1 ends here
 
@@ -1368,7 +1383,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (org-fontify-whole-heading-line . t)
 
   :init
-  (+leader-bind
+  (general-my-map
     "o" '(:ignore t :which-key "org"))
 
   :hook (org-mode-hook . indent-tabs-mode)
@@ -1407,6 +1422,12 @@ If in a list, inserts a new sublist after the current list."
   (add-to-list 'org-structure-template-alist '("java" . "src java"))
   (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
   (add-to-list 'org-structure-template-alist '("clang" . "src c"))
+
+  ;; fix syntax <> matching with paren
+  (add-hook 'org-mode-hook (lambda ()
+                             (modify-syntax-entry ?< ".")
+                             (modify-syntax-entry ?> ".")))
+
 
   ;; keywords override
 
@@ -1466,13 +1487,16 @@ If in a list, inserts a new sublist after the current list."
   :hook org-mode-hook
   :setq
   (image-slicing-newline-trailing-text . nil))
+
+(leaf org-auto-tangle
+  :hook org-mode-hook)
 ;; org-mode:1 ends here
 
 ;; [[file:../Config.org::*org-agenda][org-agenda:1]]
 (leaf org-agenda :ensure nil
   :after org
   :init
-  (+leader-bind
+  (general-my-map
     "oa" 'org-agenda)
 
   :bind (org-agenda-mode-map
@@ -1584,7 +1608,7 @@ The property will be removed if ran with a \\[universal-argument]."
 (leaf org-capture :ensure nil
   :after org
   :init
-  (+leader-bind
+  (general-my-map
     "oc" 'org-capture)
 
   :config
@@ -1651,7 +1675,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
     (if (not (derived-mode-p 'org-mode))
         (message "Not in org-mode.")
       (org-latex-preview '(16))))
-  (+leader-bind
+  (general-my-map
     "ol" 'my/org-latex-preview-buffer))
 
 (leaf org-fragtog
@@ -1732,16 +1756,26 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 ;; org extras:1 ends here
 
 ;; [[file:../Config.org::*persp-mode][persp-mode:1]]
+;; NOTE: modify #'persp-save-state-to-file arg (keep-others-in-non-parametric-file 'yes)
+
+;; maybe have each persp have its own save file, and when autosaving, save each persp?
+;; maybe have a function to delete a persp from the main autosave file?
+;; - prompt available perspectives from main autosave file, after selection, delete each from file.
+
 (leaf persp-mode
-  ;; :disabled t
   :bind-keymap
   ("C-c w w" . persp-key-map)
   ("C-c ." . persp-key-map)
   ("C-c (" . persp-key-map)
+  :bind (persp-key-map
+         ("." . my-persp-load-name-from-latest)
+         ("D" . my-persp-delete-name-from-latest))
   :setq
   (wg-morph-on . nil)
   (persp-autokill-buffer-on-remove . 'kill-weak)
-  (persp-auto-resume-time . 0.1)
+  ;; (persp-auto-resume-time . 0.1)
+  (persp-auto-resume-time . -1)
+  (persp-auto-save-opt . 2)
   ;; prevent issue with persp-special-last-buffer
   :hook
   (elpaca-after-init-hook . (lambda () (persp-mode 1)))
@@ -1759,7 +1793,23 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
   (set-persp-parameter 'dont-save-to-file t nil)
   ;; consult-buffer integration
   (defvar persp-consult-source
-    (list :name     "Perspective"
+    (list :name     "Persp Buffers"
+          :narrow   ?
+          :category 'buffer
+          :state    #'consult--buffer-state
+          :history  'buffer-name-history
+          :default  t
+          :items
+          (lambda ()
+            (let ((current-persp (get-current-persp)))
+              (consult--buffer-query
+               :sort 'visibility
+               :predicate (lambda (buf)
+                            (and current-persp
+                                 (persp-contain-buffer-p buf)))
+               :as 'buffer-name)))))
+  (defvar persp-rest-consult-source
+    (list :name     "Other Buffers"
           :narrow   ?s
           :category 'buffer
           :state    #'consult--buffer-state
@@ -1767,17 +1817,73 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
           :default  t
           :items
           (lambda ()
-            (let ((curr-persp (get-current-persp)))
+            (let ((current-persp (get-current-persp)))
               (consult--buffer-query
                :sort 'visibility
                :predicate (lambda (buf)
-                            (if curr-persp
-                                (persp-contain-buffer-p buf)
+                            (if current-persp
+                                (not (persp-contain-buffer-p buf))
                               t))
                :as 'buffer-name)))))
   (with-eval-after-load 'consult
     (consult-customize consult--source-buffer :hidden t :default nil)
-    (add-to-list 'consult-buffer-sources persp-consult-source)))
+    (add-to-list 'consult-buffer-sources persp-rest-consult-source)
+    (add-to-list 'consult-buffer-sources persp-consult-source))
+
+  ;; load from file
+  (cl-defun my-persp-load-name-from-latest (&optional (fname persp-auto-save-fname)
+                                                      (phash *persp-hash*)
+                                                      name savelist)
+    "Load and switch to a perspective via name from the latest backup file."
+    (interactive)
+    (unless savelist
+      (setq savelist (persp-savelist-from-savefile fname)))
+    (when savelist
+      (let* ((available-names (persp-list-persp-names-in-file fname savelist))
+             (loaded-names (persp-names-current-frame-fast-ordered))
+             (unloaded-names (seq-remove (lambda (p) (member p loaded-names)) available-names)))
+        (when unloaded-names
+          (setq name
+                (persp-read-persp
+                 "to load" nil nil t t nil unloaded-names t 'push)))))
+    (when name
+      (let ((names-regexp (regexp-opt (list name))))
+        (persp-load-state-from-file fname phash names-regexp t savelist))
+      ;; switch to new loaded persp
+      (persp-frame-switch name)))
+
+  ;; don't overwrite backup file with current; merge.
+  (advice-add 'persp-save-state-to-file :around
+              (lambda (orig-fun &rest args)
+                ;; We need to modify the fourth optional parameter
+                ;; Default arguments structure:
+                ;; (fname phash respect-persp-file-parameter keep-others-in-non-parametric-file)
+                (let ((fname (or (nth 0 args) persp-auto-save-fname))
+                      (phash (or (nth 1 args) *persp-hash*))
+                      (respect-param (or (nth 2 args) persp-auto-save-persps-to-their-file))
+                      ;; Always set the fourth parameter to 'yes regardless of what was passed
+                      (keep-others 'yes))
+                  ;; Call the original function with modified arguments
+                  (funcall orig-fun fname phash respect-param keep-others))))
+
+
+  ;; delete persp from file
+  (defun my-persp-delete-name-from-latest ()
+    (interactive)
+    (let* ((fname persp-auto-save-fname)
+           (savelist (persp-savelist-from-savefile fname))
+           (available-names (persp-list-persp-names-in-file fname savelist))
+           (names (persp-read-persp
+                   "to delete" 'reverse nil t nil nil available-names t 'push))
+           (filtered-savelist (cl-remove-if
+                               (lambda (expr)
+                                 (and (listp expr)
+                                      (eq (car expr) 'def-persp)
+                                      (seq-contains-p names (cadr expr))))
+                               savelist)))
+      (if (y-or-n-p (format "Delete %s?" names))
+          (persp-savelist-to-file filtered-savelist fname))))
+  )
 
 ;; enable persp-mode-project-bridge mode
 
@@ -1953,38 +2059,6 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 ;;     (consult-customize consult--source-buffer :hidden t :default nil)
 ;;     (add-to-list 'consult-buffer-sources my/persp-consult-source)))
 ;; perspective (disabled):1 ends here
-
-;; [[file:../Config.org::*activities (disabled)][activities (disabled):1]]
-;; (leaf activities
-;;   :disabled t
-;;   :init
-;;   (activities-mode)
-;;   ;; (activities-tabs-mode)
-;;   ;; prevent edebug default bindings from interfering
-;;   ;; (setq edebug-inhibit-emacs-lisp-mode-bindings t)
-
-;;   (defvar activities-mode-map
-;;     (let ((map (make-sparse-keymap)))
-;;       (define-key map (kbd "n") #'activities-new)
-;;       (define-key map (kbd "d") #'activities-define)
-;;       (define-key map (kbd "a") #'activities-resume)
-;;       (define-key map (kbd "s") #'activities-suspend)
-;;       (define-key map (kbd "k") #'activities-kill)
-;;       (define-key map (kbd "RET") #'activities-switch)
-;;       (define-key map (kbd "b")   #'activities-switch-buffer)
-;;       (define-key map (kbd "g")   #'activities-revert)
-;;       (define-key map (kbd "l")   #'activities-list)
-;;       ;; set up autoloads
-;;       (let ((cmds (mapcar #'cdr (cdr map))))
-;;         (dolist (c cmds)
-;;           (unless (fboundp c)
-;;             (autoload c "activities" nil t))))
-;;       ;; return map
-;;       map))
-;;   ;; bind map
-;;   (global-set-key (kbd "C-x C-a") activities-mode-map)
-;;   (global-set-key (kbd "C-c .") activities-mode-map))
-;; activities (disabled):1 ends here
 
 ;; [[file:../Config.org::*eat][eat:1]]
 (leaf eat
@@ -2180,12 +2254,19 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 ;; [[file:../Config.org::*whitespace][whitespace:1]]
 (leaf whitespace :ensure nil
   :hook ((prog-mode-hook . my/prog-mode-whitespace)
-         (org-mode-hook  . my/prog-mode-whitespace)
-         (text-mode-hook . my/prog-mode-whitespace))
+         (org-mode-hook  . my/org-mode-whitespace)
+         (text-mode-hook . my/org-mode-whitespace))
   :init
+  (defvar my/base-whitespace-style '(face trailing tabs missing-newline-at-eof))
   (defun my/prog-mode-whitespace ()
-    (setq whitespace-style '(face trailing tabs tab-mark))
-    (whitespace-mode 1)))
+    (setq whitespace-style (append my/base-whitespace-style
+                                   '(tab-mark lines-tail)))
+    (whitespace-mode 1))
+  (defun my/org-mode-whitespace ()
+    (setq whitespace-style (append my/base-whitespace-style '()))
+    (whitespace-mode 1))
+  :config
+  (setq whitespace-trailing 'whitespace-hspace))
 ;; whitespace:1 ends here
 
 ;; [[file:../Config.org::*solaire][solaire:1]]
@@ -2289,7 +2370,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 
 (leaf denote
   :init
-  (+leader-bind
+  (general-my-map
     "n" '(:ignore t :which-key "denote")
     "nn" 'denote
     "ns" 'denote-subdirectory
@@ -2429,7 +2510,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
   :after org
   :bind ("M-s n" . consult-notes)
   :init
-  (+leader-bind
+  (general-my-map
     "nf" 'consult-notes
     "ng" 'consult-notes-search-in-all-notes)
   :config
@@ -2466,7 +2547,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 (leaf denote-explore
   :after denote
   :init
-  (+leader-bind
+  (general-my-map
     "ne" '(:ignore t :which-key "explore")
 
     ;; random walks
@@ -2505,7 +2586,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 (leaf denote-menu
   :after denote
   :init
-  (+leader-bind
+  (general-my-map
     "nm" 'list-denotes)
   :bind (denote-menu-mode-map
          ("c" . denote-menu-clear-filters)
@@ -2520,7 +2601,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
   (setq denote-menu-title-column-width 50))
 
 ;;; set common keys
-;; (+leader-bind
+;; (general-my-map
 ;;   "nN" '(:ignore t :which-key "Favorites")
 ;;   "nNn" 'denote
 ;;   "")
@@ -2814,7 +2895,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
 
   :init
-  (+leader-bind
+  (general-my-map
     "e" '(:ignore t :which-key "emms")
     "e e" 'emms
     "e k" 'emms-playlist-current-kill
@@ -2941,6 +3022,47 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 ;; tree sitter
 
 ;; eglot?
+
+(defhydra hydra-org (:color red :columns 3)
+  "Org Mode Movements"
+  ("n" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      outline-next-visible-heading
+                                      org-fold-show-entry
+                                      ))
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "next heading")
+  ("p" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      outline-previous-visible-heading
+                                      org-fold-show-entry
+                                      ))
+         (recenter-top-bottom)
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "prev heading")
+  ("N" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      org-forward-heading-same-level
+                                      org-fold-show-entry))
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "next heading at same level")
+  ("P" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      org-backward-heading-same-level
+                                      org-fold-show-entry))
+         (recenter-top-bottom)
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "prev heading at same level")
+  ("u" outline-up-heading "up heading")
+  ("g" org-goto "goto" :exit t))
 ;; to-sort:1 ends here
 
 ;; [[file:../Config.org::*ending][ending:1]]

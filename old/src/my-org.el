@@ -22,7 +22,7 @@
   (org-fontify-whole-heading-line . t)
 
   :init
-  (+leader-bind
+  (general-my-map
     "o" '(:ignore t :which-key "org"))
 
   :hook (org-mode-hook . indent-tabs-mode)
@@ -109,7 +109,7 @@ If in a list, inserts a new sublist after the current list."
 (leaf org-agenda :ensure nil
   :after org
   :init
-  (+leader-bind
+  (general-my-map
     "oa" 'org-agenda)
 
   :bind (org-agenda-mode-map
@@ -206,7 +206,7 @@ If in a list, inserts a new sublist after the current list."
 (leaf org-capture :ensure nil
   :after org
   :init
-  (+leader-bind
+  (general-my-map
     "oc" 'org-capture)
 
   :config
@@ -274,7 +274,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
     (if (not (derived-mode-p 'org-mode))
         (message "Not in org-mode.")
       (org-latex-preview '(16))))
-  (+leader-bind
+  (general-my-map
     "ol" 'my/org-latex-preview-buffer))
 
 (leaf org-fragtog

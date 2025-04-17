@@ -380,7 +380,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
     ("k" scroll-down-command "up")
     ("g" nil "quit")
     ("c" nil "close"))
-  (+leader-bind
+  (general-my-map
     "@" 'hydra-folding/body))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; end ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

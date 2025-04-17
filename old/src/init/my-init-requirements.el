@@ -7,7 +7,7 @@
 (use-package general :ensure (:wait t)
   :demand t
   :config
-  (general-create-definer +leader-bind
+  (general-create-definer general-my-map
     :prefix "C-c"))
 
 (use-package diminish :ensure (:wait t)

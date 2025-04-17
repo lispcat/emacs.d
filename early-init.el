@@ -5,7 +5,7 @@
 (setq native-comp-async-report-warnings-errors nil) ; Silence compiler warnings
 ;; variables:1 ends here
 
-;; [[file:Config.org::*paths][paths:1]]
+;; [[file:Config.org::*variables][variables:2]]
 (defvar my/emacs-root-dir       user-emacs-directory)
 
 (defvar my/emacs-src-dir        (file-name-concat my/emacs-root-dir "src"))
@@ -19,9 +19,9 @@
 
 ;; set custom-file
 (setq custom-file (file-name-concat my/emacs-local-dir "custom-vars.el"))
-;; paths:1 ends here
+;; variables:2 ends here
 
-;; [[file:Config.org::*tweak UI][tweak UI:1]]
+;; [[file:Config.org::*UI tweaks][UI tweaks:1]]
 ;; disable tool-bar-setup
 (advice-add 'tool-bar-setup :override #'ignore)
 
@@ -41,7 +41,7 @@
         (left-fringe)                   ; set left fringe
         (right-fringe)                  ; set right fringe
         ))
-;; tweak UI:1 ends here
+;; UI tweaks:1 ends here
 
 ;; [[file:Config.org::*startup transparency][startup transparency:1]]
 ;; transparency by default
@@ -57,7 +57,7 @@
 ;;              '(background-color . "#000000"))
 ;; startup transparency:1 ends here
 
-;; [[file:Config.org::*eln-cache dir][eln-cache dir:1]]
+;; [[file:Config.org::*eln-cache dir tweaks][eln-cache dir tweaks:1]]
 ;; changes the eln-cache dir to be inside a subdir for cleanliness
 (when (and (fboundp 'startup-redirect-eln-cache)
            (fboundp 'native-comp-available-p)
@@ -65,9 +65,9 @@
   (startup-redirect-eln-cache
    (convert-standard-filename
     (expand-file-name  "var/eln-cache/" my/emacs-local-dir))))
-;; eln-cache dir:1 ends here
+;; eln-cache dir tweaks:1 ends here
 
-;; [[file:Config.org::*lsp-booster][lsp-booster:1]]
+;; [[file:Config.org::*lsp-booster tweaks][lsp-booster tweaks:1]]
 (setenv "LSP_USE_PLISTS" "true")
 (setq lsp-use-plists t)
-;; lsp-booster:1 ends here
+;; lsp-booster tweaks:1 ends here

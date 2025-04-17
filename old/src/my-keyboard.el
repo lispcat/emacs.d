@@ -200,7 +200,7 @@
 ;; avy
 (leaf avy
   :init
-  (+leader-bind
+  (general-my-map
     "j" '(:ignore t :which-key "avy")
     "jj" 'avy-goto-char-timer
     "jc" 'avy-goto-char-2

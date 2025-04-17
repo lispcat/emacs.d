@@ -1,6 +1,7 @@
 #+title: my Emacs configuration
-#+property: header-args :tangle src/main.el :comments link
-#+startup: content
+#+property:    header-args :tangle src/main.el :comments link
+#+startup:     fold
+#+auto_tangle: t
 
 * Table of Contents :TOC_5:
 - [[#personal-notes][Personal notes]]
@@ -8,24 +9,22 @@
 - [[#early-initel][early-init.el]]
   - [[#debugging][debugging]]
   - [[#variables][variables]]
-  - [[#paths][paths]]
-  - [[#tweak-ui][tweak UI]]
+  - [[#ui-tweaks][UI tweaks]]
   - [[#startup-transparency][startup transparency]]
-  - [[#eln-cache-dir][eln-cache dir]]
-  - [[#lsp-booster][lsp-booster]]
+  - [[#eln-cache-dir-tweaks][eln-cache dir tweaks]]
+  - [[#lsp-booster-tweaks][lsp-booster tweaks]]
 - [[#initel][init.el]]
-  - [[#load-path][load-path]]
-  - [[#custom-file][custom-file]]
+  - [[#add-to-load-path][add to load-path]]
+  - [[#load-custom-file-after-startup][load custom-file after startup]]
   - [[#helper-functions][helper functions]]
-  - [[#no-littering][no-littering]]
+  - [[#no-litteringel][no-littering.el]]
   - [[#elpaca-package-manager][Elpaca (package manager)]]
-  - [[#elpaca-tweaks][Elpaca tweaks]]
-  - [[#post-init][post-init]]
-  - [[#required-packages][required packages]]
-  - [[#load-main][load main]]
+  - [[#post-init-sequence][post-init sequence]]
+  - [[#prerequisite-packages][prerequisite packages]]
+  - [[#load-mainel][load main.el]]
 - [[#----main----][--- Main ---]]
 - [[#base][Base]]
-  - [[#buffer-reverting-and-management][buffer reverting and management]]
+  - [[#buffer-auto-reverting-and-management][buffer auto-reverting and management]]
   - [[#history-and-recents][history and recents]]
   - [[#window-management][window management]]
   - [[#dired][dired]]
@@ -59,7 +58,7 @@
   - [[#projectile][projectile]]
   - [[#lsp-mode][lsp-mode]]
     - [[#lsp-ui][lsp-ui]]
-    - [[#lsp-booster-1][lsp-booster]]
+    - [[#lsp-booster][lsp-booster]]
   - [[#eglot][eglot]]
     - [[#eglot-booster][eglot-booster]]
   - [[#languages][Languages]]
@@ -79,6 +78,7 @@
     - [[#haskell][haskell]]
     - [[#nix][nix]]
     - [[#yaml][yaml]]
+    - [[#ron][ron]]
   - [[#direnv][direnv]]
   - [[#hex-colors][hex colors]]
   - [[#code-folding][code-folding]]
@@ -90,8 +90,9 @@
   - [[#org-extras][org extras]]
 - [[#workspaces][Workspaces]]
   - [[#persp-mode][persp-mode]]
-  - [[#perspective-disabled][perspective (disabled)]]
+  - [[#bufler-disabled][bufler (disabled)]]
   - [[#activities-disabled][activities (disabled)]]
+  - [[#perspective-disabled][perspective (disabled)]]
 - [[#programs][Programs]]
   - [[#eat][eat]]
   - [[#eshell][eshell]]
@@ -118,6 +119,7 @@
 - [[#ical][ical]]
 - [[#to-sort][to-sort]]
 - [[#ending][ending]]
+- [[#local-variables][Local Variables]]
 
 * Personal notes
 
@@ -128,11 +130,75 @@ TODO: I will try to make my configuration fully literate, since the pros seem to
 
 - [ ] automatically insert a banner comment or something before tangling each code block
 
-- [ ] org mode is currently slow bc of minor modes like the image-slicing and org latex stuff
+- [ ] (leaf emacs ...) for everything
 
-- [ ] put everything inside of a wrapper like (leaf emacs ...)
+- [ ] TODO: bufler.el & activities.el
 
-- [ ] everything should be ready now, but before switching, push everything to github, create a new branch, and apply the changes and fix any breakages.
+- [ ] workspace config brainstorming:
+
+  - idea 2: (works!!!)
+    - switch back to persp-mode, but disable auto-loading. each perspective will have its own save file. loading a perspective will load the save file.
+
+    - make a function that takes the most recent save file, prompts for which perspective to load from file, continues, then switches to that buffer.
+
+- [ ] ensure when org-noter creates a new frame, that it will open in the same persp as the origin buffer.
+
+- [ ] make <> highlight in ShowParen-mode and modify insert-pair-alist?
+
+- [ ] Create multiple literate config files that each create a module, which is loaded by Config.org.
+
+  OR: maybe not? try to get used to having everything in one document?
+
+  - Config.org
+  > early-init.el
+  > init.el
+  - Main.org
+    > (load each module)
+    #+begin_src emacs-lisp :tangle no
+  (mapc #'+require
+	'(
+          base
+          keyboard
+          completion
+          ide
+          org
+          workspaces
+          programs
+          ui
+          misc
+          denote
+          emms
+          ical
+          to-sort
+          ))
+    #+end_src
+  - src/
+    - Base.org
+    - base.el
+    - Keyboard.org
+    - keyboard.el
+    - Completion.org
+    - completion.el
+    - IDE.org
+    - ide.el
+    - Org.org
+    - org.el
+    - Workspaces.org
+    - workspaces.el
+    - Programs.org
+    - programs.el
+    - UI.org
+    - ui.el
+    - Misc.org
+    - misc.el
+    - Denote.org
+    - denote.el
+    - EMMS.org
+    - emms.el
+    - ical.org
+    - ical.el
+    - TO-SORT.org
+    - to-sort.el
 
 * Preface
 
@@ -169,9 +235,7 @@ Here we set important variables to load during startup, such as disabling the de
 
 #+end_src
 
-** paths
-
-- Here we set variables related to paths.
+- Then, we define variables related to paths.
   - root dir :: the root of the config directory.
   - local dir :: the root of the config directory, as Emacs understands it to be (more on this later).
   - src dir :: the directory that stores most of my config files.
@@ -206,7 +270,7 @@ Here we set important variables to load during startup, such as disabling the de
 
 - On the =custom-file= variable: this variable is bound to a path to a file, which contains customizations saved in Emacs' "customize" interface. This file is kept under the local dir.
 
-** tweak UI
+** UI tweaks
 
 Emacs' UI has a lot of bloat by default, so I disable them here.
 
@@ -254,7 +318,7 @@ An Emacs frame can have a transparent background and/or a different color.
 
 #+end_src
 
-** eln-cache dir
+** eln-cache dir tweaks
 
 The eln-cache dir is set to the root dir by default, so this is changed to the local dir to reduce clutter.
 
@@ -270,7 +334,7 @@ The eln-cache dir is set to the root dir by default, so this is changed to the l
 
 #+end_src
 
-** lsp-booster
+** lsp-booster tweaks
 
 The LSP clients =lsp-mode= and =eglot= (?) can be made much more performant by using plists instead of hash tables for deserialization. <TODO: LINK>
 
@@ -287,7 +351,7 @@ This is a necessary step to use =lsp-booster=, which drastically improves the pe
 
 This section encompasses necessities and fundamentals to get Emacs in shape to be tinkered.
 
-** load-path
+** add to load-path
 
 The =load-path= variable is a list of paths from which "features"/libraries/packages can be loaded from.
 
@@ -313,7 +377,7 @@ Here we add all subdirs of the src dir to the =load-path= recursively, and all s
 
 #+end_src
 
-** custom-file
+** load custom-file after startup
 
 The =custom-file= stores the list of customizations made using Emacs' =customize= interface. This file should be loaded after startup to load the saved customizations.
 
@@ -357,7 +421,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 #+end_src
 
-** no-littering
+** no-littering.el
 
 #+begin_src emacs-lisp :tangle init.el :comments link
 
@@ -451,7 +515,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 #+end_src
 
-** Elpaca tweaks
+- Here are some tweaks to Elpaca for compatibility with externally installed packages.
 
 #+begin_src emacs-lisp :tangle init.el :comments link
 
@@ -491,7 +555,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 #+end_src
 
-** post-init
+** post-init sequence
 
 #+begin_src emacs-lisp :tangle init.el :comments link
 
@@ -507,14 +571,14 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 #+end_src
 
-** required packages
+** prerequisite packages
 
 #+begin_src emacs-lisp :tangle init.el :comments link
 
 (use-package general :ensure (:wait t)
   :demand t
   :config
-  (general-create-definer +leader-bind
+  (general-create-definer general-my-map
     :prefix "C-c"))
 
 (use-package diminish :ensure (:wait t)
@@ -532,7 +596,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 #+end_src
 
-** load main
+** load main.el
 
 #+begin_src emacs-lisp :tangle init.el :comments link
 
@@ -548,7 +612,7 @@ the rest below is main
 
 * Base
 
-** buffer reverting and management
+** buffer auto-reverting and management
 
 #+begin_src emacs-lisp
 
@@ -563,7 +627,7 @@ the rest below is main
   (auto-revert-use-notify . nil)
   (auto-revert-interval . 5))
 
-(+leader-bind
+(general-my-map
   "k" 'kill-current-buffer
   "b" '(:ignore t :which-key "buffer")
   "bk" 'kill-current-buffer
@@ -610,7 +674,7 @@ the rest below is main
   :bind
   ("M-o" . ace-window)
   :init
-  (+leader-bind
+  (general-my-map
     "w" '(:ignore t :which-key "window")
     "wd" 'delete-window
     "w+" 'balance-windows
@@ -706,9 +770,14 @@ Emacs' file management tool.
 #+begin_src emacs-lisp
 
 (defun my/open-emacs-config-file ()
-  "Open Dired in `my/emacs-src-dir'."
+  "Open emacs config file."
   (interactive)
   (find-file my/emacs-config-file))
+
+(defun my/open-agenda-file ()
+  "Open agenda file."
+  (interactive)
+  (find-file "~/Notes/org/agenda.org"))
 
 (leaf dired :ensure nil
   :setq
@@ -719,13 +788,14 @@ Emacs' file management tool.
          ("s" . dired-find-file)
          ("r" . dired-sort-toggle-or-edit))
   :init
-  (+leader-bind
+  (general-my-map
     "d" '(:ignore t :which-key "dired")
     "dd" 'find-file
     "dj" 'dired-jump
     "f" '(:ignore t :which-key "files")
     "ff" 'find-file
-    "fp" 'my/open-emacs-config-file)
+    "fp" 'my/open-emacs-config-file
+    "fa" 'my/open-agenda-file)
   :config
   ;; hide details by default
   (add-hook 'dired-mode-hook 'dired-hide-details-mode)
@@ -753,6 +823,7 @@ Searching for and describing variables, functions, and etc.
 #+begin_src emacs-lisp
 
 (leaf helpful
+  :commands helpful--bookmark-jump
   :setq
   (counsel-describe-function-function . #'helpful-callable)
   (counsel-describe-variable-function . #'helpful-variable)
@@ -789,7 +860,7 @@ Searching for and describing variables, functions, and etc.
   (profiler-stop)
   (profiler-report))
 
-(+leader-bind
+(general-my-map
   "D" '(:ignore t :which-key "debug")
   "Ds" 'profiler-start
   "Dr" 'my/profiler-report)
@@ -1020,7 +1091,7 @@ Searching for and describing variables, functions, and etc.
 ;; avy
 (leaf avy
   :init
-  (+leader-bind
+  (general-my-map
     "j" '(:ignore t :which-key "avy")
     "jj" 'avy-goto-char-timer
     "jc" 'avy-goto-char-2
@@ -1187,7 +1258,7 @@ A very nice minibuffer completion framework.
           ("M-r" . consult-history)) ;; previous-matching-history-element
          )
   :init
-  (+leader-bind
+  (general-my-map
     "s" search-map
     "Tt" 'consult-theme
     "bb" 'consult-buffer
@@ -1197,7 +1268,7 @@ A very nice minibuffer completion framework.
 ;; used to go to a file in a bookmarked dir n stuff (one ex)
 (leaf consult-dir
   :init
-  (+leader-bind
+  (general-my-map
     "fd" 'consult-dir)
   :bind (("C-x C-d" . consult-dir)      ; default?
          (vertico-map
@@ -1811,6 +1882,9 @@ Optional WIDTH parameter determines total width (defaults to 70)."
                     text
                     right-semis))))
 
+(with-eval-after-load 'flycheck
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+
 #+end_src
 
 **** scheme
@@ -1928,7 +2002,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
         lsp-rust-analyzer-display-parameter-hints t ; def: nil (input param name)
 
         ;; maybe
-        lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
+        ;; lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
         lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t ; def: nil (?)
 
         ;; experimenting
@@ -2112,6 +2186,15 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 #+end_src
 
+*** ron
+
+#+begin_src emacs-lisp
+
+(leaf ron-mode
+  :require t)
+
+#+end_src
+
 ** direnv
 
 #+begin_src emacs-lisp
@@ -2176,7 +2259,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
     ("k" scroll-down-command "up")
     ("g" nil "quit")
     ("c" nil "close"))
-  (+leader-bind
+  (general-my-map
     "@" 'hydra-folding/body))
 
 #+end_src
@@ -2203,7 +2286,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
   (org-fontify-whole-heading-line . t)
 
   :init
-  (+leader-bind
+  (general-my-map
     "o" '(:ignore t :which-key "org"))
 
   :hook (org-mode-hook . indent-tabs-mode)
@@ -2242,6 +2325,12 @@ If in a list, inserts a new sublist after the current list."
   (add-to-list 'org-structure-template-alist '("java" . "src java"))
   (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
   (add-to-list 'org-structure-template-alist '("clang" . "src c"))
+
+  ;; fix syntax <> matching with paren
+  (add-hook 'org-mode-hook (lambda ()
+                             (modify-syntax-entry ?< ".")
+                             (modify-syntax-entry ?> ".")))
+
 
   ;; keywords override
 
@@ -2302,6 +2391,9 @@ If in a list, inserts a new sublist after the current list."
   :setq
   (image-slicing-newline-trailing-text . nil))
 
+(leaf org-auto-tangle
+  :hook org-mode-hook)
+
 #+end_src
 
 ** org-agenda
@@ -2311,7 +2403,7 @@ If in a list, inserts a new sublist after the current list."
 (leaf org-agenda :ensure nil
   :after org
   :init
-  (+leader-bind
+  (general-my-map
     "oa" 'org-agenda)
 
   :bind (org-agenda-mode-map
@@ -2427,7 +2519,7 @@ The property will be removed if ran with a \\[universal-argument]."
 (leaf org-capture :ensure nil
   :after org
   :init
-  (+leader-bind
+  (general-my-map
     "oc" 'org-capture)
 
   :config
@@ -2498,7 +2590,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
     (if (not (derived-mode-p 'org-mode))
         (message "Not in org-mode.")
       (org-latex-preview '(16))))
-  (+leader-bind
+  (general-my-map
     "ol" 'my/org-latex-preview-buffer))
 
 (leaf org-fragtog
@@ -2591,16 +2683,26 @@ https://github.com/Bad-ptr/persp-mode.el
 
 #+begin_src emacs-lisp
 
+;; NOTE: modify #'persp-save-state-to-file arg (keep-others-in-non-parametric-file 'yes)
+
+;; maybe have each persp have its own save file, and when autosaving, save each persp?
+;; maybe have a function to delete a persp from the main autosave file?
+;; - prompt available perspectives from main autosave file, after selection, delete each from file.
+
 (leaf persp-mode
-  ;; :disabled t
   :bind-keymap
   ("C-c w w" . persp-key-map)
   ("C-c ." . persp-key-map)
   ("C-c (" . persp-key-map)
+  :bind (persp-key-map
+         ("." . my-persp-load-name-from-latest)
+         ("D" . my-persp-delete-name-from-latest))
   :setq
   (wg-morph-on . nil)
   (persp-autokill-buffer-on-remove . 'kill-weak)
-  (persp-auto-resume-time . 0.1)
+  ;; (persp-auto-resume-time . 0.1)
+  (persp-auto-resume-time . -1)
+  (persp-auto-save-opt . 2)
   ;; prevent issue with persp-special-last-buffer
   :hook
   (elpaca-after-init-hook . (lambda () (persp-mode 1)))
@@ -2618,7 +2720,23 @@ https://github.com/Bad-ptr/persp-mode.el
   (set-persp-parameter 'dont-save-to-file t nil)
   ;; consult-buffer integration
   (defvar persp-consult-source
-    (list :name     "Perspective"
+    (list :name     "Persp Buffers"
+          :narrow   ?
+          :category 'buffer
+          :state    #'consult--buffer-state
+          :history  'buffer-name-history
+          :default  t
+          :items
+          (lambda ()
+            (let ((current-persp (get-current-persp)))
+              (consult--buffer-query
+               :sort 'visibility
+               :predicate (lambda (buf)
+                            (and current-persp
+                                 (persp-contain-buffer-p buf)))
+               :as 'buffer-name)))))
+  (defvar persp-rest-consult-source
+    (list :name     "Other Buffers"
           :narrow   ?s
           :category 'buffer
           :state    #'consult--buffer-state
@@ -2626,17 +2744,73 @@ https://github.com/Bad-ptr/persp-mode.el
           :default  t
           :items
           (lambda ()
-            (let ((curr-persp (get-current-persp)))
+            (let ((current-persp (get-current-persp)))
               (consult--buffer-query
                :sort 'visibility
                :predicate (lambda (buf)
-                            (if curr-persp
-                                (persp-contain-buffer-p buf)
+                            (if current-persp
+                                (not (persp-contain-buffer-p buf))
                               t))
                :as 'buffer-name)))))
   (with-eval-after-load 'consult
     (consult-customize consult--source-buffer :hidden t :default nil)
-    (add-to-list 'consult-buffer-sources persp-consult-source)))
+    (add-to-list 'consult-buffer-sources persp-rest-consult-source)
+    (add-to-list 'consult-buffer-sources persp-consult-source))
+
+  ;; load from file
+  (cl-defun my-persp-load-name-from-latest (&optional (fname persp-auto-save-fname)
+                                                      (phash *persp-hash*)
+                                                      name savelist)
+    "Load and switch to a perspective via name from the latest backup file."
+    (interactive)
+    (unless savelist
+      (setq savelist (persp-savelist-from-savefile fname)))
+    (when savelist
+      (let* ((available-names (persp-list-persp-names-in-file fname savelist))
+             (loaded-names (persp-names-current-frame-fast-ordered))
+             (unloaded-names (seq-remove (lambda (p) (member p loaded-names)) available-names)))
+        (when unloaded-names
+          (setq name
+                (persp-read-persp
+                 "to load" nil nil t t nil unloaded-names t 'push)))))
+    (when name
+      (let ((names-regexp (regexp-opt (list name))))
+        (persp-load-state-from-file fname phash names-regexp t savelist))
+      ;; switch to new loaded persp
+      (persp-frame-switch name)))
+
+  ;; don't overwrite backup file with current; merge.
+  (advice-add 'persp-save-state-to-file :around
+              (lambda (orig-fun &rest args)
+                ;; We need to modify the fourth optional parameter
+                ;; Default arguments structure:
+                ;; (fname phash respect-persp-file-parameter keep-others-in-non-parametric-file)
+                (let ((fname (or (nth 0 args) persp-auto-save-fname))
+                      (phash (or (nth 1 args) *persp-hash*))
+                      (respect-param (or (nth 2 args) persp-auto-save-persps-to-their-file))
+                      ;; Always set the fourth parameter to 'yes regardless of what was passed
+                      (keep-others 'yes))
+                  ;; Call the original function with modified arguments
+                  (funcall orig-fun fname phash respect-param keep-others))))
+
+
+  ;; delete persp from file
+  (defun my-persp-delete-name-from-latest ()
+    (interactive)
+    (let* ((fname persp-auto-save-fname)
+           (savelist (persp-savelist-from-savefile fname))
+           (available-names (persp-list-persp-names-in-file fname savelist))
+           (names (persp-read-persp
+                   "to delete" 'reverse nil t nil nil available-names t 'push))
+           (filtered-savelist (cl-remove-if
+                               (lambda (expr)
+                                 (and (listp expr)
+                                      (eq (car expr) 'def-persp)
+                                      (seq-contains-p names (cadr expr))))
+                               savelist)))
+      (if (y-or-n-p (format "Delete %s?" names))
+          (persp-savelist-to-file filtered-savelist fname))))
+  )
 
 ;; enable persp-mode-project-bridge mode
 
@@ -2770,6 +2944,385 @@ https://github.com/Bad-ptr/persp-mode.el
 ;;                 (ibuffer-switch-to-saved-filter-groups "persp-mode"))))
 #+end_src
 
+** bufler (disabled)
+
+https://github.com/alphapapa/bufler.el
+
+AMAZING
+
+- TODO: consult buffer show
+
+#+begin_src emacs-lisp :tangle no
+
+(leaf bufler
+  :require t
+  ;; :init
+  ;; (bufler-mode 1)
+  :bind
+  ("C-c b l" . bufler)
+  :config
+  ;; TODO: BROKEN!!! bufler-workspace-buffers doesnt work.
+  ;; (defvar bufler-consult-source
+  ;;   (list :name     "Workspace Buffers"
+  ;;         :narrow   ?w
+  ;;         :category 'buffer
+  ;;         :state    #'consult--buffer-state
+  ;;         :history  'buffer-name-history
+  ;;         :default  t
+  ;;         :items
+  ;;         (lambda ()
+  ;;           (let ((lst (bufler-workspace-buffers)))
+  ;;             (consult--buffer-query
+  ;;              :sort 'visibility
+  ;;              :predicate (lambda (buf)
+  ;;                           (member buf lst))
+  ;;              :as 'buffer-name)))))
+  ;; (defvar bufler-not-consult-source
+  ;;   (list :name     "Other Buffers"
+  ;;         :narrow   ?w
+  ;;         :category 'buffer
+  ;;         :state    #'consult--buffer-state
+  ;;         :history  'buffer-name-history
+  ;;         :default  t
+  ;;         :items
+  ;;         (lambda ()
+  ;;           (let ((lst (bufler-workspace-buffers)))
+  ;;             (consult--buffer-query
+  ;;              :sort 'visibility
+  ;;              :predicate (lambda (buf)
+  ;;                           (not (member buf lst)))
+  ;;              :as 'buffer-name)))))
+  ;; (with-eval-after-load 'consult
+  ;;   (consult-customize consult--source-buffer :hidden t :default nil)
+  ;;   (add-to-list 'consult-buffer-sources bufler-not-consult-source)
+  ;;   (add-to-list 'consult-buffer-sources bufler-consult-source)
+  ;;   )
+  (bufler-defgroups
+    (group
+     ;; Subgroup collecting all named workspaces.
+     (auto-workspace))
+    (group
+     ;; Subgroup collecting all `help-mode' and `info-mode' buffers.
+     (group-or "*Help/Info*"
+               (mode-match "*Help*" (rx bos "help-"))
+               (mode-match "*Info*" (rx bos "info-"))))
+    (group
+     ;; Subgroup collecting all special buffers (i.e. ones that are not
+     ;; file-backed), except `magit-status-mode' buffers (which are allowed to fall
+     ;; through to other groups, so they end up grouped with their project buffers).
+     (group-and "*Special*"
+                (lambda (buffer)
+                  (unless (or (funcall (mode-match "Magit" (rx bos "magit-status"))
+                                       buffer)
+                              (funcall (mode-match "Dired" (rx bos "dired"))
+                                       buffer)
+                              (funcall (auto-file) buffer))
+                    "*Special*")))
+     (group
+      ;; Subgroup collecting these "special special" buffers
+      ;; separately for convenience.
+      (name-match "**Special**"
+                  (rx bos "*" (or "Messages" "Warnings" "scratch" "Backtrace") "*")))
+     (group
+      ;; Subgroup collecting all other Magit buffers, grouped by directory.
+      (mode-match "*Magit* (non-status)" (rx bos (or "magit" "forge") "-"))
+      (auto-directory))
+     ;; Subgroup for Helm buffers.
+     (mode-match "*Helm*" (rx bos "helm-"))
+     ;; Remaining special buffers are grouped automatically by mode.
+     (auto-mode))
+    ;; All buffers under "~/.emacs.d" (or wherever it is).
+    (dir user-emacs-directory)
+    (group
+     ;; Subgroup collecting buffers in `org-directory' (or "~/org" if
+     ;; `org-directory' is not yet defined).
+     (dir (if (bound-and-true-p org-directory)
+              org-directory
+            "~/org"))
+     (group
+      ;; Subgroup collecting indirect Org buffers, grouping them by file.
+      ;; This is very useful when used with `org-tree-to-indirect-buffer'.
+      (auto-indirect)
+      (auto-file))
+     ;; Group remaining buffers by whether they're file backed, then by mode.
+     (group-not "*special*" (auto-file))
+     (auto-mode))
+    (group
+     ;; Subgroup collecting buffers in a projectile project.
+     (auto-projectile))
+    (group
+     ;; Subgroup collecting buffers in a version-control project,
+     ;; grouping them by directory.
+     (auto-project))
+    ;; Group remaining buffers by directory, then major mode.
+    (auto-directory)
+    (auto-mode))
+
+;;;; TODO: create function to get list of all workspace buffers!
+
+  ;; (cl-defun bufler-workspace-switch-buffer
+;;     (&key all-p no-filter (include-recent-buffers bufler-switch-buffer-include-recent-buffers) (switch-workspace-p t))
+;;   "Switch to another buffer in the current group.
+;; Without any input, switch to the previous buffer, like
+;; `switch-to-buffer'.
+
+;; If ALL-P (interactively, with universal prefix) or if the frame
+;; has no workspace, select from all buffers.
+
+;; If SWITCH-WORKSPACE-P (disable with two universal prefixes),
+;; select from all buffers and switch to that buffer's workspace.
+
+;; If NO-FILTER (with three universal prefixes), include buffers
+;; that would otherwise be filtered by
+;; `bufler-workspace-switch-buffer-filter-fns'.
+
+;; If INCLUDE-RECENT-BUFFERS, include recently shown buffers in the
+;; selected window at the top of the list of buffers (see option
+;; `bufler-switch-buffer-include-recent-buffers').
+
+;; If `bufler-workspace-switch-buffer-sets-workspace' is non-nil,
+;; act as if SET-WORKSPACE-P is non-nil.  And if
+;; `bufler-workspace-switch-buffer-and-tab' is non-nil,
+;; automatically switch to the buffer's workspace's tab, if it has
+;; one."
+;;   (interactive
+;;    (list :all-p current-prefix-arg
+;;          :no-filter (and current-prefix-arg
+;;                          (>= (car current-prefix-arg) 64))
+;;          :switch-workspace-p (not (and current-prefix-arg
+;;                                        (>= (car current-prefix-arg) 16)))))
+;;   (let* ((bufler-vc-state nil)
+;;          (completion-ignore-case bufler-workspace-ignore-case)
+;;          (path (unless all-p
+;;                  (or (when tab-bar-mode
+;;                        (bufler-workspace--tab-parameter 'bufler-workspace-path (tab-bar--current-tab-find)))
+;;                      (frame-parameter nil 'bufler-workspace-path))))
+;;          (buffers (bufler-buffer-alist-at
+;;                    path :filter-fns (unless no-filter
+;;                                       bufler-workspace-switch-buffer-filter-fns)))
+;;          (other-buffer-path (bufler-group-tree-leaf-path
+;;                              (bufler-buffers) (other-buffer (current-buffer))))
+;;          (other-buffer-cons (cons (buffer-name (-last-item other-buffer-path))
+;;                                   (other-buffer (current-buffer))))
+;;          (recent-buffers (when include-recent-buffers
+;;                            (cl-loop for (buffer _ _) in (window-prev-buffers)
+;;                                     collect (cons (buffer-name buffer) buffer))))
+;;          (buffers (cons other-buffer-cons (append recent-buffers buffers)))
+;;          (buffer-name (completing-read "Buffer: " (mapcar #'car buffers)
+;;                                        nil nil nil nil other-buffer-cons))
+;;          (selected-buffer (alist-get buffer-name buffers nil nil #'string=)))
+;;     ;; TODO: If selected-buffer has no associated workspace tab, try
+;;     ;; to use a tab that has a window that most recently displayed it.
+;;     (when-let ((switch-workspace-p)
+;;                (workspace-path (bufler-buffer-workspace-path selected-buffer))
+;;                (workspace-tab (cl-find workspace-path (tab-bar-tabs) :test #'equal
+;;                                        :key (lambda (tab)
+;;                                               (bufler-workspace--tab-parameter 'bufler-workspace-path tab))))
+;;                (tab-name (bufler-workspace--tab-parameter 'name workspace-tab)))
+;;       ;; TODO: Try to switch to a frame when not using tab-bar-mode
+;;       ;; (or just ignore frames and focus on supporting tab-bar best).
+;;       (tab-bar-switch-to-tab tab-name))
+;;     (if-let ((selected-buffer)
+;;              (window (get-buffer-window selected-buffer)))
+;;         (select-window window)
+;;       (switch-to-buffer (or selected-buffer buffer-name)))))
+  )
+
+#+end_src
+
+** activities (disabled)
+
+[[https://github.com/alphapapa/activities.el]]
+
+TODO: create a consult-based selection menu for activities-resume/switch
+- have two blocks: loaded and unloaded
+
+#+begin_src emacs-lisp :tangle no
+
+(leaf activities
+  :custom
+  (tab-bar-show . 3)
+  :init
+  (activities-mode)
+  (activities-tabs-mode)
+  ;; prevent edebug default bindings from interfering
+  ;; (setq edebug-inhibit-emacs-lisp-mode-bindings t)
+
+  ;; create map
+  (defvar activities-mode-map
+    (let ((map (make-sparse-keymap)))
+      ;; Define keys in bulk
+      (dolist
+          (binding
+           '(;; create new activity name.
+             ("N" . activities-new)
+             ;; define new activity's default with current frame state.
+             ;; (prefix) define pre-existing activity' default with current frame state.
+             ("d" . activities-define)
+             ;; resume suspended activity
+             ;; (prefix) resume activity with default state.
+             ("." . activities-resume)
+             ;; save and close activity.
+             ("k" . activities-suspend)
+             ;; reset to default state and close activity.
+             ("K" . activities-kill)
+             ;; switch to an opened activity
+             ("s" . activities-switch)
+             ;; permanently delete activity
+             ("D" . activities-discard)
+             ;; switch to a buffer in the current activity.
+             ("b" . activities-switch-buffer)
+             ;; revert activity to default state.
+             ("g" . activities-revert)
+             ;; list activities in vtable buffer
+             ("l" . activities-list)
+             ;; rename activity
+             ("R" . activities-rename)
+             ;; next tab
+             ("n" . tab-next)
+             ;; previous tab
+             ("p" . tab-previous)))
+        (define-key map (kbd (car binding)) (cdr binding)))
+      ;; set up autoloads
+      (let ((cmds (mapcar #'cdr (cdr map))))
+        (dolist (c cmds)
+          (unless (fboundp c)
+            (autoload c "activities" nil t))))
+      ;; return map
+      map))
+
+  ;; bind map
+  (global-set-key (kbd "C-c .") activities-mode-map)
+  (global-set-key (kbd "C-c x") activities-mode-map)
+
+  ;; save current activity before deleting frame
+  (add-to-list 'delete-frame-functions
+               (lambda ()
+                 (activities-save-all)))
+
+  ;; ;; switch to the last opened activity when starting a new frame
+
+  ;; (defvar my-activities-last nil)
+
+  ;; (defun my-activities-store-last (activity)
+  ;;   (setq my-activities-last
+  ;;         (activities-activity-name activity)))
+
+  ;; (advice-add 'activities-tabs--switch :after #'my-activities-store-last)
+  ;; (advice-add 'activities--switch :after #'my-activities-store-last)
+
+  ;; (defun my-activities-load-last-switched (frame)
+  ;;   (when-let ((last (activities-named my-activities-last)))
+  ;;     (activities-save last :lastp t)
+  ;;     (with-selected-frame frame
+  ;;       (activities-resume last)))
+  ;;   nil)
+
+  ;; ATTEMPT 2:
+
+  ;; (add-hook 'after-make-frame-functions #'my-activities-load-last-switched)
+
+  ;; (defun my-activities-switch-after-make-frame (frame)
+  ;;   (with-selected-frame frame
+  ;;     (when activities-mode
+  ;;       (call-interactively #'activities-resume))
+  ;;     t))
+
+  ;; (add-hook 'after-make-frame-functions #'my-activities-switch-after-make-frame)
+  )
+
+#+end_src
+
+- bufferlo
+
+[[https://github.com/florommel/bufferlo]]
+
+#+begin_src emacs-lisp :tangle no
+
+(defun activities-local-buffer-p (buffer)
+  "Returns non-nil if BUFFER is present in `activities-current'."
+  (when (activities-current)
+    (memq buffer (activities-tabs--tab-parameter 'activities-buffer-list
+                                                 (activities-tabs--tab (activities-current))))))
+
+(defvar my-consult--source-activities-buffer
+  `(:name "Activities Buffers"
+          :narrow   ?a
+          :category buffer
+          :face     consult-buffer
+          :history  buffer-name-history
+          :state    ,#'consult--buffer-state
+          :default  t
+          :items    ,(lambda ()
+                       (consult--buffer-query
+                        :predicate #'activities-local-buffer-p
+                        :sort 'visibility
+                        :as #'buffer-name)))
+  "Activities local buffers candidate source for `consult-buffer'.")
+
+(defvar my-consult--source-other-buffers
+  `(:name "Other Buffers"
+          :narrow   ?o
+          :category buffer
+          :face     consult-buffer
+          :history  buffer-name-history
+          :state    ,#'consult--buffer-state
+          :items    ,(lambda ()
+                       (consult--buffer-query
+                        :predicate (lambda (buf)
+                                     (not (activities-local-buffer-p buf)))
+                        :sort 'visibility
+                        :as #'consult--buffer-pair)))
+  "All buffers candidate source for `consult-buffer'.")
+
+(with-eval-after-load 'consult
+  (delete 'consult--source-buffer consult-buffer-sources)
+  (add-to-list 'consult-buffer-sources 'my-consult--source-other-buffers)
+  (add-to-list 'consult-buffer-sources 'my-consult--source-activities-buffer))
+
+;; (leaf bufferlo
+;;   :init
+;;   ;; (bufferlo-mode 1)
+;;   ;; consult integration
+;;   (defun activities-local-buffer-p (buffer)
+;;     "Returns non-nil if BUFFER is present in `activities-current'."
+;;     (when (activities-current)
+;;       (memq buffer (activities-tabs--tab-parameter 'activities-buffer-list (activities-tabs--tab (activities-current))))))
+
+;;   (defvar my-consult--source-buffer
+;;     `(:name "Other Buffers"
+;;             :narrow   ?b
+;;             :category buffer
+;;             :face     consult-buffer
+;;             :history  buffer-name-history
+;;             :state    ,#'consult--buffer-state
+;;             :items ,(lambda () (consult--buffer-query
+;;                                 :predicate #'bufferlo-non-local-buffer-p
+;;                                 :sort 'visibility
+;;                                 :as #'buffer-name)))
+;;     "Non-local buffer candidate source for `consult-buffer'.")
+
+;;   (defvar my-consult--source-local-buffer
+;;     `(:name "Local Buffers"
+;;             :narrow   ?l
+;;             :category buffer
+;;             :face     consult-buffer
+;;             :history  buffer-name-history
+;;             :state    ,#'consult--buffer-state
+;;             :default  t
+;;             :items ,(lambda () (consult--buffer-query
+;;                                 :predicate #'bufferlo-local-buffer-p
+;;                                 :sort 'visibility
+;;                                 :as #'buffer-name)))
+;;     "Local buffer candidate source for `consult-buffer'.")
+
+;;   (with-eval-after-load "consult"
+;;     (consult-customize consult--source-buffer :hidden t :default nil)
+;;     (add-to-list 'consult-buffer-sources my-consult--source-buffer)
+;;     (add-to-list 'consult-buffer-sources my-consult--source-local-buffer)))
+
+#+end_src
+
 ** perspective (disabled)
 
 - perspective is disabled and replaced with persp-mode above, because perspective has poor support for a client-server Emacs setup.
@@ -2816,42 +3369,6 @@ https://github.com/Bad-ptr/persp-mode.el
 ;;                              7]))
 ;;     (consult-customize consult--source-buffer :hidden t :default nil)
 ;;     (add-to-list 'consult-buffer-sources my/persp-consult-source)))
-#+end_src
-
-** activities (disabled)
-
-#+begin_src emacs-lisp
-
-;; (leaf activities
-;;   :disabled t
-;;   :init
-;;   (activities-mode)
-;;   ;; (activities-tabs-mode)
-;;   ;; prevent edebug default bindings from interfering
-;;   ;; (setq edebug-inhibit-emacs-lisp-mode-bindings t)
-
-;;   (defvar activities-mode-map
-;;     (let ((map (make-sparse-keymap)))
-;;       (define-key map (kbd "n") #'activities-new)
-;;       (define-key map (kbd "d") #'activities-define)
-;;       (define-key map (kbd "a") #'activities-resume)
-;;       (define-key map (kbd "s") #'activities-suspend)
-;;       (define-key map (kbd "k") #'activities-kill)
-;;       (define-key map (kbd "RET") #'activities-switch)
-;;       (define-key map (kbd "b")   #'activities-switch-buffer)
-;;       (define-key map (kbd "g")   #'activities-revert)
-;;       (define-key map (kbd "l")   #'activities-list)
-;;       ;; set up autoloads
-;;       (let ((cmds (mapcar #'cdr (cdr map))))
-;;         (dolist (c cmds)
-;;           (unless (fboundp c)
-;;             (autoload c "activities" nil t))))
-;;       ;; return map
-;;       map))
-;;   ;; bind map
-;;   (global-set-key (kbd "C-x C-a") activities-mode-map)
-;;   (global-set-key (kbd "C-c .") activities-mode-map))
-
 #+end_src
 
 * Programs
@@ -3094,12 +3611,19 @@ https://github.com/Bad-ptr/persp-mode.el
 
 (leaf whitespace :ensure nil
   :hook ((prog-mode-hook . my/prog-mode-whitespace)
-         (org-mode-hook  . my/prog-mode-whitespace)
-         (text-mode-hook . my/prog-mode-whitespace))
+         (org-mode-hook  . my/org-mode-whitespace)
+         (text-mode-hook . my/org-mode-whitespace))
   :init
+  (defvar my/base-whitespace-style '(face trailing tabs missing-newline-at-eof))
   (defun my/prog-mode-whitespace ()
-    (setq whitespace-style '(face trailing tabs tab-mark))
-    (whitespace-mode 1)))
+    (setq whitespace-style (append my/base-whitespace-style
+                                   '(tab-mark lines-tail)))
+    (whitespace-mode 1))
+  (defun my/org-mode-whitespace ()
+    (setq whitespace-style (append my/base-whitespace-style '()))
+    (whitespace-mode 1))
+  :config
+  (setq whitespace-trailing 'whitespace-hspace))
 
 #+end_src
 
@@ -3237,7 +3761,7 @@ https://github.com/Bad-ptr/persp-mode.el
 
 (leaf denote
   :init
-  (+leader-bind
+  (general-my-map
     "n" '(:ignore t :which-key "denote")
     "nn" 'denote
     "ns" 'denote-subdirectory
@@ -3377,7 +3901,7 @@ https://github.com/Bad-ptr/persp-mode.el
   :after org
   :bind ("M-s n" . consult-notes)
   :init
-  (+leader-bind
+  (general-my-map
     "nf" 'consult-notes
     "ng" 'consult-notes-search-in-all-notes)
   :config
@@ -3414,7 +3938,7 @@ https://github.com/Bad-ptr/persp-mode.el
 (leaf denote-explore
   :after denote
   :init
-  (+leader-bind
+  (general-my-map
     "ne" '(:ignore t :which-key "explore")
 
     ;; random walks
@@ -3453,7 +3977,7 @@ https://github.com/Bad-ptr/persp-mode.el
 (leaf denote-menu
   :after denote
   :init
-  (+leader-bind
+  (general-my-map
     "nm" 'list-denotes)
   :bind (denote-menu-mode-map
          ("c" . denote-menu-clear-filters)
@@ -3468,7 +3992,7 @@ https://github.com/Bad-ptr/persp-mode.el
   (setq denote-menu-title-column-width 50))
 
 ;;; set common keys
-;; (+leader-bind
+;; (general-my-map
 ;;   "nN" '(:ignore t :which-key "Favorites")
 ;;   "nNn" 'denote
 ;;   "")
@@ -3767,7 +4291,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
 
   :init
-  (+leader-bind
+  (general-my-map
     "e" '(:ignore t :which-key "emms")
     "e e" 'emms
     "e k" 'emms-playlist-current-kill
@@ -3905,6 +4429,47 @@ check out https://github.com/mwfogleman/.emacs.d/blob/master/michael.org
 
 ;; eglot?
 
+(defhydra hydra-org (:color red :columns 3)
+  "Org Mode Movements"
+  ("n" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      outline-next-visible-heading
+                                      org-fold-show-entry
+                                      ))
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "next heading")
+  ("p" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      outline-previous-visible-heading
+                                      org-fold-show-entry
+                                      ))
+         (recenter-top-bottom)
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "prev heading")
+  ("N" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      org-forward-heading-same-level
+                                      org-fold-show-entry))
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "next heading at same level")
+  ("P" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      org-backward-heading-same-level
+                                      org-fold-show-entry))
+         (recenter-top-bottom)
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "prev heading at same level")
+  ("u" outline-up-heading "up heading")
+  ("g" org-goto "goto" :exit t))
+
 #+end_src
 
 * ending
@@ -3912,3 +4477,9 @@ check out https://github.com/mwfogleman/.emacs.d/blob/master/michael.org
 #+begin_src emacs-lisp
 (provide 'main)
 #+end_src
+
+* Local Variables
+
+# Local Variables:
+# eval: (org-indent-mode 0)
+# End:

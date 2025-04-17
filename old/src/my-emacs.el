@@ -36,7 +36,7 @@
   (auto-revert-use-notify . nil)
   (auto-revert-interval . 5))
 
-(+leader-bind
+(general-my-map
   "k" 'kill-current-buffer
   "b" '(:ignore t :which-key "buffer")
   "bk" 'kill-current-buffer
@@ -75,7 +75,7 @@
   :bind
   ("M-o" . ace-window)
   :init
-  (+leader-bind
+  (general-my-map
     "w" '(:ignore t :which-key "window")
     "wd" 'delete-window
     "w+" 'balance-windows
@@ -147,7 +147,7 @@
          ("s" . dired-find-file)
          ("r" . dired-sort-toggle-or-edit))
   :init
-  (+leader-bind
+  (general-my-map
     "d" '(:ignore t :which-key "dired")
     "dd" 'find-file
     "dj" 'dired-jump
@@ -203,7 +203,7 @@
   (profiler-stop)
   (profiler-report))
 
-(+leader-bind
+(general-my-map
   "D" '(:ignore t :which-key "debug")
   "Ds" 'profiler-start
   "Dr" 'my/profiler-report)
