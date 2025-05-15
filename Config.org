@@ -24,8 +24,8 @@
   - [[#load-mainel][load main.el]]
 - [[#----main----][--- Main ---]]
 - [[#base][Base]]
-  - [[#buffer-auto-reverting-and-management][buffer auto-reverting and management]]
-  - [[#history-and-recents][history and recents]]
+  - [[#buffers][buffers]]
+  - [[#history][history]]
   - [[#window-management][window management]]
   - [[#dired][dired]]
   - [[#helpful][helpful]]
@@ -33,34 +33,34 @@
   - [[#profiler][profiler]]
 - [[#keyboard][Keyboard]]
   - [[#basic-keybind-tweaks][basic keybind tweaks]]
-  - [[#meow---modal-editing][meow - modal editing]]
-  - [[#avy---jumping][avy - jumping]]
-  - [[#jinx---auto-correct][jinx - auto-correct]]
+  - [[#meow-modal-editing][meow (modal editing)]]
+  - [[#avy-jumping][avy (jumping)]]
+  - [[#jinx-auto-correct][jinx (auto-correct)]]
   - [[#fontawesome][fontawesome]]
 - [[#completion][Completion]]
-  - [[#vertico][vertico]]
-  - [[#consult][consult]]
-  - [[#embark][embark]]
-  - [[#embark-consult][embark-consult]]
-  - [[#orderless][orderless]]
-  - [[#marginalia][marginalia]]
-  - [[#company][company]]
-  - [[#yasnippet][yasnippet]]
-  - [[#hippie-expand][hippie-expand]]
-  - [[#isearch][isearch]]
+  - [[#vertico-completion-framework][vertico (completion framework)]]
+  - [[#consult-search-and-navigation][consult (search and navigation)]]
+  - [[#embark-run-action-on-target][embark (run action on target)]]
+  - [[#embark-consult-consult--embark-integration][embark-consult (consult + embark integration)]]
+  - [[#orderless-somewhat-fuzzy-completion-style][orderless (somewhat-fuzzy completion style)]]
+  - [[#marginalia-extra-info-on-completion-candidates][marginalia (extra info on completion candidates)]]
+  - [[#company-in-buffer-completions-and-ui][company (in-buffer completions and UI)]]
+  - [[#yasnippet-templates][yasnippet (templates)]]
+  - [[#hippie-expand-smart-completions-and-expansions][hippie-expand (smart completions and expansions)]]
+  - [[#isearch-built-in-text-searching][isearch (built-in text searching)]]
   - [[#corfu-disabled][corfu (disabled)]]
   - [[#cape-disabled][cape (disabled)]]
   - [[#abbrev-disabled][abbrev (disabled)]]
 - [[#ide][IDE]]
-  - [[#personal-variables][personal variables]]
+  - [[#personal-variables-todo-delete-this][personal variables (todo: delete this)]]
   - [[#generic-tweaks-for-programming][generic tweaks for programming]]
-  - [[#projectel][project.el]]
-  - [[#projectile][projectile]]
-  - [[#lsp-mode][lsp-mode]]
-    - [[#lsp-ui][lsp-ui]]
-    - [[#lsp-booster][lsp-booster]]
-  - [[#eglot][eglot]]
-    - [[#eglot-booster][eglot-booster]]
+  - [[#projectel-operations-on-the-current-project][project.el (operations on the current project)]]
+  - [[#projectile-projectel-alternative][projectile (project.el alternative)]]
+  - [[#lsp-mode-the-lsp-client][lsp-mode (the LSP client)]]
+    - [[#lsp-ui-show-info-on-sideline][lsp-ui (show info on sideline)]]
+    - [[#lsp-booster-speed-up-lsp-mode][lsp-booster (speed up LSP-mode)]]
+  - [[#eglot-disabled][eglot (disabled)]]
+    - [[#eglot-booster-disabled][eglot-booster (disabled)]]
   - [[#languages][Languages]]
     - [[#generic-code-settings][generic code settings]]
     - [[#lisps][Lisps]]
@@ -94,7 +94,7 @@
   - [[#cdlatex][CDLatex]]
   - [[#preview][Preview]]
   - [[#preview-pane][Preview Pane]]
-  - [[#yasnippet-1][Yasnippet]]
+  - [[#yasnippet][Yasnippet]]
 - [[#workspaces][Workspaces]]
   - [[#persp-mode][persp-mode]]
   - [[#bufler-disabled][bufler (disabled)]]
@@ -618,7 +618,7 @@ the rest below is main
 
 * Base
 
-** buffer auto-reverting and management
+** buffers
 
 #+begin_src emacs-lisp
 
@@ -647,7 +647,7 @@ the rest below is main
 
 #+end_src
 
-** history and recents
+** history
 
 #+begin_src emacs-lisp
 
@@ -885,7 +885,7 @@ Searching for and describing variables, functions, and etc.
 
 #+end_src
 
-** meow - modal editing
+** meow (modal editing)
 
 #+begin_src emacs-lisp
 
@@ -1080,7 +1080,7 @@ Searching for and describing variables, functions, and etc.
 
 #+end_src
 
-** avy - jumping
+** avy (jumping)
 
 #+begin_src emacs-lisp
 
@@ -1100,7 +1100,7 @@ Searching for and describing variables, functions, and etc.
 
 #+end_src
 
-** jinx - auto-correct
+** jinx (auto-correct)
 
 #+begin_src emacs-lisp
 
@@ -1134,7 +1134,9 @@ Searching for and describing variables, functions, and etc.
 
 * Completion
 
-** vertico
+Emacs has a very extensible completion system that can be equipped with frameworks and UIs. This setup uses Vertico, a very lightweight and minimal completion UI, along with complementary packages such as consult, embark, orderless, and more.
+
+** vertico (completion framework)
 
 A very nice minibuffer completion framework.
 
@@ -1184,7 +1186,9 @@ A very nice minibuffer completion framework.
 
 #+end_src
 
-** consult
+** consult (search and navigation)
+
+https://github.com/minad/consult
 
 #+begin_src emacs-lisp
 
@@ -1297,7 +1301,7 @@ A very nice minibuffer completion framework.
 
 #+end_src
 
-** embark
+** embark (run action on target)
 
 #+begin_src emacs-lisp
 
@@ -1328,7 +1332,7 @@ A very nice minibuffer completion framework.
 
 #+end_src
 
-** embark-consult
+** embark-consult (consult + embark integration)
 
 #+begin_src emacs-lisp
 
@@ -1338,7 +1342,7 @@ A very nice minibuffer completion framework.
 
 #+end_src
 
-** orderless
+** orderless (somewhat-fuzzy completion style)
 
 #+begin_src emacs-lisp
 
@@ -1354,7 +1358,9 @@ A very nice minibuffer completion framework.
 
 #+end_src
 
-** marginalia
+** marginalia (extra info on completion candidates)
+
+https://github.com/minad/marginalia
 
 #+begin_src emacs-lisp
 
@@ -1368,7 +1374,9 @@ A very nice minibuffer completion framework.
 
 #+end_src
 
-** company
+** company (in-buffer completions and UI)
+
+https://github.com/company-mode/company-mode
 
 #+begin_src emacs-lisp
 
@@ -1451,7 +1459,7 @@ A very nice minibuffer completion framework.
 
 #+end_src
 
-** yasnippet
+** yasnippet (templates)
 
 #+begin_src emacs-lisp
 
@@ -1470,20 +1478,22 @@ A very nice minibuffer completion framework.
 
 #+end_src
 
-** hippie-expand
+** hippie-expand (smart completions and expansions)
+
+https://www.gnu.org/software/emacs/manual/html_node/autotype/Hippie-Expand.html
 
 #+begin_src emacs-lisp
-
-;; https://www.gnu.org/software/emacs/manual/html_node/autotype/Hippie-Expand.html
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand t)
 
 #+end_src
 
-** isearch
+** isearch (built-in text searching)
 
 Built-in text-searching commands.
+
+Here we bind the isearch commands to =C-M-s= and =C-M-r=, so that we can free up the original keybinds (=C-s= and =C-r=) for other stuff.
 
 #+begin_src emacs-lisp
 
@@ -1623,7 +1633,9 @@ Built-in text-searching commands.
 
 * IDE
 
-** personal variables
+Emacs can be used as an IDE, though quite some configuration is required. This setup uses LSP-mode as the lsp client. There are many lsp clients out there, but LSP-mode is the most plug-and-play.
+
+** personal variables (todo: delete this)
 
 #+begin_src emacs-lisp
 
@@ -1640,15 +1652,15 @@ Built-in text-searching commands.
 (setq tab-always-indent t)
 
 (leaf compile :ensure nil
-  :setq
-  (compilation-scroll-output . t))
+  :config
+  (setq compilation-scroll-output t))
 
 (leaf flycheck
   :hook prog-mode-hook)
 
 #+end_src
 
-** project.el
+** project.el (operations on the current project)
 
 #+begin_src emacs-lisp
 
@@ -1666,14 +1678,13 @@ Built-in text-searching commands.
 
 #+end_src
 
-** projectile
+** projectile (project.el alternative)
 
 - TODO: compile project command + comint?
 
 #+begin_src emacs-lisp
 
 (leaf projectile
-  :after
   :init
   (projectile-mode 1)
   :bind-keymap
@@ -1683,21 +1694,18 @@ Built-in text-searching commands.
 
 #+end_src
 
-** lsp-mode
+** lsp-mode (the LSP client)
 
-https://github.com/emacs-lsp/lsp-ui
+https://emacs-lsp.github.io/lsp-mode/
 
 #+begin_src emacs-lisp
 
 (leaf lsp-mode
-  :commands
-  (lsp lsp-deferred)
+  :commands (lsp lsp-deferred)
 
-  :hook
-  (lsp-mode-hook . lsp-enable-which-key-integration)
+  :hook (lsp-mode-hook . lsp-enable-which-key-integration)
 
-  :bind-keymap
-  ("C-c l" . lsp-command-map)
+  :bind-keymap ("C-c l" . lsp-command-map)
 
   :config
   (setq lsp-inlay-hint-enable t
@@ -1710,7 +1718,9 @@ https://github.com/emacs-lsp/lsp-ui
 
 #+end_src
 
-*** lsp-ui
+*** lsp-ui (show info on sideline)
+
+https://github.com/emacs-lsp/lsp-ui
 
 #+begin_src emacs-lisp
 
@@ -1740,7 +1750,9 @@ https://github.com/emacs-lsp/lsp-ui
 
 #+end_src
 
-*** lsp-booster
+*** lsp-booster (speed up LSP-mode)
+
+https://github.com/blahgeek/emacs-lsp-booster
 
 #+begin_src emacs-lisp
 
@@ -1784,31 +1796,31 @@ https://github.com/emacs-lsp/lsp-ui
 
 #+end_src
 
-** eglot
+** eglot (disabled)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
-(leaf eglot
-  :config
-  ;; For signature activation
-  (setq eglot-ignored-server-capabilities '() ; Enable all capabilities
-        ;; eglot-autoshutdown t
-        ))
+;; (leaf eglot
+;;   :config
+;;   ;; For signature activation
+;;   (setq eglot-ignored-server-capabilities '() ; Enable all capabilities
+;;         ;; eglot-autoshutdown t
+;;         ))
 
 #+end_src
 
-*** eglot-booster
+*** eglot-booster (disabled)
 
 https://github.com/jdtsmith/eglot-booster
 
 > To verify that the wrapper is functioning, M-x eglot-events-buffer and look at the beginning for emacs_lsp_booster::app notices. If you'd like to avoid boosting remote servers (those run over TRAMP), set eglot-booster-no-remote-boost to t.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
-(leaf eglot-booster :ensure nil
-  :after eglot
-  :config
-  (eglot-booster-mode))
+;; (leaf eglot-booster :ensure nil
+;;   :after eglot
+;;   :config
+;;   (eglot-booster-mode))
 
 #+end_src
 

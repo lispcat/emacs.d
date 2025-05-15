@@ -3,7 +3,7 @@
 ;; (debug-on-entry 'switch-to-buffer)
 ;; debugging:1 ends here
 
-;; [[file:../Config.org::*buffer auto-reverting and management][buffer auto-reverting and management:1]]
+;; [[file:../Config.org::*buffers][buffers:1]]
 ;; revert buffer when its file is changed on the filesystem
 (leaf autorevert :ensure nil
   :require t
@@ -26,9 +26,9 @@
   "bs" 'save-buffer)
 
 (defalias 'my/last-selected-buffer 'mode-line-other-buffer)
-;; buffer auto-reverting and management:1 ends here
+;; buffers:1 ends here
 
-;; [[file:../Config.org::*history and recents][history and recents:1]]
+;; [[file:../Config.org::*history][history:1]]
 ;; remember recent files
 (leaf recentf :ensure nil
   :hook emacs-startup-hook)
@@ -42,7 +42,7 @@
 (leaf savehist :ensure nil
   :init
   (savehist-mode 1))
-;; history and recents:1 ends here
+;; history:1 ends here
 
 ;; [[file:../Config.org::*window management][window management:1]]
 (leaf ace-window
@@ -232,7 +232,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 (global-set-key (kbd "M-n") (kbd "M-- 1 M-v"))
 ;; basic keybind tweaks:1 ends here
 
-;; [[file:../Config.org::*meow - modal editing][meow - modal editing:1]]
+;; [[file:../Config.org::*meow (modal editing)][meow (modal editing):1]]
 (defun my/meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-dvp)
   (meow-motion-overwrite-define-key
@@ -421,9 +421,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
   ;; enter meow insert mode after creating new org heading
   (add-hook 'org-insert-heading-hook 'meow-insert)
   )
-;; meow - modal editing:1 ends here
+;; meow (modal editing):1 ends here
 
-;; [[file:../Config.org::*avy - jumping][avy - jumping:1]]
+;; [[file:../Config.org::*avy (jumping)][avy (jumping):1]]
 ;; avy
 (leaf avy
   :init
@@ -437,16 +437,16 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (setq avy-keys (mapcar (lambda (c)
                            (string-to-char c))
                          (split-string "a o e u h t n s k b"))))
-;; avy - jumping:1 ends here
+;; avy (jumping):1 ends here
 
-;; [[file:../Config.org::*jinx - auto-correct][jinx - auto-correct:1]]
+;; [[file:../Config.org::*jinx (auto-correct)][jinx (auto-correct):1]]
 ;; spellchecking
 (leaf jinx :ensure nil
   :hook org-mode-hook markdown-mode-hook text-mode-hook
   :bind
   (("M-$" . jinx-correct)
    ("C-M-$" . jinx-languages)))
-;; jinx - auto-correct:1 ends here
+;; jinx (auto-correct):1 ends here
 
 ;; [[file:../Config.org::*fontawesome][fontawesome:1]]
 (leaf fontawesome
@@ -463,7 +463,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
        (fontawesome--construct-candidates))))))
 ;; fontawesome:1 ends here
 
-;; [[file:../Config.org::*vertico][vertico:1]]
+;; [[file:../Config.org::*vertico (completion framework)][vertico (completion framework):1]]
 ;; ? : corfu, kind-icon, wgrep?, consult-dir, cape
 ;; ^ more at ~/code/cloned/daviwil-dots/.emacs.d/modules/dw-interface.el
 ;; TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)
@@ -505,9 +505,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (setq minibuffer-prompt-properties
         '(read-only t cursor-intangible t face minibuffer-prompt))
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
-;; vertico:1 ends here
+;; vertico (completion framework):1 ends here
 
-;; [[file:../Config.org::*consult][consult:1]]
+;; [[file:../Config.org::*consult (search and navigation)][consult (search and navigation):1]]
 (leaf consult
   :bind (;; generic binds
          ("C-s" . consult-line)
@@ -614,9 +614,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;;        ,(unless (featurep f)
 ;;           `(eval-after-load ',f
 ;;              (lambda () ,@body))))))
-;; consult:1 ends here
+;; consult (search and navigation):1 ends here
 
-;; [[file:../Config.org::*embark][embark:1]]
+;; [[file:../Config.org::*embark (run action on target)][embark (run action on target):1]]
 (leaf embark
   :bind
   (("C-." . embark-act)
@@ -641,15 +641,15 @@ _SPC_ cancel	_o_nly this   	_d_elete
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
-;; embark:1 ends here
+;; embark (run action on target):1 ends here
 
-;; [[file:../Config.org::*embark-consult][embark-consult:1]]
+;; [[file:../Config.org::*embark-consult (consult + embark integration)][embark-consult (consult + embark integration):1]]
 (leaf embark-consult
   :after embark consult
   :hook (embark-collect-mode-hook . consult-preview-at-point-mode))
-;; embark-consult:1 ends here
+;; embark-consult (consult + embark integration):1 ends here
 
-;; [[file:../Config.org::*orderless][orderless:1]]
+;; [[file:../Config.org::*orderless (somewhat-fuzzy completion style)][orderless (somewhat-fuzzy completion style):1]]
 (leaf orderless
   :require t
   :setq
@@ -659,9 +659,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (completion-styles . '(orderless basic))
   (completion-category-defaults . nil)
   (completion-category-overrides . '((file (styles partial-completion)))))
-;; orderless:1 ends here
+;; orderless (somewhat-fuzzy completion style):1 ends here
 
-;; [[file:../Config.org::*marginalia][marginalia:1]]
+;; [[file:../Config.org::*marginalia (extra info on completion candidates)][marginalia (extra info on completion candidates):1]]
 (leaf marginalia
   :init
   (marginalia-mode 1)
@@ -669,9 +669,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
           ("M-A" . marginalia-cycle))
          (completion-list-mode-map
           ("M-A" . marginalia-cycle))))
-;; marginalia:1 ends here
+;; marginalia (extra info on completion candidates):1 ends here
 
-;; [[file:../Config.org::*company][company:1]]
+;; [[file:../Config.org::*company (in-buffer completions and UI)][company (in-buffer completions and UI):1]]
 ;; TODO: disable most backends by default add a bunch per mode (org should only have a few
 (leaf company
   ;; :disabled t
@@ -748,9 +748,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (company-quickhelp-delay . 1)
   :config
   (company-quickhelp-mode 1))
-;; company:1 ends here
+;; company (in-buffer completions and UI):1 ends here
 
-;; [[file:../Config.org::*yasnippet][yasnippet:1]]
+;; [[file:../Config.org::*yasnippet (templates)][yasnippet (templates):1]]
 ;; TODO: this is set up for eglot only, not lsp-mode
 
 ;; https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for-yasnippets-when-using-eglot
@@ -763,21 +763,19 @@ _SPC_ cancel	_o_nly this   	_d_elete
    ("RET" . yas-next-field-or-maybe-expand))
   :config
   (yas-reload-all))
-;; yasnippet:1 ends here
+;; yasnippet (templates):1 ends here
 
-;; [[file:../Config.org::*hippie-expand][hippie-expand:1]]
-;; https://www.gnu.org/software/emacs/manual/html_node/autotype/Hippie-Expand.html
-
+;; [[file:../Config.org::*hippie-expand (smart completions and expansions)][hippie-expand (smart completions and expansions):1]]
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand t)
-;; hippie-expand:1 ends here
+;; hippie-expand (smart completions and expansions):1 ends here
 
-;; [[file:../Config.org::*isearch][isearch:1]]
+;; [[file:../Config.org::*isearch (built-in text searching)][isearch (built-in text searching):1]]
 (leaf isearch :ensure nil
   :bind
   ("C-M-s" . isearch-forward)
   ("C-M-r" . isearch-backward))
-;; isearch:1 ends here
+;; isearch (built-in text searching):1 ends here
 
 ;; [[file:../Config.org::*corfu (disabled)][corfu (disabled):1]]
 ;;; CULPRIT OF HANGING, DISABLED.
@@ -894,24 +892,24 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;;          ("C-c c e" . edit-abbrevs)))
 ;; abbrev (disabled):1 ends here
 
-;; [[file:../Config.org::*personal variables][personal variables:1]]
+;; [[file:../Config.org::*personal variables (todo: delete this)][personal variables (todo: delete this):1]]
 (defvar prefer-eglot-mode? nil)
 (defvar prefer-lsp-mode? nil)
-;; personal variables:1 ends here
+;; personal variables (todo: delete this):1 ends here
 
 ;; [[file:../Config.org::*generic tweaks for programming][generic tweaks for programming:1]]
 (setq-default indent-tabs-mode nil)
 (setq tab-always-indent t)
 
 (leaf compile :ensure nil
-  :setq
-  (compilation-scroll-output . t))
+  :config
+  (setq compilation-scroll-output t))
 
 (leaf flycheck
   :hook prog-mode-hook)
 ;; generic tweaks for programming:1 ends here
 
-;; [[file:../Config.org::*project.el][project.el:1]]
+;; [[file:../Config.org::*project.el (operations on the current project)][project.el (operations on the current project):1]]
 (leaf project :ensure nil
   :bind-keymap ("C-c P" . project-prefix-map)
   :init
@@ -923,29 +921,25 @@ _SPC_ cancel	_o_nly this   	_d_elete
   :bind
   (project-prefix-map
    ("C" . project-compile-interactive)))
-;; project.el:1 ends here
+;; project.el (operations on the current project):1 ends here
 
-;; [[file:../Config.org::*projectile][projectile:1]]
+;; [[file:../Config.org::*projectile (project.el alternative)][projectile (project.el alternative):1]]
 (leaf projectile
-  :after
   :init
   (projectile-mode 1)
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :config
   (setq projectile-compile-use-comint-mode t))
-;; projectile:1 ends here
+;; projectile (project.el alternative):1 ends here
 
-;; [[file:../Config.org::*lsp-mode][lsp-mode:1]]
+;; [[file:../Config.org::*lsp-mode (the LSP client)][lsp-mode (the LSP client):1]]
 (leaf lsp-mode
-  :commands
-  (lsp lsp-deferred)
+  :commands (lsp lsp-deferred)
 
-  :hook
-  (lsp-mode-hook . lsp-enable-which-key-integration)
+  :hook (lsp-mode-hook . lsp-enable-which-key-integration)
 
-  :bind-keymap
-  ("C-c l" . lsp-command-map)
+  :bind-keymap ("C-c l" . lsp-command-map)
 
   :config
   (setq lsp-inlay-hint-enable t
@@ -955,9 +949,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
         lsp-keymap-prefix "C-c l"
         ;; problematic: https://github.com/emacs-lsp/lsp-mode/issues/4113
         lsp-update-inlay-hints-on-scroll nil))
-;; lsp-mode:1 ends here
+;; lsp-mode (the LSP client):1 ends here
 
-;; [[file:../Config.org::*lsp-ui][lsp-ui:1]]
+;; [[file:../Config.org::*lsp-ui (show info on sideline)][lsp-ui (show info on sideline):1]]
 (leaf lsp-ui
   :bind
   (lsp-ui-mode-map
@@ -981,9 +975,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
   (with-eval-after-load 'lsp-mode
     (define-key lsp-command-map (kbd "v i") #'lsp-ui-imenu)))
-;; lsp-ui:1 ends here
+;; lsp-ui (show info on sideline):1 ends here
 
-;; [[file:../Config.org::*lsp-booster][lsp-booster:1]]
+;; [[file:../Config.org::*lsp-booster (speed up LSP-mode)][lsp-booster (speed up LSP-mode):1]]
 ;;; lsp-booster
 ;; use lsp-doctor for testing
 ;; Steps:
@@ -1021,23 +1015,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
             (cons "emacs-lsp-booster" orig-result))
         orig-result)))
   (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
-;; lsp-booster:1 ends here
-
-;; [[file:../Config.org::*eglot][eglot:1]]
-(leaf eglot
-  :config
-  ;; For signature activation
-  (setq eglot-ignored-server-capabilities '() ; Enable all capabilities
-        ;; eglot-autoshutdown t
-        ))
-;; eglot:1 ends here
-
-;; [[file:../Config.org::*eglot-booster][eglot-booster:1]]
-(leaf eglot-booster :ensure nil
-  :after eglot
-  :config
-  (eglot-booster-mode))
-;; eglot-booster:1 ends here
+;; lsp-booster (speed up LSP-mode):1 ends here
 
 ;; [[file:../Config.org::*generic code settings][generic code settings:1]]
 ;; for non-programming too
