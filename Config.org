@@ -1,6 +1,6 @@
 #+title: my Emacs configuration
 #+property:    header-args :tangle src/main.el :comments link
-#+startup:     fold
+#+startup:     content
 #+auto_tangle: t
 
 * Table of Contents :TOC_5:
@@ -33,9 +33,9 @@
   - [[#profiler][profiler]]
 - [[#keyboard][Keyboard]]
   - [[#basic-keybind-tweaks][basic keybind tweaks]]
-  - [[#meow-modal-editing][meow: modal editing]]
-  - [[#avy-jumping][avy: jumping]]
-  - [[#jinx-auto-correct][jinx: auto-correct]]
+  - [[#meow---modal-editing][meow - modal editing]]
+  - [[#avy---jumping][avy - jumping]]
+  - [[#jinx---auto-correct][jinx - auto-correct]]
   - [[#fontawesome][fontawesome]]
 - [[#completion][Completion]]
   - [[#vertico][vertico]]
@@ -82,12 +82,17 @@
   - [[#direnv][direnv]]
   - [[#hex-colors][hex colors]]
   - [[#code-folding][code-folding]]
+  - [[#tree-sitter][tree-sitter]]
 - [[#org][Org]]
   - [[#org-mode][org-mode]]
   - [[#org-agenda][org-agenda]]
   - [[#org-capture][org-capture]]
-  - [[#org-latex][org-latex]]
+  - [[#org-latex-disabled][org-latex (disabled)]]
   - [[#org-extras][org extras]]
+- [[#latex][LaTeX]]
+  - [[#auctex][AucTeX]]
+  - [[#cdlatex][CDLatex]]
+  - [[#yasnippet-1][Yasnippet]]
 - [[#workspaces][Workspaces]]
   - [[#persp-mode][persp-mode]]
   - [[#bufler-disabled][bufler (disabled)]]
@@ -455,8 +460,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 ** Elpaca (package manager)
 
 #+begin_src emacs-lisp :tangle init.el :comments link
-
-(defvar elpaca-installer-version 0.10)
+(defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -491,7 +495,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
     (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
@@ -690,16 +694,6 @@ the rest below is main
     ;; misc
     "wm" 'switch-to-minibuffer))
 
-;; (leaf eyebrowse
-;;   :init
-;;   (eyebrowse-mode 1))
-
-;; (leaf bufler
-;;   :bind
-;;   ("C-x C-b" . bufler-list)
-;;   :init
-;;   (bufler-workspace-mode 1))
-
 (defhydra hydra-window ()
   "
 Movement^^        ^Split^         ^Switch^		^Resize^
@@ -889,7 +883,7 @@ Searching for and describing variables, functions, and etc.
 
 #+end_src
 
-** meow: modal editing
+** meow - modal editing
 
 #+begin_src emacs-lisp
 
@@ -1084,7 +1078,7 @@ Searching for and describing variables, functions, and etc.
 
 #+end_src
 
-** avy: jumping
+** avy - jumping
 
 #+begin_src emacs-lisp
 
@@ -1104,7 +1098,7 @@ Searching for and describing variables, functions, and etc.
 
 #+end_src
 
-** jinx: auto-correct
+** jinx - auto-correct
 
 #+begin_src emacs-lisp
 
@@ -1425,6 +1419,10 @@ A very nice minibuffer completion framework.
                (lambda ()
                  (setq-local company-backends
                              '((company-dabbrev :with company-files))))))
+  (eval-after-load 'latex
+    '(add-hook 'LaTeX-mode-hook
+               (lambda ()
+                 (setq-local company-backends'nil))))
 
   ;; separator for orderless completion:
 
@@ -1971,6 +1969,9 @@ https://robert.kra.hn/posts/rust-emacs-setup
 (leaf rustic
   ;; :disabled t
   ;; :mode ("\\.rs\\'" . rustic-mode)
+  :init
+  (setq rust-mode-treesitter-derive t)
+  :after rust-mode
   :bind
   (rustic-mode-map
    ("C-c C-c M-r" . rustic-cargo-comint-run)
@@ -1980,13 +1981,25 @@ https://robert.kra.hn/posts/rust-emacs-setup
   :config
   (setq rustic-cargo-use-last-stored-arguments t
         rustic-format-on-save t)
+
+  ;; use tree-sitter for rustic-mode
+  ;; (define-derived-mode rustic-mode rust-ts-mode "Rustic"
+;;     "Major mode for Rust code.
+
+;; \\{rustic-mode-map}"
+;;     :group 'rustic
+;;     (when (bound-and-true-p rustic-cargo-auto-add-missing-dependencies)
+;;       (add-hook 'lsp-after-diagnostics-hook 'rustic-cargo-add-missing-dependencies-hook nil t)))
+
   :hook
-  (rust-mode-hook . (lambda ()
-                      (with-eval-after-load 'company
-                        (setq-local company-idle-delay 0.3
-                                    company-minimum-prefix-length 2)))))
+  ((rust-mode-hook rust-ts-mode-hook)
+   . (lambda ()
+       (with-eval-after-load 'company
+         (setq-local company-idle-delay 0.3
+                     company-minimum-prefix-length 2)))))
 
 (leaf rustic :ensure nil
+  :after rust-mode
   :bind
   (rustic-mode-map
    ("C-c C-c a" . lsp-execute-code-action)
@@ -2009,14 +2022,15 @@ https://robert.kra.hn/posts/rust-emacs-setup
         lsp-signature-auto-activate t ; def: '(:on-trigger-char :on-server-request)
         )
   :hook
-  (rust-mode-hook . (lambda ()
-                      (with-eval-after-load 'lsp-mode
-                        (setq-local lsp-idle-delay 0.5
-                                    lsp-ui-sideline-delay 0.3
-                                    lsp-eldoc-render-all nil ; def: nil (minibuffer doc popup)
-                                    lsp-ui-doc-enable t ; def: t (ui-popup docs)
-                                    lsp-ui-doc-max-height 14 ; def: 13
-                                    )))))
+  ((rust-mode-hook rust-ts-mode-hook)
+   . (lambda ()
+       (with-eval-after-load 'lsp-mode
+         (setq-local lsp-idle-delay 0.5
+                     lsp-ui-sideline-delay 0.3
+                     lsp-eldoc-render-all nil ; def: nil (minibuffer doc popup)
+                     lsp-ui-doc-enable t      ; def: t (ui-popup docs)
+                     lsp-ui-doc-max-height 14 ; def: 13
+                     )))))
 
 
 ;; (leaf rustic :ensure nil
@@ -2264,6 +2278,18 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 #+end_src
 
+** tree-sitter
+
+#+begin_src emacs-lisp
+
+(leaf treesit-auto
+  :require t
+  :config
+  (setq treesit-auto-install 'prompt)
+  (global-treesit-auto-mode))
+
+#+end_src
+
 * Org
 
 ** org-mode
@@ -2299,9 +2325,10 @@ If in a list, inserts a new sublist after the current list."
     (org-meta-return)
     (org-metaright))
 
-  :bind (org-mode-map
-         ("C-M-<return>"
-          . my/org-insert-subheading-respect-content))
+  :bind
+  (org-mode-map
+   ("C-M-<return>"
+    . my/org-insert-subheading-respect-content))
 
   :defer-config
 
@@ -2356,6 +2383,7 @@ If in a list, inserts a new sublist after the current list."
   :setq-default
   (org-download-image-dir . "_images"))
 
+;; TODO: replace with org-superstar
 (leaf org-bullets
   :hook org-mode-hook
   :setq
@@ -2550,9 +2578,9 @@ The property will be removed if ran with a \\[universal-argument]."
 
 #+end_src
 
-** org-latex
+** org-latex (disabled)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 
 ;; TODO: implement one-time load after cdlatex loads, but before cdlatex is enabled
 (leaf auctex
@@ -2674,6 +2702,29 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
                  (org-next-visible-heading -1))))))
 
 #+end_src
+
+* LaTeX
+
+** AucTeX
+
+#+begin_src emacs-lisp
+
+(leaf auctex
+  :require t)
+
+#+end_src
+
+** CDLatex
+
+#+begin_src emacs-lisp
+
+(leaf cdlatex
+  :after auctex
+  :hook ((LaTeX-mode-hook . turn-on-cdlatex)))
+
+#+end_src
+
+** Yasnippet
 
 * Workspaces
 
@@ -3469,6 +3520,18 @@ TODO: create a consult-based selection menu for activities-resume/switch
 ;; HACK: fix bitmap fonts on emacsclient frames
 (add-hook 'server-after-make-frame-hook #'my/fontconfig)
 
+;; all the icons
+(leaf all-the-icons
+  :config
+  ;; Use 'prepend for the NS and Mac ports or Emacs will crash.
+  (set-fontset-font t 'unicode (font-spec :family "all-the-icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "file-icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "Material Icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "github-octicons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "Weather Icons") nil 'append))
+
+
 #+end_src
 
 ** themes
@@ -3617,7 +3680,7 @@ TODO: create a consult-based selection menu for activities-resume/switch
   (defvar my/base-whitespace-style '(face trailing tabs missing-newline-at-eof))
   (defun my/prog-mode-whitespace ()
     (setq whitespace-style (append my/base-whitespace-style
-                                   '(tab-mark lines-tail)))
+                                   '(tab-mark)))
     (whitespace-mode 1))
   (defun my/org-mode-whitespace ()
     (setq whitespace-style (append my/base-whitespace-style '()))
@@ -3801,12 +3864,13 @@ TODO: create a consult-based selection menu for activities-resume/switch
     "noa" '(my/denote-insert-file-local-dblock-update-mode :which-key "insert file-local dblock mode")
 
     ;; journal
-    "oj" '(denote-journal-extras-new-or-existing-entry :which-key "denote-journal")
-    "nj" '(:ignore t :which-key "journal")
-    "njj" '(denote-journal-extras-new-or-existing-entry :which-key "open today")
-    "njo" '(denote-journal-extras-new-or-existing-entry :which-key "open today")
-    "njn" '(denote-journal-extras-new-entry :which-key "new entry")
-    "njl" '(denote-journal-extras-link-or-create-entry :which-key "link entry"))
+    ;; "oj" '(denote-journal-extras-new-or-existing-entry :which-key "denote-journal")
+    ;; "nj" '(:ignore t :which-key "journal")
+    ;; "njj" '(denote-journal-extras-new-or-existing-entry :which-key "open today")
+    ;; "njo" '(denote-journal-extras-new-or-existing-entry :which-key "open today")
+    ;; "njn" '(denote-journal-extras-new-entry :which-key "new entry")
+    ;; "njl" '(denote-journal-extras-link-or-create-entry :which-key "link entry")
+    )
 
   :config
 
@@ -3880,9 +3944,10 @@ TODO: create a consult-based selection menu for activities-resume/switch
 
   ;; journal
 
-  (require 'denote-journal-extras)
-  (setq denote-journal-extras-directory
-        (expand-file-name "journal" denote-directory)))
+  ;; (require 'denote-journal-extras)
+  ;; (setq denote-journal-extras-directory
+  ;;       (expand-file-name "journal" denote-directory))
+  )
 
 
 ;; provides consult sources:
@@ -4481,5 +4546,5 @@ check out https://github.com/mwfogleman/.emacs.d/blob/master/michael.org
 * Local Variables
 
 # Local Variables:
-# eval: (org-indent-mode 0)
+# eval: (org-indent-mode 1)
 # End:

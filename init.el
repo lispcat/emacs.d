@@ -78,7 +78,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 ;; no-littering.el:1 ends here
 
 ;; [[file:Config.org::*Elpaca (package manager)][Elpaca (package manager):1]]
-(defvar elpaca-installer-version 0.10)
+(defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -113,7 +113,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
     (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 

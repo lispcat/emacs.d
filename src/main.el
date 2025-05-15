@@ -70,16 +70,6 @@
     ;; misc
     "wm" 'switch-to-minibuffer))
 
-;; (leaf eyebrowse
-;;   :init
-;;   (eyebrowse-mode 1))
-
-;; (leaf bufler
-;;   :bind
-;;   ("C-x C-b" . bufler-list)
-;;   :init
-;;   (bufler-workspace-mode 1))
-
 (defhydra hydra-window ()
   "
 Movement^^        ^Split^         ^Switch^		^Resize^
@@ -242,7 +232,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 (global-set-key (kbd "M-n") (kbd "M-- 1 M-v"))
 ;; basic keybind tweaks:1 ends here
 
-;; [[file:../Config.org::*meow: modal editing][meow: modal editing:1]]
+;; [[file:../Config.org::*meow - modal editing][meow - modal editing:1]]
 (defun my/meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-dvp)
   (meow-motion-overwrite-define-key
@@ -431,9 +421,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
   ;; enter meow insert mode after creating new org heading
   (add-hook 'org-insert-heading-hook 'meow-insert)
   )
-;; meow: modal editing:1 ends here
+;; meow - modal editing:1 ends here
 
-;; [[file:../Config.org::*avy: jumping][avy: jumping:1]]
+;; [[file:../Config.org::*avy - jumping][avy - jumping:1]]
 ;; avy
 (leaf avy
   :init
@@ -447,16 +437,16 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (setq avy-keys (mapcar (lambda (c)
                            (string-to-char c))
                          (split-string "a o e u h t n s k b"))))
-;; avy: jumping:1 ends here
+;; avy - jumping:1 ends here
 
-;; [[file:../Config.org::*jinx: auto-correct][jinx: auto-correct:1]]
+;; [[file:../Config.org::*jinx - auto-correct][jinx - auto-correct:1]]
 ;; spellchecking
 (leaf jinx :ensure nil
   :hook org-mode-hook markdown-mode-hook text-mode-hook
   :bind
   (("M-$" . jinx-correct)
    ("C-M-$" . jinx-languages)))
-;; jinx: auto-correct:1 ends here
+;; jinx - auto-correct:1 ends here
 
 ;; [[file:../Config.org::*fontawesome][fontawesome:1]]
 (leaf fontawesome
@@ -731,6 +721,10 @@ _SPC_ cancel	_o_nly this   	_d_elete
                (lambda ()
                  (setq-local company-backends
                              '((company-dabbrev :with company-files))))))
+  (eval-after-load 'latex
+    '(add-hook 'LaTeX-mode-hook
+               (lambda ()
+                 (setq-local company-backends'nil))))
 
   ;; separator for orderless completion:
 
@@ -1126,6 +1120,9 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 (leaf rustic
   ;; :disabled t
   ;; :mode ("\\.rs\\'" . rustic-mode)
+  :init
+  (setq rust-mode-treesitter-derive t)
+  :after rust-mode
   :bind
   (rustic-mode-map
    ("C-c C-c M-r" . rustic-cargo-comint-run)
@@ -1135,13 +1132,25 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :config
   (setq rustic-cargo-use-last-stored-arguments t
         rustic-format-on-save t)
+
+  ;; use tree-sitter for rustic-mode
+  ;; (define-derived-mode rustic-mode rust-ts-mode "Rustic"
+;;     "Major mode for Rust code.
+
+;; \\{rustic-mode-map}"
+;;     :group 'rustic
+;;     (when (bound-and-true-p rustic-cargo-auto-add-missing-dependencies)
+;;       (add-hook 'lsp-after-diagnostics-hook 'rustic-cargo-add-missing-dependencies-hook nil t)))
+
   :hook
-  (rust-mode-hook . (lambda ()
-                      (with-eval-after-load 'company
-                        (setq-local company-idle-delay 0.3
-                                    company-minimum-prefix-length 2)))))
+  ((rust-mode-hook rust-ts-mode-hook)
+   . (lambda ()
+       (with-eval-after-load 'company
+         (setq-local company-idle-delay 0.3
+                     company-minimum-prefix-length 2)))))
 
 (leaf rustic :ensure nil
+  :after rust-mode
   :bind
   (rustic-mode-map
    ("C-c C-c a" . lsp-execute-code-action)
@@ -1164,14 +1173,15 @@ Optional WIDTH parameter determines total width (defaults to 70)."
         lsp-signature-auto-activate t ; def: '(:on-trigger-char :on-server-request)
         )
   :hook
-  (rust-mode-hook . (lambda ()
-                      (with-eval-after-load 'lsp-mode
-                        (setq-local lsp-idle-delay 0.5
-                                    lsp-ui-sideline-delay 0.3
-                                    lsp-eldoc-render-all nil ; def: nil (minibuffer doc popup)
-                                    lsp-ui-doc-enable t ; def: t (ui-popup docs)
-                                    lsp-ui-doc-max-height 14 ; def: 13
-                                    )))))
+  ((rust-mode-hook rust-ts-mode-hook)
+   . (lambda ()
+       (with-eval-after-load 'lsp-mode
+         (setq-local lsp-idle-delay 0.5
+                     lsp-ui-sideline-delay 0.3
+                     lsp-eldoc-render-all nil ; def: nil (minibuffer doc popup)
+                     lsp-ui-doc-enable t      ; def: t (ui-popup docs)
+                     lsp-ui-doc-max-height 14 ; def: 13
+                     )))))
 
 
 ;; (leaf rustic :ensure nil
@@ -1366,6 +1376,14 @@ Optional WIDTH parameter determines total width (defaults to 70)."
     "@" 'hydra-folding/body))
 ;; code-folding:1 ends here
 
+;; [[file:../Config.org::*tree-sitter][tree-sitter:1]]
+(leaf treesit-auto
+  :require t
+  :config
+  (setq treesit-auto-install 'prompt)
+  (global-treesit-auto-mode))
+;; tree-sitter:1 ends here
+
 ;; [[file:../Config.org::*org-mode][org-mode:1]]
 ;; NOTE: ensure that the newest version of org is installed right after elpaca setup
 (leaf org :ensure nil
@@ -1396,9 +1414,10 @@ If in a list, inserts a new sublist after the current list."
     (org-meta-return)
     (org-metaright))
 
-  :bind (org-mode-map
-         ("C-M-<return>"
-          . my/org-insert-subheading-respect-content))
+  :bind
+  (org-mode-map
+   ("C-M-<return>"
+    . my/org-insert-subheading-respect-content))
 
   :defer-config
 
@@ -1453,6 +1472,7 @@ If in a list, inserts a new sublist after the current list."
   :setq-default
   (org-download-image-dir . "_images"))
 
+;; TODO: replace with org-superstar
 (leaf org-bullets
   :hook org-mode-hook
   :setq
@@ -1638,50 +1658,6 @@ The property will be removed if ran with a \\[universal-argument]."
            :kill-buffer t :jump-to-captured t))))
 ;; org-capture:1 ends here
 
-;; [[file:../Config.org::*org-latex][org-latex:1]]
-;; TODO: implement one-time load after cdlatex loads, but before cdlatex is enabled
-(leaf auctex
-  :require t)
-
-(leaf cdlatex
-  :after auctex
-  :hook (org-mode-hook . turn-on-org-cdlatex)
-  :setq
-  (org-preview-latex-default-process . 'dvisvgm)
-  (org-latex-create-formula-image-program . 'dvisvgm)
-  (org-latex-preview-ltxpng-directory . "_ltximg/")
-  :config
-  (defun org-try-cdlatex-tab ()
-    "Check if it makes sense to execute `cdlatex-tab', and do it if yes.
-It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
-  - inside a LaTeX fragment, or
-  - after the first word in a line, where an abbreviation expansion could
-    insert a LaTeX environment."
-    (when org-cdlatex-mode
-      (cond
-       ;; Before any word on the line: No expansion possible.
-       ;; ((save-excursion (skip-chars-backward " \t") (bolp)) nil)
-       ;; Just after first word on the line: Expand it.  Make sure it
-       ;; cannot happen on headlines, though.
-       ;; ((save-excursion
-       ;;    (skip-chars-backward "a-zA-Z0-9*")
-       ;;    (skip-chars-backward " \t")
-       ;;    (and (bolp) (not (org-at-heading-p))))
-       ;;  (cdlatex-tab) t)
-       ((org-inside-LaTeX-fragment-p) (cdlatex-tab) t))))
-  :init
-  (defun my/org-latex-preview-buffer ()
-    (interactive)
-    (if (not (derived-mode-p 'org-mode))
-        (message "Not in org-mode.")
-      (org-latex-preview '(16))))
-  (general-my-map
-    "ol" 'my/org-latex-preview-buffer))
-
-(leaf org-fragtog
-  :hook org-mode-hook)
-;; org-latex:1 ends here
-
 ;; [[file:../Config.org::*org extras][org extras:1]]
 (defun my/org-priority-to-anki ()
   (interactive)
@@ -1754,6 +1730,17 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
                  (org-set-property "EFFORT" (format "%s" effort))
                  (org-next-visible-heading -1))))))
 ;; org extras:1 ends here
+
+;; [[file:../Config.org::*AucTeX][AucTeX:1]]
+(leaf auctex
+  :require t)
+;; AucTeX:1 ends here
+
+;; [[file:../Config.org::*CDLatex][CDLatex:1]]
+(leaf cdlatex
+  :after auctex
+  :hook ((LaTeX-mode-hook . turn-on-cdlatex)))
+;; CDLatex:1 ends here
 
 ;; [[file:../Config.org::*persp-mode][persp-mode:1]]
 ;; NOTE: modify #'persp-save-state-to-file arg (keep-others-in-non-parametric-file 'yes)
@@ -2131,6 +2118,17 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 
 ;; HACK: fix bitmap fonts on emacsclient frames
 (add-hook 'server-after-make-frame-hook #'my/fontconfig)
+
+;; all the icons
+(leaf all-the-icons
+  :config
+  ;; Use 'prepend for the NS and Mac ports or Emacs will crash.
+  (set-fontset-font t 'unicode (font-spec :family "all-the-icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "file-icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "Material Icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "github-octicons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "Weather Icons") nil 'append))
 ;; fonts:1 ends here
 
 ;; [[file:../Config.org::*themes][themes:1]]
@@ -2260,7 +2258,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
   (defvar my/base-whitespace-style '(face trailing tabs missing-newline-at-eof))
   (defun my/prog-mode-whitespace ()
     (setq whitespace-style (append my/base-whitespace-style
-                                   '(tab-mark lines-tail)))
+                                   '(tab-mark)))
     (whitespace-mode 1))
   (defun my/org-mode-whitespace ()
     (setq whitespace-style (append my/base-whitespace-style '()))
@@ -2410,12 +2408,13 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
     "noa" '(my/denote-insert-file-local-dblock-update-mode :which-key "insert file-local dblock mode")
 
     ;; journal
-    "oj" '(denote-journal-extras-new-or-existing-entry :which-key "denote-journal")
-    "nj" '(:ignore t :which-key "journal")
-    "njj" '(denote-journal-extras-new-or-existing-entry :which-key "open today")
-    "njo" '(denote-journal-extras-new-or-existing-entry :which-key "open today")
-    "njn" '(denote-journal-extras-new-entry :which-key "new entry")
-    "njl" '(denote-journal-extras-link-or-create-entry :which-key "link entry"))
+    ;; "oj" '(denote-journal-extras-new-or-existing-entry :which-key "denote-journal")
+    ;; "nj" '(:ignore t :which-key "journal")
+    ;; "njj" '(denote-journal-extras-new-or-existing-entry :which-key "open today")
+    ;; "njo" '(denote-journal-extras-new-or-existing-entry :which-key "open today")
+    ;; "njn" '(denote-journal-extras-new-entry :which-key "new entry")
+    ;; "njl" '(denote-journal-extras-link-or-create-entry :which-key "link entry")
+    )
 
   :config
 
@@ -2489,9 +2488,10 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 
   ;; journal
 
-  (require 'denote-journal-extras)
-  (setq denote-journal-extras-directory
-        (expand-file-name "journal" denote-directory)))
+  ;; (require 'denote-journal-extras)
+  ;; (setq denote-journal-extras-directory
+  ;;       (expand-file-name "journal" denote-directory))
+  )
 
 
 ;; provides consult sources:
