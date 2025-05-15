@@ -1117,71 +1117,68 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;; scheme:1 ends here
 
 ;; [[file:../Config.org::*rust][rust:1]]
-(leaf rustic
-  ;; :disabled t
-  ;; :mode ("\\.rs\\'" . rustic-mode)
+(leaf rust-mode
+  :require t
   :init
-  (setq rust-mode-treesitter-derive t)
+  (setq rust-mode-treesitter-derive t))
+
+(leaf rustic
   :after rust-mode
+  :config
+  (setq rustic-cargo-use-last-stored-arguments t
+        rustic-format-on-save t)
+
+  ;; lsp-mode settings
+  (with-eval-after-load 'lsp-mode
+    (setq lsp-rust-analyzer-cargo-watch-command "clippy"
+          lsp-rust-analyzer-display-closure-return-type-hints t ; def: nil
+          lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
+          lsp-rust-analyzer-display-parameter-hints t ; def: nil (input param name)
+
+          ;; maybe
+          ;; lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
+          lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t ; def: nil (?)
+
+          ;; experimenting
+          lsp-signature-auto-activate t ; def: '(:on-trigger-char :on-server-request)
+          ))
+
+  ;; use tree-sitter for rustic-mode
+  ;; (define-derived-mode rustic-mode rust-ts-mode "Rustic"
+  ;;     "Major mode for Rust code.
+
+  ;; \\{rustic-mode-map}"
+  ;;     :group 'rustic
+  ;;     (when (bound-and-true-p rustic-cargo-auto-add-missing-dependencies)
+  ;;       (add-hook 'lsp-after-diagnostics-hook 'rustic-cargo-add-missing-dependencies-hook nil t)))
+
   :bind
   (rustic-mode-map
    ("C-c C-c M-r" . rustic-cargo-comint-run)
    ("C-c C-c l" . flycheck-list-errors)
    ("C-c C-c A" . rustic-cargo-add)
-   ("C-c C-c R" . rustic-cargo-rm))
-  :config
-  (setq rustic-cargo-use-last-stored-arguments t
-        rustic-format-on-save t)
-
-  ;; use tree-sitter for rustic-mode
-  ;; (define-derived-mode rustic-mode rust-ts-mode "Rustic"
-;;     "Major mode for Rust code.
-
-;; \\{rustic-mode-map}"
-;;     :group 'rustic
-;;     (when (bound-and-true-p rustic-cargo-auto-add-missing-dependencies)
-;;       (add-hook 'lsp-after-diagnostics-hook 'rustic-cargo-add-missing-dependencies-hook nil t)))
-
-  :hook
-  ((rust-mode-hook rust-ts-mode-hook)
-   . (lambda ()
-       (with-eval-after-load 'company
-         (setq-local company-idle-delay 0.3
-                     company-minimum-prefix-length 2)))))
-
-(leaf rustic :ensure nil
-  :after rust-mode
-  :bind
-  (rustic-mode-map
+   ("C-c C-c R" . rustic-cargo-rm)
    ("C-c C-c a" . lsp-execute-code-action)
    ("C-c C-c r" . lsp-rename)
    ("C-c C-c q" . lsp-workspace-restart)
    ("C-c C-c Q" . lsp-workspace-shutdown)
    ("C-c C-c s" . lsp-rust-analyzer-status)
    ("C-c C-c h" . lsp-describe-thing-at-point))
-  :config
-  (setq lsp-rust-analyzer-cargo-watch-command "clippy"
-        lsp-rust-analyzer-display-closure-return-type-hints t ; def: nil
-        lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
-        lsp-rust-analyzer-display-parameter-hints t ; def: nil (input param name)
 
-        ;; maybe
-        ;; lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
-        lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t ; def: nil (?)
-
-        ;; experimenting
-        lsp-signature-auto-activate t ; def: '(:on-trigger-char :on-server-request)
-        )
   :hook
-  ((rust-mode-hook rust-ts-mode-hook)
-   . (lambda ()
-       (with-eval-after-load 'lsp-mode
-         (setq-local lsp-idle-delay 0.5
-                     lsp-ui-sideline-delay 0.3
-                     lsp-eldoc-render-all nil ; def: nil (minibuffer doc popup)
-                     lsp-ui-doc-enable t      ; def: t (ui-popup docs)
-                     lsp-ui-doc-max-height 14 ; def: 13
-                     )))))
+  (rust-ts-mode-hook . (lambda ()
+                         ;; company settings
+                         (with-eval-after-load 'company
+                           (setq-local company-idle-delay 0.3
+                                       company-minimum-prefix-length 2))
+                         ;; lsp settings
+                         (with-eval-after-load 'lsp-mode
+                           (setq-local lsp-idle-delay 0.5
+                                       lsp-ui-sideline-delay 0.3
+                                       lsp-eldoc-render-all nil ; def: nil (minibuffer doc popup)
+                                       lsp-ui-doc-enable t ; def: t (ui-popup docs)
+                                       lsp-ui-doc-max-height 14 ; def: 13
+                                       )))))
 
 
 ;; (leaf rustic :ensure nil
@@ -1391,7 +1388,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (org-directory . "~/Notes/org")
   (org-tags-column . -55)          ; column where tags are indented to
   ;; (org-startup-folded . 'showall)  ; default folding mode
-  (org-startup-folded . 'showeverything)  ; default folding mode
+  (org-startup-folded . 'nofold)  ; default folding mode
   (org-startup-indented . t)       ; indent headings and its body
   (org-special-ctrl-a/e . t)
   (org-src-window-setup . 'current-window) ; edit code blocks in the same window
@@ -1399,6 +1396,11 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (org-hide-emphasis-markers . t) ; hide formatting chars (* / ~ = etc)
   (org-src-preserve-indentation . t) ; remove annoying leading whitespace in code blocks
   (org-fontify-whole-heading-line . t)
+  ;; (org-ellipsis . " ›")
+  (org-ellipsis . " ‣")
+  ;; (org-ellipsis . " …")
+  ;; (org-ellipsis . " ⤵")
+  ;; (org-ellipsis . " ▾")
 
   :init
   (general-my-map
@@ -1741,6 +1743,25 @@ The property will be removed if ran with a \\[universal-argument]."
   :after auctex
   :hook ((LaTeX-mode-hook . turn-on-cdlatex)))
 ;; CDLatex:1 ends here
+
+;; [[file:../Config.org::*Preview][Preview:1]]
+(leaf latex
+  :require preview
+  :hook ((LaTeX-mode-hook . preview-larger-previews))
+  :config
+  (defun preview-larger-previews ()
+    (setq preview-scale-function
+          (lambda () (* 1.25 (funcall (preview-scale-from-face)))))))
+;; Preview:1 ends here
+
+;; [[file:../Config.org::*Preview Pane][Preview Pane:1]]
+(leaf latex-preview-pane
+  :init
+  (add-hook 'LaTeX-mode-hook (lambda () (latex-preview-pane-mode 1)))
+  :config
+  (setq preview-orientation 'below)
+  )
+;; Preview Pane:1 ends here
 
 ;; [[file:../Config.org::*persp-mode][persp-mode:1]]
 ;; NOTE: modify #'persp-save-state-to-file arg (keep-others-in-non-parametric-file 'yes)
