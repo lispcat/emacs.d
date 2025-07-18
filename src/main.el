@@ -1,9 +1,9 @@
-;; [[file:../Config.org::*debugging][debugging:1]]
+;; [[file:../README.org::*debugging][debugging:1]]
 ;; (advice-add 'switch-to-buffer :before (lambda (arg &optional a b) (message "DEBUG: switching to buffer: %s" arg)))
 ;; (debug-on-entry 'switch-to-buffer)
 ;; debugging:1 ends here
 
-;; [[file:../Config.org::*buffers][buffers:1]]
+;; [[file:../README.org::*buffers][buffers:1]]
 ;; revert buffer when its file is changed on the filesystem
 (leaf autorevert :ensure nil
   :require t
@@ -28,7 +28,7 @@
 (defalias 'my/last-selected-buffer 'mode-line-other-buffer)
 ;; buffers:1 ends here
 
-;; [[file:../Config.org::*history][history:1]]
+;; [[file:../README.org::*history][history:1]]
 ;; remember recent files
 (leaf recentf :ensure nil
   :hook emacs-startup-hook)
@@ -44,7 +44,7 @@
   (savehist-mode 1))
 ;; history:1 ends here
 
-;; [[file:../Config.org::*window management][window management:1]]
+;; [[file:../README.org::*window management][window management:1]]
 (leaf ace-window
   :setq
   (aw-keys . '(?a ?o ?e ?u ?h ?t ?n ?s))
@@ -132,7 +132,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   )
 ;; window management:1 ends here
 
-;; [[file:../Config.org::*dired][dired:1]]
+;; [[file:../README.org::*dired][dired:1]]
 (defun my/open-emacs-config-file ()
   "Open emacs config file."
   (interactive)
@@ -179,7 +179,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
        ("html" ("librewolf")))))
 ;; dired:1 ends here
 
-;; [[file:../Config.org::*helpful][helpful:1]]
+;; [[file:../README.org::*helpful][helpful:1]]
 (leaf helpful
   :commands helpful--bookmark-jump
   :setq
@@ -197,13 +197,13 @@ _SPC_ cancel	_o_nly this   	_d_elete
   ("C-h E" . describe-keymap))
 ;; helpful:1 ends here
 
-;; [[file:../Config.org::*sudoedit][sudoedit:1]]
+;; [[file:../README.org::*sudoedit][sudoedit:1]]
 ;; sudoedit
 (leaf auto-sudoedit
   :commands auto-sudoedit-sudoedit)
 ;; sudoedit:1 ends here
 
-;; [[file:../Config.org::*profiler][profiler:1]]
+;; [[file:../README.org::*profiler][profiler:1]]
 (defun my/profiler-report ()
   "Profiler stop and report."
   (interactive)
@@ -216,7 +216,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   "Dr" 'my/profiler-report)
 ;; profiler:1 ends here
 
-;; [[file:../Config.org::*basic keybind tweaks][basic keybind tweaks:1]]
+;; [[file:../README.org::*basic keybind tweaks][basic keybind tweaks:1]]
 ;; Actuates Meta key by default
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
@@ -232,7 +232,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 (global-set-key (kbd "M-n") (kbd "M-- 1 M-v"))
 ;; basic keybind tweaks:1 ends here
 
-;; [[file:../Config.org::*meow (modal editing)][meow (modal editing):1]]
+;; [[file:../README.org::*meow (modal editing)][meow (modal editing):1]]
 (defun my/meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-dvp)
   (meow-motion-overwrite-define-key
@@ -423,7 +423,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   )
 ;; meow (modal editing):1 ends here
 
-;; [[file:../Config.org::*avy (jumping)][avy (jumping):1]]
+;; [[file:../README.org::*avy (jumping)][avy (jumping):1]]
 ;; avy
 (leaf avy
   :init
@@ -439,7 +439,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
                          (split-string "a o e u h t n s k b"))))
 ;; avy (jumping):1 ends here
 
-;; [[file:../Config.org::*jinx (auto-correct)][jinx (auto-correct):1]]
+;; [[file:../README.org::*jinx (auto-correct)][jinx (auto-correct):1]]
 ;; spellchecking
 (leaf jinx :ensure nil
   :hook org-mode-hook markdown-mode-hook text-mode-hook
@@ -448,7 +448,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
    ("C-M-$" . jinx-languages)))
 ;; jinx (auto-correct):1 ends here
 
-;; [[file:../Config.org::*fontawesome][fontawesome:1]]
+;; [[file:../README.org::*fontawesome][fontawesome:1]]
 (leaf fontawesome
   :commands vertico-fontawesome fontawesome--construct-candidates
   :init
@@ -463,7 +463,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
        (fontawesome--construct-candidates))))))
 ;; fontawesome:1 ends here
 
-;; [[file:../Config.org::*vertico (completion framework)][vertico (completion framework):1]]
+;; [[file:../README.org::*vertico (completion framework)][vertico (completion framework):1]]
 ;; ? : corfu, kind-icon, wgrep?, consult-dir, cape
 ;; ^ more at ~/code/cloned/daviwil-dots/.emacs.d/modules/dw-interface.el
 ;; TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)
@@ -507,7 +507,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 ;; vertico (completion framework):1 ends here
 
-;; [[file:../Config.org::*consult (search and navigation)][consult (search and navigation):1]]
+;; [[file:../README.org::*consult (search and navigation)][consult (search and navigation):1]]
 (leaf consult
   :bind (;; generic binds
          ("C-s" . consult-line)
@@ -616,7 +616,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;;              (lambda () ,@body))))))
 ;; consult (search and navigation):1 ends here
 
-;; [[file:../Config.org::*embark (run action on target)][embark (run action on target):1]]
+;; [[file:../README.org::*embark (run action on target)][embark (run action on target):1]]
 (leaf embark
   :bind
   (("C-." . embark-act)
@@ -643,13 +643,13 @@ _SPC_ cancel	_o_nly this   	_d_elete
                  (window-parameters (mode-line-format . none)))))
 ;; embark (run action on target):1 ends here
 
-;; [[file:../Config.org::*embark-consult (consult + embark integration)][embark-consult (consult + embark integration):1]]
+;; [[file:../README.org::*embark-consult (consult + embark integration)][embark-consult (consult + embark integration):1]]
 (leaf embark-consult
   :after embark consult
   :hook (embark-collect-mode-hook . consult-preview-at-point-mode))
 ;; embark-consult (consult + embark integration):1 ends here
 
-;; [[file:../Config.org::*orderless (somewhat-fuzzy completion style)][orderless (somewhat-fuzzy completion style):1]]
+;; [[file:../README.org::*orderless (somewhat-fuzzy completion style)][orderless (somewhat-fuzzy completion style):1]]
 (leaf orderless
   :require t
   :setq
@@ -661,7 +661,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (completion-category-overrides . '((file (styles partial-completion)))))
 ;; orderless (somewhat-fuzzy completion style):1 ends here
 
-;; [[file:../Config.org::*marginalia (extra info on completion candidates)][marginalia (extra info on completion candidates):1]]
+;; [[file:../README.org::*marginalia (extra info on completion candidates)][marginalia (extra info on completion candidates):1]]
 (leaf marginalia
   :init
   (marginalia-mode 1)
@@ -671,7 +671,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
           ("M-A" . marginalia-cycle))))
 ;; marginalia (extra info on completion candidates):1 ends here
 
-;; [[file:../Config.org::*company (in-buffer completions and UI)][company (in-buffer completions and UI):1]]
+;; [[file:../README.org::*company (in-buffer completions and UI)][company (in-buffer completions and UI):1]]
 ;; TODO: disable most backends by default add a bunch per mode (org should only have a few
 (leaf company
   ;; :disabled t
@@ -750,7 +750,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (company-quickhelp-mode 1))
 ;; company (in-buffer completions and UI):1 ends here
 
-;; [[file:../Config.org::*yasnippet (templates)][yasnippet (templates):1]]
+;; [[file:../README.org::*yasnippet (templates)][yasnippet (templates):1]]
 ;; TODO: this is set up for eglot only, not lsp-mode
 
 ;; https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for-yasnippets-when-using-eglot
@@ -765,19 +765,19 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (yas-reload-all))
 ;; yasnippet (templates):1 ends here
 
-;; [[file:../Config.org::*hippie-expand (smart completions and expansions)][hippie-expand (smart completions and expansions):1]]
+;; [[file:../README.org::*hippie-expand (smart completions and expansions)][hippie-expand (smart completions and expansions):1]]
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand t)
 ;; hippie-expand (smart completions and expansions):1 ends here
 
-;; [[file:../Config.org::*isearch (built-in text searching)][isearch (built-in text searching):1]]
+;; [[file:../README.org::*isearch (built-in text searching)][isearch (built-in text searching):1]]
 (leaf isearch :ensure nil
   :bind
   ("C-M-s" . isearch-forward)
   ("C-M-r" . isearch-backward))
 ;; isearch (built-in text searching):1 ends here
 
-;; [[file:../Config.org::*corfu (disabled)][corfu (disabled):1]]
+;; [[file:../README.org::*corfu (disabled)][corfu (disabled):1]]
 ;;; CULPRIT OF HANGING, DISABLED.
 
 ;; (leaf corfu
@@ -809,7 +809,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;;   (global-corfu-mode))
 ;; corfu (disabled):1 ends here
 
-;; [[file:../Config.org::*cape (disabled)][cape (disabled):1]]
+;; [[file:../README.org::*cape (disabled)][cape (disabled):1]]
 ;; (leaf cape
 ;;   ;; :disabled t
 ;;   :require t
@@ -885,19 +885,19 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;; (use-package tempel-collection)
 ;; cape (disabled):1 ends here
 
-;; [[file:../Config.org::*abbrev (disabled)][abbrev (disabled):1]]
+;; [[file:../README.org::*abbrev (disabled)][abbrev (disabled):1]]
 ;; (leaf abbrev :ensure nil
 ;;   :bind (("C-c c a" . add-global-abbrev)
 ;;          ("C-c c -" . inverse-add-global-abbrev)
 ;;          ("C-c c e" . edit-abbrevs)))
 ;; abbrev (disabled):1 ends here
 
-;; [[file:../Config.org::*personal variables (todo: delete this)][personal variables (todo: delete this):1]]
+;; [[file:../README.org::*personal variables (todo: delete this)][personal variables (todo: delete this):1]]
 (defvar prefer-eglot-mode? nil)
 (defvar prefer-lsp-mode? nil)
 ;; personal variables (todo: delete this):1 ends here
 
-;; [[file:../Config.org::*generic tweaks for programming][generic tweaks for programming:1]]
+;; [[file:../README.org::*generic tweaks for programming][generic tweaks for programming:1]]
 (setq-default indent-tabs-mode nil)
 (setq tab-always-indent t)
 
@@ -909,7 +909,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   :hook prog-mode-hook)
 ;; generic tweaks for programming:1 ends here
 
-;; [[file:../Config.org::*project.el (operations on the current project)][project.el (operations on the current project):1]]
+;; [[file:../README.org::*project.el (operations on the current project)][project.el (operations on the current project):1]]
 (leaf project :ensure nil
   :bind-keymap ("C-c P" . project-prefix-map)
   :init
@@ -923,7 +923,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
    ("C" . project-compile-interactive)))
 ;; project.el (operations on the current project):1 ends here
 
-;; [[file:../Config.org::*projectile (project.el alternative)][projectile (project.el alternative):1]]
+;; [[file:../README.org::*projectile (project.el alternative)][projectile (project.el alternative):1]]
 (leaf projectile
   :init
   (projectile-mode 1)
@@ -933,7 +933,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (setq projectile-compile-use-comint-mode t))
 ;; projectile (project.el alternative):1 ends here
 
-;; [[file:../Config.org::*lsp-mode (the LSP client)][lsp-mode (the LSP client):1]]
+;; [[file:../README.org::*lsp-mode (the LSP client)][lsp-mode (the LSP client):1]]
 (leaf lsp-mode
   :commands (lsp lsp-deferred)
 
@@ -951,7 +951,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
         lsp-update-inlay-hints-on-scroll nil))
 ;; lsp-mode (the LSP client):1 ends here
 
-;; [[file:../Config.org::*lsp-ui (show info on sideline)][lsp-ui (show info on sideline):1]]
+;; [[file:../README.org::*lsp-ui (show info on sideline)][lsp-ui (show info on sideline):1]]
 (leaf lsp-ui
   :bind
   (lsp-ui-mode-map
@@ -977,7 +977,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
     (define-key lsp-command-map (kbd "v i") #'lsp-ui-imenu)))
 ;; lsp-ui (show info on sideline):1 ends here
 
-;; [[file:../Config.org::*lsp-booster (speed up LSP-mode)][lsp-booster (speed up LSP-mode):1]]
+;; [[file:../README.org::*lsp-booster (speed up LSP-mode)][lsp-booster (speed up LSP-mode):1]]
 ;;; lsp-booster
 ;; use lsp-doctor for testing
 ;; Steps:
@@ -1017,7 +1017,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
 ;; lsp-booster (speed up LSP-mode):1 ends here
 
-;; [[file:../Config.org::*generic code settings][generic code settings:1]]
+;; [[file:../README.org::*generic code settings][generic code settings:1]]
 ;; for non-programming too
 (leaf elec-pair :ensure nil
   :require t
@@ -1034,7 +1034,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (electric-pair-mode 1))
 ;; generic code settings:1 ends here
 
-;; [[file:../Config.org::*settings for all lisps][settings for all lisps:1]]
+;; [[file:../README.org::*settings for all lisps][settings for all lisps:1]]
 (setq my/lisp-mode-hooks
       '(emacs-lisp-mode-hook
         scheme-mode-hook))
@@ -1048,7 +1048,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   :hook `,@my/lisp-mode-hooks)
 ;; settings for all lisps:1 ends here
 
-;; [[file:../Config.org::*emacs-lisp][emacs-lisp:1]]
+;; [[file:../README.org::*emacs-lisp][emacs-lisp:1]]
 (leaf orglink
   :hook emacs-lisp-mode-hook)
 
@@ -1076,7 +1076,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 ;; emacs-lisp:1 ends here
 
-;; [[file:../Config.org::*scheme][scheme:1]]
+;; [[file:../README.org::*scheme][scheme:1]]
 (leaf scheme-mode :ensure nil
   :disabled t
   :mode "\\.sld\\'" "\\.scm\\'")
@@ -1094,17 +1094,20 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :after geiser)
 ;; scheme:1 ends here
 
-;; [[file:../Config.org::*rust][rust:1]]
+;; [[file:../README.org::*rust][rust:1]]
 (leaf rust-mode
   :require t
   :init
-  (setq rust-mode-treesitter-derive t))
+  (setq rust-mode-treesitter-derive t)
+  (setq rust-rustfmt-switches '("--edition" "2021")))
 
 (leaf rustic
+  :require t
   :after rust-mode
   :config
-  (setq rustic-cargo-use-last-stored-arguments t
-        rustic-format-on-save t)
+  (setq rustic-cargo-use-last-stored-arguments t)
+  (setq rustic-format-on-save t)
+  (setq rustic-rustfmt-args "--edition 2021")
 
   ;; lsp-mode settings
   (with-eval-after-load 'lsp-mode
@@ -1194,7 +1197,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;    :files (:defaults "emacs/*")))
 ;; rust:1 ends here
 
-;; [[file:../Config.org::*C][C:1]]
+;; [[file:../README.org::*C][C:1]]
 (leaf cc-mode :ensure nil
   :hook ((c-mode-hook . lsp)
          (c-mode-hook . (lambda ()
@@ -1219,7 +1222,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;   (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
 ;; C:1 ends here
 
-;; [[file:../Config.org::*java][java:1]]
+;; [[file:../README.org::*java][java:1]]
 (leaf lsp-java
   :mode "\\.java\\'"
   :config
@@ -1237,7 +1240,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;    ("C-c l R" . eglot-java-project-build-refresh)))
 ;; java:1 ends here
 
-;; [[file:../Config.org::*markdown][markdown:1]]
+;; [[file:../README.org::*markdown][markdown:1]]
 (leaf markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode))
@@ -1252,12 +1255,12 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (add-hook 'markdown-mode-hook #'my/setup-markdown-mode))
 ;; markdown:1 ends here
 
-;; [[file:../Config.org::*clojure][clojure:1]]
+;; [[file:../README.org::*clojure][clojure:1]]
 (leaf clojure-mode
   :disabled t)
 ;; clojure:1 ends here
 
-;; [[file:../Config.org::*scala][scala:1]]
+;; [[file:../README.org::*scala][scala:1]]
 (leaf scala-mode
   :disabled t
   :interpreter "scala"
@@ -1266,7 +1269,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
                    scala-prettify-symbols-alist)))
 ;; scala:1 ends here
 
-;; [[file:../Config.org::*zig][zig:1]]
+;; [[file:../README.org::*zig][zig:1]]
 (leaf zig-mode
   :disabled t
   ;; :config
@@ -1274,84 +1277,186 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   )
 ;; zig:1 ends here
 
-;; [[file:../Config.org::*haskell][haskell:1]]
+;; [[file:../README.org::*haskell][haskell:1]]
 (leaf haskell-mode
   :mode "\\.hs\\'")
 ;; haskell:1 ends here
 
-;; [[file:../Config.org::*nix][nix:1]]
+;; [[file:../README.org::*nix][nix:1]]
 (leaf nix-mode
   :mode "\\.nix\\'")
 ;; nix:1 ends here
 
-;; [[file:../Config.org::*yaml][yaml:1]]
+;; [[file:../README.org::*yaml][yaml:1]]
 (leaf yaml-mode
   :mode "\\.yml\\'")
 ;; yaml:1 ends here
 
-;; [[file:../Config.org::*ron][ron:1]]
+;; [[file:../README.org::*ron][ron:1]]
 (leaf ron-mode
   :require t)
 ;; ron:1 ends here
 
-;; [[file:../Config.org::*direnv][direnv:1]]
+;; [[file:../README.org::*kerolox][kerolox:1]]
+;;;; Kerolox ;;;;
+
+(leaf emacs :ensure nil
+  ;;;; Kerolox mode and LSP ;;;;
+
+  ;; Major-mode for .rp1 files
+  (define-derived-mode kerolox-mode prog-mode "kerolox"
+    "Major mode for editing kerolox (.rp1) files."
+    :group 'kerolox)
+
+  (with-eval-after-load 'lsp-mode
+    ;; Register LSP server and setup LSP server
+    (add-to-list 'lsp-language-id-configuration '(kerolox-mode . "kerolox"))
+    (lsp-register-client
+     (make-lsp-client
+      :new-connection (lsp-stdio-connection '("/home/sui/Code/cloned/saturn-v/target/release/saturn-v" "lsp"))
+      :major-modes '(kerolox-mode)
+      :server-id 'saturn-v-lsp)))
+
+
+  ;;;; Kerolox treesit mode and LSP
+
+  (define-derived-mode kerolox-ts-mode kerolox-mode "kerolox[ts]"
+    "Tree-sitter based major mode for editing kerolox (.rp1) files."
+    :group 'kerolox
+
+    (when (and (fboundp 'treesit-available-p)
+               (treesit-available-p))
+
+      ;; create parser for this buffer
+      (treesit-parser-create 'kerolox)
+
+      (setq-local treesit-font-lock-feature-list
+                  '((comment)
+                    (keyword string)
+                    (constant type)
+                    (function variable module constructor)
+                    (operator punctuation)))
+
+      (setq-local font-lock-defaults nil)
+
+      ;; Set up face mapping for tree-sitter query capture names to Emacs faces
+      (defvar kerolox-ts-font-lock-settings
+        (treesit-font-lock-rules
+         :language 'kerolox
+         :feature 'comment
+         '((comment) @font-lock-comment-face)
+
+         :language 'kerolox
+         :feature 'constant
+         '((integer) @font-lock-constant-face
+           (value (symbol)) @font-lock-constant-face)
+
+         :language 'kerolox
+         :feature 'variable
+         '((variable) @font-lock-variable-name-face)
+
+         :language 'kerolox
+         :feature 'module
+         '((import (symbol)) @font-lock-preprocessor-face)
+
+         :language 'kerolox
+         :feature 'type
+         '((type (symbol)) @font-lock-type-face)
+
+         :language 'kerolox
+         :feature 'function
+         '((definition relation: (symbol)) @font-lock-function-name-face
+           (atom head: (symbol)) @font-lock-function-name-face)
+
+         :language 'kerolox
+         :feature 'constructor
+         '((rule relation: (symbol)) @font-lock-function-name-face)
+
+         :language 'kerolox
+         :feature 'punctuation
+         '(([":-" "," "."]) @font-lock-delimiter-face
+           (["(" ")"]) @font-lock-bracket-face)
+
+         :language 'kerolox
+         :feature 'operator
+         '((binary_expr op: (_)) @font-lock-builtin-face
+           (unary_expr op: (_)) @font-lock-builtin-face
+           (cardinality kind: (_)) @font-lock-builtin-face)
+
+         :language 'kerolox
+         :feature 'keyword
+         '((["constrain" "decision" "define" "import" "output" "soft"]) @font-lock-keyword-face
+           (constraint_kind) @font-lock-keyword-face))
+        "Font-lock settings for Kerolox.")
+
+      ;; Set font-lock settings from the defined rules
+      (setq-local treesit-font-lock-settings kerolox-ts-font-lock-settings)
+
+      (treesit-major-mode-setup)))
+
+  ;; Register LSP server and setup LSP server
+  (with-eval-after-load 'lsp-mode
+    (add-to-list 'lsp-language-id-configuration '(kerolox-ts-mode . "kerolox"))
+    (lsp-register-client
+     (make-lsp-client
+      :new-connection (lsp-stdio-connection '("/home/sui/Code/cloned/saturn-v/target/release/saturn-v" "lsp"))
+      :major-modes '(kerolox-ts-mode)
+      :server-id 'saturn-v-ts-lsp)))
+
+
+  ;;;; Tree-sitter generic ;;;;
+
+  (with-eval-after-load 'treesit
+    ;; Configure the language grammar source and mapping
+    (when (and (fboundp 'treesit-available-p)
+               (treesit-available-p))
+      ;; Define grammar source
+      (add-to-list 'treesit-language-source-alist
+                   '(kerolox . ("https://github.com/marceline-cramer/saturn-v" nil "tree-sitter-kerolox/src")))
+
+      ;; ;; Set up language mapping
+      ;; (add-to-list 'treesit-language-remap-alist '(kerolox-ts-mode . kerolox))
+
+      ;; Only install if not already installed
+      ;; (unless (treesit-language-available-p 'kerolox)
+      ;;   (treesit-install-language-grammar 'kerolox))
+      (treesit-install-language-grammar 'kerolox)
+      ))
+
+  ;; Auto-start LSP when opening .rp1 files with tree-sitter mode
+  (add-hook 'kerolox-ts-mode-hook #'lsp-deferred)
+
+
+  ;;;; Misc ;;;;
+
+  ;; Remap regular mode to tree-sitter mode
+  (setq major-mode-remap-alist
+        '((kerolox-mode . kerolox-ts-mode)))
+
+
+  ;;;; Auto-mode-alist ;;;;
+
+  ;; Associate file name pattern with major-mode
+  (add-to-list 'auto-mode-alist '("\\.rp1\\'" . kerolox-ts-mode)))
+;; kerolox:1 ends here
+
+;; [[file:../README.org::*direnv][direnv:1]]
 (leaf direnv
   :init
   (direnv-mode 1))
 ;; direnv:1 ends here
 
-;; [[file:../Config.org::*hex colors][hex colors:1]]
+;; [[file:../README.org::*hex colors][hex colors:1]]
 (leaf rainbow-mode
   :hook prog-mode-hook)
 ;; hex colors:1 ends here
 
-;; [[file:../Config.org::*code-folding][code-folding:1]]
-(leaf hideshow :ensure nil
-  :hook
-  (prog-mode-hook . hs-minor-mode)
-  :config
-  ;; new fold function
-  (defun my/toggle-fold ()
-    (interactive)
-    (save-excursion
-      (end-of-line)
-      (hs-toggle-hiding)))
-  ;; unset orig keymap from minor-mode
-  (setf (alist-get 'hs-minor-mode minor-mode-map-alist) nil)
-  ;; new custom keymap
-  ;; (defvar my/hs-minor-mode-map
-  ;;   (let ((map (make-sparse-keymap)))
-  ;;     (define-key map (kbd "h") #'hs-hide-block)
-  ;;     (define-key map (kbd "s") #'hs-show-block)
-  ;;     (define-key map (kbd "a") #'hs-hide-all)
-  ;;     (define-key map (kbd "r") #'hs-show-all)
-  ;;     (define-key map (kbd "l") #'hs-hide-level)
-  ;;     (define-key map (kbd "t") #'my/toggle-fold)
-  ;;     map))
-  ;; bind new keymap
-  ;; (define-key global-map (kbd "C-c @") my/hs-minor-mode-map)
-  ;; (with-eval-after-load 'lsp-mode
-  ;;   (define-key lsp-command-map (kbd "t") my/hs-minor-mode-map))
-  ;; hydra
-  (defhydra hydra-folding (:color red)
-    "Code folding"
-    ("t" my/toggle-fold "toggle")
-    ("l" hs-hide-level  "hide level")
-    ("s" hs-show-block  "show block")
-    ("h" hs-hide-block  "hide block")
-    ("S" hs-show-all    "Show all")
-    ("H" hs-hide-all    "Hide all")
-    ("n" next-line      "next line")
-    ("p" previous-line  "previous line")
-    ("j" scroll-up-command "down")
-    ("k" scroll-down-command "up")
-    ("g" nil "quit")
-    ("c" nil "close"))
-  (general-my-map
-    "@" 'hydra-folding/body))
-;; code-folding:1 ends here
+;; [[file:../README.org::*compile-mode][compile-mode:1]]
+(with-eval-after-load 'ansi-color
+  (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter))
+;; compile-mode:1 ends here
 
-;; [[file:../Config.org::*tree-sitter][tree-sitter:1]]
+;; [[file:../README.org::*tree-sitter][tree-sitter:1]]
 (leaf treesit-auto
   :require t
   :config
@@ -1359,7 +1464,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (global-treesit-auto-mode))
 ;; tree-sitter:1 ends here
 
-;; [[file:../Config.org::*org-mode][org-mode:1]]
+;; [[file:../README.org::*org-mode][org-mode:1]]
 ;; NOTE: ensure that the newest version of org is installed right after elpaca setup
 (leaf org :ensure nil
   :setq
@@ -1384,7 +1489,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (general-my-map
     "o" '(:ignore t :which-key "org"))
 
-  :hook (org-mode-hook . indent-tabs-mode)
+  ;; :hook (org-mode-hook . indent-tabs-mode)
 
   :config
   (defun my/org-insert-subheading-respect-content ()
@@ -1492,7 +1597,7 @@ If in a list, inserts a new sublist after the current list."
   :hook org-mode-hook)
 ;; org-mode:1 ends here
 
-;; [[file:../Config.org::*org-agenda][org-agenda:1]]
+;; [[file:../README.org::*org-agenda][org-agenda:1]]
 (leaf org-agenda :ensure nil
   :after org
   :init
@@ -1604,7 +1709,7 @@ The property will be removed if ran with a \\[universal-argument]."
          (org-entry-put (point) "NOTER_PAGE" num))))))
 ;; org-agenda:1 ends here
 
-;; [[file:../Config.org::*org-capture][org-capture:1]]
+;; [[file:../README.org::*org-capture][org-capture:1]]
 (leaf org-capture :ensure nil
   :after org
   :init
@@ -1638,7 +1743,7 @@ The property will be removed if ran with a \\[universal-argument]."
            :kill-buffer t :jump-to-captured t))))
 ;; org-capture:1 ends here
 
-;; [[file:../Config.org::*org extras][org extras:1]]
+;; [[file:../README.org::*org extras][org extras:1]]
 (defun my/org-priority-to-anki ()
   (interactive)
   ;; check connection with anki
@@ -1711,37 +1816,75 @@ The property will be removed if ran with a \\[universal-argument]."
                  (org-next-visible-heading -1))))))
 ;; org extras:1 ends here
 
-;; [[file:../Config.org::*AucTeX][AucTeX:1]]
+;; [[file:../README.org::*Quail (for TeX input method)][Quail (for TeX input method):1]]
+(leaf quail :ensure nil
+  :config
+  (eval-after-load "quail/latin-ltx"
+    `(progn
+       ,@(mapcar (lambda (bind)
+                   `(quail-defrule ,(car bind) ,(cdr bind) "TeX"))
+                 `(("\\lnt"   . ?¬)
+                   ("\\land"  . ?∧)
+                   ("\\lor"   . ?∨)
+                   ("\\lev"   . ?≡)
+                   ("\\nlev"  . ?≢)
+                   ("\\lrarr" . ?↔)
+                   ("\\bic"   . ?↔)
+                   ("\\To"  . ?⇒)
+                   ("\\allint" . ?ℤ)
+                   ("\\tf" . ?∴)
+                   ("\\isct" . ?∩)
+                   ("\\ints" . ?∩)
+                   ("\\union" . ?∪)
+                   ("\\unn" . ?∪)
+                   ("\\sst" . ?⊆)
+                   ("\\psst" . ?⊂)
+                   ("\\nin" . ?∉)
+                   ("\\*" . ?·)
+                   ("\\boxul"  . ?┌)   ; box upper-left
+                   ("\\boxur"  . ?┐)   ; box upper-right
+                   ("\\boxdl"  . ?└)   ; box down-left
+                   ("\\boxdr"  . ?┘)   ; box down-right
+                   ("\\boxh"   . ?─)   ; box horizontal
+                   ("\\boxv"   . ?│)   ; box vertical
+                   ("\\boxtd"  . ?┬)   ; box tee down
+                   ("\\boxtu"  . ?┴)   ; box tee up
+                   ("\\boxtr"  . ?├)   ; box tee right
+                   ("\\boxtl"  . ?┤)   ; box tee left
+                   ("\\boxc"   . ?┼)   ; box cross
+                   )))))
+;; Quail (for TeX input method):1 ends here
+
+;; [[file:../README.org::*AucTeX][AucTeX:1]]
 (leaf auctex
-  :require t)
+  :require t
+  :hook ((LaTeX-mode-hook . preview-larger-previews))
+  :config
+  (with-eval-after-load 'ox-latex
+    (setq org-latex-compiler "lualatex")
+    (setq org-latex-pdf-process '("%latex -interaction nonstopmode -output-directory %o %f")))
+  (defun preview-larger-previews ()
+    (setq preview-scale-function
+          (lambda () (* 1.25 (funcall (preview-scale-from-face)))))))
 ;; AucTeX:1 ends here
 
-;; [[file:../Config.org::*CDLatex][CDLatex:1]]
+;; [[file:../README.org::*CDLatex][CDLatex:1]]
 (leaf cdlatex
   :after auctex
   :hook ((LaTeX-mode-hook . turn-on-cdlatex)))
 ;; CDLatex:1 ends here
 
-;; [[file:../Config.org::*Preview][Preview:1]]
-(leaf latex
-  :require preview
-  :hook ((LaTeX-mode-hook . preview-larger-previews))
-  :config
-  (defun preview-larger-previews ()
-    (setq preview-scale-function
-          (lambda () (* 1.25 (funcall (preview-scale-from-face)))))))
-;; Preview:1 ends here
-
-;; [[file:../Config.org::*Preview Pane][Preview Pane:1]]
+;; [[file:../README.org::*Preview Pane][Preview Pane:1]]
 (leaf latex-preview-pane
   :init
   (add-hook 'LaTeX-mode-hook (lambda () (latex-preview-pane-mode 1)))
   :config
+  (setq pdf-latex-command "lualatex")
   (setq preview-orientation 'below)
   )
 ;; Preview Pane:1 ends here
 
-;; [[file:../Config.org::*persp-mode][persp-mode:1]]
+;; [[file:../README.org::*persp-mode][persp-mode:1]]
 ;; NOTE: modify #'persp-save-state-to-file arg (keep-others-in-non-parametric-file 'yes)
 
 ;; maybe have each persp have its own save file, and when autosaving, save each persp?
@@ -2003,7 +2146,7 @@ The property will be removed if ran with a \\[universal-argument]."
 ;;                 (ibuffer-switch-to-saved-filter-groups "persp-mode"))))
 ;; persp-mode:1 ends here
 
-;; [[file:../Config.org::*perspective (disabled)][perspective (disabled):1]]
+;; [[file:../README.org::*perspective (disabled)][perspective (disabled):1]]
 ;; (leaf perspective
 ;;   :init
 ;;   (persp-mode)
@@ -2046,7 +2189,7 @@ The property will be removed if ran with a \\[universal-argument]."
 ;;     (add-to-list 'consult-buffer-sources my/persp-consult-source)))
 ;; perspective (disabled):1 ends here
 
-;; [[file:../Config.org::*eat][eat:1]]
+;; [[file:../README.org::*eat][eat:1]]
 (leaf eat
   :setq
   (eat-term-name . "xterm-256color")
@@ -2062,13 +2205,13 @@ The property will be removed if ran with a \\[universal-argument]."
    ("M-o" . ace-window)))
 ;; eat:1 ends here
 
-;; [[file:../Config.org::*eshell][eshell:1]]
+;; [[file:../README.org::*eshell][eshell:1]]
 (leaf eshell :ensure nil
   :bind
   ("C-c a e" . eshell))
 ;; eshell:1 ends here
 
-;; [[file:../Config.org::*magit][magit:1]]
+;; [[file:../README.org::*magit][magit:1]]
 (leaf magit
   :preface (elpaca transient) ; HACK: magit needs newer version
   :setq
@@ -2077,13 +2220,13 @@ The property will be removed if ran with a \\[universal-argument]."
   ("C-c v" . magit))
 ;; magit:1 ends here
 
-;; [[file:../Config.org::*pdf][pdf:1]]
+;; [[file:../README.org::*pdf][pdf:1]]
 (leaf pdf-tools
   :config
   (pdf-loader-install)) ; On demand loading, leads to faster startup time
 ;; pdf:1 ends here
 
-;; [[file:../Config.org::*elfeed][elfeed:1]]
+;; [[file:../README.org::*elfeed][elfeed:1]]
 (leaf elfeed
   :defer-config
   ;; set `elfeed-feeds' to all files in `my/elfeed-feeds-dir'.
@@ -2098,7 +2241,7 @@ The property will be removed if ran with a \\[universal-argument]."
   (advice-add #'elfeed-update :before #'my/elfeed-feeds-update-var))
 ;; elfeed:1 ends here
 
-;; [[file:../Config.org::*fonts][fonts:1]]
+;; [[file:../README.org::*fonts][fonts:1]]
 (defvar my/font-alist
   `((hack . "Hack")
     (tamzenPL-16
@@ -2130,7 +2273,7 @@ The property will be removed if ran with a \\[universal-argument]."
   (set-fontset-font t 'unicode (font-spec :family "Weather Icons") nil 'append))
 ;; fonts:1 ends here
 
-;; [[file:../Config.org::*themes][themes:1]]
+;; [[file:../README.org::*themes][themes:1]]
 ;;; Function: `load-theme' but fixed theme-bleeding issue.
 
 ;;; obsolete, replaced with consult-theme.
@@ -2198,7 +2341,7 @@ The property will be removed if ran with a \\[universal-argument]."
   (my/set-random-theme))
 ;; themes:1 ends here
 
-;; [[file:../Config.org::*transparency][transparency:1]]
+;; [[file:../README.org::*transparency][transparency:1]]
 (defvar my/transparency-value 100)
 
 (defun my/native-transparency-supported? ()
@@ -2230,7 +2373,7 @@ The property will be removed if ran with a \\[universal-argument]."
     (set-frame-parameter (selected-frame) 'alpha-background value)))
 ;; transparency:1 ends here
 
-;; [[file:../Config.org::*line numbers][line numbers:1]]
+;; [[file:../README.org::*line numbers][line numbers:1]]
 ;; list of programming modes to disable line-numbers on
 (defvar my/display-line-numbers-exclude '())
 
@@ -2243,12 +2386,12 @@ The property will be removed if ran with a \\[universal-argument]."
 (setq display-line-numbers-type 'relative)
 ;; line numbers:1 ends here
 
-;; [[file:../Config.org::*line wrapping][line wrapping:1]]
+;; [[file:../README.org::*line wrapping][line wrapping:1]]
 (global-visual-line-mode 1)
 (diminish 'visual-line-mode) ; hide "Wrap" in mode-line
 ;; line wrapping:1 ends here
 
-;; [[file:../Config.org::*whitespace][whitespace:1]]
+;; [[file:../README.org::*whitespace][whitespace:1]]
 (leaf whitespace :ensure nil
   :hook ((prog-mode-hook . my/prog-mode-whitespace)
          (org-mode-hook  . my/org-mode-whitespace)
@@ -2266,7 +2409,7 @@ The property will be removed if ran with a \\[universal-argument]."
   (setq whitespace-trailing 'whitespace-hspace))
 ;; whitespace:1 ends here
 
-;; [[file:../Config.org::*solaire][solaire:1]]
+;; [[file:../README.org::*solaire][solaire:1]]
 (leaf solaire-mode
   :config
   (defun real-buffer-p ()
@@ -2277,7 +2420,7 @@ The property will be removed if ran with a \\[universal-argument]."
   (solaire-global-mode +1))
 ;; solaire:1 ends here
 
-;; [[file:../Config.org::*mode-line][mode-line:1]]
+;; [[file:../README.org::*mode-line][mode-line:1]]
 ;; show column # on modeline
 (column-number-mode 1)
 
@@ -2289,7 +2432,7 @@ The property will be removed if ran with a \\[universal-argument]."
   )
 ;; mode-line:1 ends here
 
-;; [[file:../Config.org::*scroll][scroll:1]]
+;; [[file:../README.org::*scroll][scroll:1]]
 ;; Improve scroll
 (leaf emacs :ensure nil
   :setq
@@ -2306,7 +2449,7 @@ The property will be removed if ran with a \\[universal-argument]."
   (mouse-wheel-scroll-amount-horizontal . 2)) ; faster hscroll speed
 ;; scroll:1 ends here
 
-;; [[file:../Config.org::*dashboard][dashboard:1]]
+;; [[file:../README.org::*dashboard][dashboard:1]]
 (leaf dashboard
   :require t
   :config
@@ -2323,11 +2466,11 @@ The property will be removed if ran with a \\[universal-argument]."
                   (dashboard-initialize))))))
 ;; dashboard:1 ends here
 
-;; [[file:../Config.org::*prettify][prettify:1]]
+;; [[file:../README.org::*prettify][prettify:1]]
 (global-prettify-symbols-mode 1)
 ;; prettify:1 ends here
 
-;; [[file:../Config.org::*server][server:1]]
+;; [[file:../README.org::*server][server:1]]
 (leaf server :ensure nil
   :doc "Autostarts an Emacs server. Connect to it using emacsclient."
   :require t
@@ -2345,7 +2488,7 @@ The property will be removed if ran with a \\[universal-argument]."
   (emacs-startup-hook . my/start-server-if-not-running))
 ;; server:1 ends here
 
-;; [[file:../Config.org::*html][html:1]]
+;; [[file:../README.org::*html][html:1]]
 (leaf htmlize)
 
 (leaf simple-httpd)
@@ -2353,7 +2496,7 @@ The property will be removed if ran with a \\[universal-argument]."
 (leaf impatient-mode)
 ;; html:1 ends here
 
-;; [[file:../Config.org::*denote][denote:1]]
+;; [[file:../README.org::*denote][denote:1]]
 ;; Sample config:
 ;; https://protesilaos.com/emacs/denote#h:5d16932d-4f7b-493d-8e6a-e5c396b15fd6
 
@@ -2405,14 +2548,6 @@ The property will be removed if ran with a \\[universal-argument]."
     "nof" '(denote-org-extras-dblock-insert-files :which-key "dblock files")
     "nob" '(denote-org-extras-dblock-insert-backlinks :which-key "dblock backlinks")
     "noa" '(my/denote-insert-file-local-dblock-update-mode :which-key "insert file-local dblock mode")
-
-    ;; journal
-    ;; "oj" '(denote-journal-extras-new-or-existing-entry :which-key "denote-journal")
-    ;; "nj" '(:ignore t :which-key "journal")
-    ;; "njj" '(denote-journal-extras-new-or-existing-entry :which-key "open today")
-    ;; "njo" '(denote-journal-extras-new-or-existing-entry :which-key "open today")
-    ;; "njn" '(denote-journal-extras-new-entry :which-key "new entry")
-    ;; "njl" '(denote-journal-extras-link-or-create-entry :which-key "link entry")
     )
 
   :config
@@ -2492,6 +2627,15 @@ The property will be removed if ran with a \\[universal-argument]."
   ;;       (expand-file-name "journal" denote-directory))
   )
 
+(leaf denote-journal
+  :config
+  (general-my-map
+    ;; journal
+
+    "nj" '(:ignore t :which-key "journal")
+    "njN" 'denote-journal-new-entry
+    "njc" 'denote-journal-link-or-create-entry
+    "njn" 'denote-journal-new-or-existing-entry))
 
 ;; provides consult sources:
 ;; - "SPC D" for denote buffers
@@ -2606,7 +2750,7 @@ The property will be removed if ran with a \\[universal-argument]."
 ;;   "")
 ;; denote:1 ends here
 
-;; [[file:../Config.org::*emms][emms:1]]
+;; [[file:../README.org::*emms][emms:1]]
 ;; no cover
 ;; (use-package listen)
 
@@ -2930,7 +3074,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
     "e S o" 'emms-playlist-sort-by-info-note))
 ;; emms:1 ends here
 
-;; [[file:../Config.org::*ical][ical:1]]
+;; [[file:../README.org::*ical][ical:1]]
 ;; https://www.reddit.com/r/emacs/comments/ioenk2/ical_import_in_emacs_calendar/
 
 (require 'diary-lib)
@@ -2953,7 +3097,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
           my/calendars))
 ;; ical:1 ends here
 
-;; [[file:../Config.org::*to-sort][to-sort:1]]
+;; [[file:../README.org::*to-sort][to-sort:1]]
 (leaf omni-quotes
   :init (omni-quotes-mode 1)
   :bind (("M-s q m" . omni-quotes-mode)
@@ -3064,6 +3208,6 @@ a buffer-local variable `emms-playlistedit-orig-path'."
   ("g" org-goto "goto" :exit t))
 ;; to-sort:1 ends here
 
-;; [[file:../Config.org::*ending][ending:1]]
+;; [[file:../README.org::*ending][ending:1]]
 (provide 'main)
 ;; ending:1 ends here

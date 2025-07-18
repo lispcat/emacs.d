@@ -1,4 +1,4 @@
-;; [[file:Config.org::*add to load-path][add to load-path:1]]
+;; [[file:README.org::*add to load-path][add to load-path:1]]
 (require 'cl-lib)
 
 (defun add-subdirs-to-load-path (path &optional recursively?)
@@ -16,7 +16,7 @@
 (add-subdirs-to-load-path my/emacs-submodules-dir)
 ;; add to load-path:1 ends here
 
-;; [[file:Config.org::*load custom-file after startup][load custom-file after startup:1]]
+;; [[file:README.org::*load custom-file after startup][load custom-file after startup:1]]
 (defun my/log-customize-set-func (&rest args)
   (message "log: customized: %s" args))
 ;; (advice-add 'custom-set-variables :before #'my/log-customize-set-func)
@@ -28,7 +28,7 @@
               (load custom-file))))
 ;; load custom-file after startup:1 ends here
 
-;; [[file:Config.org::*helper functions][helper functions:1]]
+;; [[file:README.org::*helper functions][helper functions:1]]
 (defun +load-all (target-dir &optional parent-path)
   "Load all files in TARGET-DIR.
 PARENT-PATH defaults to `my/emacs-src-dir'."
@@ -50,7 +50,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
                  (file-name-nondirectory path)))))))
 ;; helper functions:1 ends here
 
-;; [[file:Config.org::*no-littering.el][no-littering.el:1]]
+;; [[file:README.org::*no-littering.el][no-littering.el:1]]
 (add-to-list 'load-path (file-name-concat my/emacs-submodules-dir "no-littering"))
 
 ;; load
@@ -77,7 +77,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
           ("." ,auto-save-dir t))))
 ;; no-littering.el:1 ends here
 
-;; [[file:Config.org::*Elpaca (package manager)][Elpaca (package manager):1]]
+;; [[file:README.org::*Elpaca (package manager)][Elpaca (package manager):1]]
 (defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -136,7 +136,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 (elpaca org)
 ;; Elpaca (package manager):1 ends here
 
-;; [[file:Config.org::*Elpaca (package manager)][Elpaca (package manager):2]]
+;; [[file:README.org::*Elpaca (package manager)][Elpaca (package manager):2]]
 ;;; Exclude all externally installed packages from elpaca.
 
 (require 'elpaca)
@@ -172,7 +172,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
   (push pkg elpaca-ignored-dependencies))
 ;; Elpaca (package manager):2 ends here
 
-;; [[file:Config.org::*post-init sequence][post-init sequence:1]]
+;; [[file:README.org::*post-init sequence][post-init sequence:1]]
 (add-hook 'emacs-startup-hook
           (lambda ()
             (message "*** Emacs loaded in %s seconds with %d garbage collections."
@@ -184,7 +184,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
             (setq gc-cons-threshold (* 10000 10000))))
 ;; post-init sequence:1 ends here
 
-;; [[file:Config.org::*prerequisite packages][prerequisite packages:1]]
+;; [[file:README.org::*prerequisite packages][prerequisite packages:1]]
 (use-package general :ensure (:wait t)
   :demand t
   :config
@@ -205,7 +205,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
   :demand t)
 ;; prerequisite packages:1 ends here
 
-;; [[file:Config.org::*load main.el][load main.el:1]]
+;; [[file:README.org::*load main.el][load main.el:1]]
 (require 'main)
 
 (message "Emacs initialized!")
