@@ -907,6 +907,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 (leaf flycheck
   :hook prog-mode-hook)
+
+(leaf emacs :ensure nil
+  :hook goto-address-mode)
 ;; generic tweaks for programming:1 ends here
 
 ;; [[file:../README.org::*project.el (operations on the current project)][project.el (operations on the current project):1]]
@@ -1049,6 +1052,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;; settings for all lisps:1 ends here
 
 ;; [[file:../README.org::*emacs-lisp][emacs-lisp:1]]
+(leaf emacs :ensure nil
+  :hook ((emacs-lisp-mode-hook . auto-fill-mode)))
+
 (leaf orglink
   :hook emacs-lisp-mode-hook)
 
@@ -1284,7 +1290,8 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 
 ;; [[file:../README.org::*nix][nix:1]]
 (leaf nix-mode
-  :mode "\\.nix\\'")
+  :mode "\\.nix\\'"
+  :hook ((nix-mode-hook . lsp)))
 ;; nix:1 ends here
 
 ;; [[file:../README.org::*yaml][yaml:1]]
@@ -1439,6 +1446,31 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   ;; Associate file name pattern with major-mode
   (add-to-list 'auto-mode-alist '("\\.rp1\\'" . kerolox-ts-mode)))
 ;; kerolox:1 ends here
+
+;; [[file:../README.org::*lua][lua:1]]
+(leaf lua-mode
+  :config
+  (with-eval-after-load 'lsp-lua
+    ;; fix issue with externally installed server
+    (setq lsp-clients-lua-language-server-command
+          "lua-language-server")
+    ;; renoise lua api definitions
+    ;; (setq lsp-lua-workspace-library "'Lua.workspace.library': {'/home/sui/Music/prod/scripts/renoise-lua/definitions': true}")
+    (setq lsp-lua-workspace-library (ht ("/home/sui/Music/prod/scripts/renoise-lua/definitions" t)))
+    (setq lsp-lua-runtime-plugin "/home/sui/Music/prod/scripts/renoise-lua/definitions/plugin.lua")
+    )
+
+  ;; fix pt.2
+  (defun my/lsp-clients-lua-language-server-test ()
+    "(Improved) Test Lua language server binaries and files."
+    (or (and (f-exists? lsp-clients-lua-language-server-main-location)
+             (f-exists? lsp-clients-lua-language-server-bin))
+        (f-exists? (car (split-string lsp-clients-lua-language-server-command)))))
+
+  (advice-add #'lsp-clients-lua-language-server-test
+              :override
+              #'my/lsp-clients-lua-language-server-test))
+;; lua:1 ends here
 
 ;; [[file:../README.org::*direnv][direnv:1]]
 (leaf direnv
@@ -1814,6 +1846,15 @@ The property will be removed if ran with a \\[universal-argument]."
                  (org-set-property "TIME" (format "%s" time-daily))
                  (org-set-property "EFFORT" (format "%s" effort))
                  (org-next-visible-heading -1))))))
+
+(leaf visual-fill-column
+  :require t
+  :hook ((org-mode-hook . my/org-visual-fill))
+  :init
+  (defun my/org-visual-fill ()
+    (setq visual-fill-column-width 100
+          visual-fill-column-center-text t)
+    (visual-fill-column-mode 1)))
 ;; org extras:1 ends here
 
 ;; [[file:../README.org::*Quail (for TeX input method)][Quail (for TeX input method):1]]
@@ -2250,11 +2291,22 @@ The property will be removed if ran with a \\[universal-argument]."
     (ttyp0-17-b .        "-UW-Ttyp0-bold-normal-normal-*-17-*-*-*-c-90-iso8859-1")
     (ttyp0-16   .   "-UW  -Ttyp0-regular-normal-normal-*-16-*-*-*-m-*-iso8859-1")
     (ttyp0-16-i .   "-UW  -Ttyp0-regular-italic-normal-*-16-*-*-*-m-*-iso10646-1")
-    (gb-16 . "-AW-Greybeard 16px-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1")))
+    (gb-16 . "-AW-Greybeard 16px-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1")
+    (fira-code . "Fira Code")
+    (maple-mono . "Maple Mono")))
+
+(defun my/get-font (font)
+  (alist-get font my/font-alist))
 
 (defun my/fontconfig ()
   "Set default font face."
-  (set-face-attribute 'default nil :font (alist-get 'ttyp0-16 my/font-alist)))
+  (let ((font
+         'fira-code
+         ;; 'ttyp0-16
+         ;; 'fira-code
+         ))
+    (set-face-attribute 'default nil :font (my/get-font font)))
+  )
 
 (my/fontconfig)
 
@@ -2764,7 +2816,7 @@ The property will be removed if ran with a \\[universal-argument]."
 
   (setq emms-player-list '(
                            emms-player-mpd
-                           ;; emms-player-mpv
+                           emms-player-mpv
                            ))
 
   ;; (require 'emms-player-mpv) ; disabled for mpd
