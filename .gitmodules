@@ -7,3 +7,6 @@
 [submodule "submodules/eglot-booster"]
 	path = submodules/eglot-booster
 	url = git@github.com:jdtsmith/eglot-booster.git
+[submodule "el2markdown"]
+	path = submodules/el2markdown
+	url = git@github.com:Lindydancer/el2markdown.git
