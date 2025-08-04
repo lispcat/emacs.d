@@ -205,8 +205,46 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
   :demand t)
 ;; prerequisite packages:1 ends here
 
-;; [[file:README.org::*load main.el][load main.el:1]]
-(require 'main)
+;; [[file:README.org::*(import)][(import):1]]
+(require 'my-base)
+;; (import):1 ends here
 
-(message "Emacs initialized!")
-;; load main.el:1 ends here
+;; [[file:README.org::*(import)][(import):1]]
+(require 'my-kbd)
+;; (import):1 ends here
+
+;; [[file:README.org::*(import)][(import):1]]
+(require 'my-completion)
+;; (import):1 ends here
+
+;; [[file:README.org::*(import)][(import):1]]
+(require 'my-ide)
+;; (import):1 ends here
+
+;; [[file:README.org::*(import)][(import):1]]
+(require 'my-org)
+;; (import):1 ends here
+
+;; [[file:README.org::*(import)][(import):1]]
+(require 'my-latex)
+;; (import):1 ends here
+
+;; [[file:README.org::*(import)][(import):1]]
+(require 'my-workspaces)
+;; (import):1 ends here
+
+;; [[file:README.org::*(import)][(import):1]]
+(require 'my-programs)
+;; (import):1 ends here
+
+;; [[file:README.org::*(import)][(import):1]]
+(require 'my-ui)
+;; (import):1 ends here
+
+;; [[file:README.org::*(import)][(import):1]]
+(require 'my-misc)
+;; (import):1 ends here
+
+;; [[file:README.org::*(import)][(import):1]]
+(require 'my-to-sort)
+;; (import):1 ends here

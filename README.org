@@ -1,7 +1,5 @@
 #+title: My Emacs configuration
-#+property:    header-args :tangle src/main.el :comments link
 #+startup:     content
-#+auto_tangle: t
 
 * Table of Contents :TOC_5:
 :PROPERTIES:
@@ -24,7 +22,6 @@
   - [[#elpaca-package-manager][Elpaca (package manager)]]
   - [[#post-init-sequence][post-init sequence]]
   - [[#prerequisite-packages][prerequisite packages]]
-  - [[#load-mainel][load main.el]]
 - [[#----main----][--- Main ---]]
 - [[#base][Base]]
   - [[#misc][misc]]
@@ -35,12 +32,16 @@
   - [[#helpful][helpful]]
   - [[#sudoedit][sudoedit]]
   - [[#profiler][profiler]]
+  - [[#end][end]]
+  - [[#import][(import)]]
 - [[#keyboard][Keyboard]]
   - [[#basic-keybind-tweaks][basic keybind tweaks]]
   - [[#meow-modal-editing][meow (modal editing)]]
   - [[#avy-jumping][avy (jumping)]]
   - [[#jinx-auto-correct][jinx (auto-correct)]]
   - [[#fontawesome][fontawesome]]
+  - [[#end-1][end]]
+  - [[#import-1][(import)]]
 - [[#completion][Completion]]
   - [[#vertico-completion-framework][vertico (completion framework)]]
   - [[#consult-search-and-navigation][consult (search and navigation)]]
@@ -55,6 +56,8 @@
   - [[#corfu-disabled][corfu (disabled)]]
   - [[#cape-disabled][cape (disabled)]]
   - [[#abbrev-disabled][abbrev (disabled)]]
+  - [[#end-2][end]]
+  - [[#import-2][(import)]]
 - [[#ide][IDE]]
   - [[#personal-variables-todo-delete-this][personal variables (todo: delete this)]]
   - [[#auto-insert][auto-insert]]
@@ -91,29 +94,39 @@
   - [[#compile-mode][compile-mode]]
   - [[#code-folding][code-folding]]
   - [[#tree-sitter][tree-sitter]]
+  - [[#end-3][end]]
+  - [[#import-3][(import)]]
 - [[#org][Org]]
   - [[#org-mode][org-mode]]
   - [[#org-agenda][org-agenda]]
   - [[#org-capture][org-capture]]
   - [[#org-latex-disabled][org-latex (disabled)]]
   - [[#org-extras][org extras]]
+  - [[#end-4][end]]
+  - [[#import-4][(import)]]
 - [[#latex][LaTeX]]
   - [[#quail-for-tex-input-method][Quail (for TeX input method)]]
   - [[#auctex][AucTeX]]
   - [[#cdlatex][CDLatex]]
   - [[#preview-pane][Preview Pane]]
   - [[#yasnippet][Yasnippet]]
+  - [[#end-5][end]]
+  - [[#import-5][(import)]]
 - [[#workspaces][Workspaces]]
   - [[#persp-mode][persp-mode]]
   - [[#bufler-disabled][bufler (disabled)]]
   - [[#activities-disabled][activities (disabled)]]
   - [[#perspective-disabled][perspective (disabled)]]
+  - [[#end-6][end]]
+    - [[#import-6][(import)]]
 - [[#programs][Programs]]
   - [[#eat][eat]]
   - [[#eshell][eshell]]
   - [[#magit][magit]]
   - [[#pdf][pdf]]
   - [[#elfeed][elfeed]]
+  - [[#end-7][end]]
+    - [[#import-7][(import)]]
 - [[#ui][UI]]
   - [[#fonts][fonts]]
   - [[#themes][themes]]
@@ -126,13 +139,19 @@
   - [[#scroll][scroll]]
   - [[#dashboard][dashboard]]
   - [[#prettify][prettify]]
+  - [[#end-8][end]]
+    - [[#import-8][(import)]]
 - [[#misc-1][misc]]
   - [[#server][server]]
   - [[#html][html]]
-- [[#denote][denote]]
-- [[#emms][emms]]
-- [[#ical][ical]]
+  - [[#end-9][end]]
+    - [[#import-9][(import)]]
 - [[#to-sort][to-sort]]
+  - [[#ical][ical]]
+  - [[#emms][emms]]
+  - [[#denote][denote]]
+  - [[#end-10][end]]
+    - [[#import-10][(import)]]
 - [[#documentation-generation][documentation generation]]
 - [[#ending][ending]]
 - [[#local-variables][Local Variables]]
@@ -612,16 +631,6 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 #+end_src
 
-** load main.el
-
-#+begin_src emacs-lisp :tangle init.el :comments link
-
-(require 'main)
-
-(message "Emacs initialized!")
-
-#+end_src
-
 * --- Main ---
 
 the rest below is main
@@ -630,7 +639,7 @@ the rest below is main
 
 ** misc
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-base.el
 
 (setq user-full-name "lispcat")
 (setq user-mail-address "187922791+lispcat@users.noreply.github.com")
@@ -639,7 +648,7 @@ the rest below is main
 
 ** buffers
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-base.el
 
 ;; revert buffer when its file is changed on the filesystem
 (leaf autorevert :ensure nil
@@ -668,7 +677,7 @@ the rest below is main
 
 ** history
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-base.el
 
 ;; remember recent files
 (leaf recentf :ensure nil
@@ -688,7 +697,7 @@ the rest below is main
 
 ** window management
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-base.el
 
 (leaf ace-window
   :setq
@@ -782,7 +791,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 Emacs' file management tool.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-base.el
 
 (defun my/open-emacs-config-file ()
   "Open emacs config file."
@@ -835,7 +844,7 @@ Emacs' file management tool.
 
 Searching for and describing variables, functions, and etc.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-base.el
 
 (leaf helpful
   :commands helpful--bookmark-jump
@@ -857,7 +866,7 @@ Searching for and describing variables, functions, and etc.
 
 ** sudoedit
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-base.el
 
 ;; sudoedit
 (leaf auto-sudoedit
@@ -867,7 +876,7 @@ Searching for and describing variables, functions, and etc.
 
 ** profiler
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-base.el
 
 (defun my/profiler-report ()
   "Profiler stop and report."
@@ -882,11 +891,27 @@ Searching for and describing variables, functions, and etc.
 
 #+end_src
 
+** end
+
+#+begin_src emacs-lisp :tangle src/my-base.el
+
+(provide 'my-base)
+
+#+end_src
+
+** (import)
+
+#+begin_src emacs-lisp :tangle init.el
+
+(require 'my-base)
+
+#+end_src
+
 * Keyboard
 
 ** basic keybind tweaks
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-kbd.el
 
 ;; Actuates Meta key by default
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -906,7 +931,7 @@ Searching for and describing variables, functions, and etc.
 
 ** meow (modal editing)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-kbd.el
 
 (defun my/meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-dvp)
@@ -1101,7 +1126,7 @@ Searching for and describing variables, functions, and etc.
 
 ** avy (jumping)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-kbd.el
 
 ;; avy
 (leaf avy
@@ -1121,7 +1146,7 @@ Searching for and describing variables, functions, and etc.
 
 ** jinx (auto-correct)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-kbd.el
 
 ;; spellchecking
 (leaf jinx :ensure nil
@@ -1134,7 +1159,7 @@ Searching for and describing variables, functions, and etc.
 
 ** fontawesome
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-kbd.el
 
 (leaf fontawesome
   :commands vertico-fontawesome fontawesome--construct-candidates
@@ -1151,6 +1176,22 @@ Searching for and describing variables, functions, and etc.
 
 #+end_src
 
+** end
+
+#+begin_src emacs-lisp :tangle src/my-kbd.el
+
+(provide 'my-kbd)
+
+#+end_src
+
+** (import)
+
+#+begin_src emacs-lisp :tangle init.el
+
+(require 'my-kbd)
+
+#+end_src
+
 * Completion
 
 Emacs has a very extensible completion system that can be equipped with frameworks and UIs. This setup uses Vertico, a very lightweight and minimal completion UI, along with complementary packages such as consult, embark, orderless, and more.
@@ -1159,7 +1200,7 @@ Emacs has a very extensible completion system that can be equipped with framewor
 
 A very nice minibuffer completion framework.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 ;; ? : corfu, kind-icon, wgrep?, consult-dir, cape
 ;; ^ more at ~/code/cloned/daviwil-dots/.emacs.d/modules/dw-interface.el
@@ -1209,7 +1250,7 @@ A very nice minibuffer completion framework.
 
 https://github.com/minad/consult
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 (leaf consult
   :bind (;; generic binds
@@ -1322,7 +1363,7 @@ https://github.com/minad/consult
 
 ** embark (run action on target)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 (leaf embark
   :bind
@@ -1353,7 +1394,7 @@ https://github.com/minad/consult
 
 ** embark-consult (consult + embark integration)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 (leaf embark-consult
   :after embark consult
@@ -1363,7 +1404,7 @@ https://github.com/minad/consult
 
 ** orderless (somewhat-fuzzy completion style)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 (leaf orderless
   :require t
@@ -1381,7 +1422,7 @@ https://github.com/minad/consult
 
 https://github.com/minad/marginalia
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 (leaf marginalia
   :init
@@ -1397,7 +1438,7 @@ https://github.com/minad/marginalia
 
 https://github.com/company-mode/company-mode
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 ;; TODO: disable most backends by default add a bunch per mode (org should only have a few
 (leaf company
@@ -1480,7 +1521,7 @@ https://github.com/company-mode/company-mode
 
 ** yasnippet (templates)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 ;; TODO: this is set up for eglot only, not lsp-mode
 
@@ -1501,7 +1542,7 @@ https://github.com/company-mode/company-mode
 
 https://www.gnu.org/software/emacs/manual/html_node/autotype/Hippie-Expand.html
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand t)
@@ -1514,7 +1555,7 @@ Built-in text-searching commands.
 
 Here we bind the isearch commands to =C-M-s= and =C-M-r=, so that we can free up the original keybinds (=C-s= and =C-r=) for other stuff.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 (leaf isearch :ensure nil
   :bind
@@ -1525,7 +1566,7 @@ Here we bind the isearch commands to =C-M-s= and =C-M-r=, so that we can free up
 
 ** corfu (disabled)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 ;;; CULPRIT OF HANGING, DISABLED.
 
@@ -1561,7 +1602,7 @@ Here we bind the isearch commands to =C-M-s= and =C-M-r=, so that we can free up
 
 ** cape (disabled)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 ;; (leaf cape
 ;;   ;; :disabled t
@@ -1641,12 +1682,28 @@ Here we bind the isearch commands to =C-M-s= and =C-M-r=, so that we can free up
 
 ** abbrev (disabled)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-completion.el
 
 ;; (leaf abbrev :ensure nil
 ;;   :bind (("C-c c a" . add-global-abbrev)
 ;;          ("C-c c -" . inverse-add-global-abbrev)
 ;;          ("C-c c e" . edit-abbrevs)))
+
+#+end_src
+
+** end
+
+#+begin_src emacs-lisp :tangle src/my-completion.el
+
+(provide 'my-completion)
+
+#+end_src
+
+** (import)
+
+#+begin_src emacs-lisp :tangle init.el
+
+(require 'my-completion)
 
 #+end_src
 
@@ -1656,7 +1713,7 @@ Emacs can be used as an IDE, though quite some configuration is required. This s
 
 ** personal variables (todo: delete this)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (defvar prefer-eglot-mode? nil)
 (defvar prefer-lsp-mode? nil)
@@ -1669,7 +1726,7 @@ Inserts template code and comments for a file.
 
 https://www.emacswiki.org/emacs?action=browse;diff=1;id=AutoInsertMode
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (auto-insert-mode)  ;;; Adds hook to find-files-hook
 
@@ -1677,7 +1734,7 @@ https://www.emacswiki.org/emacs?action=browse;diff=1;id=AutoInsertMode
 
 ** generic tweaks for programming
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (setq-default indent-tabs-mode nil)
 (setq tab-always-indent t)
@@ -1696,7 +1753,7 @@ https://www.emacswiki.org/emacs?action=browse;diff=1;id=AutoInsertMode
 
 ** project.el (operations on the current project)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf project :ensure nil
   :bind-keymap ("C-c P" . project-prefix-map)
@@ -1716,7 +1773,7 @@ https://www.emacswiki.org/emacs?action=browse;diff=1;id=AutoInsertMode
 
 - TODO: compile project command + comint?
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf projectile
   :init
@@ -1732,7 +1789,7 @@ https://www.emacswiki.org/emacs?action=browse;diff=1;id=AutoInsertMode
 
 https://emacs-lsp.github.io/lsp-mode/
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf lsp-mode
   :commands (lsp lsp-deferred)
@@ -1756,7 +1813,7 @@ https://emacs-lsp.github.io/lsp-mode/
 
 https://github.com/emacs-lsp/lsp-ui
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf lsp-ui
   :bind
@@ -1788,7 +1845,7 @@ https://github.com/emacs-lsp/lsp-ui
 
 https://github.com/blahgeek/emacs-lsp-booster
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 ;;; lsp-booster
 ;; use lsp-doctor for testing
@@ -1862,7 +1919,7 @@ https://github.com/jdtsmith/eglot-booster
 
 *** generic code settings
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 ;; for non-programming too
 (leaf elec-pair :ensure nil
@@ -1885,7 +1942,7 @@ https://github.com/jdtsmith/eglot-booster
 
 **** settings for all lisps
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (setq my/lisp-mode-hooks
       '(emacs-lisp-mode-hook
@@ -1903,7 +1960,7 @@ https://github.com/jdtsmith/eglot-booster
 
 **** emacs-lisp
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf emacs :ensure nil
   :hook ((emacs-lisp-mode-hook . auto-fill-mode)))
@@ -1938,7 +1995,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 
 **** scheme
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf scheme-mode :ensure nil
   :disabled t
@@ -2015,7 +2072,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 
 https://robert.kra.hn/posts/rust-emacs-setup
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf rust-mode
   :require t
@@ -2122,7 +2179,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 *** C
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf cc-mode :ensure nil
   :hook ((c-mode-hook . lsp)
@@ -2151,7 +2208,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 *** java
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf lsp-java
   :mode "\\.java\\'"
@@ -2173,7 +2230,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 *** markdown
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
@@ -2192,7 +2249,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 *** clojure
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf clojure-mode
   :disabled t)
@@ -2201,7 +2258,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 *** scala
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf scala-mode
   :disabled t
@@ -2214,7 +2271,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 *** zig
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf zig-mode
   :disabled t
@@ -2226,7 +2283,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 *** haskell
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf haskell-mode
   :mode "\\.hs\\'")
@@ -2235,7 +2292,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 *** nix
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf nix-mode
   :mode "\\.nix\\'"
@@ -2245,7 +2302,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 *** yaml
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf yaml-mode
   :mode "\\.yml\\'")
@@ -2254,7 +2311,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 *** ron
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf ron-mode
   :require t)
@@ -2265,7 +2322,7 @@ https://robert.kra.hn/posts/rust-emacs-setup
 
 support for Kerolox with lsp-mode and tree-sitter.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 ;;;; Kerolox ;;;;
 
@@ -2449,7 +2506,7 @@ Though I think a more optimal solution might be this:
 ```
 
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf lua-mode
   :config
@@ -2478,7 +2535,7 @@ Though I think a more optimal solution might be this:
 
 ** direnv
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf direnv
   :init
@@ -2488,7 +2545,7 @@ Though I think a more optimal solution might be this:
 
 ** hex colors
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf rainbow-mode
   :hook prog-mode-hook)
@@ -2499,7 +2556,7 @@ Though I think a more optimal solution might be this:
 
 Add ANSI color support in compile-mode buffers.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 (with-eval-after-load 'ansi-color
   (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter))
 #+end_src
@@ -2556,7 +2613,7 @@ Add ANSI color support in compile-mode buffers.
 
 ** tree-sitter
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ide.el
 
 (leaf treesit-auto
   :require t
@@ -2566,11 +2623,27 @@ Add ANSI color support in compile-mode buffers.
 
 #+end_src
 
+** end
+
+#+begin_src emacs-lisp :tangle src/my-ide.el
+
+(provide 'my-ide)
+
+#+end_src
+
+** (import)
+
+#+begin_src emacs-lisp :tangle init.el
+
+(require 'my-ide)
+
+#+end_src
+
 * Org
 
 ** org-mode
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-org.el
 
 ;; NOTE: ensure that the newest version of org is installed right after elpaca setup
 (leaf org :ensure nil
@@ -2707,7 +2780,7 @@ If in a list, inserts a new sublist after the current list."
 
 ** org-agenda
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-org.el
 
 (leaf org-agenda :ensure nil
   :after org
@@ -2823,7 +2896,7 @@ The property will be removed if ran with a \\[universal-argument]."
 
 ** org-capture
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-org.el
 
 (leaf org-capture :ensure nil
   :after org
@@ -2909,7 +2982,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 
 ** org extras
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-org.el
 
 (defun my/org-priority-to-anki ()
   (interactive)
@@ -2993,11 +3066,27 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 
 #+end_src
 
+** end
+
+#+begin_src emacs-lisp :tangle src/my-org.el
+
+(provide 'my-org)
+
+#+end_src
+
+** (import)
+
+#+begin_src emacs-lisp :tangle init.el
+
+(require 'my-org)
+
+#+end_src
+
 * LaTeX
 
 ** Quail (for TeX input method)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-latex.el
 
 (leaf quail :ensure nil
   :config
@@ -3040,7 +3129,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 
 ** AucTeX
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-latex.el
 
 (leaf auctex
   :require t
@@ -3057,7 +3146,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 
 ** CDLatex
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-latex.el
 
 (leaf cdlatex
   :after auctex
@@ -3067,7 +3156,7 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 
 ** Preview Pane
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-latex.el
 
 (leaf latex-preview-pane
   :init
@@ -3081,13 +3170,29 @@ It makes sense to do so if `org-cdlatex-mode' is active and if the cursor is
 
 ** Yasnippet
 
+** end
+
+#+begin_src emacs-lisp :tangle src/my-latex.el
+
+(provide 'my-latex)
+
+#+end_src
+
+** (import)
+
+#+begin_src emacs-lisp :tangle init.el
+
+(require 'my-latex)
+
+#+end_src
+
 * Workspaces
 
 ** persp-mode
 
 https://github.com/Bad-ptr/persp-mode.el
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-workspaces.el
 
 ;; NOTE: modify #'persp-save-state-to-file arg (keep-others-in-non-parametric-file 'yes)
 
@@ -3733,7 +3838,7 @@ TODO: create a consult-based selection menu for activities-resume/switch
 
 - perspective is disabled and replaced with persp-mode above, because perspective has poor support for a client-server Emacs setup.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-workspaces.el
 
 ;; (leaf perspective
 ;;   :init
@@ -3777,11 +3882,27 @@ TODO: create a consult-based selection menu for activities-resume/switch
 ;;     (add-to-list 'consult-buffer-sources my/persp-consult-source)))
 #+end_src
 
+** end
+
+#+begin_src emacs-lisp :tangle src/my-workspaces.el
+
+(provide 'my-workspaces)
+
+#+end_src
+
+*** (import)
+
+#+begin_src emacs-lisp :tangle init.el
+
+(require 'my-workspaces)
+
+#+end_src
+
 * Programs
 
 ** eat
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-programs.el
 
 (leaf eat
   :setq
@@ -3801,7 +3922,7 @@ TODO: create a consult-based selection menu for activities-resume/switch
 
 ** eshell
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-programs.el
 
 (leaf eshell :ensure nil
   :bind
@@ -3811,7 +3932,7 @@ TODO: create a consult-based selection menu for activities-resume/switch
 
 ** magit
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-programs.el
 
 (leaf magit
   :preface (elpaca transient) ; HACK: magit needs newer version
@@ -3824,7 +3945,7 @@ TODO: create a consult-based selection menu for activities-resume/switch
 
 ** pdf
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-programs.el
 
 (leaf pdf-tools
   :config
@@ -3834,7 +3955,7 @@ TODO: create a consult-based selection menu for activities-resume/switch
 
 ** elfeed
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-programs.el
 
 (leaf elfeed
   :defer-config
@@ -3850,13 +3971,30 @@ TODO: create a consult-based selection menu for activities-resume/switch
   (advice-add #'elfeed-update :before #'my/elfeed-feeds-update-var))
 
 #+end_src
+
+** end
+
+#+begin_src emacs-lisp :tangle src/my-programs.el
+
+(provide 'my-programs)
+
+#+end_src
+
+*** (import)
+
+#+begin_src emacs-lisp :tangle init.el
+
+(require 'my-programs)
+
+#+end_src
+
 * UI
 
 TODO: relocate some of these below
 
 ** fonts
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ui.el
 
 (defvar my/font-alist
   `((hack . "Hack")
@@ -3904,7 +4042,7 @@ TODO: relocate some of these below
 
 ** themes
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ui.el
 
 ;;; Function: `load-theme' but fixed theme-bleeding issue.
 
@@ -3976,7 +4114,7 @@ TODO: relocate some of these below
 
 ** transparency
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ui.el
 
 (defvar my/transparency-value 100)
 
@@ -4012,7 +4150,7 @@ TODO: relocate some of these below
 
 ** line numbers
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ui.el
 
 ;; list of programming modes to disable line-numbers on
 (defvar my/display-line-numbers-exclude '())
@@ -4029,7 +4167,7 @@ TODO: relocate some of these below
 
 ** line wrapping
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ui.el
 
 (global-visual-line-mode 1)
 (diminish 'visual-line-mode) ; hide "Wrap" in mode-line
@@ -4038,7 +4176,7 @@ TODO: relocate some of these below
 
 ** whitespace
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ui.el
 
 (leaf whitespace :ensure nil
   :hook ((prog-mode-hook . my/prog-mode-whitespace)
@@ -4060,7 +4198,7 @@ TODO: relocate some of these below
 
 ** solaire
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ui.el
 
 (leaf solaire-mode
   :config
@@ -4075,7 +4213,7 @@ TODO: relocate some of these below
 
 ** mode-line
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ui.el
 
 ;; show column # on modeline
 (column-number-mode 1)
@@ -4091,7 +4229,7 @@ TODO: relocate some of these below
 
 ** scroll
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ui.el
 
 ;; Improve scroll
 (leaf emacs :ensure nil
@@ -4112,7 +4250,7 @@ TODO: relocate some of these below
 
 ** dashboard
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ui.el
 
 (leaf dashboard
   :require t
@@ -4133,9 +4271,25 @@ TODO: relocate some of these below
 
 ** prettify
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-ui.el
 
 (global-prettify-symbols-mode 1)
+
+#+end_src
+
+** end
+
+#+begin_src emacs-lisp :tangle src/my-ui.el
+
+(provide 'my-ui)
+
+#+end_src
+
+*** (import)
+
+#+begin_src emacs-lisp :tangle init.el
+
+(require 'my-ui)
 
 #+end_src
 
@@ -4143,7 +4297,7 @@ TODO: relocate some of these below
 
 ** server
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-misc.el
 
 (leaf server :ensure nil
   :doc "Autostarts an Emacs server. Connect to it using emacsclient."
@@ -4165,7 +4319,7 @@ TODO: relocate some of these below
 
 ** html
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-misc.el
 
 (leaf htmlize)
 
@@ -4175,267 +4329,169 @@ TODO: relocate some of these below
 
 #+end_src
 
-* denote
+** end
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-misc.el
 
-;; Sample config:
-;; https://protesilaos.com/emacs/denote#h:5d16932d-4f7b-493d-8e6a-e5c396b15fd6
-
-;; TODO: to look into!!
-;; - https://baty.blog/2022/keeping-my-org-agenda-updated
-;; - https://forum.systemcrafters.net/t/bring-denote-into-org-agenda-with-prettyness/779
-;; https://www.reddit.com/r/emacs/comments/1er9wj4/denote_and_agenda_practical_use/
-
-;; Note:
-;; - dired: "% m" then "t" then `k' to kill and filter down results
-
-(leaf denote
-  :init
-  (general-my-map
-    "n" '(:ignore t :which-key "denote")
-    "nn" 'denote
-    "ns" 'denote-subdirectory
-    ;; "nf" 'denote-open-or-create ;; moved to consult-notes
-
-    ;; renaming
-    "nr" '(:ignore t :which-key "rename file")
-    "nrf" '(denote-rename-file :which-key "rename file")
-    "nrt" '(denote-rename-file-title :which-key "rename title")
-    "nrk" '(denote-rename-file-keywords :which-key "rename keywords")
-
-    ;; dired
-    "nd" '(:ignore t :which-key "dired")
-    "ndj" '(my/denote-directory-jump :which-key "jump to denote dir")
-    "ndr" '(denote-dired-rename-marked-files :which-key "marked rename")
-    "ndk" '(denote-dired-rename-marked-files-add-keywords
-            :which-key "marked add keywords")
-    "ndK" '(denote-dired-rename-marked-files-remove-keywords
-            :which-key "marked remove keywords")
-
-    ;; links
-    "nl" '(:ignore t :which-key "links")
-    "nll" '(denote-find-link :which-key "find links in file")
-    "nln" '(denote-link :which-key "new link")
-    "nla" '(denote-add-links :which-key "add links for metanote")
-
-    ;; backlinks
-    "nb" '(:ignore t :which-key "backlinks")
-    "nbb" '(denote-find-backlink :which-key "find backlinks")
-    "nbl" '(denote-backlinks :which-key "list backlinks")
-
-    ;; org-dblocks
-    "no" '(:ignore t :which-key "org-dblocks")
-    "nol" '(denote-org-extras-dblock-insert-links :which-key "dblock links")
-    "nof" '(denote-org-extras-dblock-insert-files :which-key "dblock files")
-    "nob" '(denote-org-extras-dblock-insert-backlinks :which-key "dblock backlinks")
-    "noa" '(my/denote-insert-file-local-dblock-update-mode :which-key "insert file-local dblock mode")
-    )
-
-  :config
-
-  ;; variables
-  (setq denote-directory (expand-file-name "~/Notes/denote"))
-  (setq denote-known-keywords '("emacs" "meta"
-                                "art" "hobbies" "ideas"
-                                "class" "todo"
-                                "calc1" "arthist"
-                                "systemsoftware" "bio2"
-                                "random"))
-  (setq denote-prompts '(title keywords subdirectory))
-  (setq denote-save-buffers t)
-  (setq denote-excluded-directories-regexp
-        (concat
-         ;; (^|/) ... (/|$)
-         "\\(^\\|/\\)" "[aA]rchived?" "\\(/\\|$\\)" "\\|"
-         "\\(^\\|/\\)" "[eE]xcluded?" "\\(/\\|$\\)" "\\|"
-         "\\(^\\|/\\)" "_.*"          "\\(/\\|$\\)"))
-
-  ;; when renaming, don't prompt for modify-file-name
-  (setq denote-rename-confirmations '(rewrite-front-matter))
-
-  ;; prettify
-
-  ;; rename buffer/mode-line
-  (setq denote-rename-buffer-format "[D] %t%b  _%k")
-  (denote-rename-buffer-mode 1)
-
-  ;; dired fontify
-  (add-hook 'dired-mode-hook #'denote-dired-mode)
-
-  ;; links in text files
-  (add-hook 'text-mode-hook #'denote-fontify-links-mode-maybe)
-
-  ;; other
-
-  (defun my/denote-directory-jump ()
-    (interactive)
-    (dired denote-directory))
-
-  ;; org-capture
-
-  (with-eval-after-load 'org-capture
-    (add-to-list 'org-capture-templates
-                 '("n" "New note (with Denote)" plain
-                   (file denote-last-path)
-                   #'denote-org-capture
-                   :no-save t
-                   :immediate-finish nil
-                   :kill-buffer t
-                   :jump-to-captured t)))
-
-  ;; org-dblocks
-
-  ;; (define-minor-mode org-dblock-update-minor-mode
-  ;;   "A minor mode that automatically updates Org mode dynamic blocks before saving."
-  ;;   :lighter " OrgDBlocks"
-  ;;   :global nil
-  ;;   (if (and org-dblock-update-minor-mode (eq major-mode 'org-mode))
-  ;;    (add-hook 'before-save-hook #'org-update-all-dblocks nil t)
-  ;;     (remove-hook 'before-save-hook #'org-update-all-dblocks t)))
-
-  ;; (defun my/denote-insert-file-local-dblock-update-mode ()
-  ;;   (interactive)
-  ;;   (if (eq major-mode 'org-mode)
-  ;;    (add-file-local-variable
-  ;;     'eval
-  ;;     '(org-dblock-update-minor-mode))
-  ;;     (message "Not in an org-mode buffer")))
-
-  ;; journal
-
-  ;; (require 'denote-journal-extras)
-  ;; (setq denote-journal-extras-directory
-  ;;       (expand-file-name "journal" denote-directory))
-  )
-
-(leaf denote-journal
-  :config
-  (general-my-map
-    ;; journal
-
-    "nj" '(:ignore t :which-key "journal")
-    "njN" 'denote-journal-new-entry
-    "njc" 'denote-journal-link-or-create-entry
-    "njn" 'denote-journal-new-or-existing-entry))
-
-;; provides consult sources:
-;; - "SPC D" for denote buffers
-;; - "SPC S" for denote subdirectories
-(leaf consult-denote
-  :after consult-notes
-  :config
-  (consult-denote-mode 1))
-;; TODO: write my own consult function for "SPC S".
-
-
-;; Docs: https://github.com/mclear-tools/consult-notes
-(leaf consult-notes
-  :commands consult-notes consult-notes-search-in-all-notes
-  :after org
-  :bind ("M-s n" . consult-notes)
-  :init
-  (general-my-map
-    "nf" 'consult-notes
-    "ng" 'consult-notes-search-in-all-notes)
-  :config
-  ;; denote keywords "_" fix
-  (progn
-    (setq consult-notes-denote-display-keywords-indicator "_")
-    (defun consult-notes-denote--display-keywords (keywords)
-      (format "%18s" (if keywords
-                         (concat
-                          consult-notes-denote-display-keywords-indicator
-                          (mapconcat 'identity keywords "_"))
-                       ""))))
-  ;; custom printing format
-  (progn
-    (defun my/consult-notes--file-dir-annotate (name dir cand)
-      "Annotate file CAND with its directory DIR, size, and modification time."
-      (let* ((file  (concat (file-name-as-directory dir) cand))
-             (dirs  (abbreviate-file-name dir))
-             (attrs (file-attributes file))
-             (fsize (file-size-human-readable (file-attribute-size attrs)))
-             (ftime (consult-notes--time (file-attribute-modification-time attrs))))
-        (message "DEBUGGGGG: %s %s %s" file name dirs)
-        (put-text-property 0 (length name)  'face 'consult-notes-name name)
-        (put-text-property 0 (length dirs)  'face 'consult-notes-name dirs)
-        (put-text-property 0 (length fsize) 'face 'consult-notes-size fsize)
-        (put-text-property 0 (length ftime) 'face 'consult-notes-time ftime)
-        (format "%7s %8s  %12s  %8s" name fsize ftime dirs)))
-    (setq consult-notes-file-dir-annotate-function #'my/consult-notes--file-dir-annotate))
-  ;; enable for denote after load denote
-  (with-eval-after-load 'denote
-    (consult-notes-denote-mode 1)))
-
-;; docs: https://lucidmanager.org/productivity/denote-explore/
-(leaf denote-explore
-  :after denote
-  :init
-  (general-my-map
-    "ne" '(:ignore t :which-key "explore")
-
-    ;; random walks
-    "new" '(:ignore t :which-key "random walks")
-    "newl" '(denote-explore-random-link :which-key "random link")
-    "newr" '(denote-explore-random-regex :which-key "random regex")
-    "newk" '(denote-explore-random-keyword :which-key "random keyword")
-
-    ;; janitor
-    "nej" '(:ignore t :which-key "janitor")
-    "nejj" '(denote-explore-sync-metadata :which-key "sync filenames from metadata")
-    "nejm" '(denote-explore-sync-metadata :which-key "sync filenames from metadata")
-    "nejs" '(denote-explore-sort-keywords :which-key "sort order of all keywords")
-    "nejr" '(denote-explore-rename-keyword :which-key "rename keyword")
-    "nej0" '(denote-explore-zero-keywords :which-key "0 keywords")
-    "nej1" '(denote-explore-single-keywords :which-key "1 keywords")
-
-    ;; visualize
-    "nen" '(:ignore t :which-key "network")
-    "nenn" '(denote-explore-network :which-key "network")
-    "nenr" '(denote-explore-network-regenerate :which-key "network regenerate")
-    "nend" '(denote-explore-degree-barchart :which-key "degree barchart")
-
-    ;; stats
-    "nes" '(:ignore t :which-key "stats")
-    "nesk" '(denote-explore-barchart-keywords :which-key "barchart keywords")
-    "nese" '(denote-explore-barchart-filetypes :which-key "barchart filetypes"))
-
-  ;; :config
-  ;; (setq denote-explore-network-format )
-  ;; TODO: make denote-explore-network / browse-url-browser-function
-
-  )
-
-;; denote-menu
-(leaf denote-menu
-  :after denote
-  :init
-  (general-my-map
-    "nm" 'list-denotes)
-  :bind (denote-menu-mode-map
-         ("c" . denote-menu-clear-filters)
-         ("r" . denote-menu-filter)
-         ("k" . denote-menu-filter-by-keyword)
-         ("o" . denote-menu-filter-out-keyword)
-         ("/ r" . denote-menu-filter)
-         ("/ k" . denote-menu-filter-by-keyword)
-         ("/ o" . denote-menu-filter-out-keyword)
-         ("e" . denote-menu-export-to-dired))
-  :config
-  (setq denote-menu-title-column-width 50))
-
-;;; set common keys
-;; (general-my-map
-;;   "nN" '(:ignore t :which-key "Favorites")
-;;   "nNn" 'denote
-;;   "")
+(provide 'my-misc)
 
 #+end_src
 
-* emms
+*** (import)
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle init.el
+
+(require 'my-misc)
+
+#+end_src
+
+* to-sort
+
+check out https://github.com/mwfogleman/.emacs.d/blob/master/michael.org
+
+#+begin_src emacs-lisp :tangle src/my-to-sort.el
+
+(leaf omni-quotes
+  :init (omni-quotes-mode 1)
+  :bind (("M-s q m" . omni-quotes-mode)
+         ("M-s q p" . omni-quotes-prev-set)
+         ("M-s q n" . omni-quotes-next-set)
+         ("M-s q s" . omni-quotes-shuffle-current-set)
+         ("M-s q q" . omni-quotes-display-random-quote))
+  :setq
+  (omni-quotes-idle-interval . 60)
+  (omni-quotes-fading . t)
+  (omni-quotes-fading-delay . 30)
+  :config
+  (omni-quotes-load-simple-quote-file "~/Notes/org/quotes.txt" "personal"))
+
+;; (defvar eldoc-doc-buffer-separator
+;;   (concat (propertize "\n" 'face '(:inherit separator-line :extend t)))
+;;   "String used to separate items in Eldoc documentation buffer.")
+
+
+;;; Packages to install (check source code for malware for each first):
+
+;; bind-map
+
+;; restart-emacs
+
+;; golden-ratio
+
+;; ws-butler
+
+;; flycheck-package
+
+;; org-present
+
+;; emacs-purpose
+
+;; origami
+
+;; cask
+
+;; tao-theme
+
+;; emacs-color-themes
+
+;; hydra !!! so good
+;; https://github.com/abo-abo/hydra/wiki/Hydras-by-Topic
+
+;; literate programming?
+
+;; hl-todo
+
+;; breadcrumb?
+
+;; git-gutter?
+
+;; hideshow-org?
+
+;; wgrep
+
+;; look into different window strengths, lower C-h e 's strength
+
+;; undo-tree
+
+;; hyperbole
+
+;; tree sitter
+
+;; eglot?
+
+(defhydra hydra-org (:color red :columns 3)
+  "Org Mode Movements"
+  ("n" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      outline-next-visible-heading
+                                      org-fold-show-entry
+                                      ))
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "next heading")
+  ("p" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      outline-previous-visible-heading
+                                      org-fold-show-entry
+                                      ))
+         (recenter-top-bottom)
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "prev heading")
+  ("N" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      org-forward-heading-same-level
+                                      org-fold-show-entry))
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "next heading at same level")
+  ("P" (lambda ()
+         (interactive)
+         (mapc #'call-interactively '(org-fold-hide-entry
+                                      org-backward-heading-same-level
+                                      org-fold-show-entry))
+         (recenter-top-bottom)
+         (recenter-top-bottom)
+         (recenter-top-bottom))
+   "prev heading at same level")
+  ("u" outline-up-heading "up heading")
+  ("g" org-goto "goto" :exit t))
+
+#+end_src
+
+** ical
+
+#+begin_src emacs-lisp :tangle src/my-to-sort.el
+
+;; https://www.reddit.com/r/emacs/comments/ioenk2/ical_import_in_emacs_calendar/
+
+(require 'diary-lib)
+
+(setq my/calendars
+      (with-temp-buffer
+        (insert-file-contents "~/Private/elisp/calendar-urls.el")
+        (read (current-buffer))))
+
+(defun my/ical-pull-all ()
+  (interactive)
+  (find-file diary-file)
+  (erase-buffer)
+  (message "Cleared diary file")
+  (mapcar (lambda (url)
+            (let ((tmpfile (url-file-local-copy url)))
+              (message "Importing ")
+              (icalendar-import-file tmpfile diary-file)
+              (kill-buffer (car (last (split-string tmpfile "/"))))))
+          my/calendars))
+
+#+end_src
+
+** emms
+
+#+begin_src emacs-lisp :tangle src/my-to-sort.el
 
 
 ;; no cover
@@ -4762,147 +4818,277 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
 #+end_src
 
-* ical
+** denote
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle src/my-to-sort.el
 
-;; https://www.reddit.com/r/emacs/comments/ioenk2/ical_import_in_emacs_calendar/
+;; Sample config:
+;; https://protesilaos.com/emacs/denote#h:5d16932d-4f7b-493d-8e6a-e5c396b15fd6
 
-(require 'diary-lib)
+;; TODO: to look into!!
+;; - https://baty.blog/2022/keeping-my-org-agenda-updated
+;; - https://forum.systemcrafters.net/t/bring-denote-into-org-agenda-with-prettyness/779
+;; https://www.reddit.com/r/emacs/comments/1er9wj4/denote_and_agenda_practical_use/
 
-(setq my/calendars
-      (with-temp-buffer
-        (insert-file-contents "~/Private/elisp/calendar-urls.el")
-        (read (current-buffer))))
+;; Note:
+;; - dired: "% m" then "t" then `k' to kill and filter down results
 
-(defun my/ical-pull-all ()
-  (interactive)
-  (find-file diary-file)
-  (erase-buffer)
-  (message "Cleared diary file")
-  (mapcar (lambda (url)
-            (let ((tmpfile (url-file-local-copy url)))
-              (message "Importing ")
-              (icalendar-import-file tmpfile diary-file)
-              (kill-buffer (car (last (split-string tmpfile "/"))))))
-          my/calendars))
+(leaf denote
+  :init
+  (general-my-map
+    "n" '(:ignore t :which-key "denote")
+    "nn" 'denote
+    "ns" 'denote-subdirectory
+    ;; "nf" 'denote-open-or-create ;; moved to consult-notes
+
+    ;; renaming
+    "nr" '(:ignore t :which-key "rename file")
+    "nrf" '(denote-rename-file :which-key "rename file")
+    "nrt" '(denote-rename-file-title :which-key "rename title")
+    "nrk" '(denote-rename-file-keywords :which-key "rename keywords")
+
+    ;; dired
+    "nd" '(:ignore t :which-key "dired")
+    "ndj" '(my/denote-directory-jump :which-key "jump to denote dir")
+    "ndr" '(denote-dired-rename-marked-files :which-key "marked rename")
+    "ndk" '(denote-dired-rename-marked-files-add-keywords
+            :which-key "marked add keywords")
+    "ndK" '(denote-dired-rename-marked-files-remove-keywords
+            :which-key "marked remove keywords")
+
+    ;; links
+    "nl" '(:ignore t :which-key "links")
+    "nll" '(denote-find-link :which-key "find links in file")
+    "nln" '(denote-link :which-key "new link")
+    "nla" '(denote-add-links :which-key "add links for metanote")
+
+    ;; backlinks
+    "nb" '(:ignore t :which-key "backlinks")
+    "nbb" '(denote-find-backlink :which-key "find backlinks")
+    "nbl" '(denote-backlinks :which-key "list backlinks")
+
+    ;; org-dblocks
+    "no" '(:ignore t :which-key "org-dblocks")
+    "nol" '(denote-org-extras-dblock-insert-links :which-key "dblock links")
+    "nof" '(denote-org-extras-dblock-insert-files :which-key "dblock files")
+    "nob" '(denote-org-extras-dblock-insert-backlinks :which-key "dblock backlinks")
+    "noa" '(my/denote-insert-file-local-dblock-update-mode :which-key "insert file-local dblock mode")
+    )
+
+  :config
+
+  ;; variables
+  (setq denote-directory (expand-file-name "~/Notes/denote"))
+  (setq denote-known-keywords '("emacs" "meta"
+                                "art" "hobbies" "ideas"
+                                "class" "todo"
+                                "calc1" "arthist"
+                                "systemsoftware" "bio2"
+                                "random"))
+  (setq denote-prompts '(title keywords subdirectory))
+  (setq denote-save-buffers t)
+  (setq denote-excluded-directories-regexp
+        (concat
+         ;; (^|/) ... (/|$)
+         "\\(^\\|/\\)" "[aA]rchived?" "\\(/\\|$\\)" "\\|"
+         "\\(^\\|/\\)" "[eE]xcluded?" "\\(/\\|$\\)" "\\|"
+         "\\(^\\|/\\)" "_.*"          "\\(/\\|$\\)"))
+
+  ;; when renaming, don't prompt for modify-file-name
+  (setq denote-rename-confirmations '(rewrite-front-matter))
+
+  ;; prettify
+
+  ;; rename buffer/mode-line
+  (setq denote-rename-buffer-format "[D] %t%b  _%k")
+  (denote-rename-buffer-mode 1)
+
+  ;; dired fontify
+  (add-hook 'dired-mode-hook #'denote-dired-mode)
+
+  ;; links in text files
+  (add-hook 'text-mode-hook #'denote-fontify-links-mode-maybe)
+
+  ;; other
+
+  (defun my/denote-directory-jump ()
+    (interactive)
+    (dired denote-directory))
+
+  ;; org-capture
+
+  (with-eval-after-load 'org-capture
+    (add-to-list 'org-capture-templates
+                 '("n" "New note (with Denote)" plain
+                   (file denote-last-path)
+                   #'denote-org-capture
+                   :no-save t
+                   :immediate-finish nil
+                   :kill-buffer t
+                   :jump-to-captured t)))
+
+  ;; org-dblocks
+
+  ;; (define-minor-mode org-dblock-update-minor-mode
+  ;;   "A minor mode that automatically updates Org mode dynamic blocks before saving."
+  ;;   :lighter " OrgDBlocks"
+  ;;   :global nil
+  ;;   (if (and org-dblock-update-minor-mode (eq major-mode 'org-mode))
+  ;;    (add-hook 'before-save-hook #'org-update-all-dblocks nil t)
+  ;;     (remove-hook 'before-save-hook #'org-update-all-dblocks t)))
+
+  ;; (defun my/denote-insert-file-local-dblock-update-mode ()
+  ;;   (interactive)
+  ;;   (if (eq major-mode 'org-mode)
+  ;;    (add-file-local-variable
+  ;;     'eval
+  ;;     '(org-dblock-update-minor-mode))
+  ;;     (message "Not in an org-mode buffer")))
+
+  ;; journal
+
+  ;; (require 'denote-journal-extras)
+  ;; (setq denote-journal-extras-directory
+  ;;       (expand-file-name "journal" denote-directory))
+  )
+
+(leaf denote-journal
+  :config
+  (general-my-map
+    ;; journal
+
+    "nj" '(:ignore t :which-key "journal")
+    "njN" 'denote-journal-new-entry
+    "njc" 'denote-journal-link-or-create-entry
+    "njn" 'denote-journal-new-or-existing-entry))
+
+;; provides consult sources:
+;; - "SPC D" for denote buffers
+;; - "SPC S" for denote subdirectories
+(leaf consult-denote
+  :after consult-notes
+  :config
+  (consult-denote-mode 1))
+;; TODO: write my own consult function for "SPC S".
+
+
+;; Docs: https://github.com/mclear-tools/consult-notes
+(leaf consult-notes
+  :commands consult-notes consult-notes-search-in-all-notes
+  :after org
+  :bind ("M-s n" . consult-notes)
+  :init
+  (general-my-map
+    "nf" 'consult-notes
+    "ng" 'consult-notes-search-in-all-notes)
+  :config
+  ;; denote keywords "_" fix
+  (progn
+    (setq consult-notes-denote-display-keywords-indicator "_")
+    (defun consult-notes-denote--display-keywords (keywords)
+      (format "%18s" (if keywords
+                         (concat
+                          consult-notes-denote-display-keywords-indicator
+                          (mapconcat 'identity keywords "_"))
+                       ""))))
+  ;; custom printing format
+  (progn
+    (defun my/consult-notes--file-dir-annotate (name dir cand)
+      "Annotate file CAND with its directory DIR, size, and modification time."
+      (let* ((file  (concat (file-name-as-directory dir) cand))
+             (dirs  (abbreviate-file-name dir))
+             (attrs (file-attributes file))
+             (fsize (file-size-human-readable (file-attribute-size attrs)))
+             (ftime (consult-notes--time (file-attribute-modification-time attrs))))
+        (message "DEBUGGGGG: %s %s %s" file name dirs)
+        (put-text-property 0 (length name)  'face 'consult-notes-name name)
+        (put-text-property 0 (length dirs)  'face 'consult-notes-name dirs)
+        (put-text-property 0 (length fsize) 'face 'consult-notes-size fsize)
+        (put-text-property 0 (length ftime) 'face 'consult-notes-time ftime)
+        (format "%7s %8s  %12s  %8s" name fsize ftime dirs)))
+    (setq consult-notes-file-dir-annotate-function #'my/consult-notes--file-dir-annotate))
+  ;; enable for denote after load denote
+  (with-eval-after-load 'denote
+    (consult-notes-denote-mode 1)))
+
+;; docs: https://lucidmanager.org/productivity/denote-explore/
+(leaf denote-explore
+  :after denote
+  :init
+  (general-my-map
+    "ne" '(:ignore t :which-key "explore")
+
+    ;; random walks
+    "new" '(:ignore t :which-key "random walks")
+    "newl" '(denote-explore-random-link :which-key "random link")
+    "newr" '(denote-explore-random-regex :which-key "random regex")
+    "newk" '(denote-explore-random-keyword :which-key "random keyword")
+
+    ;; janitor
+    "nej" '(:ignore t :which-key "janitor")
+    "nejj" '(denote-explore-sync-metadata :which-key "sync filenames from metadata")
+    "nejm" '(denote-explore-sync-metadata :which-key "sync filenames from metadata")
+    "nejs" '(denote-explore-sort-keywords :which-key "sort order of all keywords")
+    "nejr" '(denote-explore-rename-keyword :which-key "rename keyword")
+    "nej0" '(denote-explore-zero-keywords :which-key "0 keywords")
+    "nej1" '(denote-explore-single-keywords :which-key "1 keywords")
+
+    ;; visualize
+    "nen" '(:ignore t :which-key "network")
+    "nenn" '(denote-explore-network :which-key "network")
+    "nenr" '(denote-explore-network-regenerate :which-key "network regenerate")
+    "nend" '(denote-explore-degree-barchart :which-key "degree barchart")
+
+    ;; stats
+    "nes" '(:ignore t :which-key "stats")
+    "nesk" '(denote-explore-barchart-keywords :which-key "barchart keywords")
+    "nese" '(denote-explore-barchart-filetypes :which-key "barchart filetypes"))
+
+  ;; :config
+  ;; (setq denote-explore-network-format )
+  ;; TODO: make denote-explore-network / browse-url-browser-function
+
+  )
+
+;; denote-menu
+(leaf denote-menu
+  :after denote
+  :init
+  (general-my-map
+    "nm" 'list-denotes)
+  :bind (denote-menu-mode-map
+         ("c" . denote-menu-clear-filters)
+         ("r" . denote-menu-filter)
+         ("k" . denote-menu-filter-by-keyword)
+         ("o" . denote-menu-filter-out-keyword)
+         ("/ r" . denote-menu-filter)
+         ("/ k" . denote-menu-filter-by-keyword)
+         ("/ o" . denote-menu-filter-out-keyword)
+         ("e" . denote-menu-export-to-dired))
+  :config
+  (setq denote-menu-title-column-width 50))
+
+;;; set common keys
+;; (general-my-map
+;;   "nN" '(:ignore t :which-key "Favorites")
+;;   "nNn" 'denote
+;;   "")
 
 #+end_src
 
-* to-sort
+** end
 
-check out https://github.com/mwfogleman/.emacs.d/blob/master/michael.org
+#+begin_src emacs-lisp :tangle src/my-to-sort.el
 
-#+begin_src emacs-lisp
+(provide 'my-to-sort)
 
-(leaf omni-quotes
-  :init (omni-quotes-mode 1)
-  :bind (("M-s q m" . omni-quotes-mode)
-         ("M-s q p" . omni-quotes-prev-set)
-         ("M-s q n" . omni-quotes-next-set)
-         ("M-s q s" . omni-quotes-shuffle-current-set)
-         ("M-s q q" . omni-quotes-display-random-quote))
-  :setq
-  (omni-quotes-idle-interval . 60)
-  (omni-quotes-fading . t)
-  (omni-quotes-fading-delay . 30)
-  :config
-  (omni-quotes-load-simple-quote-file "~/Notes/org/quotes.txt" "personal"))
+#+end_src
 
-;; (defvar eldoc-doc-buffer-separator
-;;   (concat (propertize "\n" 'face '(:inherit separator-line :extend t)))
-;;   "String used to separate items in Eldoc documentation buffer.")
+*** (import)
 
+#+begin_src emacs-lisp :tangle init.el
 
-;;; Packages to install (check source code for malware for each first):
-
-;; bind-map
-
-;; restart-emacs
-
-;; golden-ratio
-
-;; ws-butler
-
-;; flycheck-package
-
-;; org-present
-
-;; emacs-purpose
-
-;; origami
-
-;; cask
-
-;; tao-theme
-
-;; emacs-color-themes
-
-;; hydra !!! so good
-;; https://github.com/abo-abo/hydra/wiki/Hydras-by-Topic
-
-;; literate programming?
-
-;; hl-todo
-
-;; breadcrumb?
-
-;; git-gutter?
-
-;; hideshow-org?
-
-;; wgrep
-
-;; look into different window strengths, lower C-h e 's strength
-
-;; undo-tree
-
-;; hyperbole
-
-;; tree sitter
-
-;; eglot?
-
-(defhydra hydra-org (:color red :columns 3)
-  "Org Mode Movements"
-  ("n" (lambda ()
-         (interactive)
-         (mapc #'call-interactively '(org-fold-hide-entry
-                                      outline-next-visible-heading
-                                      org-fold-show-entry
-                                      ))
-         (recenter-top-bottom)
-         (recenter-top-bottom))
-   "next heading")
-  ("p" (lambda ()
-         (interactive)
-         (mapc #'call-interactively '(org-fold-hide-entry
-                                      outline-previous-visible-heading
-                                      org-fold-show-entry
-                                      ))
-         (recenter-top-bottom)
-         (recenter-top-bottom)
-         (recenter-top-bottom))
-   "prev heading")
-  ("N" (lambda ()
-         (interactive)
-         (mapc #'call-interactively '(org-fold-hide-entry
-                                      org-forward-heading-same-level
-                                      org-fold-show-entry))
-         (recenter-top-bottom)
-         (recenter-top-bottom))
-   "next heading at same level")
-  ("P" (lambda ()
-         (interactive)
-         (mapc #'call-interactively '(org-fold-hide-entry
-                                      org-backward-heading-same-level
-                                      org-fold-show-entry))
-         (recenter-top-bottom)
-         (recenter-top-bottom)
-         (recenter-top-bottom))
-   "prev heading at same level")
-  ("u" outline-up-heading "up heading")
-  ("g" org-goto "goto" :exit t))
+(require 'my-to-sort)
 
 #+end_src
 
@@ -5123,8 +5309,18 @@ current buffer is the source buffer."
 
 * ending
 
-#+begin_src emacs-lisp
-(provide 'main)
+#+begin_src emacs-lisp :tangle no
+;; (provide 'main)
+#+end_src
+
+* COMMENT require main.el from init.el
+
+#+begin_src emacs-lisp :tangle init.el :comments link
+
+;; (require 'main)
+
+;; (message "Emacs initialized!")
+
 #+end_src
 
 * Local Variables
