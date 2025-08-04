@@ -27,6 +27,7 @@
   - [[#load-mainel][load main.el]]
 - [[#----main----][--- Main ---]]
 - [[#base][Base]]
+  - [[#misc][misc]]
   - [[#buffers][buffers]]
   - [[#history][history]]
   - [[#window-management][window management]]
@@ -56,6 +57,7 @@
   - [[#abbrev-disabled][abbrev (disabled)]]
 - [[#ide][IDE]]
   - [[#personal-variables-todo-delete-this][personal variables (todo: delete this)]]
+  - [[#auto-insert][auto-insert]]
   - [[#generic-tweaks-for-programming][generic tweaks for programming]]
   - [[#projectel-operations-on-the-current-project][project.el (operations on the current project)]]
   - [[#projectile-projectel-alternative][projectile (project.el alternative)]]
@@ -124,19 +126,21 @@
   - [[#scroll][scroll]]
   - [[#dashboard][dashboard]]
   - [[#prettify][prettify]]
-- [[#misc][misc]]
+- [[#misc-1][misc]]
   - [[#server][server]]
   - [[#html][html]]
 - [[#denote][denote]]
 - [[#emms][emms]]
 - [[#ical][ical]]
 - [[#to-sort][to-sort]]
+- [[#documentation-generation][documentation generation]]
 - [[#ending][ending]]
 - [[#local-variables][Local Variables]]
 
 * Personal notes
 
-TODO: I will try to make my configuration fully literate, since the pros seem to outweigh the cons.
+- [ ] start by exporting to many smaller files instead of one main.el file.
+
 - [X] i can start off with big chunks, whole files big, then divide them up.
 
 - [X] i wonder if i can just have one big init file... for now, that'll be main-future.el
@@ -623,6 +627,15 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 the rest below is main
 
 * Base
+
+** misc
+
+#+begin_src emacs-lisp
+
+(setq user-full-name "lispcat")
+(setq user-mail-address "187922791+lispcat@users.noreply.github.com")
+
+#+end_src
 
 ** buffers
 
@@ -1647,6 +1660,18 @@ Emacs can be used as an IDE, though quite some configuration is required. This s
 
 (defvar prefer-eglot-mode? nil)
 (defvar prefer-lsp-mode? nil)
+
+#+end_src
+
+** auto-insert
+
+Inserts template code and comments for a file.
+
+https://www.emacswiki.org/emacs?action=browse;diff=1;id=AutoInsertMode
+
+#+begin_src emacs-lisp
+
+(auto-insert-mode)  ;;; Adds hook to find-files-hook
 
 #+end_src
 
@@ -4879,6 +4904,221 @@ check out https://github.com/mwfogleman/.emacs.d/blob/master/michael.org
   ("u" outline-up-heading "up heading")
   ("g" org-goto "goto" :exit t))
 
+#+end_src
+
+* documentation generation
+
+#+begin_src emacs-lisp :tangle no
+
+(add-to-list 'load-path (file-name-concat my/emacs-submodules-dir "el2markdown"))
+
+(require 'dash)
+(require 'el2markdown)
+
+(defun my/el2markdown-write-file (&optional file-name overwrite-without-confirm)
+  "Convert comment section to markdown and write to file."
+  (interactive
+   (let ((suggested-name (and (buffer-file-name)
+                              (concat (file-name-sans-extension
+                                       (buffer-file-name))
+                                      ".md"))))
+     (list (read-file-name "Write markdown file: "
+                           default-directory
+                           suggested-name
+                           nil
+                           (file-name-nondirectory suggested-name)))))
+  (unless file-name
+    (setq file-name (concat (buffer-file-name) ".md")))
+  (let ((buffer (current-buffer))
+        (orig-buffer-file-coding-system buffer-file-coding-system))
+    (with-temp-buffer
+      ;; Inherit the file coding from the buffer being converted.
+      (setq buffer-file-coding-system orig-buffer-file-coding-system)
+      (let ((standard-output (current-buffer)))
+        (with-current-buffer buffer
+          (my/el2markdown-convert))
+        ;; Note: Must set `require-final-newline' inside
+        ;; `with-temp-buffer', otherwise the value will be overridden by
+        ;; the buffers local value.
+        (let ((require-final-newline nil))
+          (write-file file-name (not overwrite-without-confirm)))))))
+
+(defun my/el2markdown-convert (&optional include-end)
+  "Print commentart section of current buffer as MarkDown.
+
+After conversion, `el2markdown-post-convert-hook' is called.  The
+functions in the hook should accept one argument, the output
+stream (typically the destination buffer).  When the hook is run
+current buffer is the source buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (el2markdown-convert-title)
+    (el2markdown-convert-formal-information)
+    (el2markdown-skip-to-commentary)
+    (while
+        (el2markdown-convert-section))
+    (terpri)
+    (princ "---")
+    (terpri)
+    (when include-end
+      (let ((file-name (buffer-file-name))
+            (from ""))
+        (if file-name
+            (setq from (concat " from `"
+                               (file-name-nondirectory file-name)
+                               "`")))
+        (princ (concat
+                "Converted" from
+                " by "
+                "[*el2markdown*](https://github.com/Lindydancer/el2markdown)."))
+        (terpri)))
+    (run-hook-with-args 'el2markdown-post-convert-hook standard-output)))
+
+(defun my/prefix-or-err (prefix str)
+  (if (string-prefix-p prefix str)
+      (string-remove-prefix prefix str)
+    (error "%s is not a prefix of %s" prefix str)
+    nil))
+
+(defun my/zip-lists (list1 list2)
+  (let ((len1 (length list1))
+        (len2 (length list2)))
+    (unless (eq len1 len2)
+      (error "Lists to zip differ in length (%s %s): %s %s"
+             len1 len2 list1 list2))
+    (-zip-pair list1 list2)))
+
+(defun my/create-docs (prefix infiles-dir outfiles-dir)
+  (interactive
+   (let*
+       ((root-dir
+         (read-file-name "Root dir: "
+                         default-directory `,(buffer-file-name)
+                         'confirm))
+        (infiles-dir
+         (read-file-name "Infiles dir: "
+                         root-dir nil 'confirm))
+        (outfiles-dir
+         (read-file-name "Outfiles dir: "
+                         root-dir nil 'confirm)))
+     ;; checks
+     (my/prefix-or-err root-dir infiles-dir)
+     (my/prefix-or-err root-dir outfiles-dir)
+
+     ;; ret
+     (list root-dir infiles-dir outfiles-dir)))
+
+  ;; exit if no proceed
+  (when
+      (y-or-n-p
+       (format
+        "Prefix: %s\nInfiles: %s\nOutfiles: %s\n> Proceed? "
+        prefix infiles-dir outfiles-dir))
+
+    ;; body
+    (let (all-infiles
+          all-outfiles
+          alist
+
+          all-infiles-no-prefix
+          all-outfiles-no-prefix
+          alist-no-prefix
+          alist-only-uniq-prefix)
+
+      (setq all-infiles
+            (reverse
+             (-filter #'file-regular-p
+                      (directory-files-recursively infiles-dir ".*"))))
+
+      (setq all-outfiles
+            (mapcar (lambda (infile)
+                      (-as-> infile cur
+                             (my/prefix-or-err infiles-dir cur)
+                             (file-name-sans-extension cur)
+                             (file-name-with-extension cur ".md")
+                             (concat outfiles-dir cur)))
+                    all-infiles))
+      (setq alist
+            (my/zip-lists all-infiles all-outfiles))
+
+      (setq all-infiles-no-prefix
+            (mapcar (lambda (infile)
+                      (my/prefix-or-err prefix infile))
+                    all-infiles))
+      (setq all-outfiles-no-prefix
+            (mapcar (lambda (outfile)
+                      (my/prefix-or-err prefix outfile))
+                    all-outfiles))
+      (setq alist-no-prefix
+            (my/zip-lists all-infiles-no-prefix
+                          all-outfiles-no-prefix))
+
+      (setq alist-only-uniq-prefix
+            (mapcar (lambda (pair)
+                      (let* ((infile (car pair))
+                             (outfile (cdr pair))
+                             (infile-rel (my/prefix-or-err prefix
+                                                           infiles-dir))
+                             (outfile-rel (my/prefix-or-err prefix
+                                                            outfiles-dir)))
+                        (cons (my/prefix-or-err infile-rel infile)
+                              (my/prefix-or-err outfile-rel outfile))))
+                    alist-no-prefix))
+
+      ;; check: ensure unique part (minus extension) is matching:
+      (dolist (pair alist-only-uniq-prefix)
+        (unless (equal (file-name-sans-extension (car pair))
+                       (file-name-sans-extension (cdr pair)))
+          (error "Found pair with non-equal uniq part: %s"
+                 pair)))
+
+      ;; check: ensure all infiles exist
+      (dolist (infile all-infiles)
+        (unless (file-exists-p infile)
+          (error "Found an infile that doesn't exist: %s"
+                 infile)))
+
+      ;; check: ensure all targets are under the outfiles dir:
+      (dolist (outfile all-outfiles)
+        (unless (my/prefix-or-err outfiles-dir outfile)
+          (error "outfile not a prefix of outfiles-dir: %s"
+                 outfile)))
+
+      ;; delete outfiles-dir
+      (when (f-dir-p outfiles-dir)
+        (when (y-or-n-p (format "Trash outfiles-dir (%s)? " outfiles-dir))
+          (move-file-to-trash outfiles-dir)))
+
+      ;; action
+      (with-output-to-temp-buffer "*File Copy Preview*"
+        (princ "Files to be copied:\n")
+        (princ "==================\n\n")
+        (dolist (pair alist-only-uniq-prefix)
+          (princ (format "%s\n"
+                         (car pair)))))
+      ;; make all parent dirs?
+      (when (y-or-n-p (format "Create all parent dirs?"))
+        (dolist (path all-outfiles)
+          (message "DEBUG: path: %s" path)
+          (let ((dir (file-name-directory path)))
+            (message "DEBUG: dir: %s" dir)
+            (unless (f-dir-p dir)
+              (make-directory dir t)))))
+
+      ;; proceed?
+      (when (y-or-n-p "Proceed?")
+        (mapcar (lambda (pair)
+                  (let ((infile (car pair))
+                        (outfile (cdr pair)))
+                    (message "%s" pair)
+                    (with-temp-buffer
+                      (insert-file-contents infile)
+                      (my/el2markdown-write-file outfile t))))
+                alist)))))
+
+;; (my/create-docs "~/Code/test/old-emacs-setup/"
+;;                 "~/Code/test/old-emacs-setup/modules/features"
+;;                 "~/Code/test/old-emacs-setup/build/docs")
 #+end_src
 
 * ending

@@ -3,6 +3,11 @@
 ;; (debug-on-entry 'switch-to-buffer)
 ;; debugging:1 ends here
 
+;; [[file:../README.org::*misc][misc:1]]
+(setq user-full-name "lispcat")
+(setq user-mail-address "187922791+lispcat@users.noreply.github.com")
+;; misc:1 ends here
+
 ;; [[file:../README.org::*buffers][buffers:1]]
 ;; revert buffer when its file is changed on the filesystem
 (leaf autorevert :ensure nil
@@ -896,6 +901,10 @@ _SPC_ cancel	_o_nly this   	_d_elete
 (defvar prefer-eglot-mode? nil)
 (defvar prefer-lsp-mode? nil)
 ;; personal variables (todo: delete this):1 ends here
+
+;; [[file:../README.org::*auto-insert][auto-insert:1]]
+(auto-insert-mode)  ;;; Adds hook to find-files-hook
+;; auto-insert:1 ends here
 
 ;; [[file:../README.org::*generic tweaks for programming][generic tweaks for programming:1]]
 (setq-default indent-tabs-mode nil)
