@@ -6,6 +6,8 @@ nav:
   - Src:
     - early-init: build/early-init.md
     - init: build/init.md
-    - "build/src/*"
+    - "build/src/*.md"
 
-  - Misc: "*/**"
+  - Misc:
+    - "*/*.md"
+    - "*.md"
