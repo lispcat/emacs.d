@@ -191,23 +191,22 @@ current buffer is the source buffer."
 
                                         ; checks ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-        (progn
-          ;; check: ensure unique part (minus extension) is matching:
-          (dolist (pair alist-uniq-parts)
-            (unless (equal (file-name-sans-extension (car pair))
-                           (file-name-sans-extension (cdr pair)))
-              (error "Found pair with non-equal uniq part: %s"
-                     pair)))
-          ;; check: ensure all infiles exist
-          (dolist (infile infiles-all)
-            (unless (file-exists-p infile)
-              (error "Found an infile that doesn't exist: %s"
-                     infile)))
-          ;; check: ensure all targets are under the outfiles dir:
-          (dolist (outfile outfiles-all)
-            (unless (my/remove-prefix-or-err outfiles-directory outfile)
-              (error "outfile not a prefix of outfiles-directory: %s"
-                     outfile))))
+        ;; check: ensure unique part (minus extension) is matching:
+        (dolist (pair alist-uniq-parts)
+          (unless (equal (file-name-sans-extension (car pair))
+                         (file-name-sans-extension (cdr pair)))
+            (error "Found pair with non-equal uniq part: %s"
+                   pair)))
+        ;; check: ensure all infiles exist
+        (dolist (infile infiles-all)
+          (unless (file-exists-p infile)
+            (error "Found an infile that doesn't exist: %s"
+                   infile)))
+        ;; check: ensure all targets are under the outfiles dir:
+        (dolist (outfile outfiles-all)
+          (unless (my/remove-prefix-or-err outfiles-directory outfile)
+            (error "outfile not a prefix of outfiles-directory: %s"
+                   outfile)))
 
         ;; delete outfiles-directory
         (when (f-dir-p outfiles-directory)
