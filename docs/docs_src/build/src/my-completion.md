@@ -7,3 +7,5 @@ a framework for minibuffer completion
 
 
 ---
+
+*Last updated: { git_revision_date_localized }*

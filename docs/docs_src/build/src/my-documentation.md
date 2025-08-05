@@ -7,3 +7,5 @@ Converts elisp files into markdown docs.
 
 
 ---
+
+*Last updated: { git_revision_date_localized }*

@@ -6,3 +6,5 @@ maybe have a function to delete a persp from the main autosave file?
 
 
 ---
+
+*Last updated: { git_revision_date_localized }*

@@ -2,3 +2,5 @@ NOTE: ensure that the newest version of org is installed right after elpaca setu
 
 
 ---
+
+*Last updated: { git_revision_date_localized }*

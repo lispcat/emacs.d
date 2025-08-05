@@ -1,0 +1,11 @@
+
+nav:
+  - Home: index.md
+  - About: about.md
+
+  - Src:
+    - early-init: build/early-init.md
+    - init: build/init.md
+    - "build/src/*"
+
+  - Misc: "*/**"

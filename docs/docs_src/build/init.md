@@ -6,3 +6,5 @@ The main init file.
 
 
 ---
+
+*Last updated: { git_revision_date_localized }*

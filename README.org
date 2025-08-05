@@ -158,6 +158,11 @@
 
 * Personal notes
 
+- [ ] add to doc loader:
+
+  have md files in code src.
+  have these be automatically collected as infiles. and simply move over!
+
 - [ ] Have auto module loading mechanism similar to nix:
   - given a dir, load just the file under it, under the same name
     - e.g. ./init/ → require ./init/init.el

@@ -77,6 +77,9 @@ current buffer is the source buffer."
       (terpri)
       (princ "---")
       (terpri)
+      (terpri)
+      (princ "*Last updated: { git_revision_date_localized }*")
+      (terpri)
       (when include-end
         (let ((file-name (buffer-file-name))
               (from ""))
@@ -245,7 +248,7 @@ current buffer is the source buffer."
     (interactive)
     (my/create-docs "~/.emacs.d/"
                     "~/.emacs.d/src"
-                    "~/.emacs.d/docs/docs_src"
+                    "~/.emacs.d/docs/docs_src/build"
                     '("~/.emacs.d/init.el" "~/.emacs.d/early-init.el"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

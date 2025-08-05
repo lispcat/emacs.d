@@ -1,0 +1,45 @@
+site_name: emacs.d
+
+docs_dir: docs_src
+site_dir: site
+
+plugins:
+  - search
+  - awesome-nav
+  - git-revision-date-localized
+
+theme:
+  name: terminal
+  palette: gruvbox_dark
+  # name: bootstrap386
+  # name: material
+
+markdown_extensions:
+  # TOC settings
+  - toc:
+      baselevel: "3"
+      toc_depth: "3"
+
+  # Code highlighting
+  - codehilite:
+      guess_lang: false
+
+  # # Admonitions (note boxes)
+  # - admonition
+
+  # # Fenced code blocks
+  # - fenced_code
+
+  # # Tables
+  # - tables
+
+  # # Footnotes
+  # - footnotes
+
+  # # Abbreviations
+  # - abbr
+
+  # # Definition lists
+  # - def_list
+
+
