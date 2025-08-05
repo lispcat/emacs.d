@@ -158,6 +158,11 @@
 
 * Personal notes
 
+- [ ] Have auto module loading mechanism similar to nix:
+  - given a dir, load just the file under it, under the same name
+    - e.g. ./init/ → require ./init/init.el
+    - this file will load all other necessary files in that dir
+
 - [ ] start by exporting to many smaller files instead of one main.el file.
 
 - [X] i can start off with big chunks, whole files big, then divide them up.

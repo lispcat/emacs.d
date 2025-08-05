@@ -142,7 +142,9 @@
   :hook `,@my/lisp-mode-hooks)
 
 (leaf emacs :ensure nil
-  :hook ((emacs-lisp-mode-hook . auto-fill-mode)))
+  :hook ((emacs-lisp-mode-hook . (lambda ()
+                                   (auto-fill-mode)
+                                   (setq-local fill-column 80)))))
 
 (leaf orglink
   :hook emacs-lisp-mode-hook)

@@ -1,27 +1,76 @@
-;; [[file:README.org::*variables][variables:1]]
-(setq package-enable-at-startup nil)      ; dont load package.el
-(setq gc-cons-threshold (* 50 1000 1000)) ; startup gc
-(setq load-prefer-newer t)                ; run .el instead of .elc if newer
-(setq native-comp-async-report-warnings-errors nil) ; Silence compiler warnings
-;; variables:1 ends here
+;;; early-init.el ---                                -*- lexical-binding: t; -*-
 
-;; [[file:README.org::*variables][variables:2]]
+;; Copyright (C) 2025  lispcat
+
+;; Author: lispcat <187922791+lispcat@users.noreply.github.com>
+;; Keywords: local
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; The first file loaded at startup.
+;;
+;; - loaded before gui creation.
+;;   - disable gui components here.
+;;
+;; Sets the following:
+;; - startup variables
+;; - dirs
+;; - UI
+;;   - gui
+;;   - transparency
+;; - eln-cache
+;;
+
+;;; Code:
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                startup vars                                ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; set startup gc
+(setq gc-cons-threshold (* 50 1000 1000))
+;; dont load package.el
+(setq package-enable-at-startup nil)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                    dirs                                    ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defvar my/emacs-root-dir       user-emacs-directory)
 
 (defvar my/emacs-src-dir        (file-name-concat my/emacs-root-dir "src"))
 (defvar my/emacs-local-dir      (file-name-concat my/emacs-root-dir "local"))
 (defvar my/emacs-submodules-dir (file-name-concat my/emacs-root-dir "submodules"))
 
-(defvar my/emacs-config-file    (file-name-concat my/emacs-root-dir "README.org"))
+(defvar my/emacs-config-file    (file-name-concat my/emacs-root-dir "init.el"))
 
-;; set local dir to local files
-(setq user-emacs-directory      my/emacs-local-dir)
+                                        ; set dirs ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; set custom-file
+;; set main dir to local dir
+(setq user-emacs-directory my/emacs-local-dir)
+
+;; set custom-file location
 (setq custom-file (file-name-concat my/emacs-local-dir "custom-vars.el"))
-;; variables:2 ends here
 
-;; [[file:README.org::*UI tweaks][UI tweaks:1]]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                     UI                                     ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+                                        ; gui ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; disable tool-bar-setup
 (advice-add 'tool-bar-setup :override #'ignore)
 
@@ -41,9 +90,9 @@
         (left-fringe)                   ; set left fringe
         (right-fringe)                  ; set right fringe
         ))
-;; UI tweaks:1 ends here
 
-;; [[file:README.org::*startup transparency][startup transparency:1]]
+                                        ; transparency ;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; transparency by default
 (unless (assoc 'alpha-background default-frame-alist)
   (add-to-list 'default-frame-alist
@@ -55,9 +104,11 @@
 ;; use color black for startup frame
 ;; (add-to-list 'default-frame-alist
 ;;              '(background-color . "#000000"))
-;; startup transparency:1 ends here
 
-;; [[file:README.org::*eln-cache dir tweaks][eln-cache dir tweaks:1]]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                  eln-cache                                 ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; changes the eln-cache dir to be inside a subdir for cleanliness
 (when (and (fboundp 'startup-redirect-eln-cache)
            (fboundp 'native-comp-available-p)
@@ -65,9 +116,13 @@
   (startup-redirect-eln-cache
    (convert-standard-filename
     (expand-file-name  "var/eln-cache/" my/emacs-local-dir))))
-;; eln-cache dir tweaks:1 ends here
 
-;; [[file:README.org::*lsp-booster tweaks][lsp-booster tweaks:1]]
 (setenv "LSP_USE_PLISTS" "true")
 (setq lsp-use-plists t)
-;; lsp-booster tweaks:1 ends here
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                     end                                    ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide 'early-init)
+;;; early-init.el ends here

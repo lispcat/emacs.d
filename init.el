@@ -1,4 +1,42 @@
-;; [[file:README.org::*add to load-path][add to load-path:1]]
+;;; init.el --- the main init file                   -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2025  lispcat
+
+;; Author: lispcat <187922791+lispcat@users.noreply.github.com>
+;; Keywords: local
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; The main init file.
+
+;;; Code:
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                standard vars                               ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; run .el instead of .elc if newer
+(setq load-prefer-newer t)
+;; silence compiler warnings
+(setq native-comp-async-report-warnings-errors nil) ; Silence compiler warnings
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                  load-path                                 ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (require 'cl-lib)
 
 (defun add-subdirs-to-load-path (path &optional recursively?)
@@ -14,9 +52,7 @@
 
 (add-subdirs-to-load-path my/emacs-src-dir t)
 (add-subdirs-to-load-path my/emacs-submodules-dir)
-;; add to load-path:1 ends here
 
-;; [[file:README.org::*load custom-file after startup][load custom-file after startup:1]]
 (defun my/log-customize-set-func (&rest args)
   (message "log: customized: %s" args))
 ;; (advice-add 'custom-set-variables :before #'my/log-customize-set-func)
@@ -26,9 +62,7 @@
           (lambda ()
             (when (file-exists-p custom-file)
               (load custom-file))))
-;; load custom-file after startup:1 ends here
 
-;; [[file:README.org::*helper functions][helper functions:1]]
 (defun +load-all (target-dir &optional parent-path)
   "Load all files in TARGET-DIR.
 PARENT-PATH defaults to `my/emacs-src-dir'."
@@ -48,10 +82,13 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
       (require (intern
                 (file-name-sans-extension
                  (file-name-nondirectory path)))))))
-;; helper functions:1 ends here
 
-;; [[file:README.org::*no-littering.el][no-littering.el:1]]
-(add-to-list 'load-path (file-name-concat my/emacs-submodules-dir "no-littering"))
+(add-to-list 'load-path (file-name-concat my/emacs-submodules-dir
+                                          "no-littering"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                no-littering                                ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; load
 (require 'no-littering)
@@ -75,9 +112,11 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
           ("\\`/tmp\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
           ("\\`/dev/shm\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
           ("." ,auto-save-dir t))))
-;; no-littering.el:1 ends here
 
-;; [[file:README.org::*Elpaca (package manager)][Elpaca (package manager):1]]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                   elpaca                                   ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -123,6 +162,10 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
         (setq use-package-always-ensure t)
         (setq use-package-always-defer t))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                    leaf                                    ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (elpaca leaf
   :wait) ; deferred by default. demand with :leaf-defer nil
 
@@ -134,9 +177,11 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 ;; hack: fix org version mismatch
 (elpaca org)
-;; Elpaca (package manager):1 ends here
 
-;; [[file:README.org::*Elpaca (package manager)][Elpaca (package manager):2]]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                       elpaca - exclude external pkgs                       ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;; Exclude all externally installed packages from elpaca.
 
 (require 'elpaca)
@@ -170,9 +215,11 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 (dolist (pkg (my/elpaca-get-external-pkgs))
   (push pkg elpaca-ignored-dependencies))
-;; Elpaca (package manager):2 ends here
 
-;; [[file:README.org::*post-init sequence][post-init sequence:1]]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                startup hooks                               ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (add-hook 'emacs-startup-hook
           (lambda ()
             (message "*** Emacs loaded in %s seconds with %d garbage collections."
@@ -182,9 +229,11 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 (add-hook 'elpaca-after-init-hook
           (lambda ()
             (setq gc-cons-threshold (* 10000 10000))))
-;; post-init sequence:1 ends here
 
-;; [[file:README.org::*prerequisite packages][prerequisite packages:1]]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                             necessary packages                             ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package general :ensure (:wait t)
   :demand t
   :config
@@ -203,48 +252,29 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 (use-package hydra :ensure (:wait t)
   :demand t)
-;; prerequisite packages:1 ends here
 
-;; [[file:README.org::*(import)][(import):1]]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                   import                                   ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (require 'my-base)
-;; (import):1 ends here
-
-;; [[file:README.org::*(import)][(import):1]]
 (require 'my-kbd)
-;; (import):1 ends here
-
-;; [[file:README.org::*(import)][(import):1]]
 (require 'my-completion)
-;; (import):1 ends here
-
-;; [[file:README.org::*(import)][(import):1]]
 (require 'my-ide)
-;; (import):1 ends here
-
-;; [[file:README.org::*(import)][(import):1]]
 (require 'my-org)
-;; (import):1 ends here
-
-;; [[file:README.org::*(import)][(import):1]]
 (require 'my-latex)
-;; (import):1 ends here
-
-;; [[file:README.org::*(import)][(import):1]]
 (require 'my-workspaces)
-;; (import):1 ends here
-
-;; [[file:README.org::*(import)][(import):1]]
 (require 'my-programs)
-;; (import):1 ends here
-
-;; [[file:README.org::*(import)][(import):1]]
 (require 'my-ui)
-;; (import):1 ends here
-
-;; [[file:README.org::*(import)][(import):1]]
 (require 'my-misc)
-;; (import):1 ends here
-
-;; [[file:README.org::*(import)][(import):1]]
 (require 'my-to-sort)
-;; (import):1 ends here
+(require 'my-documentation)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                     end                                    ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(provide 'init)
+;;; init.el ends here
+
+
