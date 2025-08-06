@@ -28,7 +28,7 @@ Some neat features of my setup:
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/lispcat/emacs-config/blob/master/LICENSE) file for details.
+This project is licensed under the GPL3 License. See the [LICENSE](https://github.com/lispcat/emacs-config/blob/master/LICENSE) file for details.
 
 ## Acknowledgements
 

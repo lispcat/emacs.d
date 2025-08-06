@@ -172,7 +172,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 (elpaca leaf-keywords
   (leaf-keywords-init)
   (setq leaf-alias-keyword-alist '((:ensure . :elpaca)))
-  (setq leaf-system-defaults (append '(:ensure t) leaf-system-defaults))
+  (setq leaf-defaults (append '(:ensure t) leaf-system-defaults))
   :wait)
 
 ;; hack: fix org version mismatch

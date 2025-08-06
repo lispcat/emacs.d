@@ -24,9 +24,8 @@
 ;; Converts elisp files into markdown docs.
 
 ;;; Code:
-
 (leaf el2markdown
-  :require t
+  :ensure (:host github :repo "lispcat/el2markdown-fork")
   :config
 
   (require 'dash)
