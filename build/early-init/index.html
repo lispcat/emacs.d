@@ -519,6 +519,7 @@
 <nav>
     <ul>
         <li><a href="#early-init-">early-init -</a></li>
+        <li><a href="#code">Code</a></li>
         
     </ul>
 </nav>
@@ -545,6 +546,91 @@
   - gui
   - transparency
 - eln-cache</p>
+<h3 id="code">Code</h3>
+<div class="codehilite"><pre><span></span><code>
+</code></pre></div>
+
+<h4 id="startup-vars">startup vars</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1">;; set startup gc</span>
+<span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">gc-cons-threshold</span><span class="w"> </span><span class="p">(</span><span class="nf">*</span><span class="w"> </span><span class="mi">50</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="mi">1000</span><span class="p">))</span>
+<span class="c1">;; dont load package.el</span>
+<span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">package-enable-at-startup</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+</code></pre></div>
+
+<h4 id="dirs">dirs</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="k">defvar</span><span class="w"> </span><span class="nv">my/emacs-root-dir</span><span class="w">       </span><span class="nv">user-emacs-directory</span><span class="p">)</span>
+
+<span class="p">(</span><span class="k">defvar</span><span class="w"> </span><span class="nv">my/emacs-src-dir</span><span class="w">        </span><span class="p">(</span><span class="nv">file-name-concat</span><span class="w"> </span><span class="nv">my/emacs-root-dir</span><span class="w"> </span><span class="s">&quot;src&quot;</span><span class="p">))</span>
+<span class="p">(</span><span class="k">defvar</span><span class="w"> </span><span class="nv">my/emacs-local-dir</span><span class="w">      </span><span class="p">(</span><span class="nv">file-name-concat</span><span class="w"> </span><span class="nv">my/emacs-root-dir</span><span class="w"> </span><span class="s">&quot;local&quot;</span><span class="p">))</span>
+<span class="p">(</span><span class="k">defvar</span><span class="w"> </span><span class="nv">my/emacs-submodules-dir</span><span class="w"> </span><span class="p">(</span><span class="nv">file-name-concat</span><span class="w"> </span><span class="nv">my/emacs-root-dir</span><span class="w"> </span><span class="s">&quot;submodules&quot;</span><span class="p">))</span>
+
+<span class="p">(</span><span class="k">defvar</span><span class="w"> </span><span class="nv">my/emacs-config-file</span><span class="w">    </span><span class="p">(</span><span class="nv">file-name-concat</span><span class="w"> </span><span class="nv">my/emacs-root-dir</span><span class="w"> </span><span class="s">&quot;init.el&quot;</span><span class="p">))</span>
+
+<span class="w">                                        </span><span class="c1">; set dirs ;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;; set main dir to local dir</span>
+<span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">user-emacs-directory</span><span class="w"> </span><span class="nv">my/emacs-local-dir</span><span class="p">)</span>
+
+<span class="c1">;; set custom-file location</span>
+<span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">custom-file</span><span class="w"> </span><span class="p">(</span><span class="nv">file-name-concat</span><span class="w"> </span><span class="nv">my/emacs-local-dir</span><span class="w"> </span><span class="s">&quot;custom-vars.el&quot;</span><span class="p">))</span>
+</code></pre></div>
+
+<h4 id="ui">UI</h4>
+<div class="codehilite"><pre><span></span><code><span class="w">                                        </span><span class="c1">; gui ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;; disable tool-bar-setup</span>
+<span class="p">(</span><span class="nv">advice-add</span><span class="w"> </span><span class="ss">&#39;tool-bar-setup</span><span class="w"> </span><span class="nb">:override</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">ignore</span><span class="p">)</span>
+
+<span class="c1">;; UI disables</span>
+<span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">tool-bar-mode</span><span class="w"> </span><span class="no">nil</span><span class="w">                 </span><span class="c1">; disable tool bar</span>
+<span class="w">      </span><span class="nv">menu-bar-mode</span><span class="w"> </span><span class="no">nil</span><span class="w">                 </span><span class="c1">; disable menu bar</span>
+<span class="w">      </span><span class="nv">scroll-bar-mode</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span><span class="w">              </span><span class="c1">; disable vertical scroll bar</span>
+
+<span class="c1">;; UI tweaks</span>
+<span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">default-frame-alist</span>
+<span class="w">      </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">tool-bar-lines</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w">            </span><span class="c1">; disable tool bar</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">menu-bar-lines</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w">            </span><span class="c1">; disable menu bar</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">vertical-scroll-bars</span><span class="p">)</span><span class="w">          </span><span class="c1">; disable vertical scroll bar</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">drag-internal-border</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
+<span class="w">        </span><span class="c1">;; (internal-border-width . 13) ; box border around buffer+modeline (creates gap) (prev: 15)</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">fullscreen</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">maximized</span><span class="p">)</span><span class="w">        </span><span class="c1">; TODO: ???</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">left-fringe</span><span class="p">)</span><span class="w">                   </span><span class="c1">; set left fringe</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">right-fringe</span><span class="p">)</span><span class="w">                  </span><span class="c1">; set right fringe</span>
+<span class="w">        </span><span class="p">))</span>
+
+<span class="w">                                        </span><span class="c1">; transparency ;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;; transparency by default</span>
+<span class="p">(</span><span class="nb">unless</span><span class="w"> </span><span class="p">(</span><span class="nf">assoc</span><span class="w"> </span><span class="ss">&#39;alpha-background</span><span class="w"> </span><span class="nv">default-frame-alist</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;default-frame-alist</span>
+<span class="w">               </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">alpha-background</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="mi">100</span><span class="p">)))</span>
+
+<span class="c1">;; make initial frame invisible (note: requires (make-frame-visible) after theme load)</span>
+<span class="c1">;; (push &#39;(visibility . nil) initial-frame-alist)</span>
+
+<span class="c1">;; use color black for startup frame</span>
+<span class="c1">;; (add-to-list &#39;default-frame-alist</span>
+<span class="c1">;;              &#39;(background-color . &quot;#000000&quot;))</span>
+</code></pre></div>
+
+<h4 id="eln-cache">eln-cache</h4>
+<div class="codehilite"><pre><span></span><code><span class="c1">;; changes the eln-cache dir to be inside a subdir for cleanliness</span>
+<span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="nf">fboundp</span><span class="w"> </span><span class="ss">&#39;startup-redirect-eln-cache</span><span class="p">)</span>
+<span class="w">           </span><span class="p">(</span><span class="nf">fboundp</span><span class="w"> </span><span class="ss">&#39;native-comp-available-p</span><span class="p">)</span>
+<span class="w">           </span><span class="p">(</span><span class="nv">native-comp-available-p</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">startup-redirect-eln-cache</span>
+<span class="w">   </span><span class="p">(</span><span class="nv">convert-standard-filename</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">expand-file-name</span><span class="w">  </span><span class="s">&quot;var/eln-cache/&quot;</span><span class="w"> </span><span class="nv">my/emacs-local-dir</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="nv">setenv</span><span class="w"> </span><span class="s">&quot;LSP_USE_PLISTS&quot;</span><span class="w"> </span><span class="s">&quot;true&quot;</span><span class="p">)</span>
+<span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">lsp-use-plists</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
+</code></pre></div>
+
+<h4 id="end">end</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="nb">provide</span><span class="w"> </span><span class="ss">&#39;early-init</span><span class="p">)</span>
+<span class="c1">;;; early-init.el ends here</span>
+</code></pre></div>
+
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>

@@ -515,6 +515,12 @@
         
     </ul>
   
+</nav><hr>
+<nav>
+    <ul>
+        <li><a href="#code">Code</a></li>
+        
+    </ul>
 </nav>
 </aside>
             <main id="terminal-mkdocs-main-content">
@@ -525,7 +531,212 @@
     
 
 <section id="mkdocs-terminal-content">
-    <hr />
+    <h3 id="code">Code</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">user-mail-address</span><span class="w"> </span><span class="s">&quot;187922791+lispcat@users.noreply.github.com&quot;</span><span class="p">)</span>
+
+<span class="c1">;; revert buffer when its file is changed on the filesystem</span>
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">autorevert</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
+<span class="w">  </span><span class="nb">:require</span><span class="w"> </span><span class="no">t</span>
+<span class="w">  </span><span class="nb">:diminish</span><span class="w"> </span><span class="nv">autorevert-mode</span>
+<span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">global-auto-revert-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:setq</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">global-auto-revert-non-file-buffers</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">auto-revert-use-notify</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">auto-revert-interval</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="mi">5</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">general-my-map</span>
+<span class="w">  </span><span class="s">&quot;k&quot;</span><span class="w"> </span><span class="ss">&#39;kill-current-buffer</span>
+<span class="w">  </span><span class="s">&quot;b&quot;</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nb">:ignore</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="nb">:which-key</span><span class="w"> </span><span class="s">&quot;buffer&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="s">&quot;bk&quot;</span><span class="w"> </span><span class="ss">&#39;kill-current-buffer</span>
+<span class="w">  </span><span class="s">&quot;bn&quot;</span><span class="w"> </span><span class="ss">&#39;next-buffer</span>
+<span class="w">  </span><span class="s">&quot;bp&quot;</span><span class="w"> </span><span class="ss">&#39;previous-buffer</span>
+<span class="w">  </span><span class="s">&quot;bo&quot;</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">my/last-selected-buffer</span><span class="w"> </span><span class="nb">:which-key</span><span class="w"> </span><span class="s">&quot;last-buffer&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="s">&quot;bb&quot;</span><span class="w"> </span><span class="ss">&#39;switch-to-buffer</span>
+<span class="w">  </span><span class="s">&quot;bs&quot;</span><span class="w"> </span><span class="ss">&#39;save-buffer</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">defalias</span><span class="w"> </span><span class="ss">&#39;my/last-selected-buffer</span><span class="w"> </span><span class="ss">&#39;mode-line-other-buffer</span><span class="p">)</span>
+
+<span class="c1">;; remember recent files</span>
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">recentf</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
+<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="nv">emacs-startup-hook</span><span class="p">)</span>
+
+<span class="c1">;; go to previous location in file when reopening</span>
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">saveplace</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
+<span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">save-place-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">;; persist minibuffer history over restarts</span>
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">savehist</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
+<span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">savehist-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">ace-window</span>
+<span class="w">  </span><span class="nb">:setq</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">aw-keys</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="sc">?a</span><span class="w"> </span><span class="sc">?o</span><span class="w"> </span><span class="sc">?e</span><span class="w"> </span><span class="sc">?u</span><span class="w"> </span><span class="sc">?h</span><span class="w"> </span><span class="sc">?t</span><span class="w"> </span><span class="sc">?n</span><span class="w"> </span><span class="sc">?s</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">aw-scope</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="ss">&#39;frame</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">aw-background</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+<span class="w">  </span><span class="c1">;; (aw-dispatch-always . t)</span>
+<span class="w">  </span><span class="nb">:bind</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;M-o&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">ace-window</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">general-my-map</span>
+<span class="w">    </span><span class="s">&quot;w&quot;</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nb">:ignore</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="nb">:which-key</span><span class="w"> </span><span class="s">&quot;window&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="s">&quot;wd&quot;</span><span class="w"> </span><span class="ss">&#39;delete-window</span>
+<span class="w">    </span><span class="s">&quot;w+&quot;</span><span class="w"> </span><span class="ss">&#39;balance-windows</span>
+<span class="w">    </span><span class="s">&quot;wa&quot;</span><span class="w"> </span><span class="ss">&#39;balance-windows-area</span>
+<span class="w">    </span><span class="c1">;; split window</span>
+<span class="w">    </span><span class="s">&quot;wv&quot;</span><span class="w"> </span><span class="ss">&#39;split-window-horizontally</span>
+<span class="w">    </span><span class="s">&quot;ws&quot;</span><span class="w"> </span><span class="ss">&#39;split-window-vertically</span>
+<span class="w">    </span><span class="c1">;; select window directionally</span>
+<span class="w">    </span><span class="s">&quot;wp&quot;</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">windmove-up</span><span class="w">    </span><span class="nb">:which-key</span><span class="w"> </span><span class="s">&quot;select up&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="s">&quot;wn&quot;</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">windmove-down</span><span class="w">  </span><span class="nb">:which-key</span><span class="w"> </span><span class="s">&quot;select down&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="s">&quot;wf&quot;</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">windmove-right</span><span class="w"> </span><span class="nb">:which-key</span><span class="w"> </span><span class="s">&quot;select right&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="s">&quot;wb&quot;</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">windmove-left</span><span class="w">  </span><span class="nb">:which-key</span><span class="w"> </span><span class="s">&quot;select left&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">;; misc</span>
+<span class="w">    </span><span class="s">&quot;wm&quot;</span><span class="w"> </span><span class="ss">&#39;switch-to-minibuffer</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">defhydra</span><span class="w"> </span><span class="nv">hydra-window</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="s">&quot;</span>
+<span class="s">Movement^^        ^Split^         ^Switch^      ^Resize^</span>
+<span class="s">----------------------------------------------------------------</span>
+<span class="s">_h_ ←           _v_ertical      _b_uffer        _q_ X←</span>
+<span class="s">_j_ ↓           _x_ horizontal  _f_ind files    _w_ X↓</span>
+<span class="s">_k_ ↑           _z_ undo        _a_ce 1     _e_ X↑</span>
+<span class="s">_l_ →           _Z_ reset       _s_wap      _r_ X→</span>
+<span class="s">_F_ollow        _D_lt Other     _S_ave      max_i_mize</span>
+<span class="s">_SPC_ cancel    _o_nly this     _d_elete</span>
+<span class="s">&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;h&quot;</span><span class="w"> </span><span class="nv">windmove-left</span><span class="w"> </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;j&quot;</span><span class="w"> </span><span class="nv">windmove-down</span><span class="w"> </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;k&quot;</span><span class="w"> </span><span class="nv">windmove-up</span><span class="w"> </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;l&quot;</span><span class="w"> </span><span class="nv">windmove-right</span><span class="w"> </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;q&quot;</span><span class="w"> </span><span class="nv">hydra-move-splitter-left</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;w&quot;</span><span class="w"> </span><span class="nv">hydra-move-splitter-down</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;e&quot;</span><span class="w"> </span><span class="nv">hydra-move-splitter-up</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="nv">hydra-move-splitter-right</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="w"> </span><span class="nv">helm-mini</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;f&quot;</span><span class="w"> </span><span class="nv">helm-find-files</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;F&quot;</span><span class="w"> </span><span class="nv">follow-mode</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
+<span class="w">         </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">ace-window</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;ace-window-end-once-hook</span>
+<span class="w">                   </span><span class="ss">&#39;hydra-window/body</span><span class="p">))</span>
+<span class="w">   </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;v&quot;</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
+<span class="w">         </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">split-window-right</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">windmove-right</span><span class="p">))</span>
+<span class="w">   </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;x&quot;</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
+<span class="w">         </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">split-window-below</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">windmove-down</span><span class="p">))</span>
+<span class="w">   </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;s&quot;</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
+<span class="w">         </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">ace-window</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;ace-window-end-once-hook</span>
+<span class="w">                   </span><span class="ss">&#39;hydra-window/body</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;S&quot;</span><span class="w"> </span><span class="nv">save-buffer</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="w"> </span><span class="nv">delete-window</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;D&quot;</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
+<span class="w">         </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">ace-window</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;ace-window-end-once-hook</span>
+<span class="w">                   </span><span class="ss">&#39;hydra-window/body</span><span class="p">))</span>
+<span class="w">   </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;o&quot;</span><span class="w"> </span><span class="nv">delete-other-windows</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;i&quot;</span><span class="w"> </span><span class="nv">ace-maximize-window</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;z&quot;</span><span class="w"> </span><span class="p">(</span><span class="k">progn</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">winner-undo</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">this-command</span><span class="w"> </span><span class="ss">&#39;winner-undo</span><span class="p">))</span>
+<span class="w">   </span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;Z&quot;</span><span class="w"> </span><span class="nv">winner-redo</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;SPC&quot;</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/open-emacs-config-file</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="s">&quot;Open emacs config file.&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">find-file</span><span class="w"> </span><span class="nv">my/emacs-config-file</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/open-agenda-file</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="s">&quot;Open agenda file.&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">find-file</span><span class="w"> </span><span class="s">&quot;~/Notes/org/agenda.org&quot;</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">dired</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
+<span class="w">  </span><span class="nb">:setq</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">dired-listing-switches</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="s">&quot;-Ahl --group-directories-first -X&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">dired-auto-revert-buffer</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">t</span><span class="p">)</span><span class="w">        </span><span class="c1">; auto update file changes</span>
+<span class="w">  </span><span class="nb">:bind</span><span class="w"> </span><span class="p">(</span><span class="nv">dired-mode-map</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;h&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">dired-up-directory</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;s&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">dired-find-file</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">dired-sort-toggle-or-edit</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">general-my-map</span>
+<span class="w">    </span><span class="s">&quot;d&quot;</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nb">:ignore</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="nb">:which-key</span><span class="w"> </span><span class="s">&quot;dired&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="s">&quot;dd&quot;</span><span class="w"> </span><span class="ss">&#39;find-file</span>
+<span class="w">    </span><span class="s">&quot;dj&quot;</span><span class="w"> </span><span class="ss">&#39;dired-jump</span>
+<span class="w">    </span><span class="s">&quot;f&quot;</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nb">:ignore</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="nb">:which-key</span><span class="w"> </span><span class="s">&quot;files&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="s">&quot;ff&quot;</span><span class="w"> </span><span class="ss">&#39;find-file</span>
+<span class="w">    </span><span class="s">&quot;fp&quot;</span><span class="w"> </span><span class="ss">&#39;my/open-emacs-config-file</span>
+<span class="w">    </span><span class="s">&quot;fa&quot;</span><span class="w"> </span><span class="ss">&#39;my/open-agenda-file</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="c1">;; hide details by default</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;dired-mode-hook</span><span class="w"> </span><span class="ss">&#39;dired-hide-details-mode</span><span class="p">)</span>
+<span class="w">  </span><span class="c1">;; use trash if trash executable is found</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="nv">executable-find</span><span class="w"> </span><span class="s">&quot;trash&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">delete-by-moving-to-trash</span><span class="w"> </span><span class="no">t</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">dired-launch</span>
+<span class="w">  </span><span class="nb">:after</span><span class="w"> </span><span class="nv">dired</span>
+<span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">dired-launch-enable</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:setq</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">dired-launch-extensions-map</span>
+<span class="w">   </span><span class="o">.</span><span class="w"> </span><span class="o">&#39;</span><span class="p">((</span><span class="s">&quot;pptx&quot;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;libreoffice&quot;</span><span class="p">))</span>
+<span class="w">       </span><span class="p">(</span><span class="s">&quot;docx&quot;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;libreoffice&quot;</span><span class="p">))</span>
+<span class="w">       </span><span class="p">(</span><span class="s">&quot;odt&quot;</span><span class="w">  </span><span class="p">(</span><span class="s">&quot;libreoffice&quot;</span><span class="p">))</span>
+<span class="w">       </span><span class="p">(</span><span class="s">&quot;html&quot;</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;librewolf&quot;</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">helpful</span>
+<span class="w">  </span><span class="nb">:commands</span><span class="w"> </span><span class="nv">helpful--bookmark-jump</span>
+<span class="w">  </span><span class="nb">:setq</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">counsel-describe-function-function</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">helpful-callable</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">counsel-describe-variable-function</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">helpful-variable</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:bind</span>
+<span class="w">  </span><span class="p">([</span><span class="nv">remap</span><span class="w"> </span><span class="nv">describe-function</span><span class="p">]</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">helpful-callable</span><span class="p">)</span>
+<span class="w">  </span><span class="p">([</span><span class="nv">remap</span><span class="w"> </span><span class="nv">describe-symbol</span><span class="p">]</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">helpful-symbol</span><span class="p">)</span>
+<span class="w">  </span><span class="p">([</span><span class="nv">remap</span><span class="w"> </span><span class="nv">describe-variable</span><span class="p">]</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">helpful-variable</span><span class="p">)</span>
+<span class="w">  </span><span class="p">([</span><span class="nv">remap</span><span class="w"> </span><span class="nv">describe-command</span><span class="p">]</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">helpful-command</span><span class="p">)</span>
+<span class="w">  </span><span class="p">([</span><span class="nv">remap</span><span class="w"> </span><span class="nv">describe-key</span><span class="p">]</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">helpful-key</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-h h&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">helpful-at-point</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-h H&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">view-hello-file</span><span class="p">)</span><span class="w">          </span><span class="c1">; command originally at &quot;C-h h&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-h M&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">which-key-show-major-mode</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-h E&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">describe-keymap</span><span class="p">))</span>
+
+<span class="c1">;; sudoedit</span>
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">auto-sudoedit</span>
+<span class="w">  </span><span class="nb">:commands</span><span class="w"> </span><span class="nv">auto-sudoedit-sudoedit</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/profiler-report</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="s">&quot;Profiler stop and report.&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">profiler-stop</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">profiler-report</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">general-my-map</span>
+<span class="w">  </span><span class="s">&quot;D&quot;</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nb">:ignore</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="nb">:which-key</span><span class="w"> </span><span class="s">&quot;debug&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="s">&quot;Ds&quot;</span><span class="w"> </span><span class="ss">&#39;profiler-start</span>
+<span class="w">  </span><span class="s">&quot;Dr&quot;</span><span class="w"> </span><span class="ss">&#39;my/profiler-report</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">provide</span><span class="w"> </span><span class="ss">&#39;my-base</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>
 

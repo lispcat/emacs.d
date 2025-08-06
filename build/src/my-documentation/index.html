@@ -519,6 +519,7 @@
 <nav>
     <ul>
         <li><a href="#my-documentation-auto-docs-generator">my-documentation - auto docs generator</a></li>
+        <li><a href="#code">Code</a></li>
         
     </ul>
 </nav>
@@ -535,6 +536,181 @@
 <p><em>Author:</em> lispcat <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;">&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;</a><br></p>
 <p>Automatically generates documentation using el2markdown.
 Converts elisp files into markdown docs.</p>
+<h3 id="code">Code</h3>
+<div class="codehilite"><pre><span></span><code>
+</code></pre></div>
+
+<h4 id="make-package-accessible">make package accessible</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;load-path</span>
+<span class="w">             </span><span class="p">(</span><span class="nv">file-name-concat</span><span class="w"> </span><span class="nv">my/emacs-submodules-dir</span>
+<span class="w">                               </span><span class="s">&quot;el2markdown-fork&quot;</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">require</span><span class="w"> </span><span class="ss">&#39;el2markdown-fork</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">require</span><span class="w"> </span><span class="ss">&#39;dash</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/remove-prefix-or-err</span><span class="w"> </span><span class="p">(</span><span class="nv">prefix</span><span class="w"> </span><span class="nv">str</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nv">string-prefix-p</span><span class="w"> </span><span class="nv">prefix</span><span class="w"> </span><span class="nv">str</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nv">string-remove-prefix</span><span class="w"> </span><span class="nv">prefix</span><span class="w"> </span><span class="nv">str</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="ne">error</span><span class="w"> </span><span class="s">&quot;%s is not a prefix of %s&quot;</span><span class="w"> </span><span class="nv">prefix</span><span class="w"> </span><span class="nv">str</span><span class="p">)</span>
+<span class="w">    </span><span class="no">nil</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/zip-lists</span><span class="w"> </span><span class="p">(</span><span class="nv">list1</span><span class="w"> </span><span class="nv">list2</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nv">len1</span><span class="w"> </span><span class="p">(</span><span class="nf">length</span><span class="w"> </span><span class="nv">list1</span><span class="p">))</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">len2</span><span class="w"> </span><span class="p">(</span><span class="nf">length</span><span class="w"> </span><span class="nv">list2</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">unless</span><span class="w"> </span><span class="p">(</span><span class="nf">eq</span><span class="w"> </span><span class="nv">len1</span><span class="w"> </span><span class="nv">len2</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="ne">error</span><span class="w"> </span><span class="s">&quot;Lists to zip differ in length (%s %s): %s %s&quot;</span>
+<span class="w">             </span><span class="nv">len1</span><span class="w"> </span><span class="nv">len2</span><span class="w"> </span><span class="nv">list1</span><span class="w"> </span><span class="nv">list2</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">-zip-pair</span><span class="w"> </span><span class="nv">list1</span><span class="w"> </span><span class="nv">list2</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/assert-f-dir-p</span><span class="w"> </span><span class="p">(</span><span class="nv">path</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nv">f-dir-p</span><span class="w"> </span><span class="nv">path</span><span class="p">)</span>
+<span class="w">      </span><span class="nv">path</span>
+<span class="w">    </span><span class="p">(</span><span class="ne">error</span><span class="w"> </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;Path not exist: %s&quot;</span><span class="w"> </span><span class="nv">path</span><span class="p">))</span>
+<span class="w">    </span><span class="no">nil</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/create-docs</span><span class="w"> </span><span class="p">(</span><span class="nv">root-directory</span><span class="w"> </span><span class="nv">infiles-directory</span><span class="w"> </span><span class="nv">outfiles-directory</span>
+<span class="w">                                      </span><span class="kp">&amp;optional</span><span class="w"> </span><span class="nv">extra-infiles</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">interactive</span>
+<span class="w">   </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nv">root-directory</span>
+<span class="w">           </span><span class="p">(</span><span class="nv">read-file-name</span><span class="w"> </span><span class="s">&quot;Root dir: &quot;</span><span class="w"> </span><span class="nv">default-directory</span>
+<span class="w">                           </span><span class="o">`,</span><span class="p">(</span><span class="nf">buffer-file-name</span><span class="p">)</span><span class="w"> </span><span class="ss">&#39;confirm</span><span class="p">))</span>
+<span class="w">          </span><span class="p">(</span><span class="nv">infiles-directory</span>
+<span class="w">           </span><span class="p">(</span><span class="nv">read-file-name</span><span class="w"> </span><span class="s">&quot;Infiles dir: &quot;</span><span class="w"> </span><span class="nv">root-directory</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="ss">&#39;confirm</span><span class="p">))</span>
+<span class="w">          </span><span class="p">(</span><span class="nv">outfiles-directory</span>
+<span class="w">           </span><span class="p">(</span><span class="nv">read-file-name</span><span class="w"> </span><span class="s">&quot;Outfiles dir: &quot;</span><span class="w"> </span><span class="nv">root-directory</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="ss">&#39;confirm</span><span class="p">)))</span>
+<span class="w">     </span><span class="c1">;; ret</span>
+<span class="w">     </span><span class="p">(</span><span class="nf">list</span><span class="w"> </span><span class="nv">root-directory</span><span class="w"> </span><span class="nv">infiles-directory</span><span class="w"> </span><span class="nv">outfiles-directory</span><span class="p">)))</span>
+
+<span class="w">  </span><span class="c1">;; expand</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">root-directory</span><span class="w"> </span><span class="p">(</span><span class="nf">expand-file-name</span><span class="w"> </span><span class="nv">root-directory</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">infiles-directory</span><span class="w"> </span><span class="p">(</span><span class="nf">expand-file-name</span><span class="w"> </span><span class="nv">infiles-directory</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">outfiles-directory</span><span class="w"> </span><span class="p">(</span><span class="nf">expand-file-name</span><span class="w"> </span><span class="nv">outfiles-directory</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">extra-infiles</span><span class="w"> </span><span class="p">(</span><span class="nf">mapcar</span><span class="w"> </span><span class="nf">#&#39;expand-file-name</span><span class="w"> </span><span class="nv">extra-infiles</span><span class="p">))</span>
+
+<span class="w">  </span><span class="c1">;; fs checks</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">my/remove-prefix-or-err</span><span class="w"> </span><span class="nv">root-directory</span><span class="w"> </span><span class="nv">infiles-directory</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">my/remove-prefix-or-err</span><span class="w"> </span><span class="nv">root-directory</span><span class="w"> </span><span class="nv">outfiles-directory</span><span class="p">)</span>
+
+<span class="w">  </span><span class="p">(</span><span class="nv">my/assert-f-dir-p</span><span class="w"> </span><span class="nv">root-directory</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">my/assert-f-dir-p</span><span class="w"> </span><span class="nv">infiles-directory</span><span class="p">)</span>
+
+<span class="w">  </span><span class="c1">;; proceed?</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="nv">y-or-n-p</span>
+<span class="w">         </span><span class="p">(</span><span class="nf">format</span>
+<span class="w">          </span><span class="s">&quot;Prefix: %s\nInfiles: %s\nOutfiles: %s\n&gt; Proceed? &quot;</span>
+<span class="w">          </span><span class="nv">root-directory</span><span class="w"> </span><span class="nv">infiles-directory</span><span class="w"> </span><span class="nv">outfiles-directory</span><span class="p">))</span>
+
+<span class="w">    </span><span class="c1">;; body</span>
+<span class="w">    </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">(</span><span class="c1">;; collect all infiles</span>
+<span class="w">           </span><span class="p">(</span><span class="nv">infiles-all</span>
+<span class="w">            </span><span class="p">(</span><span class="nf">append</span>
+<span class="w">             </span><span class="p">(</span><span class="nf">reverse</span>
+<span class="w">              </span><span class="p">(</span><span class="nv">-filter</span><span class="w"> </span><span class="nf">#&#39;file-regular-p</span>
+<span class="w">                       </span><span class="p">(</span><span class="nv">directory-files-recursively</span><span class="w"> </span><span class="nv">infiles-directory</span><span class="w"> </span><span class="s">&quot;.*&quot;</span><span class="p">)))</span>
+<span class="w">             </span><span class="nv">extra-infiles</span><span class="p">))</span>
+
+<span class="w">           </span><span class="c1">;; derive all outfiles for each infile</span>
+<span class="w">           </span><span class="c1">;; - given infile:</span>
+<span class="w">           </span><span class="c1">;;   - remove prefix infiles-directory, but keep the dirname</span>
+<span class="w">           </span><span class="c1">;;   - replace extension .el -&gt; .md</span>
+<span class="w">           </span><span class="c1">;;   - prepend with prefix outfiles-directory</span>
+<span class="w">           </span><span class="p">(</span><span class="nv">outfiles-all</span>
+<span class="w">            </span><span class="p">(</span><span class="nf">mapcar</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">(</span><span class="nv">infile</span><span class="p">)</span>
+<span class="w">                      </span><span class="p">(</span><span class="nv">-as-&gt;</span><span class="w"> </span><span class="nv">infile</span><span class="w"> </span><span class="nv">x</span>
+<span class="w">                             </span><span class="p">(</span><span class="nv">my/remove-prefix-or-err</span><span class="w"> </span><span class="p">(</span><span class="nf">file-name-directory</span><span class="w"> </span><span class="nv">infiles-directory</span><span class="p">)</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span>
+<span class="w">                             </span><span class="p">(</span><span class="nv">file-name-sans-extension</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span>
+<span class="w">                             </span><span class="p">(</span><span class="nv">file-name-with-extension</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="s">&quot;.md&quot;</span><span class="p">)</span>
+<span class="w">                             </span><span class="p">(</span><span class="nf">expand-file-name</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="nv">outfiles-directory</span><span class="p">)))</span>
+<span class="w">                    </span><span class="nv">infiles-all</span><span class="p">))</span>
+
+<span class="w">           </span><span class="c1">;; create alist from infiles-all and outfiles-all</span>
+<span class="w">           </span><span class="p">(</span><span class="nv">alist</span>
+<span class="w">            </span><span class="p">(</span><span class="nv">my/zip-lists</span><span class="w"> </span><span class="nv">infiles-all</span><span class="w"> </span><span class="nv">outfiles-all</span><span class="p">))</span>
+
+<span class="w">           </span><span class="p">(</span><span class="nv">alist-uniq-parts</span>
+<span class="w">            </span><span class="p">(</span><span class="nf">mapcar</span>
+<span class="w">             </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">(</span><span class="nv">pair</span><span class="p">)</span>
+<span class="w">               </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nv">infile</span><span class="w"> </span><span class="p">(</span><span class="nf">car</span><span class="w"> </span><span class="nv">pair</span><span class="p">))</span>
+<span class="w">                      </span><span class="p">(</span><span class="nv">outfile</span><span class="w"> </span><span class="p">(</span><span class="nf">cdr</span><span class="w"> </span><span class="nv">pair</span><span class="p">))</span>
+<span class="w">                      </span><span class="p">(</span><span class="nv">infile-uniq</span><span class="w"> </span><span class="p">(</span><span class="nv">my/remove-prefix-or-err</span>
+<span class="w">                                    </span><span class="p">(</span><span class="nf">file-name-directory</span><span class="w"> </span><span class="nv">infiles-directory</span><span class="p">)</span>
+<span class="w">                                    </span><span class="nv">infile</span><span class="p">))</span>
+<span class="w">                      </span><span class="p">(</span><span class="nv">outfile-uniq</span><span class="w"> </span><span class="p">(</span><span class="nv">my/remove-prefix-or-err</span>
+<span class="w">                                     </span><span class="nv">outfiles-directory</span>
+<span class="w">                                     </span><span class="nv">outfile</span><span class="p">))</span>
+<span class="w">                      </span><span class="p">(</span><span class="nv">infile-uniq-no-slash</span><span class="w"> </span><span class="p">(</span><span class="nv">replace-regexp-in-string</span>
+<span class="w">                                             </span><span class="s">&quot;^/+&quot;</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="nv">infile-uniq</span><span class="p">))</span>
+<span class="w">                      </span><span class="p">(</span><span class="nv">outfile-uniq-no-slash</span><span class="w"> </span><span class="p">(</span><span class="nv">replace-regexp-in-string</span>
+<span class="w">                                              </span><span class="s">&quot;^/+&quot;</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="nv">outfile-uniq</span><span class="p">)))</span>
+<span class="w">                 </span><span class="p">(</span><span class="nf">cons</span><span class="w"> </span><span class="nv">infile-uniq-no-slash</span>
+<span class="w">                       </span><span class="nv">outfile-uniq-no-slash</span><span class="p">)))</span>
+<span class="w">             </span><span class="nv">alist</span><span class="p">)))</span>
+
+<span class="w">                                        </span><span class="c1">; checks ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="w">      </span><span class="c1">;; check: ensure unique part (minus extension) is matching:</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">dolist</span><span class="w"> </span><span class="p">(</span><span class="nv">pair</span><span class="w"> </span><span class="nv">alist-uniq-parts</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nb">unless</span><span class="w"> </span><span class="p">(</span><span class="nf">equal</span><span class="w"> </span><span class="p">(</span><span class="nv">file-name-sans-extension</span><span class="w"> </span><span class="p">(</span><span class="nf">car</span><span class="w"> </span><span class="nv">pair</span><span class="p">))</span>
+<span class="w">                       </span><span class="p">(</span><span class="nv">file-name-sans-extension</span><span class="w"> </span><span class="p">(</span><span class="nf">cdr</span><span class="w"> </span><span class="nv">pair</span><span class="p">)))</span>
+<span class="w">          </span><span class="p">(</span><span class="ne">error</span><span class="w"> </span><span class="s">&quot;Found pair with non-equal uniq part: %s&quot;</span>
+<span class="w">                 </span><span class="nv">pair</span><span class="p">)))</span>
+<span class="w">      </span><span class="c1">;; check: ensure all infiles exist</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">dolist</span><span class="w"> </span><span class="p">(</span><span class="nv">infile</span><span class="w"> </span><span class="nv">infiles-all</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nb">unless</span><span class="w"> </span><span class="p">(</span><span class="nf">file-exists-p</span><span class="w"> </span><span class="nv">infile</span><span class="p">)</span>
+<span class="w">          </span><span class="p">(</span><span class="ne">error</span><span class="w"> </span><span class="s">&quot;Found an infile that doesn&#39;t exist: %s&quot;</span>
+<span class="w">                 </span><span class="nv">infile</span><span class="p">)))</span>
+<span class="w">      </span><span class="c1">;; check: ensure all targets are under the outfiles dir:</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">dolist</span><span class="w"> </span><span class="p">(</span><span class="nv">outfile</span><span class="w"> </span><span class="nv">outfiles-all</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nb">unless</span><span class="w"> </span><span class="p">(</span><span class="nv">my/remove-prefix-or-err</span><span class="w"> </span><span class="nv">outfiles-directory</span><span class="w"> </span><span class="nv">outfile</span><span class="p">)</span>
+<span class="w">          </span><span class="p">(</span><span class="ne">error</span><span class="w"> </span><span class="s">&quot;outfile not a prefix of outfiles-directory: %s&quot;</span>
+<span class="w">                 </span><span class="nv">outfile</span><span class="p">)))</span>
+
+<span class="w">      </span><span class="c1">;; delete outfiles-directory</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="nv">f-dir-p</span><span class="w"> </span><span class="nv">outfiles-directory</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="nv">y-or-n-p</span><span class="w"> </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;Trash outfiles-directory (%s)? &quot;</span><span class="w"> </span><span class="nv">outfiles-directory</span><span class="p">))</span>
+<span class="w">          </span><span class="p">(</span><span class="nv">move-file-to-trash</span><span class="w"> </span><span class="nv">outfiles-directory</span><span class="p">)))</span>
+
+<span class="w">      </span><span class="c1">;; action</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">with-output-to-temp-buffer</span><span class="w"> </span><span class="s">&quot;*File Copy Preview*&quot;</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">princ</span><span class="w"> </span><span class="s">&quot;Files to be copied:\n&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">princ</span><span class="w"> </span><span class="s">&quot;==================\n\n&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nb">dolist</span><span class="w"> </span><span class="p">(</span><span class="nv">pair</span><span class="w"> </span><span class="nv">alist</span><span class="p">)</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">princ</span><span class="w"> </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;%s\n%s\n&quot;</span>
+<span class="w">                         </span><span class="p">(</span><span class="nf">car</span><span class="w"> </span><span class="nv">pair</span><span class="p">)</span>
+<span class="w">                         </span><span class="p">(</span><span class="nf">cdr</span><span class="w"> </span><span class="nv">pair</span><span class="p">)))))</span>
+<span class="w">      </span><span class="c1">;; make all parent dirs?</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="nv">y-or-n-p</span><span class="w"> </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;Create all parent dirs?&quot;</span><span class="p">))</span>
+<span class="w">        </span><span class="p">(</span><span class="nb">dolist</span><span class="w"> </span><span class="p">(</span><span class="nv">path</span><span class="w"> </span><span class="nv">outfiles-all</span><span class="p">)</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">message</span><span class="w"> </span><span class="s">&quot;DEBUG: path: %s&quot;</span><span class="w"> </span><span class="nv">path</span><span class="p">)</span>
+<span class="w">          </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nv">dir</span><span class="w"> </span><span class="p">(</span><span class="nf">file-name-directory</span><span class="w"> </span><span class="nv">path</span><span class="p">)))</span>
+<span class="w">            </span><span class="p">(</span><span class="nf">message</span><span class="w"> </span><span class="s">&quot;DEBUG: dir: %s&quot;</span><span class="w"> </span><span class="nv">dir</span><span class="p">)</span>
+<span class="w">            </span><span class="p">(</span><span class="nb">unless</span><span class="w"> </span><span class="p">(</span><span class="nv">f-dir-p</span><span class="w"> </span><span class="nv">dir</span><span class="p">)</span>
+<span class="w">              </span><span class="p">(</span><span class="nv">make-directory</span><span class="w"> </span><span class="nv">dir</span><span class="w"> </span><span class="no">t</span><span class="p">)))))</span>
+
+<span class="w">      </span><span class="c1">;; proceed?</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="nv">y-or-n-p</span><span class="w"> </span><span class="s">&quot;Proceed?&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">mapcar</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">(</span><span class="nv">pair</span><span class="p">)</span>
+<span class="w">                  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nv">infile</span><span class="w"> </span><span class="p">(</span><span class="nf">car</span><span class="w"> </span><span class="nv">pair</span><span class="p">))</span>
+<span class="w">                        </span><span class="p">(</span><span class="nv">outfile</span><span class="w"> </span><span class="p">(</span><span class="nf">cdr</span><span class="w"> </span><span class="nv">pair</span><span class="p">)))</span>
+<span class="w">                    </span><span class="p">(</span><span class="nf">message</span><span class="w"> </span><span class="s">&quot;%s&quot;</span><span class="w"> </span><span class="nv">pair</span><span class="p">)</span>
+<span class="w">                    </span><span class="p">(</span><span class="nb">with-temp-buffer</span>
+<span class="w">                      </span><span class="p">(</span><span class="nf">insert-file-contents</span><span class="w"> </span><span class="nv">infile</span><span class="p">)</span>
+<span class="w">                      </span><span class="p">(</span><span class="nv">el2markdown-write-file</span><span class="w"> </span><span class="nv">outfile</span><span class="w"> </span><span class="no">t</span><span class="p">))))</span>
+<span class="w">                </span><span class="nv">alist</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/create-docs-default</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">my/create-docs</span><span class="w"> </span><span class="s">&quot;~/.emacs.d/&quot;</span>
+<span class="w">                  </span><span class="s">&quot;~/.emacs.d/src&quot;</span>
+<span class="w">                  </span><span class="s">&quot;~/.emacs.d/docs/docs_src/build&quot;</span>
+<span class="w">                  </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;~/.emacs.d/init.el&quot;</span><span class="w"> </span><span class="s">&quot;~/.emacs.d/early-init.el&quot;</span><span class="p">)))</span>
+</code></pre></div>
+
+<h4 id="end">end</h4>
+<div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="nb">provide</span><span class="w"> </span><span class="ss">&#39;my-documentation</span><span class="p">)</span>
+<span class="c1">;;; my-documentation.el ends here</span>
+</code></pre></div>
+
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>

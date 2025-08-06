@@ -515,6 +515,12 @@
         
     </ul>
   
+</nav><hr>
+<nav>
+    <ul>
+        <li><a href="#code">Code</a></li>
+        
+    </ul>
 </nav>
 </aside>
             <main id="terminal-mkdocs-main-content">
@@ -525,7 +531,32 @@
     
 
 <section id="mkdocs-terminal-content">
-    <hr />
+    <h3 id="code">Code</h3>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="nb">:doc</span><span class="w"> </span><span class="s">&quot;Autostarts an Emacs server. Connect to it using emacsclient.&quot;</span>
+<span class="w">  </span><span class="nb">:require</span><span class="w"> </span><span class="no">t</span>
+<span class="w">  </span><span class="nb">:bind</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-c q&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nf">delete-frame</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-c Q&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">save-buffers-kill-emacs</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/start-server-if-not-running</span><span class="w"> </span><span class="p">()</span>
+<span class="w">    </span><span class="s">&quot;Start the Emacs server if not running.&quot;</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">unless</span><span class="w"> </span><span class="p">(</span><span class="k">or</span><span class="w"> </span><span class="p">(</span><span class="nf">processp</span><span class="w"> </span><span class="nv">server-process</span><span class="p">)</span>
+<span class="w">                </span><span class="p">(</span><span class="nv">server-running-p</span><span class="p">))</span>
+<span class="w">      </span><span class="p">(</span><span class="nv">server-start</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">message</span><span class="w"> </span><span class="s">&quot;Emacsclient Server started!&quot;</span><span class="p">)))</span>
+<span class="w">  </span><span class="nb">:hook</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">emacs-startup-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">my/start-server-if-not-running</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">htmlize</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">simple-httpd</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">impatient-mode</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">provide</span><span class="w"> </span><span class="ss">&#39;my-misc</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>
 

@@ -515,6 +515,12 @@
         
     </ul>
   
+</nav><hr>
+<nav>
+    <ul>
+        <li><a href="#code">Code</a></li>
+        
+    </ul>
 </nav>
 </aside>
             <main id="terminal-mkdocs-main-content">
@@ -525,7 +531,70 @@
     
 
 <section id="mkdocs-terminal-content">
-    <hr />
+    <h3 id="code">Code</h3>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">eval-after-load</span><span class="w"> </span><span class="s">&quot;quail/latin-ltx&quot;</span>
+<span class="w">    </span><span class="o">`</span><span class="p">(</span><span class="k">progn</span>
+<span class="w">       </span><span class="o">,@</span><span class="p">(</span><span class="nf">mapcar</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">(</span><span class="nv">bind</span><span class="p">)</span>
+<span class="w">                   </span><span class="o">`</span><span class="p">(</span><span class="nv">quail-defrule</span><span class="w"> </span><span class="o">,</span><span class="p">(</span><span class="nf">car</span><span class="w"> </span><span class="nv">bind</span><span class="p">)</span><span class="w"> </span><span class="o">,</span><span class="p">(</span><span class="nf">cdr</span><span class="w"> </span><span class="nv">bind</span><span class="p">)</span><span class="w"> </span><span class="s">&quot;TeX&quot;</span><span class="p">))</span>
+<span class="w">                 </span><span class="o">`</span><span class="p">((</span><span class="s">&quot;\\lnt&quot;</span><span class="w">   </span><span class="o">.</span><span class="w"> </span><span class="sc">?¬</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\land&quot;</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="sc">?∧</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\lor&quot;</span><span class="w">   </span><span class="o">.</span><span class="w"> </span><span class="sc">?∨</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\lev&quot;</span><span class="w">   </span><span class="o">.</span><span class="w"> </span><span class="sc">?≡</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\nlev&quot;</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="sc">?≢</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\lrarr&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="sc">?↔</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\bic&quot;</span><span class="w">   </span><span class="o">.</span><span class="w"> </span><span class="sc">?↔</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\To&quot;</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="sc">?⇒</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\allint&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="sc">?ℤ</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\tf&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="sc">?∴</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\isct&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="sc">?∩</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\ints&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="sc">?∩</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\union&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="sc">?∪</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\unn&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="sc">?∪</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\sst&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="sc">?⊆</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\psst&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="sc">?⊂</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\nin&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="sc">?∉</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\*&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="sc">?·</span><span class="p">)</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\boxul&quot;</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="sc">?┌</span><span class="p">)</span><span class="w">   </span><span class="c1">; box upper-left</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\boxur&quot;</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="sc">?┐</span><span class="p">)</span><span class="w">   </span><span class="c1">; box upper-right</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\boxdl&quot;</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="sc">?└</span><span class="p">)</span><span class="w">   </span><span class="c1">; box down-left</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\boxdr&quot;</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="sc">?┘</span><span class="p">)</span><span class="w">   </span><span class="c1">; box down-right</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\boxh&quot;</span><span class="w">   </span><span class="o">.</span><span class="w"> </span><span class="sc">?─</span><span class="p">)</span><span class="w">   </span><span class="c1">; box horizontal</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\boxv&quot;</span><span class="w">   </span><span class="o">.</span><span class="w"> </span><span class="sc">?│</span><span class="p">)</span><span class="w">   </span><span class="c1">; box vertical</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\boxtd&quot;</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="sc">?┬</span><span class="p">)</span><span class="w">   </span><span class="c1">; box tee down</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\boxtu&quot;</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="sc">?┴</span><span class="p">)</span><span class="w">   </span><span class="c1">; box tee up</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\boxtr&quot;</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="sc">?├</span><span class="p">)</span><span class="w">   </span><span class="c1">; box tee right</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\boxtl&quot;</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="sc">?┤</span><span class="p">)</span><span class="w">   </span><span class="c1">; box tee left</span>
+<span class="w">                   </span><span class="p">(</span><span class="s">&quot;\\boxc&quot;</span><span class="w">   </span><span class="o">.</span><span class="w"> </span><span class="sc">?┼</span><span class="p">)</span><span class="w">   </span><span class="c1">; box cross</span>
+<span class="w">                   </span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">auctex</span>
+<span class="w">  </span><span class="nb">:require</span><span class="w"> </span><span class="no">t</span>
+<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">((</span><span class="nv">LaTeX-mode-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">preview-larger-previews</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;ox-latex</span>
+<span class="w">    </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">org-latex-compiler</span><span class="w"> </span><span class="s">&quot;lualatex&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">org-latex-pdf-process</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;%latex -interaction nonstopmode -output-directory %o %f&quot;</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">preview-larger-previews</span><span class="w"> </span><span class="p">()</span>
+<span class="w">    </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">preview-scale-function</span>
+<span class="w">          </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="nf">*</span><span class="w"> </span><span class="mf">1.25</span><span class="w"> </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="p">(</span><span class="nv">preview-scale-from-face</span><span class="p">)))))))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">cdlatex</span>
+<span class="w">  </span><span class="nb">:after</span><span class="w"> </span><span class="nv">auctex</span>
+<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">((</span><span class="nv">LaTeX-mode-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">turn-on-cdlatex</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">latex-preview-pane</span>
+<span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;LaTeX-mode-hook</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="nv">latex-preview-pane-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">)))</span>
+<span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">pdf-latex-command</span><span class="w"> </span><span class="s">&quot;lualatex&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">preview-orientation</span><span class="w"> </span><span class="ss">&#39;below</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">provide</span><span class="w"> </span><span class="ss">&#39;my-latex</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>
 

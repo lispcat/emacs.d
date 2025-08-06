@@ -515,6 +515,12 @@
         
     </ul>
   
+</nav><hr>
+<nav>
+    <ul>
+        <li><a href="#code">Code</a></li>
+        
+    </ul>
 </nav>
 </aside>
             <main id="terminal-mkdocs-main-content">
@@ -525,7 +531,52 @@
     
 
 <section id="mkdocs-terminal-content">
-    <hr />
+    <h3 id="code">Code</h3>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="nb">:setq</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">eat-term-name</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="s">&quot;xterm-256color&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">eat-kill-buffer-on-exit</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:defer-config</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">eat-shell</span><span class="w"> </span><span class="p">(</span><span class="nf">concat</span><span class="w"> </span><span class="p">(</span><span class="k">or</span><span class="w"> </span><span class="nv">explicit-shell-file-name</span>
+<span class="w">                              </span><span class="p">(</span><span class="nv">getenv</span><span class="w"> </span><span class="s">&quot;ESHELL&quot;</span><span class="p">)</span>
+<span class="w">                              </span><span class="nv">shell-file-name</span><span class="p">)</span>
+<span class="w">                          </span><span class="s">&quot; -c tmux&quot;</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">:bind</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-c a a&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">eat</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">eat-semi-char-mode-map</span>
+<span class="w">   </span><span class="p">(</span><span class="s">&quot;M-o&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">ace-window</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">eshell</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
+<span class="w">  </span><span class="nb">:bind</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-c a e&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">eshell</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">magit</span>
+<span class="w">  </span><span class="nb">:preface</span><span class="w"> </span><span class="p">(</span><span class="nv">elpaca</span><span class="w"> </span><span class="nv">transient</span><span class="p">)</span><span class="w"> </span><span class="c1">; HACK: magit needs newer version</span>
+<span class="w">  </span><span class="nb">:setq</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">magit-display-buffer-function</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">magit-display-buffer-same-window-except-diff-v1</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:bind</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-c v&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">magit</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">pdf-tools</span>
+<span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">pdf-loader-install</span><span class="p">))</span><span class="w"> </span><span class="c1">; On demand loading, leads to faster startup time</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">elfeed</span>
+<span class="w">  </span><span class="nb">:defer-config</span>
+<span class="w">  </span><span class="c1">;; set `elfeed-feeds&#39; to all files in `my/elfeed-feeds-dir&#39;.</span>
+<span class="w">  </span><span class="p">(</span><span class="k">defvar</span><span class="w"> </span><span class="nv">my/elfeed-feeds-dir</span><span class="w"> </span><span class="s">&quot;~/feeds&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/elfeed-feeds-update-var</span><span class="w"> </span><span class="p">()</span>
+<span class="w">    </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">elfeed-feeds</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">mapcar</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">(</span><span class="nv">s</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">concat</span><span class="w"> </span><span class="s">&quot;file:&quot;</span><span class="w"> </span><span class="nv">s</span><span class="p">))</span>
+<span class="w">                  </span><span class="p">(</span><span class="nf">directory-files</span><span class="w"> </span><span class="nv">my/elfeed-feeds-dir</span><span class="w"> </span><span class="no">t</span>
+<span class="w">                                   </span><span class="nv">directory-files-no-dot-files-regexp</span><span class="p">))))</span>
+<span class="w">  </span><span class="c1">;; run `my/elfeed-feeds-update-var&#39; before running `elfeed-update&#39;</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">advice-add</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">elfeed-update</span><span class="w"> </span><span class="nb">:before</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">my/elfeed-feeds-update-var</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">provide</span><span class="w"> </span><span class="ss">&#39;my-programs</span><span class="p">)</span>
+</code></pre></div>
+
+<hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>
 

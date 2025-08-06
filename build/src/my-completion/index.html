@@ -515,6 +515,12 @@
         
     </ul>
   
+</nav><hr>
+<nav>
+    <ul>
+        <li><a href="#code">Code</a></li>
+        
+    </ul>
 </nav>
 </aside>
             <main id="terminal-mkdocs-main-content">
@@ -530,6 +536,405 @@
 TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)</p>
 <p>a framework for minibuffer completion
 (https://github.com/minad/vertico)</p>
+<h3 id="code">Code</h3>
+<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">vertico-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="c1">;; :setq</span>
+<span class="w">  </span><span class="c1">;; (vertico-scroll-margin . 0) ; Different scroll margin</span>
+<span class="w">  </span><span class="c1">;; (vertico-count . 20) ; Show more candidates</span>
+<span class="w">  </span><span class="c1">;; (vertico-resize . t) ; Grow and shrink the Vertico minibuffer</span>
+<span class="w">  </span><span class="c1">;; (vertico-cycle . t) ; Enable cycling for `vertico-next/previous&#39;</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="c1">;; A few more useful configurations...</span>
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">emacs</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
+<span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="c1">;; Support opening new minibuffers from inside existing minibuffers.</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">enable-recursive-minibuffers</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
+<span class="w">  </span><span class="c1">;;</span>
+<span class="w">  </span><span class="c1">;; Emacs 28 and newer: hide commands in M-x that do not work in the current mode.</span>
+<span class="w">  </span><span class="c1">;; (setq read-extended-command-predicate #&#39;command-completion-default-include-p)</span>
+<span class="w">  </span><span class="c1">;;</span>
+<span class="w">  </span><span class="c1">;; Add prompt indicator to `completing-read-multiple&#39;.</span>
+<span class="w">  </span><span class="c1">;; We display [CRM&lt;separator&gt;], e.g., [CRM,] if the separator is a comma.</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">crm-indicator</span><span class="w"> </span><span class="p">(</span><span class="nv">args</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">cons</span><span class="w"> </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;[CRM%s] %s&quot;</span>
+<span class="w">                  </span><span class="p">(</span><span class="nv">replace-regexp-in-string</span>
+<span class="w">                   </span><span class="s">&quot;\\`\\[.*?]\\*\\|\\[.*?]\\*\\&#39;&quot;</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">                   </span><span class="nv">crm-separator</span><span class="p">)</span>
+<span class="w">                  </span><span class="p">(</span><span class="nf">car</span><span class="w"> </span><span class="nv">args</span><span class="p">))</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">cdr</span><span class="w"> </span><span class="nv">args</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">advice-add</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">completing-read-multiple</span><span class="w"> </span><span class="nb">:filter-args</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">crm-indicator</span><span class="p">)</span>
+<span class="w">  </span><span class="c1">;;</span>
+<span class="w">  </span><span class="c1">;; Do not allow the cursor in the minibuffer prompt</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">minibuffer-prompt-properties</span>
+<span class="w">        </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">read-only</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="nv">cursor-intangible</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="nv">face</span><span class="w"> </span><span class="nf">minibuffer-prompt</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;minibuffer-setup-hook</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">cursor-intangible-mode</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">consult</span>
+<span class="w">  </span><span class="nb">:bind</span><span class="w"> </span><span class="p">(</span><span class="c1">;; generic binds</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;C-s&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-line</span><span class="p">)</span>
+
+<span class="w">         </span><span class="c1">;; C-c bindings in `mode-specific-map&#39;</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;C-c M-x&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-mode-command</span><span class="p">)</span>
+<span class="w">         </span><span class="c1">;; (&quot;C-c )&quot; . consult-kmacro)</span>
+
+<span class="w">         </span><span class="c1">;; C-x bindings in `ctl-x-map&#39;</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;C-x M-:&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-complex-command</span><span class="p">)</span><span class="w"> </span><span class="c1">;; repeat-complex-command</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;C-x b&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-buffer</span><span class="p">)</span><span class="w">            </span><span class="c1">;; switch-to-buffer</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;C-x 4 b&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-buffer-other-window</span><span class="p">)</span><span class="w"> </span><span class="c1">;; switch-to-buffer-other-window</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;C-x 5 b&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-buffer-other-frame</span><span class="p">)</span><span class="w"> </span><span class="c1">;; switch-to-buffer-other-frame</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;C-x t b&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-buffer-other-tab</span><span class="p">)</span><span class="w"> </span><span class="c1">;; switch-to-buffer-other-tab</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;C-x r b&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-bookmark</span><span class="p">)</span><span class="w">         </span><span class="c1">;; bookmark-jump</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;C-x p b&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-project-buffer</span><span class="p">)</span><span class="w"> </span><span class="c1">;; project-switch-to-buffer</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;C-x p C-b&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-project-buffer</span><span class="p">)</span><span class="w"> </span><span class="c1">;; project-switch-to-buffer</span>
+
+<span class="w">         </span><span class="c1">;; Custom M-# bindings for fast register access</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-#&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-register-store</span><span class="p">)</span>
+<span class="w">         </span><span class="c1">;; (&quot;C-M-#&quot; . consult-register)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;C-M-#&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-register-load</span><span class="p">)</span>
+
+<span class="w">         </span><span class="c1">;; Other custom bindings</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-y&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-yank-pop</span><span class="p">)</span><span class="w"> </span><span class="c1">;; yank-pop</span>
+<span class="w">         </span><span class="p">([</span><span class="nv">remap</span><span class="w"> </span><span class="nv">Info-search</span><span class="p">]</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-info</span><span class="p">)</span>
+
+<span class="w">         </span><span class="c1">;; M-g bindings in `goto-map&#39;</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-g e&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-compile-error</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-g f&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-flymake</span><span class="p">)</span><span class="w"> </span><span class="c1">;; Alternative: consult-flycheck</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-g g&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-goto-line</span><span class="p">)</span><span class="w">   </span><span class="c1">;; goto-line</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-g M-g&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-goto-line</span><span class="p">)</span><span class="w"> </span><span class="c1">;; goto-line</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-g o&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-outline</span><span class="p">)</span><span class="w"> </span><span class="c1">;; Alternative: consult-org-heading</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-g m&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-mark</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-g k&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-global-mark</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-g i&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-imenu</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-g I&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-imenu-multi</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-g O&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-org-heading</span><span class="p">)</span>
+
+<span class="w">         </span><span class="c1">;; M-s bindings in `search-map&#39;</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s d&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-find</span><span class="p">)</span><span class="w"> </span><span class="c1">;; Alternative: consult-fd</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s c&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-locate</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s g&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-grep</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s G&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-git-grep</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s r&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-ripgrep</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s l&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-line</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s L&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-line-multi</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s k&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-keep-lines</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s u&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-focus-lines</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s M&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-man</span><span class="p">)</span><span class="w">        </span><span class="c1">; T for terminal</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s I&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-info</span><span class="p">)</span>
+
+<span class="w">         </span><span class="c1">;; Isearch integration</span>
+<span class="w">         </span><span class="p">(</span><span class="s">&quot;M-s e&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-isearch-history</span><span class="p">)</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">isearch-mode-map</span>
+<span class="w">          </span><span class="p">(</span><span class="s">&quot;M-e&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-isearch-history</span><span class="p">)</span><span class="w">   </span><span class="c1">;; isearch-edit-string</span>
+<span class="w">          </span><span class="p">(</span><span class="s">&quot;M-s e&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-isearch-history</span><span class="p">)</span><span class="w"> </span><span class="c1">;; isearch-edit-string</span>
+<span class="w">          </span><span class="p">(</span><span class="s">&quot;M-s l&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-line</span><span class="p">)</span><span class="w"> </span><span class="c1">;; Needed by: consult-line to detect isearch</span>
+<span class="w">          </span><span class="p">(</span><span class="s">&quot;M-s L&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-line-multi</span><span class="p">))</span><span class="w"> </span><span class="c1">;; Needed by: consult-line to detect isearch</span>
+
+<span class="w">         </span><span class="c1">;; Minibuffer history</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">minibuffer-local-map</span>
+<span class="w">          </span><span class="p">(</span><span class="s">&quot;M-s&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-history</span><span class="p">)</span><span class="w"> </span><span class="c1">;; next-matching-history-element</span>
+<span class="w">          </span><span class="p">(</span><span class="s">&quot;M-r&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-history</span><span class="p">))</span><span class="w"> </span><span class="c1">;; previous-matching-history-element</span>
+<span class="w">         </span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">general-my-map</span>
+<span class="w">    </span><span class="s">&quot;s&quot;</span><span class="w"> </span><span class="nv">search-map</span>
+<span class="w">    </span><span class="s">&quot;Tt&quot;</span><span class="w"> </span><span class="ss">&#39;consult-theme</span>
+<span class="w">    </span><span class="s">&quot;bb&quot;</span><span class="w"> </span><span class="ss">&#39;consult-buffer</span>
+<span class="w">    </span><span class="s">&quot;fr&quot;</span><span class="w"> </span><span class="ss">&#39;consult-recent-file</span>
+<span class="w">    </span><span class="s">&quot;fm&quot;</span><span class="w"> </span><span class="ss">&#39;consult-bookmark</span><span class="p">))</span>
+
+<span class="c1">;; used to go to a file in a bookmarked dir n stuff (one ex)</span>
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">consult-dir</span>
+<span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">general-my-map</span>
+<span class="w">    </span><span class="s">&quot;fd&quot;</span><span class="w"> </span><span class="ss">&#39;consult-dir</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:bind</span><span class="w"> </span><span class="p">((</span><span class="s">&quot;C-x C-d&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-dir</span><span class="p">)</span><span class="w">      </span><span class="c1">; default?</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">vertico-map</span>
+<span class="w">          </span><span class="p">(</span><span class="s">&quot;C-x C-d&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-dir</span><span class="p">)</span>
+<span class="w">          </span><span class="p">(</span><span class="s">&quot;C-x C-j&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-dir-jump-file</span><span class="p">)))</span>
+<span class="w">  </span><span class="c1">;; :custom</span>
+<span class="w">  </span><span class="c1">;; (consult-dir-project-list-function nil)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="c1">;; TODO: do i even need to do this here?</span>
+<span class="c1">;; - oh wait i do since the other module might overwrite...</span>
+<span class="c1">;; - but the issue is that it never gets set if those modules</span>
+<span class="c1">;; are never loaded...</span>
+<span class="c1">;; - maybe in the other module files, only set those functions</span>
+<span class="c1">;; if another bind isnt already there?</span>
+<span class="c1">;; - is it possible to do eval-after-load &#39;thing OR after init?</span>
+<span class="c1">;; and throw away the other autoload once one succeeds?</span>
+
+<span class="c1">;; (defmacro mi/eval-now-and-after-load (feature &amp;rest body)</span>
+<span class="c1">;;   &quot;Eval BODY, then if FEATURE is not loaded, eval BODY again after FEATURE loaded.&quot;</span>
+<span class="c1">;;   (declare (indent defun))</span>
+<span class="c1">;;   (let ((f (cadr feature)))</span>
+<span class="c1">;;     `(progn</span>
+<span class="c1">;;        ;; always eval now</span>
+<span class="c1">;;        ,@body</span>
+<span class="c1">;;        ;; if feature not loaded, eval again after load feature</span>
+<span class="c1">;;        ,(unless (featurep f)</span>
+<span class="c1">;;           `(eval-after-load &#39;,f</span>
+<span class="c1">;;              (lambda () ,@body))))))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">embark</span>
+<span class="w">  </span><span class="nb">:bind</span>
+<span class="w">  </span><span class="p">((</span><span class="s">&quot;C-.&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">embark-act</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-;&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">embark-dwim</span><span class="p">)</span>
+<span class="w">   </span><span class="c1">;; (&quot;C-h B&quot; . embark-bindings)</span>
+<span class="w">   </span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="c1">;; use embark for showing command prefix help</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">prefix-help-command</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">embark-prefix-help-command</span><span class="p">)</span>
+
+<span class="w">  </span><span class="c1">;; Show the Embark target at point via Eldoc. You may adjust the</span>
+<span class="w">  </span><span class="c1">;; Eldoc strategy, if you want to see the documentation from</span>
+<span class="w">  </span><span class="c1">;; multiple providers. Beware that using this can be a little</span>
+<span class="w">  </span><span class="c1">;; jarring since the message shown in the minibuffer can be more</span>
+<span class="w">  </span><span class="c1">;; than one line, causing the modeline to move up and down:</span>
+
+<span class="w">  </span><span class="c1">;; (add-hook &#39;eldoc-documentation-functions #&#39;embark-eldoc-first-target)</span>
+<span class="w">  </span><span class="c1">;; (setq eldoc-documentation-strategy #&#39;eldoc-documentation-compose-eagerly)</span>
+<span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="c1">;; Hide the mode line of the Embark live/completions buffers</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;display-buffer-alist</span>
+<span class="w">               </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;\\`\\*Embark Collect \\(Live\\|Completions\\)\\*&quot;</span>
+<span class="w">                 </span><span class="no">nil</span>
+<span class="w">                 </span><span class="p">(</span><span class="nf">window-parameters</span><span class="w"> </span><span class="p">(</span><span class="nv">mode-line-format</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">none</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">embark-consult</span>
+<span class="w">  </span><span class="nb">:after</span><span class="w"> </span><span class="nv">embark</span><span class="w"> </span><span class="nv">consult</span>
+<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">(</span><span class="nv">embark-collect-mode-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">consult-preview-at-point-mode</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">orderless</span>
+<span class="w">  </span><span class="nb">:require</span><span class="w"> </span><span class="no">t</span>
+<span class="w">  </span><span class="nb">:setq</span>
+<span class="w">  </span><span class="c1">;; Configure a custom style dispatcher (see the Consult wiki)</span>
+<span class="w">  </span><span class="c1">;; (orderless-style-dispatchers . &#39;(+orderless-consult-dispatch orderless-affix-dispatch))</span>
+<span class="w">  </span><span class="c1">;; (orderless-component-separator . #&#39;orderless-escapable-split-on-space)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">completion-styles</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">orderless</span><span class="w"> </span><span class="nv">basic</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">completion-category-defaults</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">completion-category-overrides</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">file</span><span class="w"> </span><span class="p">(</span><span class="nv">styles</span><span class="w"> </span><span class="nv">partial-completion</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">marginalia</span>
+<span class="w">  </span><span class="nb">:init</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">marginalia-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:bind</span><span class="w"> </span><span class="p">((</span><span class="nv">minibuffer-local-map</span>
+<span class="w">          </span><span class="p">(</span><span class="s">&quot;M-A&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">marginalia-cycle</span><span class="p">))</span>
+<span class="w">         </span><span class="p">(</span><span class="nv">completion-list-mode-map</span>
+<span class="w">          </span><span class="p">(</span><span class="s">&quot;M-A&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">marginalia-cycle</span><span class="p">))))</span>
+
+<span class="c1">;; TODO: disable most backends by default add a bunch per mode (org should only have a few</span>
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">company</span>
+<span class="w">  </span><span class="c1">;; :disabled t</span>
+<span class="w">  </span><span class="nb">:require</span><span class="w"> </span><span class="no">t</span>
+<span class="w">  </span><span class="nb">:bind</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">company-active-map</span>
+<span class="w">   </span><span class="p">(</span><span class="s">&quot;&lt;return&gt;&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-n&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-p&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-s&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">company-filter-candidates</span><span class="p">))</span>
+
+<span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">company-tng-configure-default</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">global-company-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+
+<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/company-return-default-or-complete</span><span class="w"> </span><span class="p">()</span>
+<span class="w">    </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">;; number if selected, nil if not</span>
+<span class="w">    </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">company-selection</span>
+<span class="w">        </span><span class="p">(</span><span class="nv">company-complete-selection</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nv">company-abort</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">execute-kbd-macro</span><span class="w"> </span><span class="p">(</span><span class="nv">kbd</span><span class="w"> </span><span class="s">&quot;&lt;return&gt;&quot;</span><span class="p">))))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">define-key</span><span class="w"> </span><span class="nv">company-tng-map</span><span class="w"> </span><span class="p">(</span><span class="nv">kbd</span><span class="w"> </span><span class="s">&quot;&lt;return&gt;&quot;</span><span class="p">)</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">my/company-return-default-or-complete</span><span class="p">)</span>
+
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">company-backends</span>
+<span class="w">        </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">company-dabbrev</span><span class="w"> </span><span class="nv">company-files</span><span class="p">))</span><span class="w"> </span><span class="c1">; the default, overrides below</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">company-transformers</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">lsp-completion-provider</span><span class="w"> </span><span class="nb">:none</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">company-idle-delay</span><span class="w"> </span><span class="mf">0.1</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">company-selection-wrap-around</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">company-minimum-prefix-length</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">company-dabbrev-downcase</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">company-search-regexp-function</span><span class="w"> </span><span class="ss">&#39;company-search-words-in-any-order-regexp</span><span class="p">)</span>
+
+<span class="w">  </span><span class="c1">;; org-mode-specific backends</span>
+
+<span class="w">  </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;prog-mode-hook</span>
+<span class="w">            </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
+<span class="w">              </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">company-backends</span>
+<span class="w">                          </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">company-yasnippet</span><span class="w"> </span><span class="nb">:with</span><span class="w"> </span><span class="nv">company-capf</span><span class="p">)</span>
+<span class="w">                            </span><span class="nv">company-dabbrev-code</span>
+<span class="w">                            </span><span class="nv">company-files</span><span class="p">))</span>
+<span class="w">              </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">company-transformers</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">company-sort-by-backend-importance</span><span class="p">))))</span>
+
+<span class="w">  </span><span class="p">(</span><span class="nv">eval-after-load</span><span class="w"> </span><span class="ss">&#39;org</span>
+<span class="w">    </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;org-mode-hook</span>
+<span class="w">               </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
+<span class="w">                 </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">company-backends</span>
+<span class="w">                             </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">company-dabbrev</span><span class="w"> </span><span class="nb">:with</span><span class="w"> </span><span class="nv">company-files</span><span class="p">))))))</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">eval-after-load</span><span class="w"> </span><span class="ss">&#39;latex</span>
+<span class="w">    </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;LaTeX-mode-hook</span>
+<span class="w">               </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
+<span class="w">                 </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">company-backends</span><span class="ss">&#39;nil</span><span class="p">))))</span>
+
+<span class="w">  </span><span class="c1">;; separator for orderless completion:</span>
+
+<span class="w">  </span><span class="p">(</span><span class="k">defvar</span><span class="w"> </span><span class="nv">my/company-separator</span><span class="w"> </span><span class="s">&quot;&amp;&quot;</span><span class="p">)</span>
+
+<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/company-insert-separator</span><span class="w"> </span><span class="p">()</span>
+<span class="w">    </span><span class="s">&quot;Insert </span><span class="ss">`my/company-separator&#39;</span><span class="s"> during company completion.&quot;</span>
+<span class="w">    </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="nv">company-manual-begin</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">insert</span><span class="w"> </span><span class="nv">my/company-separator</span><span class="p">)))</span>
+
+<span class="w">  </span><span class="p">(</span><span class="nf">define-key</span><span class="w"> </span><span class="nv">company-active-map</span><span class="w"> </span><span class="p">(</span><span class="nv">kbd</span><span class="w"> </span><span class="s">&quot;M-SPC&quot;</span><span class="p">)</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">my/company-insert-separator</span><span class="p">)</span>
+
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">orderless-component-separator</span><span class="w"> </span><span class="s">&quot;[ &amp;]&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">company-quickhelp</span>
+<span class="w">  </span><span class="nb">:after</span><span class="w"> </span><span class="nv">company</span>
+<span class="w">  </span><span class="nb">:bind</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;C-c l h c&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">company-quickhelp-mode</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:setq</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">company-quickhelp-delay</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">company-quickhelp-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">;; TODO: this is set up for eglot only, not lsp-mode</span>
+
+<span class="c1">;; https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for-yasnippets-when-using-eglot</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">yasnippet</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="nv">yasnippet-snippets</span>
+<span class="w">  </span><span class="nb">:commands</span><span class="w"> </span><span class="nv">yas-reload-all</span>
+<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">(</span><span class="nv">prog-mode-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">yas-minor-mode</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:bind</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">yas-keymap</span>
+<span class="w">   </span><span class="p">(</span><span class="s">&quot;RET&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">yas-next-field-or-maybe-expand</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">yas-reload-all</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">global-set-key</span><span class="w"> </span><span class="p">[</span><span class="nv">remap</span><span class="w"> </span><span class="nv">dabbrev-expand</span><span class="p">]</span><span class="w"> </span><span class="ss">&#39;hippie-expand</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;hippie-expand-try-functions-list</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">yas-hippie-try-expand</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">isearch</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
+<span class="w">  </span><span class="nb">:bind</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-M-s&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">isearch-forward</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-M-r&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">isearch-backward</span><span class="p">))</span>
+
+<span class="c1">;;; CULPRIT OF HANGING, DISABLED.</span>
+
+<span class="c1">;; (leaf corfu</span>
+<span class="c1">;;   :require t</span>
+<span class="c1">;;   :setq</span>
+<span class="c1">;;   (corfu-cycle . t)        ;; Enable cycling through candidates</span>
+<span class="c1">;;   (corfu-auto . t)         ;; Enable auto completion</span>
+<span class="c1">;;   (corfu-auto-prefix . 1)  ;; Complete after typing 2 characters</span>
+<span class="c1">;;   (corfu-auto-delay . 0.1) ;; Wait time before showing completions</span>
+<span class="c1">;;   (corfu-preview-current . &#39;insert) ;; Preview first candidate</span>
+<span class="c1">;;   (corfu-preselect . &#39;prompt)       ;; Preselect the prompt</span>
+<span class="c1">;;   (corfu-on-exact-match . nil) ;; Don&#39;t auto-complete exact matches</span>
+
+<span class="c1">;;   ;; Hide commands in M-x which do not apply to the current mode.  Corfu</span>
+<span class="c1">;;   ;; commands are hidden, since they are not used via M-x. This setting is</span>
+<span class="c1">;;   ;; useful beyond Corfu.</span>
+<span class="c1">;;   (read-extended-command-predicate . #&#39;command-completion-default-include-p)</span>
+
+<span class="c1">;;   :bind (corfu-map</span>
+<span class="c1">;;          (&quot;TAB&quot; . corfu-next)</span>
+<span class="c1">;;          ([tab] . corfu-next)</span>
+<span class="c1">;;          (&quot;S-TAB&quot; . corfu-previous)</span>
+<span class="c1">;;          ([backtab] . corfu-previous)</span>
+<span class="c1">;;          (&quot;RET&quot; . nil)</span>
+<span class="c1">;;          (&quot;C-n&quot; . nil)</span>
+<span class="c1">;;          (&quot;C-p&quot; . nil)</span>
+<span class="c1">;;          (&quot;C-RET&quot; . corfu-insert))</span>
+<span class="c1">;;   :init</span>
+<span class="c1">;;   (global-corfu-mode))</span>
+
+<span class="c1">;; (leaf cape</span>
+<span class="c1">;;   ;; :disabled t</span>
+<span class="c1">;;   :require t</span>
+<span class="c1">;;   ;; Bind prefix keymap providing all Cape commands under a mnemonic key.</span>
+<span class="c1">;;   ;; Press C-c p ? to for help.</span>
+<span class="c1">;;   :bind (&quot;M-+&quot; . cape-prefix-map) ;; Alternative keys: M-p, M-+, ...</span>
+<span class="c1">;;   ;; Alternatively bind Cape commands individually.</span>
+<span class="c1">;;   ;; :bind ((&quot;C-c p d&quot; . cape-dabbrev)</span>
+<span class="c1">;;   ;;        (&quot;C-c p h&quot; . cape-history)</span>
+<span class="c1">;;   ;;        (&quot;C-c p f&quot; . cape-file)</span>
+<span class="c1">;;   ;;        ...)</span>
+<span class="c1">;;   :init</span>
+<span class="c1">;;   ;; Add to the global default value of `completion-at-point-functions&#39; which is</span>
+<span class="c1">;;   ;; used by `completion-at-point&#39;.  The order of the functions matters, the</span>
+<span class="c1">;;   ;; first function returning a result wins.  Note that the list of buffer-local</span>
+<span class="c1">;;   ;; completion functions takes precedence over the global list.</span>
+
+<span class="c1">;;   (add-hook &#39;completion-at-point-functions #&#39;cape-dabbrev) ; current buffers</span>
+<span class="c1">;;   (add-hook &#39;completion-at-point-functions #&#39;cape-file)    ; file name</span>
+<span class="c1">;;   ;; (add-hook &#39;completion-at-point-functions (cape-company-to-capf &#39;company-yasnippet))    ; file name</span>
+<span class="c1">;;   ;; (add-hook &#39;completion-at-point-functions #&#39;cape-elisp-block) ; code block (THE CULPRIT!!!!!)</span>
+
+<span class="c1">;;   )</span>
+
+<span class="c1">;; (leaf yasnippet-capf</span>
+<span class="c1">;;   :after cape</span>
+<span class="c1">;;   :config</span>
+<span class="c1">;;   (defun my/capfs-add-yasnippet ()</span>
+<span class="c1">;;     &quot;Add yasnippet-capf to the front of completion-at-point-functions.&quot;</span>
+<span class="c1">;;     ;; (add-to-list &#39;completion-at-point-functions #&#39;yasnippet-capf)</span>
+<span class="c1">;;     (setq-local completion-at-point-functions</span>
+<span class="c1">;;                 (cons #&#39;yasnippet-capf</span>
+<span class="c1">;;                       completion-at-point-functions))</span>
+<span class="c1">;;     )</span>
+<span class="c1">;;   :hook (prog-mode-hook . my/capfs-add-yasnippet))</span>
+
+<span class="c1">;; Configure Tempel</span>
+<span class="c1">;; (use-package tempel</span>
+<span class="c1">;;   ;; Require trigger prefix before template name when completing.</span>
+<span class="c1">;;   ;; :custom</span>
+<span class="c1">;;   ;; (tempel-trigger-prefix &quot;&lt;&quot;)</span>
+
+<span class="c1">;;   :bind ((&quot;M-+&quot; . tempel-complete) ;; Alternative tempel-expand</span>
+<span class="c1">;;          (&quot;M-*&quot; . tempel-insert))</span>
+
+<span class="c1">;;   :init</span>
+
+<span class="c1">;;   ;; Setup completion at point</span>
+<span class="c1">;;   (defun tempel-setup-capf ()</span>
+<span class="c1">;;     ;; Add the Tempel Capf to `completion-at-point-functions&#39;.</span>
+<span class="c1">;;     ;; `tempel-expand&#39; only triggers on exact matches. Alternatively use</span>
+<span class="c1">;;     ;; `tempel-complete&#39; if you want to see all matches, but then you</span>
+<span class="c1">;;     ;; should also configure `tempel-trigger-prefix&#39;, such that Tempel</span>
+<span class="c1">;;     ;; does not trigger too often when you don&#39;t expect it. NOTE: We add</span>
+<span class="c1">;;     ;; `tempel-expand&#39; *before* the main programming mode Capf, such</span>
+<span class="c1">;;     ;; that it will be tried first.</span>
+<span class="c1">;;     (setq-local completion-at-point-functions</span>
+<span class="c1">;;                 (cons #&#39;tempel-insert</span>
+<span class="c1">;;                       completion-at-point-functions)))</span>
+
+<span class="c1">;;   (add-hook &#39;conf-mode-hook &#39;tempel-setup-capf)</span>
+<span class="c1">;;   (add-hook &#39;prog-mode-hook &#39;tempel-setup-capf)</span>
+<span class="c1">;;   (add-hook &#39;text-mode-hook &#39;tempel-setup-capf)</span>
+
+<span class="c1">;;   ;; Optionally make the Tempel templates available to Abbrev,</span>
+<span class="c1">;;   ;; either locally or globally. `expand-abbrev&#39; is bound to C-x &#39;.</span>
+<span class="c1">;;   ;; (add-hook &#39;prog-mode-hook #&#39;tempel-abbrev-mode)</span>
+<span class="c1">;;   ;; (global-tempel-abbrev-mode)</span>
+<span class="c1">;;   )</span>
+
+<span class="c1">;; Optional: Add tempel-collection.</span>
+<span class="c1">;; The package is young and doesn&#39;t have comprehensive coverage.</span>
+<span class="c1">;; (use-package tempel-collection)</span>
+
+<span class="c1">;; (leaf abbrev :ensure nil</span>
+<span class="c1">;;   :bind ((&quot;C-c c a&quot; . add-global-abbrev)</span>
+<span class="c1">;;          (&quot;C-c c -&quot; . inverse-add-global-abbrev)</span>
+<span class="c1">;;          (&quot;C-c c e&quot; . edit-abbrevs)))</span>
+
+<span class="p">(</span><span class="nb">provide</span><span class="w"> </span><span class="ss">&#39;my-completion</span><span class="p">)</span>
+</code></pre></div>
+
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>
