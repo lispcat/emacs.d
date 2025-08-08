@@ -532,30 +532,29 @@
 
 <section id="mkdocs-terminal-content">
     <h3 id="code">Code</h3>
-<div class="codehilite"><pre><span></span><code><span class="w">  </span><span class="nb">:doc</span><span class="w"> </span><span class="s">&quot;Autostarts an Emacs server. Connect to it using emacsclient.&quot;</span>
-<span class="w">  </span><span class="nb">:require</span><span class="w"> </span><span class="no">t</span>
-<span class="w">  </span><span class="nb">:bind</span>
-<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-c q&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nf">delete-frame</span><span class="p">)</span>
-<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-c Q&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">save-buffers-kill-emacs</span><span class="p">)</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/start-server-if-not-running</span><span class="w"> </span><span class="p">()</span>
-<span class="w">    </span><span class="s">&quot;Start the Emacs server if not running.&quot;</span>
-<span class="w">    </span><span class="p">(</span><span class="nb">unless</span><span class="w"> </span><span class="p">(</span><span class="k">or</span><span class="w"> </span><span class="p">(</span><span class="nf">processp</span><span class="w"> </span><span class="nv">server-process</span><span class="p">)</span>
-<span class="w">                </span><span class="p">(</span><span class="nv">server-running-p</span><span class="p">))</span>
-<span class="w">      </span><span class="p">(</span><span class="nv">server-start</span><span class="p">)</span>
-<span class="w">      </span><span class="p">(</span><span class="nf">message</span><span class="w"> </span><span class="s">&quot;Emacsclient Server started!&quot;</span><span class="p">)))</span>
-<span class="w">  </span><span class="nb">:hook</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">emacs-startup-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">my/start-server-if-not-running</span><span class="p">))</span>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:doc</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Autostarts an Emacs server. Connect to it using emacsclient.&quot;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c q&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">delete-frame</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c Q&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> save-buffers-kill-emacs)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/start-server-if-not-running ()</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Start the Emacs server if not running.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">processp</span><span style="color: #D4D2C8"> server-process)</span>
+<span style="color: #D4D2C8">                (server-running-p))</span>
+<span style="color: #D4D2C8">      (server-start)</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Emacsclient Server started!&quot;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span>
+<span style="color: #D4D2C8">  (emacs-startup-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> my/start-server-if-not-running))</span>
 
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">htmlize</span><span class="p">)</span>
+<span style="color: #D4D2C8">(leaf htmlize)</span>
 
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">simple-httpd</span><span class="p">)</span>
+<span style="color: #D4D2C8">(leaf simple-httpd)</span>
 
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">impatient-mode</span><span class="p">)</span>
+<span style="color: #D4D2C8">(leaf impatient-mode)</span>
 
-<span class="p">(</span><span class="nb">provide</span><span class="w"> </span><span class="ss">&#39;my-misc</span><span class="p">)</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-misc</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
-
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>

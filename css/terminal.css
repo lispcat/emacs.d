@@ -8,6 +8,7 @@
     --mono-font-stack: "Menlo", "Monaco", "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", serif;
     --background-color: #fff;
     --page-width: 60em;
+    /* --page-width: 76em;         /\* fix !!!!!! *\/ */
     --font-color: #151515;
     --invert-font-color: #fff;
     --primary-color: #1a95e0;
@@ -20,6 +21,7 @@
     --input-style: solid;
     --display-h1-decoration: none;
     --block-background-color: var(--background-color);
+    --code-block-font-size: 15px;
 }
 
 * {
@@ -188,10 +190,11 @@ pre {
     white-space: pre-wrap;
     white-space: -moz-pre-wrap;
     white-space: -o-pre-wrap;
+    overflow-x: auto;
 }
 
 pre code {
-    overflow-x: scroll;
+    overflow-x: auto;
     padding: 0;
     margin: 0;
     display: inline-block;
@@ -215,7 +218,8 @@ pre code {
 }
 
 .terminal code {
-    font-size: var(--global-font-size);
+    /* font-size: var(--global-font-size); */
+    font-size: var(--code-block-font-size);
     font-style: normal;
 }
 
@@ -415,6 +419,7 @@ p {
 
 .container {
     max-width: var(--page-width);
+    /* max-width: 76em; */
 }
 
 .container,

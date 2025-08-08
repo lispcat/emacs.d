@@ -38,7 +38,8 @@
     --font-stack: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
     --mono-font-stack: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
     --background-color: var(--gb-dm-bg0);
-    --page-width: 60em;
+    /* --page-width: 60em; */
+    --page-width: 76em;
     --font-color: var(--gb-dm-fg1);
     --invert-font-color: var(--gb-dm-bg0-hard);
     --primary-color: var(--gb-dm-light-yellow);

@@ -532,560 +532,559 @@
 
 <section id="mkdocs-terminal-content">
     <h3 id="code">Code</h3>
-<div class="codehilite"><pre><span></span><code><span class="p">(</span><span class="k">defvar</span><span class="w"> </span><span class="nv">prefer-lsp-mode?</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nv">auto-insert-mode</span><span class="p">)</span><span class="w">  </span><span class="c1">;;; Adds hook to find-files-hook</span>
-
-<span class="p">(</span><span class="k">setq-default</span><span class="w"> </span><span class="nv">indent-tabs-mode</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
-<span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">tab-always-indent</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">compile</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">compilation-scroll-output</span><span class="w"> </span><span class="no">t</span><span class="p">))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">flycheck</span>
-<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="nv">prog-mode-hook</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">emacs</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
-<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="nv">goto-address-mode</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">project</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
-<span class="w">  </span><span class="nb">:bind-keymap</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;C-c P&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">project-prefix-map</span><span class="p">)</span>
-<span class="w">  </span><span class="nb">:init</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">project-compile-interactive</span><span class="w"> </span><span class="p">()</span>
-<span class="w">    </span><span class="p">(</span><span class="nb">declare</span><span class="w"> </span><span class="p">(</span><span class="nv">interactive-only</span><span class="w"> </span><span class="nv">compile</span><span class="p">))</span>
-<span class="w">    </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
-<span class="w">    </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nv">current-prefix-arg</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span>
-<span class="w">      </span><span class="p">(</span><span class="nf">call-interactively</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">project-compile</span><span class="p">)))</span>
-<span class="w">  </span><span class="nb">:bind</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">project-prefix-map</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">project-compile-interactive</span><span class="p">)))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">projectile</span>
-<span class="w">  </span><span class="nb">:init</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">projectile-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
-<span class="w">  </span><span class="nb">:bind-keymap</span>
-<span class="w">  </span><span class="p">(</span><span class="s">&quot;C-c p&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">projectile-command-map</span><span class="p">)</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">projectile-compile-use-comint-mode</span><span class="w"> </span><span class="no">t</span><span class="p">))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">lsp-mode</span>
-<span class="w">  </span><span class="nb">:commands</span><span class="w"> </span><span class="p">(</span><span class="nv">lsp</span><span class="w"> </span><span class="nv">lsp-deferred</span><span class="p">)</span>
-
-<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">(</span><span class="nv">lsp-mode-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-enable-which-key-integration</span><span class="p">)</span>
-
-<span class="w">  </span><span class="nb">:bind-keymap</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;C-c l&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-command-map</span><span class="p">)</span>
-
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">lsp-inlay-hint-enable</span><span class="w"> </span><span class="no">t</span>
-<span class="w">        </span><span class="c1">;; freq of refreshing highlights, lenses, links, etc</span>
-<span class="w">        </span><span class="nv">lsp-idle-delay</span><span class="w"> </span><span class="mf">0.5</span>
-<span class="w">        </span><span class="c1">;; bind &quot;C-c l&quot; to lsp-command-map</span>
-<span class="w">        </span><span class="nv">lsp-keymap-prefix</span><span class="w"> </span><span class="s">&quot;C-c l&quot;</span>
-<span class="w">        </span><span class="c1">;; problematic: https://github.com/emacs-lsp/lsp-mode/issues/4113</span>
-<span class="w">        </span><span class="nv">lsp-update-inlay-hints-on-scroll</span><span class="w"> </span><span class="no">nil</span><span class="p">))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">lsp-ui</span>
-<span class="w">  </span><span class="nb">:bind</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">lsp-ui-mode-map</span>
-<span class="w">   </span><span class="p">([</span><span class="nv">remap</span><span class="w"> </span><span class="nv">xref-find-definitions</span><span class="p">]</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-ui-peek-find-definitions</span><span class="p">)</span>
-<span class="w">   </span><span class="p">([</span><span class="nv">remap</span><span class="w"> </span><span class="nv">xref-find-references</span><span class="p">]</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-ui-peek-find-references</span><span class="p">))</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">lsp-ui-doc-frame-mode-map</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;q&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-ui-doc-hide</span><span class="p">)</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;u&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-ui-doc-unfocus-frame</span><span class="p">))</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">lsp-ui-doc-delay</span><span class="w"> </span><span class="mf">0.5</span>
-<span class="w">        </span><span class="nv">lsp-ui-doc-position</span><span class="w"> </span><span class="ss">&#39;top</span>
-<span class="w">        </span><span class="c1">;; lsp-ui-doc-alignment &#39;window</span>
-<span class="w">        </span><span class="nv">lsp-ui-doc-alignment</span><span class="w"> </span><span class="ss">&#39;frame</span>
-<span class="w">        </span><span class="c1">;; lsp-ui-doc-show-with-mouse nil</span>
-<span class="w">        </span><span class="nv">lsp-ui-doc-show-with-mouse</span><span class="w"> </span><span class="no">t</span>
-<span class="w">        </span><span class="nv">lsp-ui-doc-show-with-cursor</span><span class="w"> </span><span class="no">t</span>
-
-<span class="w">        </span><span class="nv">lsp-ui-sideline-delay</span><span class="w"> </span><span class="mf">0.2</span>
-
-<span class="w">        </span><span class="nv">lsp-ui-imenu-auto-refresh-delay</span><span class="w"> </span><span class="mf">1.0</span><span class="p">)</span>
-
-<span class="w">  </span><span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;lsp-mode</span>
-<span class="w">    </span><span class="p">(</span><span class="nf">define-key</span><span class="w"> </span><span class="nv">lsp-command-map</span><span class="w"> </span><span class="p">(</span><span class="nv">kbd</span><span class="w"> </span><span class="s">&quot;v i&quot;</span><span class="p">)</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">lsp-ui-imenu</span><span class="p">)))</span>
-
-<span class="c1">;;; lsp-booster</span>
-<span class="c1">;; use lsp-doctor for testing</span>
-<span class="c1">;; Steps:</span>
-<span class="c1">;; - install emacs-lsp-booster</span>
-<span class="c1">;; - use plist for deserialization (FOLLOW GUIDE)</span>
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">emacs</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">read-process-output-max</span><span class="w"> </span><span class="p">(</span><span class="nf">*</span><span class="w"> </span><span class="mi">1024</span><span class="w"> </span><span class="mi">1024</span><span class="p">))</span><span class="w"> </span><span class="c1">;; 1mb</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">lsp-booster--advice-json-parse</span><span class="w"> </span><span class="p">(</span><span class="nv">old-fn</span><span class="w"> </span><span class="kp">&amp;rest</span><span class="w"> </span><span class="nv">args</span><span class="p">)</span>
-<span class="w">    </span><span class="s">&quot;Try to parse bytecode instead of json.&quot;</span>
-<span class="w">    </span><span class="p">(</span><span class="k">or</span>
-<span class="w">     </span><span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="nf">equal</span><span class="w"> </span><span class="p">(</span><span class="nf">following-char</span><span class="p">)</span><span class="w"> </span><span class="sc">?#</span><span class="p">)</span>
-<span class="w">       </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nv">bytecode</span><span class="w"> </span><span class="p">(</span><span class="nf">read</span><span class="w"> </span><span class="p">(</span><span class="nf">current-buffer</span><span class="p">))))</span>
-<span class="w">         </span><span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="nf">byte-code-function-p</span><span class="w"> </span><span class="nv">bytecode</span><span class="p">)</span>
-<span class="w">           </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">bytecode</span><span class="p">))))</span>
-<span class="w">     </span><span class="p">(</span><span class="nf">apply</span><span class="w"> </span><span class="nv">old-fn</span><span class="w"> </span><span class="nv">args</span><span class="p">)))</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">advice-add</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">progn</span><span class="w"> </span><span class="p">(</span><span class="nb">require</span><span class="w"> </span><span class="ss">&#39;json</span><span class="p">)</span>
-<span class="w">                         </span><span class="p">(</span><span class="nf">fboundp</span><span class="w"> </span><span class="ss">&#39;json-parse-buffer</span><span class="p">))</span>
-<span class="w">                  </span><span class="ss">&#39;json-parse-buffer</span>
-<span class="w">                </span><span class="ss">&#39;json-read</span><span class="p">)</span>
-<span class="w">              </span><span class="nb">:around</span>
-<span class="w">              </span><span class="nf">#&#39;</span><span class="nv">lsp-booster--advice-json-parse</span><span class="p">)</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">lsp-booster--advice-final-command</span><span class="w"> </span><span class="p">(</span><span class="nv">old-fn</span><span class="w"> </span><span class="nv">cmd</span><span class="w"> </span><span class="kp">&amp;optional</span><span class="w"> </span><span class="nv">test?</span><span class="p">)</span>
-<span class="w">    </span><span class="s">&quot;Prepend emacs-lsp-booster command to lsp CMD.&quot;</span>
-<span class="w">    </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nv">orig-result</span><span class="w"> </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">old-fn</span><span class="w"> </span><span class="nv">cmd</span><span class="w"> </span><span class="nv">test?</span><span class="p">)))</span>
-<span class="w">      </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="nv">not</span><span class="w"> </span><span class="nv">test?</span><span class="p">)</span><span class="w"> </span><span class="c1">;; for check lsp-server-present?</span>
-<span class="w">               </span><span class="p">(</span><span class="nv">not</span><span class="w"> </span><span class="p">(</span><span class="nv">file-remote-p</span><span class="w"> </span><span class="nv">default-directory</span><span class="p">))</span><span class="w"> </span><span class="c1">;; see lsp-resolve-final-command, it would add extra shell wrapper</span>
-<span class="w">               </span><span class="nv">lsp-use-plists</span>
-<span class="w">               </span><span class="p">(</span><span class="nv">not</span><span class="w"> </span><span class="p">(</span><span class="nf">functionp</span><span class="w"> </span><span class="ss">&#39;json-rpc-connection</span><span class="p">))</span><span class="w"> </span><span class="c1">;; native json-rpc</span>
-<span class="w">               </span><span class="p">(</span><span class="nv">executable-find</span><span class="w"> </span><span class="s">&quot;emacs-lsp-booster&quot;</span><span class="p">))</span>
-<span class="w">          </span><span class="p">(</span><span class="k">progn</span>
-<span class="w">            </span><span class="p">(</span><span class="nv">when-let</span><span class="w"> </span><span class="p">((</span><span class="nv">command-from-exec-path</span><span class="w"> </span><span class="p">(</span><span class="nv">executable-find</span><span class="w"> </span><span class="p">(</span><span class="nf">car</span><span class="w"> </span><span class="nv">orig-result</span><span class="p">))))</span><span class="w"> </span><span class="c1">;; resolve command from exec-path (in case not found in $PATH)</span>
-<span class="w">              </span><span class="p">(</span><span class="nf">setcar</span><span class="w"> </span><span class="nv">orig-result</span><span class="w"> </span><span class="nv">command-from-exec-path</span><span class="p">))</span>
-<span class="w">            </span><span class="p">(</span><span class="nf">message</span><span class="w"> </span><span class="s">&quot;Using emacs-lsp-booster for %s!&quot;</span><span class="w"> </span><span class="nv">orig-result</span><span class="p">)</span>
-<span class="w">            </span><span class="p">(</span><span class="nf">cons</span><span class="w"> </span><span class="s">&quot;emacs-lsp-booster&quot;</span><span class="w"> </span><span class="nv">orig-result</span><span class="p">))</span>
-<span class="w">        </span><span class="nv">orig-result</span><span class="p">)))</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">advice-add</span><span class="w"> </span><span class="ss">&#39;lsp-resolve-final-command</span><span class="w"> </span><span class="nb">:around</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">lsp-booster--advice-final-command</span><span class="p">))</span>
-
-<span class="c1">;; for non-programming too</span>
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">elec-pair</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
-<span class="w">  </span><span class="nb">:require</span><span class="w"> </span><span class="no">t</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="c1">;; disable &quot;&lt;&quot; pair expansion</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/disable-&lt;-pair-expansion</span><span class="w"> </span><span class="p">()</span>
-<span class="w">    </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">electric-pair-inhibit-predicate</span>
-<span class="w">                </span><span class="o">`</span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">(</span><span class="nv">c</span><span class="p">)</span>
-<span class="w">                   </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">char-equal</span><span class="w"> </span><span class="nv">c</span><span class="w"> </span><span class="sc">?&lt;</span><span class="p">)</span>
-<span class="w">                       </span><span class="no">t</span>
-<span class="w">                     </span><span class="p">(</span><span class="o">,</span><span class="nv">electric-pair-inhibit-predicate</span><span class="w"> </span><span class="nv">c</span><span class="p">)))))</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;org-mode-hook</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">my/disable-&lt;-pair-expansion</span><span class="p">)</span>
-<span class="w">  </span><span class="c1">;; global</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">electric-pair-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
-
-<span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">my/lisp-mode-hooks</span>
-<span class="w">      </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">emacs-lisp-mode-hook</span>
-<span class="w">        </span><span class="nv">scheme-mode-hook</span><span class="p">))</span>
-
-<span class="c1">;; rainbow parens</span>
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">rainbow-delimiters</span>
-<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="o">`,@</span><span class="nv">my/lisp-mode-hooks</span><span class="p">)</span>
-
-<span class="c1">;; paredit</span>
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">paredit</span>
-<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="o">`,@</span><span class="nv">my/lisp-mode-hooks</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">emacs</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
-<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">((</span><span class="nv">emacs-lisp-mode-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
-<span class="w">                                   </span><span class="p">(</span><span class="nv">auto-fill-mode</span><span class="p">)</span>
-<span class="w">                                   </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">fill-column</span><span class="w"> </span><span class="mi">80</span><span class="p">)))))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">orglink</span>
-<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="nv">emacs-lisp-mode-hook</span><span class="p">)</span>
-
-<span class="c1">;; other</span>
-
-<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">create-banner-comment</span><span class="w"> </span><span class="p">(</span><span class="nv">text</span><span class="w"> </span><span class="kp">&amp;optional</span><span class="w"> </span><span class="nv">width</span><span class="p">)</span>
-<span class="w">  </span><span class="s">&quot;Create a banner comment with TEXT centered between semicolons.</span>
-<span class="s">Optional WIDTH parameter determines total width (defaults to 70).&quot;</span>
-<span class="w">  </span><span class="p">(</span><span class="k">interactive</span><span class="w"> </span><span class="s">&quot;sText: &quot;</span><span class="p">)</span>
-<span class="w">  </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nv">width</span><span class="w"> </span><span class="p">(</span><span class="k">or</span><span class="w"> </span><span class="nv">width</span><span class="w"> </span><span class="mi">70</span><span class="p">))</span>
-<span class="w">         </span><span class="p">(</span><span class="nv">text-len</span><span class="w"> </span><span class="p">(</span><span class="nf">length</span><span class="w"> </span><span class="nv">text</span><span class="p">))</span>
-<span class="w">         </span><span class="p">(</span><span class="nv">semi-len</span><span class="w"> </span><span class="p">(</span><span class="nf">/</span><span class="w"> </span><span class="p">(</span><span class="nf">-</span><span class="w"> </span><span class="nv">width</span><span class="w"> </span><span class="nv">text-len</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="c1">; -2 for spaces</span>
-<span class="w">         </span><span class="p">(</span><span class="nv">left-semis</span><span class="w"> </span><span class="p">(</span><span class="nf">make-string</span><span class="w"> </span><span class="nv">semi-len</span><span class="w"> </span><span class="sc">?\;</span><span class="p">))</span>
-<span class="w">         </span><span class="p">(</span><span class="nv">right-semis</span><span class="w"> </span><span class="p">(</span><span class="nf">make-string</span>
-<span class="w">                       </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nv">cl-oddp</span><span class="w"> </span><span class="p">(</span><span class="nf">-</span><span class="w"> </span><span class="nv">width</span><span class="w"> </span><span class="nv">text-len</span><span class="p">))</span>
-<span class="w">                           </span><span class="p">(</span><span class="nf">1+</span><span class="w"> </span><span class="nv">semi-len</span><span class="p">)</span>
-<span class="w">                         </span><span class="nv">semi-len</span><span class="p">)</span>
-<span class="w">                       </span><span class="sc">?\;</span><span class="p">)))</span>
-<span class="w">    </span><span class="p">(</span><span class="nf">insert</span><span class="w"> </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;%s %s %s\n&quot;</span>
-<span class="w">                    </span><span class="nv">left-semis</span>
-<span class="w">                    </span><span class="nv">text</span>
-<span class="w">                    </span><span class="nv">right-semis</span><span class="p">))))</span>
-
-<span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;flycheck</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq-default</span><span class="w"> </span><span class="nv">flycheck-disabled-checkers</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">emacs-lisp-checkdoc</span><span class="p">)))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">scheme-mode</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
-<span class="w">  </span><span class="nb">:disabled</span><span class="w"> </span><span class="no">t</span>
-<span class="w">  </span><span class="nb">:mode</span><span class="w"> </span><span class="s">&quot;\\.sld\\&#39;&quot;</span><span class="w"> </span><span class="s">&quot;\\.scm\\&#39;&quot;</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">geiser</span>
-<span class="w">  </span><span class="nb">:disabled</span><span class="w"> </span><span class="no">t</span>
-<span class="w">  </span><span class="nb">:mode</span><span class="w"> </span><span class="s">&quot;\\.scm\\&#39;&quot;</span>
-<span class="w">  </span><span class="nb">:setq</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">geiser-default-implementation</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="ss">&#39;guile</span><span class="p">)</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">geiser-active-implementations</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">guile</span><span class="p">))</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">geiser-implementations-alist</span><span class="w">  </span><span class="o">.</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(((</span><span class="nv">regexp</span><span class="w"> </span><span class="s">&quot;\\.scm$&quot;</span><span class="p">)</span><span class="w"> </span><span class="nv">guile</span><span class="p">))))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">geiser-guile</span>
-<span class="w">  </span><span class="nb">:disabled</span><span class="w"> </span><span class="no">t</span>
-<span class="w">  </span><span class="nb">:after</span><span class="w"> </span><span class="nv">geiser</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">rust-mode</span>
-<span class="w">  </span><span class="nb">:require</span><span class="w"> </span><span class="no">t</span>
-<span class="w">  </span><span class="nb">:init</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">rust-mode-treesitter-derive</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">rust-rustfmt-switches</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;--edition&quot;</span><span class="w"> </span><span class="s">&quot;2021&quot;</span><span class="p">)))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">rustic</span>
-<span class="w">  </span><span class="nb">:require</span><span class="w"> </span><span class="no">t</span>
-<span class="w">  </span><span class="nb">:after</span><span class="w"> </span><span class="nv">rust-mode</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">rustic-cargo-use-last-stored-arguments</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">rustic-format-on-save</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">rustic-rustfmt-args</span><span class="w"> </span><span class="s">&quot;--edition 2021&quot;</span><span class="p">)</span>
-
-<span class="w">  </span><span class="c1">;; lsp-mode settings</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;lsp-mode</span>
-<span class="w">    </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">lsp-rust-analyzer-cargo-watch-command</span><span class="w"> </span><span class="s">&quot;clippy&quot;</span>
-<span class="w">          </span><span class="nv">lsp-rust-analyzer-display-closure-return-type-hints</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="c1">; def: nil</span>
-<span class="w">          </span><span class="nv">lsp-rust-analyzer-display-lifetime-elision-hints-enable</span><span class="w"> </span><span class="s">&quot;skip_trivial&quot;</span>
-<span class="w">          </span><span class="nv">lsp-rust-analyzer-display-parameter-hints</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="c1">; def: nil (input param name)</span>
-
-<span class="w">          </span><span class="c1">;; maybe</span>
-<span class="w">          </span><span class="c1">;; lsp-rust-analyzer-display-reborrow-hints &quot;mutable&quot; ; def: never (&amp;*(&amp;*jargon))</span>
-<span class="w">          </span><span class="nv">lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="c1">; def: nil (?)</span>
-
-<span class="w">          </span><span class="c1">;; experimenting</span>
-<span class="w">          </span><span class="nv">lsp-signature-auto-activate</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="c1">; def: &#39;(:on-trigger-char :on-server-request)</span>
-<span class="w">          </span><span class="p">))</span>
-
-<span class="w">  </span><span class="c1">;; use tree-sitter for rustic-mode</span>
-<span class="w">  </span><span class="c1">;; (define-derived-mode rustic-mode rust-ts-mode &quot;Rustic&quot;</span>
-<span class="w">  </span><span class="c1">;;     &quot;Major mode for Rust code.</span>
-
-<span class="w">  </span><span class="c1">;; \\{rustic-mode-map}&quot;</span>
-<span class="w">  </span><span class="c1">;;     :group &#39;rustic</span>
-<span class="w">  </span><span class="c1">;;     (when (bound-and-true-p rustic-cargo-auto-add-missing-dependencies)</span>
-<span class="w">  </span><span class="c1">;;       (add-hook &#39;lsp-after-diagnostics-hook &#39;rustic-cargo-add-missing-dependencies-hook nil t)))</span>
-
-<span class="w">  </span><span class="nb">:bind</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">rustic-mode-map</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-c C-c M-r&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">rustic-cargo-comint-run</span><span class="p">)</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-c C-c l&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">flycheck-list-errors</span><span class="p">)</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-c C-c A&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">rustic-cargo-add</span><span class="p">)</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-c C-c R&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">rustic-cargo-rm</span><span class="p">)</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-c C-c a&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-execute-code-action</span><span class="p">)</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-c C-c r&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-rename</span><span class="p">)</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-c C-c q&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-workspace-restart</span><span class="p">)</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-c C-c Q&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-workspace-shutdown</span><span class="p">)</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-c C-c s&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-rust-analyzer-status</span><span class="p">)</span>
-<span class="w">   </span><span class="p">(</span><span class="s">&quot;C-c C-c h&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-describe-thing-at-point</span><span class="p">))</span>
-
-<span class="w">  </span><span class="nb">:hook</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">rust-ts-mode-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
-<span class="w">                         </span><span class="c1">;; company settings</span>
-<span class="w">                         </span><span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;company</span>
-<span class="w">                           </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">company-idle-delay</span><span class="w"> </span><span class="mf">0.3</span>
-<span class="w">                                       </span><span class="nv">company-minimum-prefix-length</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
-<span class="w">                         </span><span class="c1">;; lsp settings</span>
-<span class="w">                         </span><span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;lsp-mode</span>
-<span class="w">                           </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">lsp-idle-delay</span><span class="w"> </span><span class="mf">0.5</span>
-<span class="w">                                       </span><span class="nv">lsp-ui-sideline-delay</span><span class="w"> </span><span class="mf">0.3</span>
-<span class="w">                                       </span><span class="nv">lsp-eldoc-render-all</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="c1">; def: nil (minibuffer doc popup)</span>
-<span class="w">                                       </span><span class="nv">lsp-ui-doc-enable</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="c1">; def: t (ui-popup docs)</span>
-<span class="w">                                       </span><span class="nv">lsp-ui-doc-max-height</span><span class="w"> </span><span class="mi">14</span><span class="w"> </span><span class="c1">; def: 13</span>
-<span class="w">                                       </span><span class="p">)))))</span>
-
-
-<span class="c1">;; (leaf rustic :ensure nil</span>
-<span class="c1">;;   ;; :disabled t</span>
-<span class="c1">;;   :if use-eglot?</span>
-<span class="c1">;;   :init</span>
-<span class="c1">;;   (setq rustic-lsp-client &#39;eglot)</span>
-<span class="c1">;;   (with-eval-after-load &#39;eglot</span>
-<span class="c1">;;     (let ((rust-init-options</span>
-<span class="c1">;;            `(</span>
-<span class="c1">;;              :cargo       ( :buildScripts (:enable t) :features &quot;all&quot; )</span>
-<span class="c1">;;              :procMacro   ( :enable t )</span>
-<span class="c1">;;              :checkOnSave ( :command &quot;clippy&quot; )</span>
-<span class="c1">;;              :inlayHints  ( :typeHints t</span>
-<span class="c1">;;                             :parameterHints t</span>
-<span class="c1">;;                             :closureReturnTypeHints t</span>
-<span class="c1">;;                             :lifetimeElisionHints (:enable &quot;skip_trivial&quot; :useParameterNames t)</span>
-<span class="c1">;;                             :reborrowHints &quot;mutable&quot;</span>
-<span class="c1">;;                             ;; :chainingHints t</span>
-<span class="c1">;;                             )</span>
-<span class="c1">;;              )))</span>
-<span class="c1">;;       (add-to-list &#39;eglot-server-programs</span>
-<span class="c1">;;                    `(rustic-mode . (&quot;rust-analyzer&quot;</span>
-<span class="c1">;;                                     :initializationOptions ,rust-init-options)))))</span>
-<span class="c1">;;   ;; :config</span>
-
-<span class="c1">;;   )</span>
-
-
-<span class="c1">;; rustowl</span>
-<span class="c1">;; (straight-use-package</span>
-<span class="c1">;;  `(rustowlsp</span>
-<span class="c1">;;    :host github</span>
-<span class="c1">;;    :repo &quot;cordx56/rustowl&quot;</span>
-<span class="c1">;;    :files (:defaults &quot;emacs/*&quot;)))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">cc-mode</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
-<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">((</span><span class="nv">c-mode-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp</span><span class="p">)</span>
-<span class="w">         </span><span class="p">(</span><span class="nv">c-mode-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
-<span class="w">                          </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">lsp-idle-delay</span><span class="w"> </span><span class="mf">0.1</span>
-<span class="w">                                      </span><span class="nv">lsp-enable-indentation</span><span class="w"> </span><span class="no">nil</span>
-<span class="w">                                      </span><span class="nv">lsp-enable-on-type-formatting</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
-<span class="w">                          </span><span class="p">(</span><span class="nv">c-set-offset</span><span class="w"> </span><span class="ss">&#39;case-label</span><span class="w"> </span><span class="ss">&#39;+</span><span class="p">))))</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;c-default-style</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">c-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="s">&quot;cc-mode&quot;</span><span class="p">))</span>
-<span class="w">  </span><span class="p">(</span><span class="nf">define-key</span><span class="w"> </span><span class="nv">c-mode-map</span><span class="w"> </span><span class="p">(</span><span class="nv">kbd</span><span class="w"> </span><span class="s">&quot;&lt;f8&gt;&quot;</span><span class="p">)</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">project-compile-interactive</span><span class="p">))</span>
-
-<span class="c1">;; (leaf cc-mode :ensure nil</span>
-<span class="c1">;;   :if use-eglot?</span>
-<span class="c1">;;   :hook ((c-mode-hook . eglot-ensure)</span>
-<span class="c1">;;          (c-mode-hook . (lambda ()</span>
-<span class="c1">;;                           ;; (setq-local lsp-idle-delay 0.1</span>
-<span class="c1">;;                           ;;             lsp-enable-indentation nil</span>
-<span class="c1">;;                           ;;             lsp-enable-on-type-formatting nil)</span>
-<span class="c1">;;                           (c-set-offset &#39;case-label &#39;+))))</span>
-<span class="c1">;;   :config</span>
-<span class="c1">;;   (add-to-list &#39;c-default-style &#39;(c-mode . &quot;cc-mode&quot;))</span>
-<span class="c1">;;   (define-key c-mode-map (kbd &quot;&lt;f8&gt;&quot;) #&#39;project-compile-interactive))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">lsp-java</span>
-<span class="w">  </span><span class="nb">:mode</span><span class="w"> </span><span class="s">&quot;\\.java\\&#39;&quot;</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;java-mode-hook</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">lsp</span><span class="p">))</span>
-
-<span class="c1">;; (leaf eglot-java</span>
-<span class="c1">;;   :hook java-mode-hook</span>
-<span class="c1">;;   :bind</span>
-<span class="c1">;;   (eglot-java-mode-map</span>
-<span class="c1">;;    (&quot;C-c l n&quot; . eglot-java-file-new)</span>
-<span class="c1">;;    (&quot;C-c l x&quot; . eglot-java-run-main)</span>
-<span class="c1">;;    (&quot;C-c l t&quot; . eglot-java-run-test)</span>
-<span class="c1">;;    (&quot;C-c l N&quot; . eglot-java-project-new)</span>
-<span class="c1">;;    (&quot;C-c l T&quot; . eglot-java-project-build-task)</span>
-<span class="c1">;;    (&quot;C-c l R&quot; . eglot-java-project-build-refresh)))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">markdown-mode</span>
-<span class="w">  </span><span class="nb">:mode</span><span class="w"> </span><span class="p">((</span><span class="s">&quot;README\\.md\\&#39;&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">gfm-mode</span><span class="p">)</span>
-<span class="w">         </span><span class="p">(</span><span class="s">&quot;\\.md\\&#39;&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">markdown-mode</span><span class="p">))</span>
-<span class="w">  </span><span class="nb">:setq</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">markdown-fontify-code-blocks-natively</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/setup-markdown-mode</span><span class="w"> </span><span class="p">()</span>
-<span class="w">    </span><span class="c1">;; (visual-fill-column-mode 1)</span>
-<span class="w">    </span><span class="p">(</span><span class="nv">display-line-numbers-mode</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
-
-<span class="w">  </span><span class="c1">;; (setq markdown-command &quot;marked&quot;)</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;markdown-mode-hook</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">my/setup-markdown-mode</span><span class="p">))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">clojure-mode</span>
-<span class="w">  </span><span class="nb">:disabled</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">scala-mode</span>
-<span class="w">  </span><span class="nb">:disabled</span><span class="w"> </span><span class="no">t</span>
-<span class="w">  </span><span class="nb">:interpreter</span><span class="w"> </span><span class="s">&quot;scala&quot;</span>
-<span class="w">  </span><span class="nb">:hook</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">prettify-symbols-alist</span>
-<span class="w">                   </span><span class="nv">scala-prettify-symbols-alist</span><span class="p">)))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">zig-mode</span>
-<span class="w">  </span><span class="nb">:disabled</span><span class="w"> </span><span class="no">t</span>
-<span class="w">  </span><span class="c1">;; :config</span>
-<span class="w">  </span><span class="c1">;; (zig-format-on-save-mode 0)</span>
-<span class="w">  </span><span class="p">)</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">haskell-mode</span>
-<span class="w">  </span><span class="nb">:mode</span><span class="w"> </span><span class="s">&quot;\\.hs\\&#39;&quot;</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">nix-mode</span>
-<span class="w">  </span><span class="nb">:mode</span><span class="w"> </span><span class="s">&quot;\\.nix\\&#39;&quot;</span>
-<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">((</span><span class="nv">nix-mode-hook</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp</span><span class="p">)))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">yaml-mode</span>
-<span class="w">  </span><span class="nb">:mode</span><span class="w"> </span><span class="s">&quot;\\.yml\\&#39;&quot;</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">ron-mode</span>
-<span class="w">  </span><span class="nb">:require</span><span class="w"> </span><span class="no">t</span><span class="p">)</span>
-
-<span class="c1">;;;; Kerolox ;;;;</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">emacs</span><span class="w"> </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">nil</span>
-<span class="w">  </span><span class="c1">;;;; Kerolox mode and LSP ;;;;</span>
-
-<span class="w">  </span><span class="c1">;; Major-mode for .rp1 files</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">define-derived-mode</span><span class="w"> </span><span class="nv">kerolox-mode</span><span class="w"> </span><span class="nv">prog-mode</span><span class="w"> </span><span class="s">&quot;kerolox&quot;</span>
-<span class="w">    </span><span class="s">&quot;Major mode for editing kerolox (.rp1) files.&quot;</span>
-<span class="w">    </span><span class="nb">:group</span><span class="w"> </span><span class="ss">&#39;kerolox</span><span class="p">)</span>
-
-<span class="w">  </span><span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;lsp-mode</span>
-<span class="w">    </span><span class="c1">;; Register LSP server and setup LSP server</span>
-<span class="w">    </span><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;lsp-language-id-configuration</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">kerolox-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="s">&quot;kerolox&quot;</span><span class="p">))</span>
-<span class="w">    </span><span class="p">(</span><span class="nv">lsp-register-client</span>
-<span class="w">     </span><span class="p">(</span><span class="nv">make-lsp-client</span>
-<span class="w">      </span><span class="nb">:new-connection</span><span class="w"> </span><span class="p">(</span><span class="nv">lsp-stdio-connection</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;/home/sui/Code/cloned/saturn-v/target/release/saturn-v&quot;</span><span class="w"> </span><span class="s">&quot;lsp&quot;</span><span class="p">))</span>
-<span class="w">      </span><span class="nb">:major-modes</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">kerolox-mode</span><span class="p">)</span>
-<span class="w">      </span><span class="nb">:server-id</span><span class="w"> </span><span class="ss">&#39;saturn-v-lsp</span><span class="p">)))</span>
-
-
-<span class="w">  </span><span class="c1">;;;; Kerolox treesit mode and LSP</span>
-
-<span class="w">  </span><span class="p">(</span><span class="nb">define-derived-mode</span><span class="w"> </span><span class="nv">kerolox-ts-mode</span><span class="w"> </span><span class="nv">kerolox-mode</span><span class="w"> </span><span class="s">&quot;kerolox[ts]&quot;</span>
-<span class="w">    </span><span class="s">&quot;Tree-sitter based major mode for editing kerolox (.rp1) files.&quot;</span>
-<span class="w">    </span><span class="nb">:group</span><span class="w"> </span><span class="ss">&#39;kerolox</span>
-
-<span class="w">    </span><span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="nf">fboundp</span><span class="w"> </span><span class="ss">&#39;treesit-available-p</span><span class="p">)</span>
-<span class="w">               </span><span class="p">(</span><span class="nv">treesit-available-p</span><span class="p">))</span>
-
-<span class="w">      </span><span class="c1">;; create parser for this buffer</span>
-<span class="w">      </span><span class="p">(</span><span class="nv">treesit-parser-create</span><span class="w"> </span><span class="ss">&#39;kerolox</span><span class="p">)</span>
-
-<span class="w">      </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">treesit-font-lock-feature-list</span>
-<span class="w">                  </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">comment</span><span class="p">)</span>
-<span class="w">                    </span><span class="p">(</span><span class="nv">keyword</span><span class="w"> </span><span class="nf">string</span><span class="p">)</span>
-<span class="w">                    </span><span class="p">(</span><span class="nv">constant</span><span class="w"> </span><span class="nv">type</span><span class="p">)</span>
-<span class="w">                    </span><span class="p">(</span><span class="k">function</span><span class="w"> </span><span class="nv">variable</span><span class="w"> </span><span class="nv">module</span><span class="w"> </span><span class="nv">constructor</span><span class="p">)</span>
-<span class="w">                    </span><span class="p">(</span><span class="nv">operator</span><span class="w"> </span><span class="nv">punctuation</span><span class="p">)))</span>
-
-<span class="w">      </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">font-lock-defaults</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
-
-<span class="w">      </span><span class="c1">;; Set up face mapping for tree-sitter query capture names to Emacs faces</span>
-<span class="w">      </span><span class="p">(</span><span class="k">defvar</span><span class="w"> </span><span class="nv">kerolox-ts-font-lock-settings</span>
-<span class="w">        </span><span class="p">(</span><span class="nv">treesit-font-lock-rules</span>
-<span class="w">         </span><span class="nb">:language</span><span class="w"> </span><span class="ss">&#39;kerolox</span>
-<span class="w">         </span><span class="nb">:feature</span><span class="w"> </span><span class="ss">&#39;comment</span>
-<span class="w">         </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">comment</span><span class="p">)</span><span class="w"> </span><span class="nv">@font-lock-comment-face</span><span class="p">)</span>
-
-<span class="w">         </span><span class="nb">:language</span><span class="w"> </span><span class="ss">&#39;kerolox</span>
-<span class="w">         </span><span class="nb">:feature</span><span class="w"> </span><span class="ss">&#39;constant</span>
-<span class="w">         </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">integer</span><span class="p">)</span><span class="w"> </span><span class="nv">@font-lock-constant-face</span>
-<span class="w">           </span><span class="p">(</span><span class="nv">value</span><span class="w"> </span><span class="p">(</span><span class="nv">symbol</span><span class="p">))</span><span class="w"> </span><span class="nv">@font-lock-constant-face</span><span class="p">)</span>
-
-<span class="w">         </span><span class="nb">:language</span><span class="w"> </span><span class="ss">&#39;kerolox</span>
-<span class="w">         </span><span class="nb">:feature</span><span class="w"> </span><span class="ss">&#39;variable</span>
-<span class="w">         </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">variable</span><span class="p">)</span><span class="w"> </span><span class="nv">@font-lock-variable-name-face</span><span class="p">)</span>
-
-<span class="w">         </span><span class="nb">:language</span><span class="w"> </span><span class="ss">&#39;kerolox</span>
-<span class="w">         </span><span class="nb">:feature</span><span class="w"> </span><span class="ss">&#39;module</span>
-<span class="w">         </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">import</span><span class="w"> </span><span class="p">(</span><span class="nv">symbol</span><span class="p">))</span><span class="w"> </span><span class="nv">@font-lock-preprocessor-face</span><span class="p">)</span>
-
-<span class="w">         </span><span class="nb">:language</span><span class="w"> </span><span class="ss">&#39;kerolox</span>
-<span class="w">         </span><span class="nb">:feature</span><span class="w"> </span><span class="ss">&#39;type</span>
-<span class="w">         </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">type</span><span class="w"> </span><span class="p">(</span><span class="nv">symbol</span><span class="p">))</span><span class="w"> </span><span class="nv">@font-lock-type-face</span><span class="p">)</span>
-
-<span class="w">         </span><span class="nb">:language</span><span class="w"> </span><span class="ss">&#39;kerolox</span>
-<span class="w">         </span><span class="nb">:feature</span><span class="w"> </span><span class="ss">&#39;function</span>
-<span class="w">         </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">definition</span><span class="w"> </span><span class="nv">relation:</span><span class="w"> </span><span class="p">(</span><span class="nv">symbol</span><span class="p">))</span><span class="w"> </span><span class="nv">@font-lock-function-name-face</span>
-<span class="w">           </span><span class="p">(</span><span class="nf">atom</span><span class="w"> </span><span class="nv">head:</span><span class="w"> </span><span class="p">(</span><span class="nv">symbol</span><span class="p">))</span><span class="w"> </span><span class="nv">@font-lock-function-name-face</span><span class="p">)</span>
-
-<span class="w">         </span><span class="nb">:language</span><span class="w"> </span><span class="ss">&#39;kerolox</span>
-<span class="w">         </span><span class="nb">:feature</span><span class="w"> </span><span class="ss">&#39;constructor</span>
-<span class="w">         </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">rule</span><span class="w"> </span><span class="nv">relation:</span><span class="w"> </span><span class="p">(</span><span class="nv">symbol</span><span class="p">))</span><span class="w"> </span><span class="nv">@font-lock-function-name-face</span><span class="p">)</span>
-
-<span class="w">         </span><span class="nb">:language</span><span class="w"> </span><span class="ss">&#39;kerolox</span>
-<span class="w">         </span><span class="nb">:feature</span><span class="w"> </span><span class="ss">&#39;punctuation</span>
-<span class="w">         </span><span class="o">&#39;</span><span class="p">(([</span><span class="s">&quot;:-&quot;</span><span class="w"> </span><span class="s">&quot;,&quot;</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="p">])</span><span class="w"> </span><span class="nv">@font-lock-delimiter-face</span>
-<span class="w">           </span><span class="p">([</span><span class="s">&quot;(&quot;</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">])</span><span class="w"> </span><span class="nv">@font-lock-bracket-face</span><span class="p">)</span>
-
-<span class="w">         </span><span class="nb">:language</span><span class="w"> </span><span class="ss">&#39;kerolox</span>
-<span class="w">         </span><span class="nb">:feature</span><span class="w"> </span><span class="ss">&#39;operator</span>
-<span class="w">         </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">binary_expr</span><span class="w"> </span><span class="nv">op:</span><span class="w"> </span><span class="p">(</span><span class="nv">_</span><span class="p">))</span><span class="w"> </span><span class="nv">@font-lock-builtin-face</span>
-<span class="w">           </span><span class="p">(</span><span class="nv">unary_expr</span><span class="w"> </span><span class="nv">op:</span><span class="w"> </span><span class="p">(</span><span class="nv">_</span><span class="p">))</span><span class="w"> </span><span class="nv">@font-lock-builtin-face</span>
-<span class="w">           </span><span class="p">(</span><span class="nv">cardinality</span><span class="w"> </span><span class="nv">kind:</span><span class="w"> </span><span class="p">(</span><span class="nv">_</span><span class="p">))</span><span class="w"> </span><span class="nv">@font-lock-builtin-face</span><span class="p">)</span>
-
-<span class="w">         </span><span class="nb">:language</span><span class="w"> </span><span class="ss">&#39;kerolox</span>
-<span class="w">         </span><span class="nb">:feature</span><span class="w"> </span><span class="ss">&#39;keyword</span>
-<span class="w">         </span><span class="o">&#39;</span><span class="p">(([</span><span class="s">&quot;constrain&quot;</span><span class="w"> </span><span class="s">&quot;decision&quot;</span><span class="w"> </span><span class="s">&quot;define&quot;</span><span class="w"> </span><span class="s">&quot;import&quot;</span><span class="w"> </span><span class="s">&quot;output&quot;</span><span class="w"> </span><span class="s">&quot;soft&quot;</span><span class="p">])</span><span class="w"> </span><span class="nv">@font-lock-keyword-face</span>
-<span class="w">           </span><span class="p">(</span><span class="nv">constraint_kind</span><span class="p">)</span><span class="w"> </span><span class="nv">@font-lock-keyword-face</span><span class="p">))</span>
-<span class="w">        </span><span class="s">&quot;Font-lock settings for Kerolox.&quot;</span><span class="p">)</span>
-
-<span class="w">      </span><span class="c1">;; Set font-lock settings from the defined rules</span>
-<span class="w">      </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">treesit-font-lock-settings</span><span class="w"> </span><span class="nv">kerolox-ts-font-lock-settings</span><span class="p">)</span>
-
-<span class="w">      </span><span class="p">(</span><span class="nv">treesit-major-mode-setup</span><span class="p">)))</span>
-
-<span class="w">  </span><span class="c1">;; Register LSP server and setup LSP server</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;lsp-mode</span>
-<span class="w">    </span><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;lsp-language-id-configuration</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">kerolox-ts-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="s">&quot;kerolox&quot;</span><span class="p">))</span>
-<span class="w">    </span><span class="p">(</span><span class="nv">lsp-register-client</span>
-<span class="w">     </span><span class="p">(</span><span class="nv">make-lsp-client</span>
-<span class="w">      </span><span class="nb">:new-connection</span><span class="w"> </span><span class="p">(</span><span class="nv">lsp-stdio-connection</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;/home/sui/Code/cloned/saturn-v/target/release/saturn-v&quot;</span><span class="w"> </span><span class="s">&quot;lsp&quot;</span><span class="p">))</span>
-<span class="w">      </span><span class="nb">:major-modes</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">kerolox-ts-mode</span><span class="p">)</span>
-<span class="w">      </span><span class="nb">:server-id</span><span class="w"> </span><span class="ss">&#39;saturn-v-ts-lsp</span><span class="p">)))</span>
-
-
-<span class="w">  </span><span class="c1">;;;; Tree-sitter generic ;;;;</span>
-
-<span class="w">  </span><span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;treesit</span>
-<span class="w">    </span><span class="c1">;; Configure the language grammar source and mapping</span>
-<span class="w">    </span><span class="p">(</span><span class="nb">when</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="nf">fboundp</span><span class="w"> </span><span class="ss">&#39;treesit-available-p</span><span class="p">)</span>
-<span class="w">               </span><span class="p">(</span><span class="nv">treesit-available-p</span><span class="p">))</span>
-<span class="w">      </span><span class="c1">;; Define grammar source</span>
-<span class="w">      </span><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;treesit-language-source-alist</span>
-<span class="w">                   </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">kerolox</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;https://github.com/marceline-cramer/saturn-v&quot;</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="s">&quot;tree-sitter-kerolox/src&quot;</span><span class="p">)))</span>
-
-<span class="w">      </span><span class="c1">;; ;; Set up language mapping</span>
-<span class="w">      </span><span class="c1">;; (add-to-list &#39;treesit-language-remap-alist &#39;(kerolox-ts-mode . kerolox))</span>
-
-<span class="w">      </span><span class="c1">;; Only install if not already installed</span>
-<span class="w">      </span><span class="c1">;; (unless (treesit-language-available-p &#39;kerolox)</span>
-<span class="w">      </span><span class="c1">;;   (treesit-install-language-grammar &#39;kerolox))</span>
-<span class="w">      </span><span class="p">(</span><span class="nv">treesit-install-language-grammar</span><span class="w"> </span><span class="ss">&#39;kerolox</span><span class="p">)</span>
-<span class="w">      </span><span class="p">))</span>
-
-<span class="w">  </span><span class="c1">;; Auto-start LSP when opening .rp1 files with tree-sitter mode</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;kerolox-ts-mode-hook</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">lsp-deferred</span><span class="p">)</span>
-
-
-<span class="w">  </span><span class="c1">;;;; Misc ;;;;</span>
-
-<span class="w">  </span><span class="c1">;; Remap regular mode to tree-sitter mode</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">major-mode-remap-alist</span>
-<span class="w">        </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">kerolox-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">kerolox-ts-mode</span><span class="p">)))</span>
-
-
-<span class="w">  </span><span class="c1">;;;; Auto-mode-alist ;;;;</span>
-
-<span class="w">  </span><span class="c1">;; Associate file name pattern with major-mode</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;auto-mode-alist</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;\\.rp1\\&#39;&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">kerolox-ts-mode</span><span class="p">)))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">lua-mode</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;lsp-lua</span>
-<span class="w">    </span><span class="c1">;; fix issue with externally installed server</span>
-<span class="w">    </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">lsp-clients-lua-language-server-command</span>
-<span class="w">          </span><span class="s">&quot;lua-language-server&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="c1">;; renoise lua api definitions</span>
-<span class="w">    </span><span class="c1">;; (setq lsp-lua-workspace-library &quot;&#39;Lua.workspace.library&#39;: {&#39;/home/sui/Music/prod/scripts/renoise-lua/definitions&#39;: true}&quot;)</span>
-<span class="w">    </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">lsp-lua-workspace-library</span><span class="w"> </span><span class="p">(</span><span class="nv">ht</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;/home/sui/Music/prod/scripts/renoise-lua/definitions&quot;</span><span class="w"> </span><span class="no">t</span><span class="p">)))</span>
-<span class="w">    </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">lsp-lua-runtime-plugin</span><span class="w"> </span><span class="s">&quot;/home/sui/Music/prod/scripts/renoise-lua/definitions/plugin.lua&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="p">)</span>
-
-<span class="w">  </span><span class="c1">;; fix pt.2</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">my/lsp-clients-lua-language-server-test</span><span class="w"> </span><span class="p">()</span>
-<span class="w">    </span><span class="s">&quot;(Improved) Test Lua language server binaries and files.&quot;</span>
-<span class="w">    </span><span class="p">(</span><span class="k">or</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="nv">f-exists?</span><span class="w"> </span><span class="nv">lsp-clients-lua-language-server-main-location</span><span class="p">)</span>
-<span class="w">             </span><span class="p">(</span><span class="nv">f-exists?</span><span class="w"> </span><span class="nv">lsp-clients-lua-language-server-bin</span><span class="p">))</span>
-<span class="w">        </span><span class="p">(</span><span class="nv">f-exists?</span><span class="w"> </span><span class="p">(</span><span class="nf">car</span><span class="w"> </span><span class="p">(</span><span class="nv">split-string</span><span class="w"> </span><span class="nv">lsp-clients-lua-language-server-command</span><span class="p">)))))</span>
-
-<span class="w">  </span><span class="p">(</span><span class="nv">advice-add</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nv">lsp-clients-lua-language-server-test</span>
-<span class="w">              </span><span class="nb">:override</span>
-<span class="w">              </span><span class="nf">#&#39;</span><span class="nv">my/lsp-clients-lua-language-server-test</span><span class="p">))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">direnv</span>
-<span class="w">  </span><span class="nb">:init</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">direnv-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">rainbow-mode</span>
-<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="nv">prog-mode-hook</span><span class="p">)</span>
-
-<span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;ansi-color</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;compilation-filter-hook</span><span class="w"> </span><span class="ss">&#39;ansi-color-compilation-filter</span><span class="p">))</span>
-
-<span class="p">(</span><span class="nv">leaf</span><span class="w"> </span><span class="nv">treesit-auto</span>
-<span class="w">  </span><span class="nb">:require</span><span class="w"> </span><span class="no">t</span>
-<span class="w">  </span><span class="nb">:config</span>
-<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">treesit-auto-install</span><span class="w"> </span><span class="ss">&#39;prompt</span><span class="p">)</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">global-treesit-auto-mode</span><span class="p">))</span>
-
-<span class="p">(</span><span class="nb">provide</span><span class="w"> </span><span class="ss">&#39;my-ide</span><span class="p">)</span>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> prefer-lsp-mode? </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">(auto-insert-mode)  </span><span style="color: #7E8AA1">;;; Adds hook to find-files-hook</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq-default</span><span style="color: #D4D2C8"> indent-tabs-mode </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> tab-always-indent </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">(leaf compile </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> compilation-scroll-output </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">(leaf flycheck</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> prog-mode-hook)</span>
+
+<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> goto-address-mode)</span>
+
+<span style="color: #D4D2C8">(leaf project </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind-keymap</span><span style="color: #D4D2C8"> (</span><span style="color: #D5FF80">&quot;C-c P&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> project-prefix-map)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> project-compile-interactive ()</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">declare</span><span style="color: #D4D2C8"> (interactive-only compile))</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((current-prefix-arg </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #DFBFFF">4</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">call-interactively</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">project-compile)))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
+<span style="color: #D4D2C8">  (project-prefix-map</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> project-compile-interactive)))</span>
+
+<span style="color: #D4D2C8">(leaf projectile</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
+<span style="color: #D4D2C8">  (projectile-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind-keymap</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c p&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> projectile-command-map)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> projectile-compile-use-comint-mode </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">(leaf lsp-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> (lsp lsp-deferred)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> (lsp-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-enable-which-key-integration)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind-keymap</span><span style="color: #D4D2C8"> (</span><span style="color: #D5FF80">&quot;C-c l&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-command-map)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> lsp-inlay-hint-enable </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">        </span><span style="color: #7E8AA1">;; freq of refreshing highlights, lenses, links, etc</span>
+<span style="color: #D4D2C8">        lsp-idle-delay </span><span style="color: #DFBFFF">0.5</span>
+<span style="color: #D4D2C8">        </span><span style="color: #7E8AA1">;; bind &quot;C-c l&quot; to lsp-command-map</span>
+<span style="color: #D4D2C8">        lsp-keymap-prefix </span><span style="color: #D5FF80">&quot;C-c l&quot;</span>
+<span style="color: #D4D2C8">        </span><span style="color: #7E8AA1">;; problematic: https://github.com/emacs-lsp/lsp-mode/issues/4113</span>
+<span style="color: #D4D2C8">        lsp-update-inlay-hints-on-scroll </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">(leaf lsp-ui</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
+<span style="color: #D4D2C8">  (lsp-ui-mode-map</span>
+<span style="color: #D4D2C8">   ([remap xref-find-definitions] </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-ui-peek-find-definitions)</span>
+<span style="color: #D4D2C8">   ([remap xref-find-references]  </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-ui-peek-find-references))</span>
+<span style="color: #D4D2C8">  (lsp-ui-doc-frame-mode-map</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;q&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-ui-doc-hide)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;u&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-ui-doc-unfocus-frame))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> lsp-ui-doc-delay </span><span style="color: #DFBFFF">0.5</span>
+<span style="color: #D4D2C8">        lsp-ui-doc-position </span><span style="color: #DFBFFF">&#39;top</span>
+<span style="color: #D4D2C8">        </span><span style="color: #7E8AA1">;; lsp-ui-doc-alignment &#39;window</span>
+<span style="color: #D4D2C8">        lsp-ui-doc-alignment </span><span style="color: #DFBFFF">&#39;frame</span>
+<span style="color: #D4D2C8">        </span><span style="color: #7E8AA1">;; lsp-ui-doc-show-with-mouse nil</span>
+<span style="color: #D4D2C8">        lsp-ui-doc-show-with-mouse </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">        lsp-ui-doc-show-with-cursor </span><span style="color: #FFD173">t</span>
+
+<span style="color: #D4D2C8">        lsp-ui-sideline-delay </span><span style="color: #DFBFFF">0.2</span>
+
+<span style="color: #D4D2C8">        lsp-ui-imenu-auto-refresh-delay </span><span style="color: #DFBFFF">1.0</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;lsp-mode</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">define-key</span><span style="color: #D4D2C8"> lsp-command-map (kbd </span><span style="color: #D5FF80">&quot;v i&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp-ui-imenu)))</span>
+
+<span style="color: #7E8AA1">;;; lsp-booster</span>
+<span style="color: #7E8AA1">;; use lsp-doctor for testing</span>
+<span style="color: #7E8AA1">;; Steps:</span>
+<span style="color: #7E8AA1">;; - install emacs-lsp-booster</span>
+<span style="color: #7E8AA1">;; - use plist for deserialization (FOLLOW GUIDE)</span>
+<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> read-process-output-max (</span><span style="color: #FFD173">*</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1024</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1024</span><span style="color: #D4D2C8">)) </span><span style="color: #7E8AA1">;; 1mb</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> lsp-booster--advice-json-parse (old-fn </span><span style="color: #FFAD66">&amp;rest</span><span style="color: #D4D2C8"> args)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Try to parse bytecode instead of json.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">or</span>
+<span style="color: #D4D2C8">     (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">equal</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">following-char</span><span style="color: #D4D2C8">) </span><span style="color: #D5FF80">?#</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">       (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((bytecode (</span><span style="color: #FFD173">read</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">current-buffer</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">         (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">byte-code-function-p</span><span style="color: #D4D2C8"> bytecode)</span>
+<span style="color: #D4D2C8">           (</span><span style="color: #FFD173">funcall</span><span style="color: #D4D2C8"> bytecode))))</span>
+<span style="color: #D4D2C8">     (</span><span style="color: #FFD173">apply</span><span style="color: #D4D2C8"> old-fn args)))</span>
+<span style="color: #D4D2C8">  (advice-add (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">progn</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;json</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                         (</span><span style="color: #FFD173">fboundp</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;json-parse-buffer</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                  </span><span style="color: #DFBFFF">&#39;json-parse-buffer</span>
+<span style="color: #D4D2C8">                </span><span style="color: #DFBFFF">&#39;json-read</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">              </span><span style="color: #FFD173">:around</span>
+<span style="color: #D4D2C8">              </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp-booster--advice-json-parse)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> lsp-booster--advice-final-command (old-fn cmd </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> test?)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Prepend emacs-lsp-booster command to lsp CMD.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((orig-result (</span><span style="color: #FFD173">funcall</span><span style="color: #D4D2C8"> old-fn cmd test?)))</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (not test?) </span><span style="color: #7E8AA1">;; for check lsp-server-present?</span>
+<span style="color: #D4D2C8">               (not (file-remote-p default-directory)) </span><span style="color: #7E8AA1">;; see lsp-resolve-final-command, it would add extra shell wrapper</span>
+<span style="color: #D4D2C8">               lsp-use-plists</span>
+<span style="color: #D4D2C8">               (not (</span><span style="color: #FFD173">functionp</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;json-rpc-connection</span><span style="color: #D4D2C8">)) </span><span style="color: #7E8AA1">;; native json-rpc</span>
+<span style="color: #D4D2C8">               (executable-find </span><span style="color: #D5FF80">&quot;emacs-lsp-booster&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFAD66">progn</span>
+<span style="color: #D4D2C8">            (when-let ((command-from-exec-path (executable-find (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> orig-result)))) </span><span style="color: #7E8AA1">;; resolve command from exec-path (in case not found in $PATH)</span>
+<span style="color: #D4D2C8">              (</span><span style="color: #FFD173">setcar</span><span style="color: #D4D2C8"> orig-result command-from-exec-path))</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Using emacs-lsp-booster for %s!&quot;</span><span style="color: #D4D2C8"> orig-result)</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">cons</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;emacs-lsp-booster&quot;</span><span style="color: #D4D2C8"> orig-result))</span>
+<span style="color: #D4D2C8">        orig-result)))</span>
+<span style="color: #D4D2C8">  (advice-add </span><span style="color: #DFBFFF">&#39;lsp-resolve-final-command</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:around</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp-booster--advice-final-command))</span>
+
+<span style="color: #7E8AA1">;; for non-programming too</span>
+<span style="color: #D4D2C8">(leaf elec-pair </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; disable &quot;&lt;&quot; pair expansion</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/disable-&lt;-pair-expansion ()</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> electric-pair-inhibit-predicate</span>
+<span style="color: #D4D2C8">                </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (c)</span>
+<span style="color: #D4D2C8">                   (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">char-equal</span><span style="color: #D4D2C8"> c </span><span style="color: #D5FF80">?&lt;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">                     (</span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">electric-pair-inhibit-predicate c)))))</span>
+<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;org-mode-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">my/disable-&lt;-pair-expansion)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; global</span>
+<span style="color: #D4D2C8">  (electric-pair-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> my/lisp-mode-hooks</span>
+<span style="color: #D4D2C8">      </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(emacs-lisp-mode-hook</span>
+<span style="color: #D4D2C8">        scheme-mode-hook))</span>
+
+<span style="color: #7E8AA1">;; rainbow parens</span>
+<span style="color: #D4D2C8">(leaf rainbow-delimiters</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`,@</span><span style="color: #D4D2C8">my/lisp-mode-hooks)</span>
+
+<span style="color: #7E8AA1">;; paredit</span>
+<span style="color: #D4D2C8">(leaf paredit</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`,@</span><span style="color: #D4D2C8">my/lisp-mode-hooks)</span>
+
+<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> ((emacs-lisp-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">                                   (auto-fill-mode)</span>
+<span style="color: #D4D2C8">                                   (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> fill-column </span><span style="color: #DFBFFF">80</span><span style="color: #D4D2C8">)))))</span>
+
+<span style="color: #D4D2C8">(leaf orglink</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> emacs-lisp-mode-hook)</span>
+
+<span style="color: #7E8AA1">;; other</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> create-banner-comment (text </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> width)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Create a banner comment with TEXT centered between semicolons.</span>
+<span style="color: #D5FF80">Optional WIDTH parameter determines total width (defaults to 70).&quot;</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;sText: &quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((width (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> width </span><span style="color: #DFBFFF">70</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">         (text-len (</span><span style="color: #FFD173">length</span><span style="color: #D4D2C8"> text))</span>
+<span style="color: #D4D2C8">         (semi-len (</span><span style="color: #FFD173">/</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">-</span><span style="color: #D4D2C8"> width text-len </span><span style="color: #DFBFFF">2</span><span style="color: #D4D2C8">) </span><span style="color: #DFBFFF">2</span><span style="color: #D4D2C8">)) </span><span style="color: #7E8AA1">; -2 for spaces</span>
+<span style="color: #D4D2C8">         (left-semis (</span><span style="color: #FFD173">make-string</span><span style="color: #D4D2C8"> semi-len </span><span style="color: #D5FF80">?\;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">         (right-semis (</span><span style="color: #FFD173">make-string</span>
+<span style="color: #D4D2C8">                       (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (cl-oddp (</span><span style="color: #FFD173">-</span><span style="color: #D4D2C8"> width text-len))</span>
+<span style="color: #D4D2C8">                           (</span><span style="color: #FFD173">1+</span><span style="color: #D4D2C8"> semi-len)</span>
+<span style="color: #D4D2C8">                         semi-len)</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #D5FF80">?\;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">insert</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">format</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s %s %s\n&quot;</span>
+<span style="color: #D4D2C8">                    left-semis</span>
+<span style="color: #D4D2C8">                    text</span>
+<span style="color: #D4D2C8">                    right-semis))))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;flycheck</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq-default</span><span style="color: #D4D2C8"> flycheck-disabled-checkers </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(emacs-lisp-checkdoc)))</span>
+
+<span style="color: #D4D2C8">(leaf scheme-mode </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.sld\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.scm\\&#39;&quot;</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">(leaf geiser</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.scm\\&#39;&quot;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
+<span style="color: #D4D2C8">  (geiser-default-implementation </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;guile</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (geiser-active-implementations </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(guile))</span>
+<span style="color: #D4D2C8">  (geiser-implementations-alist  </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(((regexp </span><span style="color: #D5FF80">&quot;\\.scm$&quot;</span><span style="color: #D4D2C8">) guile))))</span>
+
+<span style="color: #D4D2C8">(leaf geiser-guile</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> geiser)</span>
+
+<span style="color: #D4D2C8">(leaf rust-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> rust-mode-treesitter-derive </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> rust-rustfmt-switches </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;--edition&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;2021&quot;</span><span style="color: #D4D2C8">)))</span>
+
+<span style="color: #D4D2C8">(leaf rustic</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> rust-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> rustic-cargo-use-last-stored-arguments </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> rustic-format-on-save </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> rustic-rustfmt-args </span><span style="color: #D5FF80">&quot;--edition 2021&quot;</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; lsp-mode settings</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;lsp-mode</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> lsp-rust-analyzer-cargo-watch-command </span><span style="color: #D5FF80">&quot;clippy&quot;</span>
+<span style="color: #D4D2C8">          lsp-rust-analyzer-display-closure-return-type-hints </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">; def: nil</span>
+<span style="color: #D4D2C8">          lsp-rust-analyzer-display-lifetime-elision-hints-enable </span><span style="color: #D5FF80">&quot;skip_trivial&quot;</span>
+<span style="color: #D4D2C8">          lsp-rust-analyzer-display-parameter-hints </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">; def: nil (input param name)</span>
+
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;; maybe</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;; lsp-rust-analyzer-display-reborrow-hints &quot;mutable&quot; ; def: never (&amp;*(&amp;*jargon))</span>
+<span style="color: #D4D2C8">          lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">; def: nil (?)</span>
+
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;; experimenting</span>
+<span style="color: #D4D2C8">          lsp-signature-auto-activate </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">; def: &#39;(:on-trigger-char :on-server-request)</span>
+<span style="color: #D4D2C8">          ))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; use tree-sitter for rustic-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (define-derived-mode rustic-mode rust-ts-mode &quot;Rustic&quot;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;     &quot;Major mode for Rust code.</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; \\{rustic-mode-map}&quot;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;     :group &#39;rustic</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;     (when (bound-and-true-p rustic-cargo-auto-add-missing-dependencies)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;       (add-hook &#39;lsp-after-diagnostics-hook &#39;rustic-cargo-add-missing-dependencies-hook nil t)))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
+<span style="color: #D4D2C8">  (rustic-mode-map</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-c M-r&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> rustic-cargo-comint-run)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-c l&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> flycheck-list-errors)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-c A&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> rustic-cargo-add)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-c R&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> rustic-cargo-rm)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-c a&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-execute-code-action)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-c r&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-rename)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-c q&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-workspace-restart)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-c Q&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-workspace-shutdown)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-c s&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-rust-analyzer-status)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-c h&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-describe-thing-at-point))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span>
+<span style="color: #D4D2C8">  (rust-ts-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">                         </span><span style="color: #7E8AA1">;; company settings</span>
+<span style="color: #D4D2C8">                         (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;company</span>
+<span style="color: #D4D2C8">                           (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> company-idle-delay </span><span style="color: #DFBFFF">0.3</span>
+<span style="color: #D4D2C8">                                       company-minimum-prefix-length </span><span style="color: #DFBFFF">2</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                         </span><span style="color: #7E8AA1">;; lsp settings</span>
+<span style="color: #D4D2C8">                         (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;lsp-mode</span>
+<span style="color: #D4D2C8">                           (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> lsp-idle-delay </span><span style="color: #DFBFFF">0.5</span>
+<span style="color: #D4D2C8">                                       lsp-ui-sideline-delay </span><span style="color: #DFBFFF">0.3</span>
+<span style="color: #D4D2C8">                                       lsp-eldoc-render-all </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">; def: nil (minibuffer doc popup)</span>
+<span style="color: #D4D2C8">                                       lsp-ui-doc-enable </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">; def: t (ui-popup docs)</span>
+<span style="color: #D4D2C8">                                       lsp-ui-doc-max-height </span><span style="color: #DFBFFF">14</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">; def: 13</span>
+<span style="color: #D4D2C8">                                       )))))</span>
+
+
+<span style="color: #7E8AA1">;; (leaf rustic :ensure nil</span>
+<span style="color: #7E8AA1">;;   ;; :disabled t</span>
+<span style="color: #7E8AA1">;;   :if use-eglot?</span>
+<span style="color: #7E8AA1">;;   :init</span>
+<span style="color: #7E8AA1">;;   (setq rustic-lsp-client &#39;eglot)</span>
+<span style="color: #7E8AA1">;;   (with-eval-after-load &#39;eglot</span>
+<span style="color: #7E8AA1">;;     (let ((rust-init-options</span>
+<span style="color: #7E8AA1">;;            `(</span>
+<span style="color: #7E8AA1">;;              :cargo       ( :buildScripts (:enable t) :features &quot;all&quot; )</span>
+<span style="color: #7E8AA1">;;              :procMacro   ( :enable t )</span>
+<span style="color: #7E8AA1">;;              :checkOnSave ( :command &quot;clippy&quot; )</span>
+<span style="color: #7E8AA1">;;              :inlayHints  ( :typeHints t</span>
+<span style="color: #7E8AA1">;;                             :parameterHints t</span>
+<span style="color: #7E8AA1">;;                             :closureReturnTypeHints t</span>
+<span style="color: #7E8AA1">;;                             :lifetimeElisionHints (:enable &quot;skip_trivial&quot; :useParameterNames t)</span>
+<span style="color: #7E8AA1">;;                             :reborrowHints &quot;mutable&quot;</span>
+<span style="color: #7E8AA1">;;                             ;; :chainingHints t</span>
+<span style="color: #7E8AA1">;;                             )</span>
+<span style="color: #7E8AA1">;;              )))</span>
+<span style="color: #7E8AA1">;;       (add-to-list &#39;eglot-server-programs</span>
+<span style="color: #7E8AA1">;;                    `(rustic-mode . (&quot;rust-analyzer&quot;</span>
+<span style="color: #7E8AA1">;;                                     :initializationOptions ,rust-init-options)))))</span>
+<span style="color: #7E8AA1">;;   ;; :config</span>
+
+<span style="color: #7E8AA1">;;   )</span>
+
+
+<span style="color: #7E8AA1">;; rustowl</span>
+<span style="color: #7E8AA1">;; (straight-use-package</span>
+<span style="color: #7E8AA1">;;  `(rustowlsp</span>
+<span style="color: #7E8AA1">;;    :host github</span>
+<span style="color: #7E8AA1">;;    :repo &quot;cordx56/rustowl&quot;</span>
+<span style="color: #7E8AA1">;;    :files (:defaults &quot;emacs/*&quot;)))</span>
+
+<span style="color: #D4D2C8">(leaf cc-mode </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> ((c-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp)</span>
+<span style="color: #D4D2C8">         (c-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">                          (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> lsp-idle-delay </span><span style="color: #DFBFFF">0.1</span>
+<span style="color: #D4D2C8">                                      lsp-enable-indentation </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">                                      lsp-enable-on-type-formatting </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                          (c-set-offset </span><span style="color: #DFBFFF">&#39;case-label</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;c-default-style</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(c-mode </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;cc-mode&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">define-key</span><span style="color: #D4D2C8"> c-mode-map (kbd </span><span style="color: #D5FF80">&quot;&lt;f8&gt;&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">project-compile-interactive))</span>
+
+<span style="color: #7E8AA1">;; (leaf cc-mode :ensure nil</span>
+<span style="color: #7E8AA1">;;   :if use-eglot?</span>
+<span style="color: #7E8AA1">;;   :hook ((c-mode-hook . eglot-ensure)</span>
+<span style="color: #7E8AA1">;;          (c-mode-hook . (lambda ()</span>
+<span style="color: #7E8AA1">;;                           ;; (setq-local lsp-idle-delay 0.1</span>
+<span style="color: #7E8AA1">;;                           ;;             lsp-enable-indentation nil</span>
+<span style="color: #7E8AA1">;;                           ;;             lsp-enable-on-type-formatting nil)</span>
+<span style="color: #7E8AA1">;;                           (c-set-offset &#39;case-label &#39;+))))</span>
+<span style="color: #7E8AA1">;;   :config</span>
+<span style="color: #7E8AA1">;;   (add-to-list &#39;c-default-style &#39;(c-mode . &quot;cc-mode&quot;))</span>
+<span style="color: #7E8AA1">;;   (define-key c-mode-map (kbd &quot;&lt;f8&gt;&quot;) #&#39;project-compile-interactive))</span>
+
+<span style="color: #D4D2C8">(leaf lsp-java</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.java\\&#39;&quot;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;java-mode-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp))</span>
+
+<span style="color: #7E8AA1">;; (leaf eglot-java</span>
+<span style="color: #7E8AA1">;;   :hook java-mode-hook</span>
+<span style="color: #7E8AA1">;;   :bind</span>
+<span style="color: #7E8AA1">;;   (eglot-java-mode-map</span>
+<span style="color: #7E8AA1">;;    (&quot;C-c l n&quot; . eglot-java-file-new)</span>
+<span style="color: #7E8AA1">;;    (&quot;C-c l x&quot; . eglot-java-run-main)</span>
+<span style="color: #7E8AA1">;;    (&quot;C-c l t&quot; . eglot-java-run-test)</span>
+<span style="color: #7E8AA1">;;    (&quot;C-c l N&quot; . eglot-java-project-new)</span>
+<span style="color: #7E8AA1">;;    (&quot;C-c l T&quot; . eglot-java-project-build-task)</span>
+<span style="color: #7E8AA1">;;    (&quot;C-c l R&quot; . eglot-java-project-build-refresh)))</span>
+
+<span style="color: #D4D2C8">(leaf markdown-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> ((</span><span style="color: #D5FF80">&quot;README\\.md\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> gfm-mode)</span>
+<span style="color: #D4D2C8">         (</span><span style="color: #D5FF80">&quot;\\.md\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> markdown-mode))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
+<span style="color: #D4D2C8">  (markdown-fontify-code-blocks-natively </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/setup-markdown-mode ()</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; (visual-fill-column-mode 1)</span>
+<span style="color: #D4D2C8">    (display-line-numbers-mode </span><span style="color: #DFBFFF">0</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (setq markdown-command &quot;marked&quot;)</span>
+<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;markdown-mode-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">my/setup-markdown-mode))</span>
+
+<span style="color: #D4D2C8">(leaf clojure-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">(leaf scala-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:interpreter</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;scala&quot;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> () (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> prettify-symbols-alist</span>
+<span style="color: #D4D2C8">                   scala-prettify-symbols-alist)))</span>
+
+<span style="color: #D4D2C8">(leaf zig-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; :config</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (zig-format-on-save-mode 0)</span>
+<span style="color: #D4D2C8">  )</span>
+
+<span style="color: #D4D2C8">(leaf haskell-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.hs\\&#39;&quot;</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">(leaf nix-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.nix\\&#39;&quot;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> ((nix-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp)))</span>
+
+<span style="color: #D4D2C8">(leaf yaml-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.yml\\&#39;&quot;</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">(leaf ron-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #7E8AA1">;;;; Kerolox ;;;;</span>
+
+<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;;; Kerolox mode and LSP ;;;;</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Major-mode for .rp1 files</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">define-derived-mode</span><span style="color: #D4D2C8"> kerolox-mode prog-mode </span><span style="color: #D5FF80">&quot;kerolox&quot;</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Major mode for editing kerolox (.rp1) files.&quot;</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFD173">:group</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;lsp-mode</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; Register LSP server and setup LSP server</span>
+<span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;lsp-language-id-configuration</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(kerolox-mode </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;kerolox&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">    (lsp-register-client</span>
+<span style="color: #D4D2C8">     (make-lsp-client</span>
+<span style="color: #D4D2C8">      </span><span style="color: #FFD173">:new-connection</span><span style="color: #D4D2C8"> (lsp-stdio-connection </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;/home/sui/Code/cloned/saturn-v/target/release/saturn-v&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;lsp&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #FFD173">:major-modes</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(kerolox-mode)</span>
+<span style="color: #D4D2C8">      </span><span style="color: #FFD173">:server-id</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;saturn-v-lsp</span><span style="color: #D4D2C8">)))</span>
+
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;;; Kerolox treesit mode and LSP</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">define-derived-mode</span><span style="color: #D4D2C8"> kerolox-ts-mode kerolox-mode </span><span style="color: #D5FF80">&quot;kerolox[ts]&quot;</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Tree-sitter based major mode for editing kerolox (.rp1) files.&quot;</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFD173">:group</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
+
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">fboundp</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;treesit-available-p</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">               (treesit-available-p))</span>
+
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; create parser for this buffer</span>
+<span style="color: #D4D2C8">      (treesit-parser-create </span><span style="color: #DFBFFF">&#39;kerolox</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> treesit-font-lock-feature-list</span>
+<span style="color: #D4D2C8">                  </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((comment)</span>
+<span style="color: #D4D2C8">                    (keyword </span><span style="color: #FFD173">string</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                    (constant type)</span>
+<span style="color: #D4D2C8">                    (</span><span style="color: #FFAD66">function</span><span style="color: #D4D2C8"> variable module constructor)</span>
+<span style="color: #D4D2C8">                    (operator punctuation)))</span>
+
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> font-lock-defaults </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; Set up face mapping for tree-sitter query capture names to Emacs faces</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> kerolox-ts-font-lock-settings</span>
+<span style="color: #D4D2C8">        (treesit-font-lock-rules</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:language</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:feature</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;comment</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((comment) @font-lock-comment-face)</span>
+
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:language</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:feature</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;constant</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((integer) @font-lock-constant-face</span>
+<span style="color: #D4D2C8">           (value (symbol)) @font-lock-constant-face)</span>
+
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:language</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:feature</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;variable</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((variable) @font-lock-variable-name-face)</span>
+
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:language</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:feature</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;module</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((import (symbol)) @font-lock-preprocessor-face)</span>
+
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:language</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:feature</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;type</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((type (symbol)) @font-lock-type-face)</span>
+
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:language</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:feature</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;function</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((definition relation: (symbol)) @font-lock-function-name-face</span>
+<span style="color: #D4D2C8">           (</span><span style="color: #FFD173">atom</span><span style="color: #D4D2C8"> head: (symbol)) @font-lock-function-name-face)</span>
+
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:language</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:feature</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;constructor</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((rule relation: (symbol)) @font-lock-function-name-face)</span>
+
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:language</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:feature</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;punctuation</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(([</span><span style="color: #D5FF80">&quot;:-&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;,&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8">]) @font-lock-delimiter-face</span>
+<span style="color: #D4D2C8">           ([</span><span style="color: #D5FF80">&quot;(&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;)&quot;</span><span style="color: #D4D2C8">]) @font-lock-bracket-face)</span>
+
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:language</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:feature</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;operator</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((binary_expr op: (_)) @font-lock-builtin-face</span>
+<span style="color: #D4D2C8">           (unary_expr op: (_)) @font-lock-builtin-face</span>
+<span style="color: #D4D2C8">           (cardinality kind: (_)) @font-lock-builtin-face)</span>
+
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:language</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFD173">:feature</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;keyword</span>
+<span style="color: #D4D2C8">         </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(([</span><span style="color: #D5FF80">&quot;constrain&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;decision&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;define&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;import&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;output&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;soft&quot;</span><span style="color: #D4D2C8">]) @font-lock-keyword-face</span>
+<span style="color: #D4D2C8">           (constraint_kind) @font-lock-keyword-face))</span>
+<span style="color: #D4D2C8">        </span><span style="color: #D5FF80">&quot;Font-lock settings for Kerolox.&quot;</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; Set font-lock settings from the defined rules</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> treesit-font-lock-settings kerolox-ts-font-lock-settings)</span>
+
+<span style="color: #D4D2C8">      (treesit-major-mode-setup)))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Register LSP server and setup LSP server</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;lsp-mode</span>
+<span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;lsp-language-id-configuration</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(kerolox-ts-mode </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;kerolox&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">    (lsp-register-client</span>
+<span style="color: #D4D2C8">     (make-lsp-client</span>
+<span style="color: #D4D2C8">      </span><span style="color: #FFD173">:new-connection</span><span style="color: #D4D2C8"> (lsp-stdio-connection </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;/home/sui/Code/cloned/saturn-v/target/release/saturn-v&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;lsp&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #FFD173">:major-modes</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(kerolox-ts-mode)</span>
+<span style="color: #D4D2C8">      </span><span style="color: #FFD173">:server-id</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;saturn-v-ts-lsp</span><span style="color: #D4D2C8">)))</span>
+
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;;; Tree-sitter generic ;;;;</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;treesit</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; Configure the language grammar source and mapping</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">fboundp</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;treesit-available-p</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">               (treesit-available-p))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; Define grammar source</span>
+<span style="color: #D4D2C8">      (add-to-list </span><span style="color: #DFBFFF">&#39;treesit-language-source-alist</span>
+<span style="color: #D4D2C8">                   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(kerolox </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> (</span><span style="color: #D5FF80">&quot;https://github.com/marceline-cramer/saturn-v&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;tree-sitter-kerolox/src&quot;</span><span style="color: #D4D2C8">)))</span>
+
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; ;; Set up language mapping</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; (add-to-list &#39;treesit-language-remap-alist &#39;(kerolox-ts-mode . kerolox))</span>
+
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; Only install if not already installed</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; (unless (treesit-language-available-p &#39;kerolox)</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;;   (treesit-install-language-grammar &#39;kerolox))</span>
+<span style="color: #D4D2C8">      (treesit-install-language-grammar </span><span style="color: #DFBFFF">&#39;kerolox</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">      ))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Auto-start LSP when opening .rp1 files with tree-sitter mode</span>
+<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;kerolox-ts-mode-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp-deferred)</span>
+
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;;; Misc ;;;;</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Remap regular mode to tree-sitter mode</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> major-mode-remap-alist</span>
+<span style="color: #D4D2C8">        </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((kerolox-mode </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> kerolox-ts-mode)))</span>
+
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;;; Auto-mode-alist ;;;;</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Associate file name pattern with major-mode</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;auto-mode-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;\\.rp1\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> kerolox-ts-mode)))</span>
+
+<span style="color: #D4D2C8">(leaf lua-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;lsp-lua</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; fix issue with externally installed server</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> lsp-clients-lua-language-server-command</span>
+<span style="color: #D4D2C8">          </span><span style="color: #D5FF80">&quot;lua-language-server&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; renoise lua api definitions</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; (setq lsp-lua-workspace-library &quot;&#39;Lua.workspace.library&#39;: {&#39;/home/sui/Music/prod/scripts/renoise-lua/definitions&#39;: true}&quot;)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> lsp-lua-workspace-library (ht (</span><span style="color: #D5FF80">&quot;/home/sui/Music/prod/scripts/renoise-lua/definitions&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> lsp-lua-runtime-plugin </span><span style="color: #D5FF80">&quot;/home/sui/Music/prod/scripts/renoise-lua/definitions/plugin.lua&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    )</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; fix pt.2</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/lsp-clients-lua-language-server-test ()</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;(Improved) Test Lua language server binaries and files.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (f-exists? lsp-clients-lua-language-server-main-location)</span>
+<span style="color: #D4D2C8">             (f-exists? lsp-clients-lua-language-server-bin))</span>
+<span style="color: #D4D2C8">        (f-exists? (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> (split-string lsp-clients-lua-language-server-command)))))</span>
+
+<span style="color: #D4D2C8">  (advice-add </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp-clients-lua-language-server-test</span>
+<span style="color: #D4D2C8">              </span><span style="color: #FFD173">:override</span>
+<span style="color: #D4D2C8">              </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">my/lsp-clients-lua-language-server-test))</span>
+
+<span style="color: #D4D2C8">(leaf direnv</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
+<span style="color: #D4D2C8">  (direnv-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">(leaf rainbow-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> prog-mode-hook)</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;ansi-color</span>
+<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;compilation-filter-hook</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;ansi-color-compilation-filter</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">(leaf treesit-auto</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> treesit-auto-install </span><span style="color: #DFBFFF">&#39;prompt</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (global-treesit-auto-mode))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-ide</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
-
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>
