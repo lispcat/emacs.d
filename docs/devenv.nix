@@ -18,9 +18,9 @@
       mkdocs-bootstrap386
       mkdocs-git-revision-date-localized-plugin
       mkdocs-awesome-nav
-      git+https://github.com/lispcat/mkdocs-terminal.git
     '';
   };
+      # git+https://github.com/lispcat/mkdocs-terminal.git
       # mkdocs-terminal
 
   # https://devenv.sh/processes/
@@ -51,6 +51,7 @@
   enterShell = ''
     hello
     git --version
+    pip install -e ~/Code/cloned/mkdocs-terminal
   '';
 
   # https://devenv.sh/tasks/

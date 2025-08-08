@@ -21,8 +21,8 @@ markdown_extensions:
       toc_depth: "3"
 
   # Code highlighting
-  - codehilite:
-      guess_lang: false
+  # - codehilite:
+  #     guess_lang: false
 
   # # Admonitions (note boxes)
   # - admonition
@@ -42,4 +42,9 @@ markdown_extensions:
   # # Definition lists
   # - def_list
 
-
+  - pymdownx.superfences         # required extension
+  - pymdownx.highlight:
+      use_pygments: true         # use pygments library    
+      pygments_style: lightbulb    # use 'default' style
+      noclasses: true            # update HTML style attr
+  - pymdownx.inlinehilite        # style inline code
