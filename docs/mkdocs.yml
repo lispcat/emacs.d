@@ -13,6 +13,16 @@ theme:
   palette: gruvbox_dark
   # name: bootstrap386
   # name: material
+  # name: shadcn
+
+  # name: windmill
+  # home: docs_src/index.md
+
+  # name: custommill
+  # main_color: '#bb0000' # link text
+  # gray: '#d0d0d0'       # main text
+  # lighter_gray: '#eeeeee' # bg
+  # home: docs_src/index.md
 
 markdown_extensions:
   # TOC settings
@@ -46,5 +56,6 @@ markdown_extensions:
   - pymdownx.highlight:
       use_pygments: true         # use pygments library    
       pygments_style: lightbulb    # use 'default' style
+      # pygments_style: default    # use 'default' style
       noclasses: true            # update HTML style attr
   - pymdownx.inlinehilite        # style inline code

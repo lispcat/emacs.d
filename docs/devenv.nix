@@ -18,8 +18,11 @@
       mkdocs-bootstrap386
       mkdocs-git-revision-date-localized-plugin
       mkdocs-awesome-nav
+      mkdocs-shadcn
+      mkdocs-windmill
     '';
   };
+      # mkdocs-custommill
       # git+https://github.com/lispcat/mkdocs-terminal.git
       # mkdocs-terminal
 
