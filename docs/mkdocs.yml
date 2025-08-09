@@ -18,11 +18,14 @@ theme:
   # name: windmill
   # home: docs_src/index.md
 
+  # name: pulse
+  # nav_style: dark
+
   # name: custommill
   # main_color: '#bb0000' # link text
   # gray: '#d0d0d0'       # main text
   # lighter_gray: '#eeeeee' # bg
-  # home: docs_src/index.md
+  # home: docs_src/build/init
 
 markdown_extensions:
   # TOC settings

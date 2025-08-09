@@ -26,6 +26,7 @@
 ;;   - disable gui components here.
 ;;
 ;; Sets the following:
+;;
 ;; - startup variables
 ;; - dirs
 ;; - UI

@@ -13,17 +13,19 @@
     venv.enable = true;
     venv.requirements = ''
       mkdocs
-      mkdocs-material
-      mkdocs-include-markdown-plugin
-      mkdocs-bootstrap386
-      mkdocs-git-revision-date-localized-plugin
-      mkdocs-awesome-nav
-      mkdocs-shadcn
+
       mkdocs-windmill
+      # mkdocs-bootswatch
+      # mkdocs-custommill
+      # mkdocs-material
+      # mkdocs-bootstrap386
+      # mkdocs-shadcn
+
+      mkdocs-awesome-nav
+      mkdocs-include-markdown-plugin
+      mkdocs-git-revision-date-localized-plugin
     '';
   };
-      # mkdocs-custommill
-      # git+https://github.com/lispcat/mkdocs-terminal.git
       # mkdocs-terminal
 
   # https://devenv.sh/processes/
@@ -44,6 +46,10 @@
 
     docs-deploy.exec = ''
       mkdocs gh-deploy --force
+    '';
+
+    docs-redev.exec = ''
+      devenv update && docs-dev
     '';
 
     hello.exec = ''
