@@ -39,7 +39,7 @@
     --mono-font-stack: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
     --background-color: var(--gb-dm-bg0);
     /* --page-width: 60em; */
-    --page-width: 76em;
+    --page-width: 70em;
     --font-color: var(--gb-dm-fg1);
     --invert-font-color: var(--gb-dm-bg0-hard);
     --primary-color: var(--gb-dm-light-yellow);
@@ -48,7 +48,8 @@
     --error-color: var(--gb-dm-light-red);
     --progress-bar-background: var(--gb-dm-bg2);
     --progress-bar-fill: var(--gb-dm-fg2);
-    --code-bg-color: var(--gb-dm-bg2);
+    /* --code-bg-color: var(--gb-dm-bg2); */
+    --code-bg-color: var(--gb-dm-bg1);
     --input-style: solid;
     --display-h1-decoration: none;
 }
