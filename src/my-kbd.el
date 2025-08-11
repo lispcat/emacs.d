@@ -12,7 +12,7 @@
 (global-set-key (kbd "M-p") (kbd "M-- 1 C-v"))
 (global-set-key (kbd "M-n") (kbd "M-- 1 M-v"))
 
-(defun my/meow-setup ()
+(defun +meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-dvp)
   (meow-motion-overwrite-define-key
    ;; custom keybinding for motion state
@@ -166,7 +166,7 @@
        (insert . "<I>")
        (beacon . "<B>")))
   :config
-  (my/meow-setup)
+  (+meow-setup)
 
   (defun ri/meow-exit-all-and-save ()
     "When run, exit meow insert mode, exit snippet, then save buffer."

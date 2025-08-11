@@ -55,7 +55,7 @@
   ;; :hook (org-mode-hook . indent-tabs-mode)
 
   :config
-  (defun my/org-insert-subheading-respect-content ()
+  (defun +org-insert-subheading-respect-content ()
     "Insert new subheading after the current heading's body.
 If in a list, inserts a new sublist after the current list."
     (interactive)
@@ -65,7 +65,7 @@ If in a list, inserts a new sublist after the current list."
   :bind
   (org-mode-map
    ("C-M-<return>"
-    . my/org-insert-subheading-respect-content))
+    . +org-insert-subheading-respect-content))
 
   :defer-config
 
@@ -98,7 +98,7 @@ If in a list, inserts a new sublist after the current list."
 
   ;; keywords override
 
-  (defun my/org-todo-color-override (&rest _)
+  (defun +org-todo-color-override (&rest _)
     "Set org-todo-keyword-faces only if not already set by the theme."
     (setq org-todo-keyword-faces
           `(("NEXT" :foreground ,(or (ignore-error
@@ -106,10 +106,10 @@ If in a list, inserts a new sublist after the current list."
                                      "yellow")))))
 
   ;; Advise the load-theme function to run our color override
-  (advice-add 'load-theme :after #'my/org-todo-color-override)
+  (advice-add 'load-theme :after #'+org-todo-color-override)
 
   ;; Run once immediately to set colors if no theme is loaded
-  (my/org-todo-color-override)
+  (+org-todo-color-override)
 
   )
 
@@ -144,11 +144,11 @@ If in a list, inserts a new sublist after the current list."
   :setq
   (anki-editor-latex-style . 'mathjax)
   :defer-config
-  (defun my/ensure-anki-editor-mode (note)
+  (defun +ensure-anki-editor-mode (note)
     "Ensure `anki-editor-mode' is enabled before pushing notes."
     (unless anki-editor-mode
       (anki-editor-mode 1)))
-  (advice-add #'anki-editor--push-note :before #'my/ensure-anki-editor-mode))
+  (advice-add #'anki-editor--push-note :before #'+ensure-anki-editor-mode))
 
 (use-package f :ensure (:wait f))
 (leaf image-slicing :ensure nil
@@ -198,8 +198,8 @@ If in a list, inserts a new sublist after the current list."
         `((agenda
            . ,(concat " %i "
                       "%?-12t"
-                      "[%3(my/org-get-prop-effort)]    "
-                      ;; "%3(my/org-get-prop-effort)  "
+                      "[%3(+org-get-prop-effort)]    "
+                      ;; "%3(+org-get-prop-effort)  "
                       "% s"))
           (todo   . " %i ")
           (tags   . " %i %-12:c")
@@ -207,7 +207,7 @@ If in a list, inserts a new sublist after the current list."
           (search . " %c")
           ))
 
-  (defun my/org-get-prop-effort ()
+  (defun +org-get-prop-effort ()
     (if (not (eq major-mode 'org-mode)) ""
       (let ((val (org-entry-get nil "EFFORT")))
         (if (not val) ""
@@ -251,11 +251,11 @@ If in a list, inserts a new sublist after the current list."
   :after org
   :bind (("C-c o n" . org-noter)
          ("C-c d n" . org-noter-start-from-dired)
-         ("C-c o p" . my/org-noter-set-prop-current-page))
+         ("C-c o p" . +org-noter-set-prop-current-page))
   :setq
   (org-noter-doc-split-fraction . '(0.7 . 0.6))
   :config
-  (defun my/org-noter-set-prop-current-page (arg)
+  (defun +org-noter-set-prop-current-page (arg)
     "Set the property `NOTER_PAGE' of the current org heading to the current noter page.
 The property will be removed if ran with a \\[universal-argument]."
     (interactive "P")
@@ -276,7 +276,7 @@ The property will be removed if ran with a \\[universal-argument]."
     "oc" 'org-capture)
 
   :config
-  (defun my/get-org-agenda-denote-file (name)
+  (defun +get-org-agenda-denote-file (name)
     (let ((regex (format "^.*--%s__.*\\.org$" name)))
       (car (seq-filter
             (lambda (path)
@@ -287,13 +287,13 @@ The property will be removed if ran with a \\[universal-argument]."
         `(("t" "Tasks")
 
           ("td" "Todo with deadline" entry
-           (file ,(my/get-org-agenda-denote-file "agenda"))
+           (file ,(+get-org-agenda-denote-file "agenda"))
            "* TODO %^{Task}\nDEADLINE: %^{Deadline}t\n%?\n"
            :empty-lines 1
            :immediate-finish nil)
 
           ("tp" "Task" entry
-           (file ,(my/get-org-agenda-denote-file "agenda"))
+           (file ,(+get-org-agenda-denote-file "agenda"))
            "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
           ("n" "New note (with Denote)" plain
@@ -301,7 +301,7 @@ The property will be removed if ran with a \\[universal-argument]."
            #'denote-org-capture :no-save t :immediate-finish nil
            :kill-buffer t :jump-to-captured t))))
 
-(defun my/org-priority-to-anki ()
+(defun +org-priority-to-anki ()
   (interactive)
   ;; check connection with anki
   (unless (or (boundp 'anki-editor-mode) anki-editor-mode)
@@ -335,7 +335,7 @@ The property will be removed if ran with a \\[universal-argument]."
         (unless (org-entry-get nil "ANKI_NOTE_TYPE")
           (anki-editor-set-note-type nil "Basic"))))))
 
-(defun my/org-clone-with-fraction (days time effort)
+(defun +org-clone-with-fraction (days time effort)
   "Clone subtree with time shifts, prefixing each subheading with fraction prefix."
   (interactive
    (list
@@ -374,9 +374,9 @@ The property will be removed if ran with a \\[universal-argument]."
 
 (leaf visual-fill-column
   :require t
-  :hook ((org-mode-hook . my/org-visual-fill))
+  :hook ((org-mode-hook . +org-visual-fill))
   :init
-  (defun my/org-visual-fill ()
+  (defun +org-visual-fill ()
     (setq visual-fill-column-width 100
           visual-fill-column-center-text t)
     (visual-fill-column-mode 1)))

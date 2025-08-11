@@ -49,13 +49,13 @@
         (when (file-directory-p subdir)
           (add-to-list 'load-path subdir))))))
 
-(add-path-and-subdirs-to-load-path my/emacs-src-dir t)
-(add-path-and-subdirs-to-load-path my/emacs-submodules-dir)
+(add-path-and-subdirs-to-load-path +emacs-src-dir t)
+(add-path-and-subdirs-to-load-path +emacs-submodules-dir)
 
 (defun +load-all (target-dir &optional parent-path)
   "Load all files in TARGET-DIR.
-PARENT-PATH defaults to `my/emacs-src-dir'."
-  (let* ((dir (file-name-concat (or parent-path my/emacs-src-dir)
+PARENT-PATH defaults to `+emacs-src-dir'."
+  (let* ((dir (file-name-concat (or parent-path +emacs-src-dir)
                                 target-dir))
          (files (directory-files-recursively dir "^[^_].*\\.el$")))
     (dolist (path files)
@@ -63,8 +63,8 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 (defun +require-all (target-dir &optional parent-path)
   "Load all files in TARGET-DIR.
-PARENT-PATH defaults to `my/emacs-src-dir'."
-  (let* ((dir (file-name-concat (or parent-path my/emacs-src-dir)
+PARENT-PATH defaults to `+emacs-src-dir'."
+  (let* ((dir (file-name-concat (or parent-path +emacs-src-dir)
                                 target-dir))
          (files (directory-files-recursively dir "^[^_].*\\.el$")))
     (dolist (path files)
@@ -79,7 +79,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 (progn ;; no-littering
 
   (add-to-list 'load-path
-               (file-name-concat my/emacs-submodules-dir
+               (file-name-concat +emacs-submodules-dir
                                  "no-littering"))
 
   (require 'no-littering)
@@ -162,7 +162,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
   (require 'cl-lib)
   (eval-when-compile (require 'subr-x)) ;; is this ok?
 
-  (defun my/elpaca-get-external-pkgs ()
+  (defun +elpaca-get-external-pkgs ()
     "Based on `package-load-all-descriptors'."
     (let ((pkg-dir-lst nil)
           (res nil))
@@ -187,7 +187,7 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
                       (cl-pushnew (intern name) res)))))))))
       res))
 
-  (dolist (pkg (my/elpaca-get-external-pkgs))
+  (dolist (pkg (+elpaca-get-external-pkgs))
     (push pkg elpaca-ignored-dependencies)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -28,8 +28,6 @@
 
 ;;; Code:
 
-;; TODO: rename all the my/ variables with + !
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                    vars                                    ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -50,7 +48,7 @@
 
 ;; --
 
-;;; -- Directory vars - defvar: -----------------------------------------------
+;;; -- Directory Vars : defvar: -----------------------------------------------
 
 ;; Here we define various path variables.
 
@@ -64,62 +62,64 @@
 
 ;; --
 
-;; TODO: rename my/emacs-root-dir to +emacs-root-dir
-
-(defvar my/emacs-root-dir
+(defvar +emacs-root-dir
   (file-name-as-directory ;; add trailing slash
    (expand-file-name user-emacs-directory)))
 
-(defvar my/emacs-src-dir
+(defvar +emacs-src-dir
   (file-name-as-directory
-   (expand-file-name "src" my/emacs-root-dir)))
+   (expand-file-name "src" +emacs-root-dir)))
 
-(defvar my/emacs-local-dir
+(defvar +emacs-local-dir
   (file-name-as-directory
-   (expand-file-name "local" my/emacs-root-dir)))
+   (expand-file-name "local" +emacs-root-dir)))
 
-(defvar my/emacs-submodules-dir
+(defvar +emacs-submodules-dir
   (file-name-as-directory
-   (expand-file-name "submodules" my/emacs-root-dir)))
+   (expand-file-name "submodules" +emacs-root-dir)))
 
-(defvar my/emacs-config-file
+(defvar +emacs-config-file
   (directory-file-name ;; remove trailing slash
-   (expand-file-name "init.el" my/emacs-root-dir)))
+   (expand-file-name "init.el" +emacs-root-dir)))
 
 ;; --
 
-;;; -- directory vars - setq --------------------------------------------------
+;;; -- Directory Vars : setq: -------------------------------------------------
 
-;; - On the local dir: Emacs throws temp and state files into the path bound
-;;   to =user-emacs-directory=, which by default, is set to the root of the
-;;   config directory. This can get rather messy, so I set the
-;;   =user-emacs-directory= to a subdirectory "local".
-;; - On the =custom-file= variable: this variable is bound to a path to a
-;;   file, which contains customizations saved in Emacs' "customize"
-;;   interface. This file is kept under the local dir.
+;; More on the local-dir:
+;; - By default, Emacs throws temp and state files into
+;;   the `user-emacs-directory', or the root of the configuration directory.
+;;   This can get pretty messy, so we set the user-emacs-directory to a
+;;   subdirectory, the local-dir from earlier.
+
+;; The custom-file:
+;; - Any customizations saved using Emacs' "customize" interface will be added
+;;   to the `custom-file'. This file is later loaded in init.el.
 
 ;; --
 
 ;; set main dir to local dir
-(setq user-emacs-directory my/emacs-local-dir)
+(setq user-emacs-directory +emacs-local-dir)
 
 ;; set custom-file location
-(setq custom-file (file-name-concat my/emacs-local-dir
-                                    "custom-vars.el"))
+(setq custom-file (expand-file-name "custom-vars.el" +emacs-local-dir))
 
 ;; --
 
 ;;; -- eln-cache dir - set to ./local/var/eln-cache ---------------------------
 
+;; The eln-cache dir contains compiled .el files (.eln).
+;; To keep the emacs-root-dir tidy, we override this path.
+
 ;; --
 
-;; changes the eln-cache dir to be inside a subdir for cleanliness
+;; only works on Emacs 29
 (when (and (fboundp 'startup-redirect-eln-cache)
            (fboundp 'native-comp-available-p)
            (native-comp-available-p))
   (startup-redirect-eln-cache
    (convert-standard-filename
-    (expand-file-name  "var/eln-cache/" my/emacs-local-dir))))
+    (expand-file-name  "var/eln-cache/" +emacs-local-dir))))
 
 ;; --
 
@@ -132,8 +132,8 @@
 ;; The Emacs GUI has a lot of bloat by default, so they're disabled here (e.g.
 ;; tool-bar, menu-bar, scroll-bar).
 
-;; These UI elements are loaded after early-init.el and before init.el, so we
-;; disable them now.
+;; These UI elements are typically loaded right after early-init.el loads, so
+;; we disable them now.
 
 ;; --
 
@@ -176,11 +176,18 @@
 ;; load)
 ;; (push '(visibility . nil) initial-frame-alist)
 
+;; --
+
+;;; -- default background color -----------------------------------------------
+
 ;; In some display environments, during startup, Emacs will show its window.
 ;; During this period, a theme will yet to be set. So it will show the default
 ;; theme (white, flashbang), so this entry to default-frame-alist will set this
 ;; default background color to black.
 ;; use color black for startup frame
+
+;; --
+
 (add-to-list 'default-frame-alist
              '(background-color . "#000000"))
 

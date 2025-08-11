@@ -119,13 +119,13 @@
   :require t
   :config
   ;; disable "<" pair expansion
-  (defun my/disable-<-pair-expansion ()
+  (defun +disable-<-pair-expansion ()
     (setq-local electric-pair-inhibit-predicate
                 `(lambda (c)
                    (if (char-equal c ?<)
                        t
                      (,electric-pair-inhibit-predicate c)))))
-  (add-hook 'org-mode-hook #'my/disable-<-pair-expansion)
+  (add-hook 'org-mode-hook #'+disable-<-pair-expansion)
   ;; global
   (electric-pair-mode 1))
 
@@ -133,17 +133,17 @@
 ;;                                    langs                                   ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq my/lisp-mode-hooks
+(setq +lisp-mode-hooks
       '(emacs-lisp-mode-hook
         scheme-mode-hook))
 
 ;; rainbow parens
 (leaf rainbow-delimiters
-  :hook `,@my/lisp-mode-hooks)
+  :hook `,@+lisp-mode-hooks)
 
 ;; paredit
 (leaf paredit
-  :hook `,@my/lisp-mode-hooks)
+  :hook `,@+lisp-mode-hooks)
 
 (leaf emacs :ensure nil
   :hook ((emacs-lisp-mode-hook . (lambda ()
@@ -338,12 +338,12 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :setq
   (markdown-fontify-code-blocks-natively . t)
   :config
-  (defun my/setup-markdown-mode ()
+  (defun +setup-markdown-mode ()
     ;; (visual-fill-column-mode 1)
     (display-line-numbers-mode 0))
 
   ;; (setq markdown-command "marked")
-  (add-hook 'markdown-mode-hook #'my/setup-markdown-mode))
+  (add-hook 'markdown-mode-hook #'+setup-markdown-mode))
 
 (leaf clojure-mode
   :disabled t)
@@ -525,7 +525,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
     )
 
   ;; fix pt.2
-  (defun my/lsp-clients-lua-language-server-test ()
+  (defun +lsp-clients-lua-language-server-test ()
     "(Improved) Test Lua language server binaries and files."
     (or (and (f-exists? lsp-clients-lua-language-server-main-location)
              (f-exists? lsp-clients-lua-language-server-bin))
@@ -533,7 +533,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 
   (advice-add #'lsp-clients-lua-language-server-test
               :override
-              #'my/lsp-clients-lua-language-server-test))
+              #'+lsp-clients-lua-language-server-test))
 
 (leaf direnv
   :init
@@ -562,7 +562,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 
   ;; outline-cycle
 
-  (defun my/outline-cycle (&optional event)
+  (defun +outline-cycle (&optional event)
     (interactive (list last-nonmenu-event))
     (save-excursion
       (when (mouse-event-p event)
@@ -577,13 +577,13 @@ Optional WIDTH parameter determines total width (defaults to 70)."
              (message "Show all")))
         (outline-before-first-heading nil))))
 
-  (defhydra my/outline-cycle-hydra ()
-    (";" my/outline-cycle)
-    ("<backtab>" my/outline-cycle))
+  (defhydra +outline-cycle-hydra ()
+    (";" +outline-cycle)
+    ("<backtab>" +outline-cycle))
 
   ;; outline-cycle buffer
 
-  (defun my/outline-cycle-buffer (&optional level)
+  (defun +outline-cycle-buffer (&optional level)
     (interactive (list (when current-prefix-arg
                          (prefix-numeric-value current-prefix-arg))))
     (let (top-level)
@@ -611,28 +611,28 @@ Optional WIDTH parameter determines total width (defaults to 70)."
         (setq outline--cycle-buffer-state 'show-all)
         (message "Show all")))))
 
-  (defhydra my/outline-cycle-buffer-hydra ()
-    (";" my/outline-cycle-buffer)
-    ("<backtab>" my/outline-cycle-buffer))
+  (defhydra +outline-cycle-buffer-hydra ()
+    (";" +outline-cycle-buffer)
+    ("<backtab>" +outline-cycle-buffer))
 
   ;; outline-cycle hydra
 
-  (defun my/outline-cycle-at-root (arg)
+  (defun +outline-cycle-at-root (arg)
     (interactive "P")
     (let ((prev-loc (point-marker)))
       (if arg
           (progn
             (end-of-line) (outline-previous-heading)
-            (my/outline-cycle-buffer)
-            (my/outline-cycle-buffer-hydra/body))
+            (+outline-cycle-buffer)
+            (+outline-cycle-buffer-hydra/body))
         (end-of-line) (outline-previous-heading)
-        (my/outline-cycle)
-        (my/outline-cycle-hydra/body))
+        (+outline-cycle)
+        (+outline-cycle-hydra/body))
       (goto-char prev-loc)))
 
   ;; run outline-hide-body only after first focus (add to .dir-locals.el)
 
-  (defun my/hide-outline-on-open (func &rest args)
+  (defun +hide-outline-on-open (func &rest args)
     "Hide outlines when opening files via dired or projectile."
     (let ((result (apply func args)))
       ;; After the file is opened, hide outlines if conditions are met
@@ -641,17 +641,17 @@ Optional WIDTH parameter determines total width (defaults to 70)."
         (outline-hide-body))
       result))
 
-  (advice-add 'find-file :around #'my/hide-outline-on-open)
-  (advice-add 'dired-find-file :around #'my/hide-outline-on-open)
-  (advice-add 'projectile-find-file :around #'my/hide-outline-on-open)
-  (advice-add 'projectile-find-file-dwim :around #'my/hide-outline-on-open)
+  (advice-add 'find-file :around #'+hide-outline-on-open)
+  (advice-add 'dired-find-file :around #'+hide-outline-on-open)
+  (advice-add 'projectile-find-file :around #'+hide-outline-on-open)
+  (advice-add 'projectile-find-file-dwim :around #'+hide-outline-on-open)
 
   :bind
   (outline-minor-mode-map
-   ("<backtab>" . my/outline-cycle-at-root))
+   ("<backtab>" . +outline-cycle-at-root))
 
-  ("C-c ; ;" . my/outline-cycle-buffer)
-  ("C-c ; r" . my/outline-cycle-at-root)
+  ("C-c ; ;" . +outline-cycle-buffer)
+  ("C-c ; r" . +outline-cycle-at-root)
 
   ;; buffer
   ("C-c ; s" . outline-show-all)

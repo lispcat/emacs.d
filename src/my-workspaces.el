@@ -282,7 +282,7 @@
 ;;           (not (persp-is-current-buffer buff))))
 ;;   ;; consult-buffer
 ;;   (with-eval-after-load 'consult
-;;     (setq my/persp-consult-source
+;;     (setq +persp-consult-source
 ;;           '(:name "Perspective"
 ;;                   :narrow 115           ; ?s
 ;;                   :category buffer
@@ -297,6 +297,6 @@
 ;;                               :as buffer-name]
 ;;                              7]))
 ;;     (consult-customize consult--source-buffer :hidden t :default nil)
-;;     (add-to-list 'consult-buffer-sources my/persp-consult-source)))
+;;     (add-to-list 'consult-buffer-sources +persp-consult-source)))
 
 (provide 'my-workspaces)

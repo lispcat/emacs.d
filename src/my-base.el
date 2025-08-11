@@ -44,11 +44,11 @@
   "bk" 'kill-current-buffer
   "bn" 'next-buffer
   "bp" 'previous-buffer
-  "bo" '(my/last-selected-buffer :which-key "last-buffer")
+  "bo" '(+last-selected-buffer :which-key "last-buffer")
   "bb" 'switch-to-buffer
   "bs" 'save-buffer)
 
-(defalias 'my/last-selected-buffer 'mode-line-other-buffer)
+(defalias '+last-selected-buffer 'mode-line-other-buffer)
 
 ;; remember recent files
 (leaf recentf :ensure nil
@@ -150,12 +150,12 @@ _SPC_ cancel	_o_nly this   	_d_elete
   ("SPC" nil)
   )
 
-(defun my/open-emacs-config-file ()
+(defun +open-emacs-config-file ()
   "Open emacs config file."
   (interactive)
-  (find-file my/emacs-config-file))
+  (find-file +emacs-config-file))
 
-(defun my/open-agenda-file ()
+(defun +open-agenda-file ()
   "Open agenda file."
   (interactive)
   (find-file "~/Notes/org/agenda.org"))
@@ -175,8 +175,8 @@ _SPC_ cancel	_o_nly this   	_d_elete
     "dj" 'dired-jump
     "f" '(:ignore t :which-key "files")
     "ff" 'find-file
-    "fp" 'my/open-emacs-config-file
-    "fa" 'my/open-agenda-file)
+    "fp" '+open-emacs-config-file
+    "fa" '+open-agenda-file)
   :config
   ;; hide details by default
   (add-hook 'dired-mode-hook 'dired-hide-details-mode)
@@ -215,7 +215,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 (leaf auto-sudoedit
   :commands auto-sudoedit-sudoedit)
 
-(defun my/profiler-report ()
+(defun +profiler-report ()
   "Profiler stop and report."
   (interactive)
   (profiler-stop)
@@ -224,7 +224,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 (general-my-map
   "D" '(:ignore t :which-key "debug")
   "Ds" 'profiler-start
-  "Dr" 'my/profiler-report)
+  "Dr" '+profiler-report)
 
 
 ;;; end
