@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: comment header
+# key: coh
+# --
+;;; -- ${1:comment} ${1:$(let* ((endpadlen (- fill-column 1 (current-column))))
+                           (make-string (max endpadlen 0) ?-))
+                      }$0

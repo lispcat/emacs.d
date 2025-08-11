@@ -129,6 +129,10 @@
   ;; global
   (electric-pair-mode 1))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                    langs                                   ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (setq my/lisp-mode-hooks
       '(emacs-lisp-mode-hook
         scheme-mode-hook))
@@ -370,10 +374,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 (leaf ron-mode
   :require t)
 
-;;;; Kerolox ;;;;
-
-(leaf emacs :ensure nil
-  ;;;; Kerolox mode and LSP ;;;;
+(leaf emacs :ensure nil ;; kerolox!
 
   ;; Major-mode for .rp1 files
   (define-derived-mode kerolox-mode prog-mode "kerolox"
@@ -549,5 +550,156 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :config
   (setq treesit-auto-install 'prompt)
   (global-treesit-auto-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                               Code formatting                              ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(leaf outline-indent
+  :doc "Optimal folding: https://github.com/jamescherti/outline-indent.el"
+  :commands outline-indent-minor-mode
+  :init
+
+  ;; outline-cycle
+
+  (defun my/outline-cycle (&optional event)
+    (interactive (list last-nonmenu-event))
+    (save-excursion
+      (when (mouse-event-p event)
+        (mouse-set-point event))
+      (condition-case nil
+          (pcase (outline--cycle-state)
+            ('show-all
+             (outline-hide-subtree)
+             (message "Hide all"))
+            ((or 'hide-all 'headings-only)
+             (outline-show-subtree)
+             (message "Show all")))
+        (outline-before-first-heading nil))))
+
+  (defhydra my/outline-cycle-hydra ()
+    (";" my/outline-cycle)
+    ("<backtab>" my/outline-cycle))
+
+  ;; outline-cycle buffer
+
+  (defun my/outline-cycle-buffer (&optional level)
+    (interactive (list (when current-prefix-arg
+                         (prefix-numeric-value current-prefix-arg))))
+    (let (top-level)
+      (save-excursion
+        (goto-char (point-min))
+        (while (not (or (eq top-level 1) (eobp)))
+          (when-let ((level (and (outline-on-heading-p t)
+                                 (funcall outline-level))))
+            (when (< level (or top-level most-positive-fixnum))
+              (setq top-level (max level 1))))
+          (outline-next-heading)))
+      (cond
+       (level
+        (outline-hide-sublevels level)
+        (setq outline--cycle-buffer-state 'all-heading)
+        (message "All headings up to level %s" level))
+       ((or (eq outline--cycle-buffer-state 'show-all)
+            (eq outline--cycle-buffer-state 'top-level))
+        (outline-show-all)
+        (outline-hide-region-body (point-min) (point-max))
+        (setq outline--cycle-buffer-state 'all-heading)
+        (message "All headings"))
+       (t
+        (outline-show-all)
+        (setq outline--cycle-buffer-state 'show-all)
+        (message "Show all")))))
+
+  (defhydra my/outline-cycle-buffer-hydra ()
+    (";" my/outline-cycle-buffer)
+    ("<backtab>" my/outline-cycle-buffer))
+
+  ;; outline-cycle hydra
+
+  (defun my/outline-cycle-at-root (arg)
+    (interactive "P")
+    (let ((prev-loc (point-marker)))
+      (if arg
+          (progn
+            (end-of-line) (outline-previous-heading)
+            (my/outline-cycle-buffer)
+            (my/outline-cycle-buffer-hydra/body))
+        (end-of-line) (outline-previous-heading)
+        (my/outline-cycle)
+        (my/outline-cycle-hydra/body))
+      (goto-char prev-loc)))
+
+  ;; run outline-hide-body only after first focus (add to .dir-locals.el)
+
+  (defun my/hide-outline-on-open (func &rest args)
+    "Hide outlines when opening files via dired or projectile."
+    (let ((result (apply func args)))
+      ;; After the file is opened, hide outlines if conditions are met
+      (when (and (buffer-file-name)
+                 outline-indent-minor-mode)
+        (outline-hide-body))
+      result))
+
+  (advice-add 'find-file :around #'my/hide-outline-on-open)
+  (advice-add 'dired-find-file :around #'my/hide-outline-on-open)
+  (advice-add 'projectile-find-file :around #'my/hide-outline-on-open)
+  (advice-add 'projectile-find-file-dwim :around #'my/hide-outline-on-open)
+
+  :bind
+  (outline-minor-mode-map
+   ("<backtab>" . my/outline-cycle-at-root))
+
+  ("C-c ; ;" . my/outline-cycle-buffer)
+  ("C-c ; r" . my/outline-cycle-at-root)
+
+  ;; buffer
+  ("C-c ; s" . outline-show-all)
+  ("C-c ; h" . outline-hide-body)
+  ("C-c ; b" . outline-show-all)
+  ("C-c ; B" . outline-hide-body)
+
+  ;; point
+  ("C-c ; p" . outline-show-entry)
+  ("C-c ; P" . outline-hide-entry)
+
+  ;; subtree
+  ("C-c ; t" . outline-show-subtree)
+  ("C-c ; T" . outline-hide-subtree)
+
+  ;; navigation/content/structure
+  ("C-c ; n" . outline-show-branches)
+  ("C-c ; N" . outline-hide-leaves)
+
+  ;; other/current
+  ("C-c ; O" . outline-hide-other)
+
+  ;; children
+  ("C-c ; c" . outline-show-children)
+  ("C-c ; C" . outline-hide-children)
+
+  :hook
+  ((emacs-lisp-mode-hook . outline-indent-minor-mode)
+   (outline-indent-minor-mode-hook
+    . (lambda ()
+        (setq-local make-window-start-visible t)
+        (pcase major-mode
+          ('emacs-lisp-mode
+           (setq-local outline-regexp
+                       (string-join
+                        '(
+                          ;; "^;;;+ .*"    ; ;;;+ space rest       (regular)
+                          "^;;+ .*"    ; ;;+ space rest (optimal?)
+                          "^;;$"       ; ^;;$ (alt)
+                          "^(...."      ; top-level parens
+                          ;; "^;;+ .* ;$"  ; ;;+ space rest ;      (cob)
+                          "^;;;;+$"     ; ;;;;+ (only, all the way) (cob)
+                          )
+                        "\\|"))
+           )))))
+
+  :setq
+  (outline-indent-ellipsis . " ▼")
+  (outline-blank-line . t))
 
 (provide 'my-ide)

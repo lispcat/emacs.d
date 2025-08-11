@@ -1,15 +1,45 @@
-;; NOTE: ensure that the newest version of org is installed right after elpaca setup
+;;; my-org.el --- org mode setup                     -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2025  lispcat
+
+;; Author: lispcat <187922791+lispcat@users.noreply.github.com>
+;; Keywords: local
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; 
+
+;;; Code:
+
+;; NOTE: ensure that the newest version of org is installed right after elpaca
+;; setup
+
+(require 'leaf)
+
 (leaf org :ensure nil
   :setq
   (org-directory . "~/Notes/org")
-  (org-tags-column . -55)          ; column where tags are indented to
+  (org-tags-column . -55)               ; column where tags are indented to
   ;; (org-startup-folded . 'showall)  ; default folding mode
-  (org-startup-folded . 'nofold)  ; default folding mode
-  (org-startup-indented . t)       ; indent headings and its body
+  (org-startup-folded . 'nofold)        ; default folding mode
+  (org-startup-indented . t)            ; indent headings and its body
   (org-special-ctrl-a/e . t)
   (org-src-window-setup . 'current-window) ; edit code blocks in the same window
   (org-return-follows-link . t)            ; RET can open links
-  (org-hide-emphasis-markers . t) ; hide formatting chars (* / ~ = etc)
+  (org-hide-emphasis-markers . t)          ; hide formatting chars (* / ~ = etc)
   (org-src-preserve-indentation . t) ; remove annoying leading whitespace in code blocks
   (org-fontify-whole-heading-line . t)
   ;; (org-ellipsis . " ›")
@@ -351,4 +381,9 @@ The property will be removed if ran with a \\[universal-argument]."
           visual-fill-column-center-text t)
     (visual-fill-column-mode 1)))
 
+
 (provide 'my-org)
+;;; my-org.el ends here
+
+
+

@@ -20,6 +20,7 @@
    '("t" . "p") ;; improved solution? (access Motion "t" with "SPC t")
    )
   (meow-leader-define-key
+   '("u" . meow-universal-argument)
    '("t" . "H-t")
    ;; '("p" . "H-p")
    ;; '("u" . ctl-x-map)

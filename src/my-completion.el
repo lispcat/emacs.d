@@ -282,6 +282,9 @@
   (yas-keymap
    ("RET" . yas-next-field-or-maybe-expand))
   :config
+  (add-to-list 'yas-snippet-dirs
+               (expand-file-name "no-search/snippets"
+                                 my/emacs-src-dir))
   (yas-reload-all))
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
