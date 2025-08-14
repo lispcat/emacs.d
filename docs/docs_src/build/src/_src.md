@@ -10,19 +10,18 @@
 (+require-or-load '+tools)
 
 ;; regular
-(+require-or-load 'my-base)
-(+require-or-load 'my-kbd)
-(+require-or-load 'my-completion)
-(+require-or-load 'my-ide)
-(+require-or-load 'my-org)
-(+require-or-load 'my-latex)
-(+require-or-load 'my-workspaces)
-(+require-or-load 'my-programs)
-(+require-or-load 'my-ui)
-(+require-or-load 'my-misc)
-(+require-or-load 'my-to-sort)
-(+require-or-load 'my-documentation)
-
+(+require-or-load '+base)
+(+require-or-load '+kbd)
+(+require-or-load '+completion)
+(+require-or-load '+ide)
+(+require-or-load '+org)
+(+require-or-load '+latex)
+(+require-or-load '+workspaces)
+(+require-or-load '+programs)
+(+require-or-load '+ui)
+(+require-or-load '+misc)
+(+require-or-load '+to-sort)
+(+require-or-load '+documentation)
 
 ;;; end
 (provide '_src)
