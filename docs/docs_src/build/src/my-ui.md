@@ -12,23 +12,23 @@
     (fira-code . "Fira Code")
     (maple-mono . "Maple Mono")))
 
-(defun my/get-font (font)
-  (alist-get font my/font-alist))
+(defun +get-font (font)
+  (alist-get font +font-alist))
 
-(defun my/fontconfig ()
+(defun +fontconfig ()
   "Set default font face."
   (let ((font
          'fira-code
          ;; 'ttyp0-16
          ;; 'fira-code
          ))
-    (set-face-attribute 'default nil :font (my/get-font font)))
+    (set-face-attribute 'default nil :font (+get-font font)))
   )
 
-(my/fontconfig)
+(+fontconfig)
 
 ;; HACK: fix bitmap fonts on emacsclient frames
-(add-hook 'server-after-make-frame-hook #'my/fontconfig)
+(add-hook 'server-after-make-frame-hook #'+fontconfig)
 
 ;; all the icons
 (leaf all-the-icons
@@ -65,7 +65,7 @@
 
 ;;; Function: sets a random theme.
 
-(defun my/set-random-theme ()
+(defun +set-random-theme ()
   "Set a random theme."
   (interactive)
   (let* ((available-themes (custom-available-themes))
@@ -100,26 +100,26 @@
   :leaf-defer nil
   :bind
   ("C-c T t" . consult-theme)
-  ("C-c T r" . my/set-random-theme))
+  ("C-c T r" . +set-random-theme))
 
 (leaf emacs :elpaca nil
   :after doom-themes kaolin-themes ef-themes
   :config
-  (my/set-random-theme))
+  (+set-random-theme))
 
-(defvar my/transparency-value 100)
+(defvar +transparency-value 100)
 
-(defun my/native-transparency-supported? ()
+(defun +native-transparency-supported? ()
   "Whether native-transparency is supported on this version of Emacs."
   (if (version<= "29" emacs-version)
       t
     (message "Native transparency is not supported.")
     nil))
 
-(defun my/toggle-transparency ()
-  "Toggle transparency with `my/transparency-value'."
+(defun +toggle-transparency ()
+  "Toggle transparency with `+transparency-value'."
   (interactive)
-  (when (my/native-transparency-supported?)
+  (when (+native-transparency-supported?)
     (let ((alpha (frame-parameter nil 'alpha-background)))
       (set-frame-parameter
        nil 'alpha-background
@@ -128,22 +128,22 @@
                       ;; Also handle undocumented (<active> <inactive>) form.
                       ((numberp (cadr alpha)) (cadr alpha)))
                 100)
-           my/transparency-value
+           +transparency-value
          100)))))
 
-(defun my/set-transparency (value)
+(defun +set-transparency (value)
   "Set the transparency of the frame window to VALUE."
   (interactive "nTransparency Value 0 - 100 opaque: ")
-  (when (my/native-transparency-supported?)
+  (when (+native-transparency-supported?)
     (set-frame-parameter (selected-frame) 'alpha-background value)))
 
 ;; list of programming modes to disable line-numbers on
-(defvar my/display-line-numbers-exclude '())
+(defvar +display-line-numbers-exclude '())
 
 ;; enable line-numbers on programming modes
 (add-hook 'prog-mode-hook
           (lambda ()
-            (unless (memq major-mode my/display-line-numbers-exclude)
+            (unless (memq major-mode +display-line-numbers-exclude)
               (display-line-numbers-mode 1))))
 
 (setq display-line-numbers-type 'relative)
@@ -152,17 +152,17 @@
 (diminish 'visual-line-mode) ; hide "Wrap" in mode-line
 
 (leaf whitespace :ensure nil
-  :hook ((prog-mode-hook . my/prog-mode-whitespace)
-         (org-mode-hook  . my/org-mode-whitespace)
-         (text-mode-hook . my/org-mode-whitespace))
+  :hook ((prog-mode-hook . +prog-mode-whitespace)
+         (org-mode-hook  . +org-mode-whitespace)
+         (text-mode-hook . +org-mode-whitespace))
   :init
-  (defvar my/base-whitespace-style '(face trailing tabs missing-newline-at-eof))
-  (defun my/prog-mode-whitespace ()
-    (setq whitespace-style (append my/base-whitespace-style
+  (defvar +base-whitespace-style '(face trailing tabs missing-newline-at-eof))
+  (defun +prog-mode-whitespace ()
+    (setq whitespace-style (append +base-whitespace-style
                                    '(tab-mark)))
     (whitespace-mode 1))
-  (defun my/org-mode-whitespace ()
-    (setq whitespace-style (append my/base-whitespace-style '()))
+  (defun +org-mode-whitespace ()
+    (setq whitespace-style (append +base-whitespace-style '()))
     (whitespace-mode 1))
   :config
   (setq whitespace-trailing 'whitespace-hspace))
@@ -219,8 +219,8 @@
 (global-prettify-symbols-mode 1)
 
 (provide 'my-ui)
-
 ```
+
 
 
 ---

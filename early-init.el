@@ -50,8 +50,9 @@
 
 ;;; -- Directory Vars : defvar: -----------------------------------------------
 
+;;
 ;; Here we define various path variables.
-
+;;
 ;; - root-dir: root of the Emacs config directory (usually "~/.emacs.d/").
 ;; - src-dir: modularized config files; contains most of my config.
 ;; - local-dir: the root of the Emacs config directory, as Emacs and its
@@ -86,13 +87,17 @@
 
 ;;; -- Directory Vars : setq: -------------------------------------------------
 
+;;
 ;; More on the local-dir:
+;;
 ;; - By default, Emacs throws temp and state files into
 ;;   the `user-emacs-directory', or the root of the configuration directory.
 ;;   This can get pretty messy, so we set the user-emacs-directory to a
 ;;   subdirectory, the local-dir from earlier.
 
+;;
 ;; The custom-file:
+;;
 ;; - Any customizations saved using Emacs' "customize" interface will be added
 ;;   to the `custom-file'. This file is later loaded in init.el.
 
@@ -188,8 +193,9 @@
 
 ;; --
 
-(add-to-list 'default-frame-alist
-             '(background-color . "#000000"))
+;; TODO: broken
+;; (add-to-list 'default-frame-alist
+;;              '(background-color . "#999999"))
 
 ;; --
 
@@ -200,7 +206,7 @@
 ;;; -- lsp --------------------------------------------------------------------
 
 ;; Some tweaks for lsp-mode to increase performance.
-;; https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization
+;; <https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization>
 
 ;; --
 
@@ -209,6 +215,6 @@
 
 ;; --
 
-;;; end
+;;; -- end --------------------------------------------------------------------
 (provide 'early-init)
 ;;; early-init.el ends here

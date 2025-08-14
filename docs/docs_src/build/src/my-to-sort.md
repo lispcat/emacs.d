@@ -113,12 +113,12 @@
 
 (require 'diary-lib)
 
-(setq my/calendars
+(setq +calendars
       (with-temp-buffer
         (insert-file-contents "~/Private/elisp/calendar-urls.el")
         (read (current-buffer))))
 
-(defun my/ical-pull-all ()
+(defun +ical-pull-all ()
   (interactive)
   (find-file diary-file)
   (erase-buffer)
@@ -128,7 +128,7 @@
               (message "Importing ")
               (icalendar-import-file tmpfile diary-file)
               (kill-buffer (car (last (split-string tmpfile "/"))))))
-          my/calendars))
+          +calendars))
 
 ;; no cover
 ;; (use-package listen)
@@ -203,7 +203,7 @@
 
   ;; TODO: add this function to emms-info-functions (hard to implement?)
   ;; (instead make my own function that runs ffprobe and gets info? might be better)
-  (defun my/emms-show-album-cover-in-emacs ()
+  (defun +emms-show-album-cover-in-emacs ()
     (interactive)
     (if-let ((track (emms-playlist-current-selected-track))
              (song-path (emms-track-get track 'name))
@@ -479,7 +479,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
     ;; dired
     "nd" '(:ignore t :which-key "dired")
-    "ndj" '(my/denote-directory-jump :which-key "jump to denote dir")
+    "ndj" '(+denote-directory-jump :which-key "jump to denote dir")
     "ndr" '(denote-dired-rename-marked-files :which-key "marked rename")
     "ndk" '(denote-dired-rename-marked-files-add-keywords
             :which-key "marked add keywords")
@@ -502,7 +502,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
     "nol" '(denote-org-extras-dblock-insert-links :which-key "dblock links")
     "nof" '(denote-org-extras-dblock-insert-files :which-key "dblock files")
     "nob" '(denote-org-extras-dblock-insert-backlinks :which-key "dblock backlinks")
-    "noa" '(my/denote-insert-file-local-dblock-update-mode :which-key "insert file-local dblock mode")
+    "noa" '(+denote-insert-file-local-dblock-update-mode :which-key "insert file-local dblock mode")
     )
 
   :config
@@ -541,7 +541,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
   ;; other
 
-  (defun my/denote-directory-jump ()
+  (defun +denote-directory-jump ()
     (interactive)
     (dired denote-directory))
 
@@ -567,7 +567,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
   ;;    (add-hook 'before-save-hook #'org-update-all-dblocks nil t)
   ;;     (remove-hook 'before-save-hook #'org-update-all-dblocks t)))
 
-  ;; (defun my/denote-insert-file-local-dblock-update-mode ()
+  ;; (defun +denote-insert-file-local-dblock-update-mode ()
   ;;   (interactive)
   ;;   (if (eq major-mode 'org-mode)
   ;;    (add-file-local-variable
@@ -623,7 +623,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
                        ""))))
   ;; custom printing format
   (progn
-    (defun my/consult-notes--file-dir-annotate (name dir cand)
+    (defun +consult-notes--file-dir-annotate (name dir cand)
       "Annotate file CAND with its directory DIR, size, and modification time."
       (let* ((file  (concat (file-name-as-directory dir) cand))
              (dirs  (abbreviate-file-name dir))
@@ -636,7 +636,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
         (put-text-property 0 (length fsize) 'face 'consult-notes-size fsize)
         (put-text-property 0 (length ftime) 'face 'consult-notes-time ftime)
         (format "%7s %8s  %12s  %8s" name fsize ftime dirs)))
-    (setq consult-notes-file-dir-annotate-function #'my/consult-notes--file-dir-annotate))
+    (setq consult-notes-file-dir-annotate-function #'+consult-notes--file-dir-annotate))
   ;; enable for denote after load denote
   (with-eval-after-load 'denote
     (consult-notes-denote-mode 1)))
@@ -705,8 +705,8 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 ;;   "")
 
 (provide 'my-to-sort)
-
 ```
+
 
 
 ---

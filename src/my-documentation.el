@@ -94,7 +94,7 @@
             (append
              (reverse
               (-filter #'file-regular-p
-                       (directory-files-recursively infiles-directory ".*")))
+                       (directory-files-recursively infiles-directory emacs-lisp-file-regexp)))
              extra-infiles))
 
            ;; derive all outfiles for each infile

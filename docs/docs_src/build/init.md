@@ -3,76 +3,20 @@
 *Author:* lispcat <187922791+lispcat@users.noreply.github.com><br>
 
 The main init file.
+This is automatically ran at startup after early-init.el.
 
 # Code
 
-```emacs-lisp
+## Vars
 
-```
-
-## standard vars
+Set various vars for sane defaults.
 
 ```emacs-lisp
-
 ;; run .el instead of .elc if newer
 (setq load-prefer-newer t)
+
 ;; silence compiler warnings
-(setq native-comp-async-report-warnings-errors nil) ; Silence compiler warnings
-
-```
-
-## load-path
-
-```emacs-lisp
-
-(require 'cl-lib)
-
-(defun add-subdirs-to-load-path (path &optional recursively?)
-  "Add PATH and all its subdirs to the `load-path'."
-  (when (set 'path (expand-file-name path))
-    (add-to-list 'load-path path)
-    (if recursively?
-        (let ((default-directory path))
-          (normal-top-level-add-subdirs-to-load-path))
-      (dolist (subdir (directory-files path t directory-files-no-dot-files-regexp t))
-        (when (file-directory-p subdir)
-          (add-to-list 'load-path subdir))))))
-
-(add-subdirs-to-load-path my/emacs-src-dir t)
-(add-subdirs-to-load-path my/emacs-submodules-dir)
-
-(defun my/log-customize-set-func (&rest args)
-  (message "log: customized: %s" args))
-;; (advice-add 'custom-set-variables :before #'my/log-customize-set-func)
-;; (advice-add 'custom-set-faces     :before #'my/log-customize-set-func)
-
-(add-hook 'elpaca-after-init-hook
-          (lambda ()
-            (when (file-exists-p custom-file)
-              (load custom-file))))
-
-(defun +load-all (target-dir &optional parent-path)
-  "Load all files in TARGET-DIR.
-PARENT-PATH defaults to `my/emacs-src-dir'."
-  (let* ((dir (file-name-concat (or parent-path my/emacs-src-dir)
-                                target-dir))
-         (files (directory-files-recursively dir "^[^_].*\\.el$")))
-    (dolist (path files)
-      (load path))))
-
-(defun +require-all (target-dir &optional parent-path)
-  "Load all files in TARGET-DIR.
-PARENT-PATH defaults to `my/emacs-src-dir'."
-  (let* ((dir (file-name-concat (or parent-path my/emacs-src-dir)
-                                target-dir))
-         (files (directory-files-recursively dir "^[^_].*\\.el$")))
-    (dolist (path files)
-      (require (intern
-                (file-name-sans-extension
-                 (file-name-nondirectory path)))))))
-
-(add-to-list 'load-path (file-name-concat my/emacs-submodules-dir
-                                          "no-littering"))
+(setq native-comp-async-report-warnings-errors nil)
 
 ```
 
@@ -80,28 +24,34 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 ```emacs-lisp
 
-;; load
-(require 'no-littering)
-;; variables
-(setq auto-save-default nil)       ; don't autosave all file buffers
-(setq backup-by-copying t)         ; safer backups
-(setq undo-tree-auto-save-history nil)
-;; Dont litter project folders with backup files
-(let ((backup-dir (no-littering-expand-var-file-name "backup/")))
-  (make-directory backup-dir t)
-  (setq backup-directory-alist
-        `(("\\`/tmp/" . nil)
-          ("\\`/dev/shm/" . nil)
-          ("." . ,backup-dir))))
-;; Tidy up auto-save files
-(let ((auto-save-dir (no-littering-expand-var-file-name "auto-save/")))
-  (make-directory auto-save-dir t)
-  (setq auto-save-file-name-transforms
-        `(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
-           ,(concat (file-name-as-directory temporary-file-directory) "\\2") t)
-          ("\\`/tmp\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
-          ("\\`/dev/shm\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
-          ("." ,auto-save-dir t))))
+(progn ;; no-littering
+
+  ;; manually add
+  (add-to-list 'load-path
+               (file-name-concat +emacs-submodules-dir
+                                 "no-littering"))
+
+  (require 'no-littering)
+  ;; variables
+  (setq auto-save-default nil)          ; don't autosave all file buffers
+  (setq backup-by-copying t)            ; safer backups
+  (setq undo-tree-auto-save-history nil)
+  ;; Dont litter project folders with backup files
+  (let ((backup-dir (no-littering-expand-var-file-name "backup/")))
+    (make-directory backup-dir t)
+    (setq backup-directory-alist
+          `(("\\`/tmp/" . nil)
+            ("\\`/dev/shm/" . nil)
+            ("." . ,backup-dir))))
+  ;; Tidy up auto-save files
+  (let ((auto-save-dir (no-littering-expand-var-file-name "auto-save/")))
+    (make-directory auto-save-dir t)
+    (setq auto-save-file-name-transforms
+          `(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+             ,(concat (file-name-as-directory temporary-file-directory) "\\2") t)
+            ("\\`/tmp\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
+            ("\\`/dev/shm\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
+            ("." ,auto-save-dir t)))))
 
 ```
 
@@ -109,50 +59,87 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 
 ```emacs-lisp
 
-(defvar elpaca-installer-version 0.11)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil :depth 1 :inherit ignore
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (<= emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                  ,@(when-let* ((depth (plist-get order :depth)))
-                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                  ,(plist-get order :repo) ,repo))))
-                  ((zerop (call-process "git" nil buffer t "checkout"
-                                        (or (plist-get order :ref) "--"))))
-                  (emacs (concat invocation-directory invocation-name))
-                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                  ((require 'elpaca))
-                  ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+;; elpaca 0.11
+(progn
+  (defvar elpaca-installer-version 0.11)
+  (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+  (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+  (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+  (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                                :ref nil :depth 1 :inherit ignore
+                                :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                                :build (:not elpaca--activate-package)))
+  (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+         (build (expand-file-name "elpaca/" elpaca-builds-directory))
+         (order (cdr elpaca-order))
+         (default-directory repo))
+    (add-to-list 'load-path (if (file-exists-p build) build repo))
+    (unless (file-exists-p repo)
+      (make-directory repo t)
+      (when (<= emacs-major-version 28) (require 'subr-x))
+      (condition-case-unless-debug err
+          (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                    ,@(when-let* ((depth (plist-get order :depth)))
+                                                        (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                    ,(plist-get order :repo) ,repo))))
+                    ((zerop (call-process "git" nil buffer t "checkout"
+                                          (or (plist-get order :ref) "--"))))
+                    (emacs (concat invocation-directory invocation-name))
+                    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                          "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                    ((require 'elpaca))
+                    ((elpaca-generate-autoloads "elpaca" repo)))
+              (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+            (error "%s" (with-current-buffer buffer (buffer-string))))
+        ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+    (unless (require 'elpaca-autoloads nil t)
+      (require 'elpaca)
+      (elpaca-generate-autoloads "elpaca" repo)
+      (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+  (add-hook 'after-init-hook #'elpaca-process-queues)
+  (elpaca `(,@elpaca-order)))
 
-;; setup use-package
+
+;; install use-package
 (elpaca elpaca-use-package
-        (elpaca-use-package-mode)
-        (setq use-package-always-ensure t)
-        (setq use-package-always-defer t))
+  (elpaca-use-package-mode)
+  (setq use-package-always-ensure t)
+  (setq use-package-always-defer t))
+
+;; hack: exclude all externally installed packages from elpaca.
+(progn
+  (require 'elpaca)
+  (require 'cl-lib)
+  (eval-when-compile (require 'subr-x)) ;; is this ok?
+
+  (defun +elpaca-get-external-pkgs ()
+    "Based on `package-load-all-descriptors'."
+    (let ((pkg-dir-lst nil)
+          (res nil))
+      (dolist (dir (cons package-user-dir package-directory-list))
+        (when (file-directory-p dir)
+          (dolist (pkg-dir (directory-files dir t "\\`[^.]"))
+            (when (file-directory-p pkg-dir)
+              (push pkg-dir pkg-dir-lst)))))
+      (dolist (pkg-dir pkg-dir-lst)
+        (let ((pkg-file (expand-file-name (package--description-file pkg-dir)
+                                          pkg-dir))
+              (signed-file (concat pkg-dir ".signed")))
+          (when (file-exists-p pkg-file)
+            (with-temp-buffer
+              (insert-file-contents pkg-file)
+              (goto-char (point-min))
+              (let ((pkg-text (read (current-buffer))))
+                (if (not (eq 'define-package (car-safe pkg-text)))
+                    (error "Package %s doesn't have \"define-package\"" pkg-file)
+                  (let ((name (cadr pkg-text)))
+                    (when name
+                      (cl-pushnew (intern name) res)))))))))
+      res))
+
+  (dolist (pkg (+elpaca-get-external-pkgs))
+    (push pkg elpaca-ignored-dependencies)))
 
 ```
 
@@ -161,7 +148,8 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 ```emacs-lisp
 
 (elpaca leaf
-  :wait) ; deferred by default. demand with :leaf-defer nil
+  :wait                       ; deferred by default. demand with :leaf-defer nil
+  )
 
 (elpaca leaf-keywords
   (leaf-keywords-init)
@@ -172,61 +160,6 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 ;; hack: fix org version mismatch
 (elpaca org)
 
-```
-
-## elpaca - exclude external pkgs
-
-```emacs-lisp
-
-;;; Exclude all externally installed packages from elpaca.
-
-(require 'elpaca)
-(require 'cl-lib)
-(eval-when-compile (require 'subr-x)) ;; is this ok?
-
-(defun my/elpaca-get-external-pkgs ()
-  "Based on `package-load-all-descriptors'."
-  (let ((pkg-dir-lst nil)
-        (res nil))
-    (dolist (dir (cons package-user-dir package-directory-list))
-      (when (file-directory-p dir)
-        (dolist (pkg-dir (directory-files dir t "\\`[^.]"))
-          (when (file-directory-p pkg-dir)
-            (push pkg-dir pkg-dir-lst)))))
-    (dolist (pkg-dir pkg-dir-lst)
-      (let ((pkg-file (expand-file-name (package--description-file pkg-dir)
-                                        pkg-dir))
-            (signed-file (concat pkg-dir ".signed")))
-        (when (file-exists-p pkg-file)
-          (with-temp-buffer
-            (insert-file-contents pkg-file)
-            (goto-char (point-min))
-            (let ((pkg-text (read (current-buffer))))
-              (if (not (eq 'define-package (car-safe pkg-text)))
-                  (error "Package %s doesn't have \"define-package\"" pkg-file)
-                (let ((name (cadr pkg-text)))
-                  (when name
-                    (cl-pushnew (intern name) res)))))))))
-    res))
-
-(dolist (pkg (my/elpaca-get-external-pkgs))
-  (push pkg elpaca-ignored-dependencies))
-
-```
-
-## startup hooks
-
-```emacs-lisp
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "*** Emacs loaded in %s seconds with %d garbage collections."
-                     (emacs-init-time "%.2f")
-                     gcs-done)))
-
-(add-hook 'elpaca-after-init-hook
-          (lambda ()
-            (setq gc-cons-threshold (* 10000 10000))))
 
 ```
 
@@ -253,37 +186,177 @@ PARENT-PATH defaults to `my/emacs-src-dir'."
 (use-package hydra :ensure (:wait t)
   :demand t)
 
+(use-package dash :ensure (:wait t)
+  :demand t
+  :config
+  (defun -debug (label)
+    "Debugging helper function for dash.el."
+    (lambda (m)
+      (message "%s: %S" label m)
+      m)))
+
+(require 'cl-lib)
+
+```
+
+## load-path
+
+### adding to the load-path
+
+## `load-path`
+
+- A variable; a list of paths.
+  - Paths to search for when loading an elisp file (like with `require`).
+- Typically, for every elisp package, you add its root dir to this list so
+  that its main .el file is visible, and thus loadable.
+- To make adding paths to this variable easier, we define the following
+  function.
+
+```emacs-lisp
+(defun +add-to-load-path-recursively (path depth &optional exclude-self)
+  "Add PATH and its recursive subdirs to `load-path'.
+
+DEPTH specifies how deeply to recurse. 0 for just PATH, 1 for PATH and its
+subdirs, n>1 for till depth n, and -1 for infinite depth.
+
+If EXCLUDE-SELF is non-nil, exclude PATH, and include only its recursive
+subdirs.
+
+If PATH or a subdir contains a =.nosearch= file, it's excluded.
+
+This function returns a list of paths that were added to (or already exist in)
+`load-path'."
+  (cl-labels
+      (;; return t if .nosearch file exists within dir
+       (nosearch-subfile-p (d)
+         (file-exists-p (expand-file-name ".nosearch" d)))
+
+       ;; collect recursive subdirs
+       (collect-fn (current-dir current-depth)
+         (when (and (integerp current-depth)
+                    ;; base case (unless inf depth)
+                    (/= current-depth 0)
+                    (file-directory-p current-dir))
+           (let ((subdirs
+                  (->> (directory-files current-dir t
+                                        directory-files-no-dot-files-regexp)
+                       (-filter #'file-directory-p)
+                       (-remove #'nosearch-subfile-p))))
+             ;; collect [ subdirs + (recurse subdirs) ]
+             (->> subdirs
+                  (-mapcat (lambda (sub)
+                             (collect-fn sub (1- current-depth))))
+                  (append subdirs))))))
+    (let* ((collected (collect-fn path depth))
+           (result (if (or exclude-self (nosearch-subfile-p path))
+                       collected
+                     (cons path collected))))
+
+      ;; add result to `load-path'
+      (--each result (add-to-list 'load-path it))
+      result)))
+
+(+add-to-load-path-recursively +emacs-src-dir -1)
+(+add-to-load-path-recursively +emacs-submodules-dir 1)
+
+```
+
+### loading functions
+
+`require`
+
+- A function that searches for and loads a corresponding elisp file from the
+ `load-path`.
+  - Any files loaded with `require` will be saved to the `features` var,
+    so it can keep track of which files were loaded, prevent duplicate loads,
+    and manage dependencies.
+    - A side effect is that re-running `require` with the same arg will do
+      nothing.
+- By default, if it throws an error, it terminates Emacs initialization. To
+  prevent this, we write a wrapper `+require` that catches any errors and
+  converts them into warnings.
+
+`load`
+
+- A function similar to `require`, but with some key differences:
+  - Can take any arbitrary file path.
+  - Allows dupulicate loads.
+  - Does not add to the `features` var.
+- We make a wrapper `+load` for this function as well.
+
+A macro `+require-or-load` is also defined, which runs `+require` if not yet
+loaded, and `+load` if already loaded.
+
+```emacs-lisp
+(defmacro +require (feature &optional filename noerror)
+  "A wrapper around `require' to warn instead of error."
+  `(progn
+     (condition-case-unless-debug err
+         (require ,feature ,filename ,noerror)
+       (error
+        (display-warning 'require
+                         (format "Failed to require: %s" err)
+                         :error)))))
+
+(defmacro +load (file &optional noerror nomessage nosuffix must-suffix)
+  "A wrapper around `load' to warn instead of error."
+  `(progn
+     (condition-case-unless-debug err
+         (load ,file ,noerror ,nomessage ,nosuffix ,must-suffix)
+       (error
+        (display-warning 'load
+                         (format "Failed to load: %s" err)
+                         :error)))))
+
+(defmacro +require-or-load (feature)
+  "If FEATURE is loaded, run `+load', Else, run `+require'."
+  `(progn
+     (unless (symbolp ,feature)
+       (error "Expected symbol, got: %S" ,feature))
+     (if (featurep ,feature)
+         (+load (symbol-name ,feature))
+       (+require ,feature))))
+
+```
+
+## startup hooks
+
+```emacs-lisp
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "*** Emacs loaded in %s seconds with %d garbage collections."
+                     (emacs-init-time "%.2f")
+                     gcs-done)))
+
+(add-hook 'elpaca-after-init-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 10000 10000))))
+
+(add-hook 'elpaca-after-init-hook
+          (lambda ()
+            (when (file-exists-p custom-file)
+              (load custom-file))))
+
 ```
 
 ## import
 
 ```emacs-lisp
 
-(require 'my-base)
-(require 'my-kbd)
-(require 'my-completion)
-(require 'my-ide)
-(require 'my-org)
-(require 'my-latex)
-(require 'my-workspaces)
-(require 'my-programs)
-(require 'my-ui)
-(require 'my-misc)
-(require 'my-to-sort)
-(require 'my-documentation)
+;; load ./src/src.el
+(+require-or-load 'src)
 
 ```
 
-## end
+### end
 
 ```emacs-lisp
 
 (provide 'init)
 ;;; init.el ends here
-
-
-
 ```
+
 
 
 ---

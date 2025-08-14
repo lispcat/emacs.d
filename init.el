@@ -21,12 +21,17 @@
 ;;; Commentary:
 
 ;; The main init file.
+;; This is automatically ran at startup after early-init.el.
 
 ;;; Code:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    vars                                    ;
+;;                                    Vars                                    ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Set various vars for sane defaults.
+
+;; --
 
 ;; run .el instead of .elc if newer
 (setq load-prefer-newer t)
@@ -34,43 +39,7 @@
 ;; silence compiler warnings
 (setq native-comp-async-report-warnings-errors nil)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                  load-path                                 ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun add-path-and-subdirs-to-load-path (path &optional recursively?)
-  "Add PATH and all its subdirs to the `load-path'."
-  (when (setq path (expand-file-name path))
-    (add-to-list 'load-path path)
-    (if recursively?
-        (let ((default-directory path))
-          (normal-top-level-add-subdirs-to-load-path))
-      (dolist (subdir (directory-files path t directory-files-no-dot-files-regexp t))
-        (when (file-directory-p subdir)
-          (add-to-list 'load-path subdir))))))
-
-(add-path-and-subdirs-to-load-path +emacs-src-dir t)
-(add-path-and-subdirs-to-load-path +emacs-submodules-dir)
-
-(defun +load-all (target-dir &optional parent-path)
-  "Load all files in TARGET-DIR.
-PARENT-PATH defaults to `+emacs-src-dir'."
-  (let* ((dir (file-name-concat (or parent-path +emacs-src-dir)
-                                target-dir))
-         (files (directory-files-recursively dir "^[^_].*\\.el$")))
-    (dolist (path files)
-      (load path))))
-
-(defun +require-all (target-dir &optional parent-path)
-  "Load all files in TARGET-DIR.
-PARENT-PATH defaults to `+emacs-src-dir'."
-  (let* ((dir (file-name-concat (or parent-path +emacs-src-dir)
-                                target-dir))
-         (files (directory-files-recursively dir "^[^_].*\\.el$")))
-    (dolist (path files)
-      (require (intern
-                (file-name-sans-extension
-                 (file-name-nondirectory path)))))))
+;; --
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                no-littering                                ;
@@ -78,6 +47,7 @@ PARENT-PATH defaults to `+emacs-src-dir'."
 
 (progn ;; no-littering
 
+  ;; manually add
   (add-to-list 'load-path
                (file-name-concat +emacs-submodules-dir
                                  "no-littering"))
@@ -207,24 +177,6 @@ PARENT-PATH defaults to `+emacs-src-dir'."
 ;; hack: fix org version mismatch
 (elpaca org)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                startup hooks                               ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "*** Emacs loaded in %s seconds with %d garbage collections."
-                     (emacs-init-time "%.2f")
-                     gcs-done)))
-
-(add-hook 'elpaca-after-init-hook
-          (lambda ()
-            (setq gc-cons-threshold (* 10000 10000))))
-
-(add-hook 'elpaca-after-init-hook
-          (lambda ()
-            (when (file-exists-p custom-file)
-              (load custom-file))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                             necessary packages                             ;
@@ -249,17 +201,179 @@ PARENT-PATH defaults to `+emacs-src-dir'."
 (use-package hydra :ensure (:wait t)
   :demand t)
 
-;;; -- hello ${2:$(make-string (max 0 (- fill-column (length (concat ";;; -- " yas-text " ")))) ?-)}
+(use-package dash :ensure (:wait t)
+  :demand t
+  :config
+  (defun -debug (label)
+    "Debugging helper function for dash.el."
+    (lambda (m)
+      (message "%s: %S" label m)
+      m)))
 
+(require 'cl-lib)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                  load-path                                 ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; -- adding to the load-path ------------------------------------------------
+
+;;
+;; `load-path':
+;;
+;; - A variable; a list of paths.
+;;   - Paths to search for when loading an elisp file (like with `require').
+;; - Typically, for every elisp package, you add its root dir to this list so
+;;   that its main .el file is visible, and thus loadable.
+;; - To make adding paths to this variable easier, we define the following
+;;   function.
+
+;; --
+
+(defun +add-to-load-path-recursively (path depth &optional exclude-self)
+  "Add PATH and its recursive subdirs to `load-path'.
+
+DEPTH specifies how deeply to recurse. 0 for just PATH, 1 for PATH and its
+subdirs, n>1 for till depth n, and -1 for infinite depth.
+
+If EXCLUDE-SELF is non-nil, exclude PATH, and include only its recursive
+subdirs.
+
+If PATH or a subdir contains a =.nosearch= file, it's excluded.
+
+This function returns a list of paths that were added to (or already exist in)
+`load-path'."
+  (cl-labels
+      (;; return t if .nosearch file exists within dir
+       (nosearch-subfile-p (d)
+         (file-exists-p (expand-file-name ".nosearch" d)))
+
+       ;; collect recursive subdirs
+       (collect-fn (current-dir current-depth)
+         (when (and (integerp current-depth)
+                    ;; base case (unless inf depth)
+                    (/= current-depth 0)
+                    (file-directory-p current-dir))
+           (let ((subdirs
+                  (->> (directory-files current-dir t
+                                        directory-files-no-dot-files-regexp)
+                       (-filter #'file-directory-p)
+                       (-remove #'nosearch-subfile-p))))
+             ;; collect [ subdirs + (recurse subdirs) ]
+             (->> subdirs
+                  (-mapcat (lambda (sub)
+                             (collect-fn sub (1- current-depth))))
+                  (append subdirs))))))
+    (let* ((collected (collect-fn path depth))
+           (result (if (or exclude-self (nosearch-subfile-p path))
+                       collected
+                     (cons path collected))))
+
+      ;; add result to `load-path'
+      (--each result (add-to-list 'load-path it))
+      result)))
+
+(+add-to-load-path-recursively +emacs-src-dir -1)
+(+add-to-load-path-recursively +emacs-submodules-dir 1)
+
+;; --
+
+;;; -- loading functions ------------------------------------------------------
+
+;;
+;; `require'
+;;
+;; - A function that searches for and loads a corresponding elisp file from the
+;;  `load-path'.
+;;   - Any files loaded with `require' will be saved to the `features' var,
+;;     so it can keep track of which files were loaded, prevent duplicate loads,
+;;     and manage dependencies.
+;;     - A side effect is that re-running `require' with the same arg will do
+;;       nothing.
+;; - By default, if it throws an error, it terminates Emacs initialization. To
+;;   prevent this, we write a wrapper `+require' that catches any errors and
+;;   converts them into warnings.
+
+;;
+;; `load'
+;;
+;; - A function similar to `require', but with some key differences:
+;;   - Can take any arbitrary file path.
+;;   - Allows dupulicate loads.
+;;   - Does not add to the `features' var.
+;; - We make a wrapper `+load' for this function as well.
+
+;; A macro `+require-or-load' is also defined, which runs `+require' if not yet
+;; loaded, and `+load' if already loaded.
+
+;; --
+
+(defmacro +require (feature &optional filename noerror)
+  "A wrapper around `require' to warn instead of error."
+  `(progn
+     (condition-case-unless-debug err
+         (require ,feature ,filename ,noerror)
+       (error
+        (display-warning 'require
+                         (format "Failed to require: %s" err)
+                         :error)))))
+
+(defmacro +load (file &optional noerror nomessage nosuffix must-suffix)
+  "A wrapper around `load' to warn instead of error."
+  `(progn
+     (condition-case-unless-debug err
+         (load ,file ,noerror ,nomessage ,nosuffix ,must-suffix)
+       (error
+        (display-warning 'load
+                         (format "Failed to load: %s" err)
+                         :error)))))
+
+(defmacro +require-or-load (feature)
+  "If FEATURE is loaded, run `+load', Else, run `+require'."
+  `(progn
+     (unless (symbolp ,feature)
+       (error "Expected symbol, got: %S" ,feature))
+     (if (featurep ,feature)
+         (+load (symbol-name ,feature))
+       (+require ,feature))))
+
+;; --
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                startup hooks                               ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; --
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "*** Emacs loaded in %s seconds with %d garbage collections."
+                     (emacs-init-time "%.2f")
+                     gcs-done)))
+
+(add-hook 'elpaca-after-init-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 10000 10000))))
+
+(add-hook 'elpaca-after-init-hook
+          (lambda ()
+            (when (file-exists-p custom-file)
+              (load custom-file))))
+
+;; --
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                   import                                   ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; load ./src/src.el
-(require 'src)
+;; --
 
-;;; end
+;; load ./src/src.el
+(+require-or-load 'src)
+
+;; --
+
+;;; -- end --------------------------------------------------------------------
+
 (provide 'init)
 ;;; init.el ends here

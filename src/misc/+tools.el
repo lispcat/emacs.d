@@ -1,4 +1,4 @@
-;;; src.el ---                                       -*- lexical-binding: t; -*-
+;;; +tools.el --- misc tools                         -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  lispcat
 
@@ -24,25 +24,23 @@
 
 ;;; Code:
 
-;; misc
-(+require-or-load '+log)
-(+require-or-load '+tools)
+(defun +benchmark-lambdas (f1 f2 &optional n)
+  (let* ((n (or n 10000))
+         (time1 (car (benchmark-run n (funcall f1))))
+         (time2 (car (benchmark-run n (funcall f2))))
+         (less (if (< time1 time2) "f1" "f2"))
+         (symbol (if (< time1 time2) "<" ">"))
+         (difference (if (> time1 time2)
+                         (- time1 time2)
+                       (- time2 time1))))
+    (message "f1: %.6f %s f2: %.6f (%s faster by %.6f)"
+             time1
+             symbol
+             time2
+             less
+             difference)))
 
-;; regular
-(+require-or-load 'my-base)
-(+require-or-load 'my-kbd)
-(+require-or-load 'my-completion)
-(+require-or-load 'my-ide)
-(+require-or-load 'my-org)
-(+require-or-load 'my-latex)
-(+require-or-load 'my-workspaces)
-(+require-or-load 'my-programs)
-(+require-or-load 'my-ui)
-(+require-or-load 'my-misc)
-(+require-or-load 'my-to-sort)
-(+require-or-load 'my-documentation)
+;;; -- end --------------------------------------------------------------------
 
-
-;;; end
-(provide 'src)
-;;; src.el ends here
+(provide '+tools)
+;;; +tools.el ends here

@@ -211,14 +211,14 @@ a framework for minibuffer completion
   (company-tng-configure-default)
   (global-company-mode 1)
 
-  (defun my/company-return-default-or-complete ()
+  (defun +company-return-default-or-complete ()
     (interactive)
     ;; number if selected, nil if not
     (if company-selection
         (company-complete-selection)
       (company-abort)
       (execute-kbd-macro (kbd "<return>"))))
-  (define-key company-tng-map (kbd "<return>") #'my/company-return-default-or-complete)
+  (define-key company-tng-map (kbd "<return>") #'+company-return-default-or-complete)
 
   (setq company-backends
         '(company-dabbrev company-files)) ; the default, overrides below
@@ -252,15 +252,15 @@ a framework for minibuffer completion
 
   ;; separator for orderless completion:
 
-  (defvar my/company-separator "&")
+  (defvar +company-separator "&")
 
-  (defun my/company-insert-separator ()
-    "Insert `my/company-separator' during company completion."
+  (defun +company-insert-separator ()
+    "Insert `+company-separator' during company completion."
     (interactive)
     (when (company-manual-begin)
-      (insert my/company-separator)))
+      (insert +company-separator)))
 
-  (define-key company-active-map (kbd "M-SPC") #'my/company-insert-separator)
+  (define-key company-active-map (kbd "M-SPC") #'+company-insert-separator)
 
   (setq orderless-component-separator "[ &]")
   )
@@ -284,6 +284,9 @@ a framework for minibuffer completion
   (yas-keymap
    ("RET" . yas-next-field-or-maybe-expand))
   :config
+  (add-to-list 'yas-snippet-dirs
+               (expand-file-name "no-search/snippets"
+                                 +emacs-src-dir))
   (yas-reload-all))
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
@@ -351,14 +354,14 @@ a framework for minibuffer completion
 ;; (leaf yasnippet-capf
 ;;   :after cape
 ;;   :config
-;;   (defun my/capfs-add-yasnippet ()
+;;   (defun +capfs-add-yasnippet ()
 ;;     "Add yasnippet-capf to the front of completion-at-point-functions."
 ;;     ;; (add-to-list 'completion-at-point-functions #'yasnippet-capf)
 ;;     (setq-local completion-at-point-functions
 ;;                 (cons #'yasnippet-capf
 ;;                       completion-at-point-functions))
 ;;     )
-;;   :hook (prog-mode-hook . my/capfs-add-yasnippet))
+;;   :hook (prog-mode-hook . +capfs-add-yasnippet))
 
 ;; Configure Tempel
 ;; (use-package tempel
@@ -404,8 +407,8 @@ a framework for minibuffer completion
 ;;          ("C-c c e" . edit-abbrevs)))
 
 (provide 'my-completion)
-
 ```
+
 
 
 ---

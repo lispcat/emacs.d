@@ -7,28 +7,24 @@ Converts elisp files into markdown docs.
 
 # Code
 
-```emacs-lisp
-
-```
-
 ## make package accessible
 
 ```emacs-lisp
 
 (add-to-list 'load-path
-             (file-name-concat my/emacs-submodules-dir
+             (file-name-concat +emacs-submodules-dir
                                "el2markdown-fork"))
 
 (require 'el2markdown-fork)
 (require 'dash)
 
-(defun my/remove-prefix-or-err (prefix str)
+(defun +remove-prefix-or-err (prefix str)
   (if (string-prefix-p prefix str)
       (string-remove-prefix prefix str)
     (error "%s is not a prefix of %s" prefix str)
     nil))
 
-(defun my/zip-lists (list1 list2)
+(defun +zip-lists (list1 list2)
   (let ((len1 (length list1))
         (len2 (length list2)))
     (unless (eq len1 len2)
@@ -36,13 +32,13 @@ Converts elisp files into markdown docs.
              len1 len2 list1 list2))
     (-zip-pair list1 list2)))
 
-(defun my/assert-f-dir-p (path)
+(defun +assert-f-dir-p (path)
   (if (f-dir-p path)
       path
     (error (format "Path not exist: %s" path))
     nil))
 
-(defun my/create-docs (root-directory infiles-directory outfiles-directory
+(defun +create-docs (root-directory infiles-directory outfiles-directory
                                       &optional extra-infiles)
   (interactive
    (let* ((root-directory
@@ -62,11 +58,11 @@ Converts elisp files into markdown docs.
   (setq extra-infiles (mapcar #'expand-file-name extra-infiles))
 
   ;; fs checks
-  (my/remove-prefix-or-err root-directory infiles-directory)
-  (my/remove-prefix-or-err root-directory outfiles-directory)
+  (+remove-prefix-or-err root-directory infiles-directory)
+  (+remove-prefix-or-err root-directory outfiles-directory)
 
-  (my/assert-f-dir-p root-directory)
-  (my/assert-f-dir-p infiles-directory)
+  (+assert-f-dir-p root-directory)
+  (+assert-f-dir-p infiles-directory)
 
   ;; proceed?
   (when (y-or-n-p
@@ -80,7 +76,7 @@ Converts elisp files into markdown docs.
             (append
              (reverse
               (-filter #'file-regular-p
-                       (directory-files-recursively infiles-directory ".*")))
+                       (directory-files-recursively infiles-directory emacs-lisp-file-regexp)))
              extra-infiles))
 
            ;; derive all outfiles for each infile
@@ -91,7 +87,7 @@ Converts elisp files into markdown docs.
            (outfiles-all
             (mapcar (lambda (infile)
                       (-as-> infile x
-                             (my/remove-prefix-or-err (file-name-directory infiles-directory) x)
+                             (+remove-prefix-or-err (file-name-directory infiles-directory) x)
                              (file-name-sans-extension x)
                              (file-name-with-extension x ".md")
                              (expand-file-name x outfiles-directory)))
@@ -99,17 +95,17 @@ Converts elisp files into markdown docs.
 
            ;; create alist from infiles-all and outfiles-all
            (alist
-            (my/zip-lists infiles-all outfiles-all))
+            (+zip-lists infiles-all outfiles-all))
 
            (alist-uniq-parts
             (mapcar
              (lambda (pair)
                (let* ((infile (car pair))
                       (outfile (cdr pair))
-                      (infile-uniq (my/remove-prefix-or-err
+                      (infile-uniq (+remove-prefix-or-err
                                     (file-name-directory infiles-directory)
                                     infile))
-                      (outfile-uniq (my/remove-prefix-or-err
+                      (outfile-uniq (+remove-prefix-or-err
                                      outfiles-directory
                                      outfile))
                       (infile-uniq-no-slash (replace-regexp-in-string
@@ -135,7 +131,7 @@ Converts elisp files into markdown docs.
                  infile)))
       ;; check: ensure all targets are under the outfiles dir:
       (dolist (outfile outfiles-all)
-        (unless (my/remove-prefix-or-err outfiles-directory outfile)
+        (unless (+remove-prefix-or-err outfiles-directory outfile)
           (error "outfile not a prefix of outfiles-directory: %s"
                  outfile)))
 
@@ -172,9 +168,9 @@ Converts elisp files into markdown docs.
                       (el2markdown-write-file outfile t))))
                 alist)))))
 
-(defun my/create-docs-default ()
+(defun +create-docs-default ()
   (interactive)
-  (my/create-docs "~/.emacs.d/"
+  (+create-docs "~/.emacs.d/"
                   "~/.emacs.d/src"
                   "~/.emacs.d/docs/docs_src/build"
                   '("~/.emacs.d/init.el" "~/.emacs.d/early-init.el")))
@@ -187,8 +183,8 @@ Converts elisp files into markdown docs.
 
 (provide 'my-documentation)
 ;;; my-documentation.el ends here
-
 ```
+
 
 
 ---
