@@ -488,6 +488,27 @@
                 
             </li>
         
+            
+            
+
+            <li class="terminal-mkdocs-side-nav-li-ul-li">
+                
+                    
+    
+        
+        
+            <a class="
+
+    terminal-mkdocs-side-nav-item" href="../src/">Src</a>
+        
+    
+    
+                
+
+                
+                
+            </li>
+        
     </ul>
         
     
@@ -538,23 +559,21 @@
 <p>Automatically generates documentation using el2markdown.
 Converts elisp files into markdown docs.</p>
 <h3 id="code">Code</h3>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code>
-</code></pre></div>
 <h4 id="make-package-accessible">make package accessible</h4>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(add-to-list </span><span style="color: #DFBFFF">&#39;load-path</span>
-<span style="color: #D4D2C8">             (file-name-concat my/emacs-submodules-dir</span>
+<span style="color: #D4D2C8">             (file-name-concat +emacs-submodules-dir</span>
 <span style="color: #D4D2C8">                               </span><span style="color: #D5FF80">&quot;el2markdown-fork&quot;</span><span style="color: #D4D2C8">))</span>
 
 <span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;el2markdown-fork</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;dash</span><span style="color: #D4D2C8">)</span>
 
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/remove-prefix-or-err (prefix str)</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +remove-prefix-or-err (prefix str)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (string-prefix-p prefix str)</span>
 <span style="color: #D4D2C8">      (string-remove-prefix prefix str)</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #73D0FF">error</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s is not a prefix of %s&quot;</span><span style="color: #D4D2C8"> prefix str)</span>
 <span style="color: #D4D2C8">    </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">))</span>
 
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/zip-lists (list1 list2)</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +zip-lists (list1 list2)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((len1 (</span><span style="color: #FFD173">length</span><span style="color: #D4D2C8"> list1))</span>
 <span style="color: #D4D2C8">        (len2 (</span><span style="color: #FFD173">length</span><span style="color: #D4D2C8"> list2)))</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">eq</span><span style="color: #D4D2C8"> len1 len2)</span>
@@ -562,13 +581,13 @@ Converts elisp files into markdown docs.</p>
 <span style="color: #D4D2C8">             len1 len2 list1 list2))</span>
 <span style="color: #D4D2C8">    (-zip-pair list1 list2)))</span>
 
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/assert-f-dir-p (path)</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +assert-f-dir-p (path)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (f-dir-p path)</span>
 <span style="color: #D4D2C8">      path</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #73D0FF">error</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">format</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Path not exist: %s&quot;</span><span style="color: #D4D2C8"> path))</span>
 <span style="color: #D4D2C8">    </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">))</span>
 
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/create-docs (root-directory infiles-directory outfiles-directory</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +create-docs (root-directory infiles-directory outfiles-directory</span>
 <span style="color: #D4D2C8">                                      </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> extra-infiles)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span>
 <span style="color: #D4D2C8">   (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((root-directory</span>
@@ -588,11 +607,11 @@ Converts elisp files into markdown docs.</p>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> extra-infiles (</span><span style="color: #FFD173">mapcar</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;expand-file-name</span><span style="color: #D4D2C8"> extra-infiles))</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; fs checks</span>
-<span style="color: #D4D2C8">  (my/remove-prefix-or-err root-directory infiles-directory)</span>
-<span style="color: #D4D2C8">  (my/remove-prefix-or-err root-directory outfiles-directory)</span>
+<span style="color: #D4D2C8">  (+remove-prefix-or-err root-directory infiles-directory)</span>
+<span style="color: #D4D2C8">  (+remove-prefix-or-err root-directory outfiles-directory)</span>
 
-<span style="color: #D4D2C8">  (my/assert-f-dir-p root-directory)</span>
-<span style="color: #D4D2C8">  (my/assert-f-dir-p infiles-directory)</span>
+<span style="color: #D4D2C8">  (+assert-f-dir-p root-directory)</span>
+<span style="color: #D4D2C8">  (+assert-f-dir-p infiles-directory)</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; proceed?</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (y-or-n-p</span>
@@ -606,7 +625,7 @@ Converts elisp files into markdown docs.</p>
 <span style="color: #D4D2C8">            (</span><span style="color: #FFD173">append</span>
 <span style="color: #D4D2C8">             (</span><span style="color: #FFD173">reverse</span>
 <span style="color: #D4D2C8">              (-filter </span><span style="color: #FFD173">#&#39;file-regular-p</span>
-<span style="color: #D4D2C8">                       (directory-files-recursively infiles-directory </span><span style="color: #D5FF80">&quot;.*&quot;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">                       (directory-files-recursively infiles-directory emacs-lisp-file-regexp)))</span>
 <span style="color: #D4D2C8">             extra-infiles))</span>
 
 <span style="color: #D4D2C8">           </span><span style="color: #7E8AA1">;; derive all outfiles for each infile</span>
@@ -617,7 +636,7 @@ Converts elisp files into markdown docs.</p>
 <span style="color: #D4D2C8">           (outfiles-all</span>
 <span style="color: #D4D2C8">            (</span><span style="color: #FFD173">mapcar</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (infile)</span>
 <span style="color: #D4D2C8">                      (-as-&gt; infile x</span>
-<span style="color: #D4D2C8">                             (my/remove-prefix-or-err (</span><span style="color: #FFD173">file-name-directory</span><span style="color: #D4D2C8"> infiles-directory) x)</span>
+<span style="color: #D4D2C8">                             (+remove-prefix-or-err (</span><span style="color: #FFD173">file-name-directory</span><span style="color: #D4D2C8"> infiles-directory) x)</span>
 <span style="color: #D4D2C8">                             (file-name-sans-extension x)</span>
 <span style="color: #D4D2C8">                             (file-name-with-extension x </span><span style="color: #D5FF80">&quot;.md&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">                             (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> x outfiles-directory)))</span>
@@ -625,17 +644,17 @@ Converts elisp files into markdown docs.</p>
 
 <span style="color: #D4D2C8">           </span><span style="color: #7E8AA1">;; create alist from infiles-all and outfiles-all</span>
 <span style="color: #D4D2C8">           (alist</span>
-<span style="color: #D4D2C8">            (my/zip-lists infiles-all outfiles-all))</span>
+<span style="color: #D4D2C8">            (+zip-lists infiles-all outfiles-all))</span>
 
 <span style="color: #D4D2C8">           (alist-uniq-parts</span>
 <span style="color: #D4D2C8">            (</span><span style="color: #FFD173">mapcar</span>
 <span style="color: #D4D2C8">             (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (pair)</span>
 <span style="color: #D4D2C8">               (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((infile (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> pair))</span>
 <span style="color: #D4D2C8">                      (outfile (</span><span style="color: #FFD173">cdr</span><span style="color: #D4D2C8"> pair))</span>
-<span style="color: #D4D2C8">                      (infile-uniq (my/remove-prefix-or-err</span>
+<span style="color: #D4D2C8">                      (infile-uniq (+remove-prefix-or-err</span>
 <span style="color: #D4D2C8">                                    (</span><span style="color: #FFD173">file-name-directory</span><span style="color: #D4D2C8"> infiles-directory)</span>
 <span style="color: #D4D2C8">                                    infile))</span>
-<span style="color: #D4D2C8">                      (outfile-uniq (my/remove-prefix-or-err</span>
+<span style="color: #D4D2C8">                      (outfile-uniq (+remove-prefix-or-err</span>
 <span style="color: #D4D2C8">                                     outfiles-directory</span>
 <span style="color: #D4D2C8">                                     outfile))</span>
 <span style="color: #D4D2C8">                      (infile-uniq-no-slash (replace-regexp-in-string</span>
@@ -661,7 +680,7 @@ Converts elisp files into markdown docs.</p>
 <span style="color: #D4D2C8">                 infile)))</span>
 <span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; check: ensure all targets are under the outfiles dir:</span>
 <span style="color: #D4D2C8">      (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (outfile outfiles-all)</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (my/remove-prefix-or-err outfiles-directory outfile)</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (+remove-prefix-or-err outfiles-directory outfile)</span>
 <span style="color: #D4D2C8">          (</span><span style="color: #73D0FF">error</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;outfile not a prefix of outfiles-directory: %s&quot;</span>
 <span style="color: #D4D2C8">                 outfile)))</span>
 
@@ -698,17 +717,14 @@ Converts elisp files into markdown docs.</p>
 <span style="color: #D4D2C8">                      (el2markdown-write-file outfile </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))))</span>
 <span style="color: #D4D2C8">                alist)))))</span>
 
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/create-docs-default ()</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +create-docs-default ()</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (my/create-docs </span><span style="color: #D5FF80">&quot;~/.emacs.d/&quot;</span>
+<span style="color: #D4D2C8">  (+create-docs </span><span style="color: #D5FF80">&quot;~/.emacs.d/&quot;</span>
 <span style="color: #D4D2C8">                  </span><span style="color: #D5FF80">&quot;~/.emacs.d/src&quot;</span>
 <span style="color: #D4D2C8">                  </span><span style="color: #D5FF80">&quot;~/.emacs.d/docs/docs_src/build&quot;</span>
 <span style="color: #D4D2C8">                  </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;~/.emacs.d/init.el&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;~/.emacs.d/early-init.el&quot;</span><span style="color: #D4D2C8">)))</span>
 </code></pre></div>
 <h4 id="end">end</h4>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-documentation</span><span style="color: #D4D2C8">)</span>
-<span style="color: #7E8AA1">;;; my-documentation.el ends here</span>
-</code></pre></div>
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>

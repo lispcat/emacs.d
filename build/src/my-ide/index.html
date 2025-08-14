@@ -488,6 +488,27 @@
                 
             </li>
         
+            
+            
+
+            <li class="terminal-mkdocs-side-nav-li-ul-li">
+                
+                    
+    
+        
+        
+            <a class="
+
+    terminal-mkdocs-side-nav-item" href="../src/">Src</a>
+        
+    
+    
+                
+
+                
+                
+            </li>
+        
     </ul>
         
     
@@ -653,27 +674,28 @@
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; disable &quot;&lt;&quot; pair expansion</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/disable-&lt;-pair-expansion ()</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +disable-&lt;-pair-expansion ()</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> electric-pair-inhibit-predicate</span>
 <span style="color: #D4D2C8">                </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (c)</span>
 <span style="color: #D4D2C8">                   (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">char-equal</span><span style="color: #D4D2C8"> c </span><span style="color: #D5FF80">?&lt;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">                       </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">                     (</span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">electric-pair-inhibit-predicate c)))))</span>
-<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;org-mode-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">my/disable-&lt;-pair-expansion)</span>
+<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;org-mode-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">+disable-&lt;-pair-expansion)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; global</span>
 <span style="color: #D4D2C8">  (electric-pair-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> my/lisp-mode-hooks</span>
+</code></pre></div>
+<h4 id="langs">langs</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> +lisp-mode-hooks</span>
 <span style="color: #D4D2C8">      </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(emacs-lisp-mode-hook</span>
 <span style="color: #D4D2C8">        scheme-mode-hook))</span>
 
 <span style="color: #7E8AA1">;; rainbow parens</span>
 <span style="color: #D4D2C8">(leaf rainbow-delimiters</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`,@</span><span style="color: #D4D2C8">my/lisp-mode-hooks)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`,@</span><span style="color: #D4D2C8">+lisp-mode-hooks)</span>
 
 <span style="color: #7E8AA1">;; paredit</span>
 <span style="color: #D4D2C8">(leaf paredit</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`,@</span><span style="color: #D4D2C8">my/lisp-mode-hooks)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`,@</span><span style="color: #D4D2C8">+lisp-mode-hooks)</span>
 
 <span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> ((emacs-lisp-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
@@ -868,12 +890,12 @@
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
 <span style="color: #D4D2C8">  (markdown-fontify-code-blocks-natively </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/setup-markdown-mode ()</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +setup-markdown-mode ()</span>
 <span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; (visual-fill-column-mode 1)</span>
 <span style="color: #D4D2C8">    (display-line-numbers-mode </span><span style="color: #DFBFFF">0</span><span style="color: #D4D2C8">))</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (setq markdown-command &quot;marked&quot;)</span>
-<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;markdown-mode-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">my/setup-markdown-mode))</span>
+<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;markdown-mode-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">+setup-markdown-mode))</span>
 
 <span style="color: #D4D2C8">(leaf clojure-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
@@ -904,10 +926,7 @@
 <span style="color: #D4D2C8">(leaf ron-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
 
-<span style="color: #7E8AA1">;;;; Kerolox ;;;;</span>
-
-<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;;; Kerolox mode and LSP ;;;;</span>
+<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">;; kerolox!</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Major-mode for .rp1 files</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">define-derived-mode</span><span style="color: #D4D2C8"> kerolox-mode prog-mode </span><span style="color: #D5FF80">&quot;kerolox&quot;</span>
@@ -1058,7 +1077,7 @@
 <span style="color: #D4D2C8">    )</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; fix pt.2</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/lsp-clients-lua-language-server-test ()</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +lsp-clients-lua-language-server-test ()</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;(Improved) Test Lua language server binaries and files.&quot;</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (f-exists? lsp-clients-lua-language-server-main-location)</span>
 <span style="color: #D4D2C8">             (f-exists? lsp-clients-lua-language-server-bin))</span>
@@ -1066,7 +1085,7 @@
 
 <span style="color: #D4D2C8">  (advice-add </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp-clients-lua-language-server-test</span>
 <span style="color: #D4D2C8">              </span><span style="color: #FFD173">:override</span>
-<span style="color: #D4D2C8">              </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">my/lsp-clients-lua-language-server-test))</span>
+<span style="color: #D4D2C8">              </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">+lsp-clients-lua-language-server-test))</span>
 
 <span style="color: #D4D2C8">(leaf direnv</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
@@ -1083,9 +1102,8 @@
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> treesit-auto-install </span><span style="color: #DFBFFF">&#39;prompt</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  (global-treesit-auto-mode))</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-ide</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
+<h4 id="code-formatting">Code formatting</h4>
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>

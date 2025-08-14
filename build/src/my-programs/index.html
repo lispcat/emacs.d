@@ -488,6 +488,27 @@
                 
             </li>
         
+            
+            
+
+            <li class="terminal-mkdocs-side-nav-li-ul-li">
+                
+                    
+    
+        
+        
+            <a class="
+
+    terminal-mkdocs-side-nav-item" href="../src/">Src</a>
+        
+    
+    
+                
+
+                
+                
+            </li>
+        
     </ul>
         
     
@@ -533,49 +554,6 @@
 
 <section id="mkdocs-terminal-content">
     <h3 id="code">Code</h3>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
-<span style="color: #D4D2C8">  (eat-term-name </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;xterm-256color&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (eat-kill-buffer-on-exit </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:defer-config</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> eat-shell (</span><span style="color: #FFD173">concat</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> explicit-shell-file-name</span>
-<span style="color: #D4D2C8">                              (getenv </span><span style="color: #D5FF80">&quot;ESHELL&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">                              shell-file-name)</span>
-<span style="color: #D4D2C8">                          </span><span style="color: #D5FF80">&quot; -c tmux&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c a a&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> eat)</span>
-<span style="color: #D4D2C8">  (eat-semi-char-mode-map</span>
-<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;M-o&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> ace-window)))</span>
-
-<span style="color: #D4D2C8">(leaf eshell </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c a e&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> eshell))</span>
-
-<span style="color: #D4D2C8">(leaf magit</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:preface</span><span style="color: #D4D2C8"> (elpaca transient) </span><span style="color: #7E8AA1">; HACK: magit needs newer version</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
-<span style="color: #D4D2C8">  (magit-display-buffer-function </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">magit-display-buffer-same-window-except-diff-v1)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c v&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> magit))</span>
-
-<span style="color: #D4D2C8">(leaf pdf-tools</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
-<span style="color: #D4D2C8">  (pdf-loader-install)) </span><span style="color: #7E8AA1">; On demand loading, leads to faster startup time</span>
-
-<span style="color: #D4D2C8">(leaf elfeed</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:defer-config</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; set `elfeed-feeds&#39; to all files in `my/elfeed-feeds-dir&#39;.</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> my/elfeed-feeds-dir </span><span style="color: #D5FF80">&quot;~/feeds&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/elfeed-feeds-update-var ()</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> elfeed-feeds</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">mapcar</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (s) (</span><span style="color: #FFD173">concat</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;file:&quot;</span><span style="color: #D4D2C8"> s))</span>
-<span style="color: #D4D2C8">                  (</span><span style="color: #FFD173">directory-files</span><span style="color: #D4D2C8"> my/elfeed-feeds-dir </span><span style="color: #FFD173">t</span>
-<span style="color: #D4D2C8">                                   directory-files-no-dot-files-regexp))))</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; run `my/elfeed-feeds-update-var&#39; before running `elfeed-update&#39;</span>
-<span style="color: #D4D2C8">  (advice-add </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">elfeed-update </span><span style="color: #FFD173">:before</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">my/elfeed-feeds-update-var))</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-programs</span><span style="color: #D4D2C8">)</span>
-</code></pre></div>
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>

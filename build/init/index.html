@@ -488,6 +488,27 @@
                 
             </li>
         
+            
+            
+
+            <li class="terminal-mkdocs-side-nav-li-ul-li">
+                
+                    
+    
+        
+        
+            <a class="
+
+    terminal-mkdocs-side-nav-item" href="../src/src/">Src</a>
+        
+    
+    
+                
+
+                
+                
+            </li>
+        
     </ul>
         
     
@@ -535,139 +556,134 @@
 <section id="mkdocs-terminal-content">
     <h3 id="init-the-main-init-file">init - the main init file</h3>
 <p><em>Author:</em> lispcat <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;">&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;</a><br></p>
-<p>The main init file.</p>
+<p>The main init file.
+This is automatically ran at startup after early-init.el.</p>
 <h3 id="code">Code</h3>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code>
-</code></pre></div>
-<h4 id="standard-vars">standard vars</h4>
+<h4 id="vars">Vars</h4>
+<p>;; Set various vars for sane defaults.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; run .el instead of .elc if newer</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> load-prefer-newer </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+
 <span style="color: #7E8AA1">;; silence compiler warnings</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> native-comp-async-report-warnings-errors </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">) </span><span style="color: #7E8AA1">; Silence compiler warnings</span>
-</code></pre></div>
-<h4 id="load-path">load-path</h4>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;cl-lib</span><span style="color: #D4D2C8">)</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> add-subdirs-to-load-path (path </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> recursively?)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Add PATH and all its subdirs to the </span><span style="color: #DFBFFF">`load-path&#39;</span><span style="color: #D5FF80">.&quot;</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">set</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;path</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> path))</span>
-<span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;load-path</span><span style="color: #D4D2C8"> path)</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> recursively?</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((default-directory path))</span>
-<span style="color: #D4D2C8">          (normal-top-level-add-subdirs-to-load-path))</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (subdir (</span><span style="color: #FFD173">directory-files</span><span style="color: #D4D2C8"> path </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> directory-files-no-dot-files-regexp </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-directory-p</span><span style="color: #D4D2C8"> subdir)</span>
-<span style="color: #D4D2C8">          (add-to-list </span><span style="color: #DFBFFF">&#39;load-path</span><span style="color: #D4D2C8"> subdir))))))</span>
-
-<span style="color: #D4D2C8">(add-subdirs-to-load-path my/emacs-src-dir </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(add-subdirs-to-load-path my/emacs-submodules-dir)</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/log-customize-set-func (</span><span style="color: #FFAD66">&amp;rest</span><span style="color: #D4D2C8"> args)</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;log: customized: %s&quot;</span><span style="color: #D4D2C8"> args))</span>
-<span style="color: #7E8AA1">;; (advice-add &#39;custom-set-variables :before #&#39;my/log-customize-set-func)</span>
-<span style="color: #7E8AA1">;; (advice-add &#39;custom-set-faces     :before #&#39;my/log-customize-set-func)</span>
-
-<span style="color: #D4D2C8">(add-hook </span><span style="color: #DFBFFF">&#39;elpaca-after-init-hook</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
-<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-exists-p</span><span style="color: #D4D2C8"> custom-file)</span>
-<span style="color: #D4D2C8">              (</span><span style="color: #FFD173">load</span><span style="color: #D4D2C8"> custom-file))))</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +load-all (target-dir </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> parent-path)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Load all files in TARGET-DIR.</span>
-<span style="color: #D5FF80">PARENT-PATH defaults to </span><span style="color: #DFBFFF">`my/emacs-src-dir&#39;</span><span style="color: #D5FF80">.&quot;</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((dir (file-name-concat (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> parent-path my/emacs-src-dir)</span>
-<span style="color: #D4D2C8">                                target-dir))</span>
-<span style="color: #D4D2C8">         (files (directory-files-recursively dir </span><span style="color: #D5FF80">&quot;^[^_].*\\.el$&quot;</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (path files)</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">load</span><span style="color: #D4D2C8"> path))))</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +require-all (target-dir </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> parent-path)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Load all files in TARGET-DIR.</span>
-<span style="color: #D5FF80">PARENT-PATH defaults to </span><span style="color: #DFBFFF">`my/emacs-src-dir&#39;</span><span style="color: #D5FF80">.&quot;</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((dir (file-name-concat (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> parent-path my/emacs-src-dir)</span>
-<span style="color: #D4D2C8">                                target-dir))</span>
-<span style="color: #D4D2C8">         (files (directory-files-recursively dir </span><span style="color: #D5FF80">&quot;^[^_].*\\.el$&quot;</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (path files)</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">intern</span>
-<span style="color: #D4D2C8">                (file-name-sans-extension</span>
-<span style="color: #D4D2C8">                 (</span><span style="color: #FFD173">file-name-nondirectory</span><span style="color: #D4D2C8"> path)))))))</span>
-
-<span style="color: #D4D2C8">(add-to-list </span><span style="color: #DFBFFF">&#39;load-path</span><span style="color: #D4D2C8"> (file-name-concat my/emacs-submodules-dir</span>
-<span style="color: #D4D2C8">                                          </span><span style="color: #D5FF80">&quot;no-littering&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> native-comp-async-report-warnings-errors </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
 <h4 id="no-littering">no-littering</h4>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; load</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;no-littering</span><span style="color: #D4D2C8">)</span>
-<span style="color: #7E8AA1">;; variables</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> auto-save-default </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)       </span><span style="color: #7E8AA1">; don&#39;t autosave all file buffers</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> backup-by-copying </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)         </span><span style="color: #7E8AA1">; safer backups</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> undo-tree-auto-save-history </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
-<span style="color: #7E8AA1">;; Dont litter project folders with backup files</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((backup-dir (no-littering-expand-var-file-name </span><span style="color: #D5FF80">&quot;backup/&quot;</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">  (make-directory backup-dir </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> backup-directory-alist</span>
-<span style="color: #D4D2C8">        </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">((</span><span style="color: #D5FF80">&quot;\\`/tmp/&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #D5FF80">&quot;\\`/dev/shm/&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">backup-dir))))</span>
-<span style="color: #7E8AA1">;; Tidy up auto-save files</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((auto-save-dir (no-littering-expand-var-file-name </span><span style="color: #D5FF80">&quot;auto-save/&quot;</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">  (make-directory auto-save-dir </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> auto-save-file-name-transforms</span>
-<span style="color: #D4D2C8">        </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">((</span><span style="color: #D5FF80">&quot;\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\&#39;&quot;</span>
-<span style="color: #D4D2C8">           </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">concat</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-name-as-directory</span><span style="color: #D4D2C8"> temporary-file-directory) </span><span style="color: #D5FF80">&quot;\\2&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #D5FF80">&quot;\\`/tmp\\([^/]*/\\)*\\(.*\\)\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\2&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #D5FF80">&quot;\\`/dev/shm\\([^/]*/\\)*\\(.*\\)\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\2&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">auto-save-dir </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))))</span>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">progn</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">;; no-littering</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; manually add</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;load-path</span>
+<span style="color: #D4D2C8">               (file-name-concat +emacs-submodules-dir</span>
+<span style="color: #D4D2C8">                                 </span><span style="color: #D5FF80">&quot;no-littering&quot;</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;no-littering</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; variables</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> auto-save-default </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)          </span><span style="color: #7E8AA1">; don&#39;t autosave all file buffers</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> backup-by-copying </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)            </span><span style="color: #7E8AA1">; safer backups</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> undo-tree-auto-save-history </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Dont litter project folders with backup files</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((backup-dir (no-littering-expand-var-file-name </span><span style="color: #D5FF80">&quot;backup/&quot;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">    (make-directory backup-dir </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> backup-directory-alist</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">((</span><span style="color: #D5FF80">&quot;\\`/tmp/&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #D5FF80">&quot;\\`/dev/shm/&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">backup-dir))))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Tidy up auto-save files</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((auto-save-dir (no-littering-expand-var-file-name </span><span style="color: #D5FF80">&quot;auto-save/&quot;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">    (make-directory auto-save-dir </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> auto-save-file-name-transforms</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">((</span><span style="color: #D5FF80">&quot;\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\&#39;&quot;</span>
+<span style="color: #D4D2C8">             </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">concat</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-name-as-directory</span><span style="color: #D4D2C8"> temporary-file-directory) </span><span style="color: #D5FF80">&quot;\\2&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #D5FF80">&quot;\\`/tmp\\([^/]*/\\)*\\(.*\\)\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\2&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #D5FF80">&quot;\\`/dev/shm\\([^/]*/\\)*\\(.*\\)\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\2&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">auto-save-dir </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)))))</span>
 </code></pre></div>
 <h4 id="elpaca">elpaca</h4>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> elpaca-installer-version </span><span style="color: #DFBFFF">0.11</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> elpaca-directory (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;elpaca/&quot;</span><span style="color: #D4D2C8"> user-emacs-directory))</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> elpaca-builds-directory (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;builds/&quot;</span><span style="color: #D4D2C8"> elpaca-directory))</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> elpaca-repos-directory (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;repos/&quot;</span><span style="color: #D4D2C8"> elpaca-directory))</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> elpaca-order </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(elpaca </span><span style="color: #FFD173">:repo</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;https://github.com/progfolio/elpaca.git&quot;</span>
-<span style="color: #D4D2C8">                              </span><span style="color: #FFD173">:ref</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:depth</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:inherit</span><span style="color: #D4D2C8"> ignore</span>
-<span style="color: #D4D2C8">                              </span><span style="color: #FFD173">:files</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:defaults</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;elpaca-test.el&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:exclude</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;extensions&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">                              </span><span style="color: #FFD173">:build</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:not</span><span style="color: #D4D2C8"> elpaca--activate-package)))</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((repo  (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;elpaca/&quot;</span><span style="color: #D4D2C8"> elpaca-repos-directory))</span>
-<span style="color: #D4D2C8">       (build (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;elpaca/&quot;</span><span style="color: #D4D2C8"> elpaca-builds-directory))</span>
-<span style="color: #D4D2C8">       (order (</span><span style="color: #FFD173">cdr</span><span style="color: #D4D2C8"> elpaca-order))</span>
-<span style="color: #D4D2C8">       (default-directory repo))</span>
-<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;load-path</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-exists-p</span><span style="color: #D4D2C8"> build) build repo))</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-exists-p</span><span style="color: #D4D2C8"> repo)</span>
-<span style="color: #D4D2C8">    (make-directory repo </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">&lt;=</span><span style="color: #D4D2C8"> emacs-major-version </span><span style="color: #DFBFFF">28</span><span style="color: #D4D2C8">) (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;subr-x</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">condition-case-unless-debug</span><span style="color: #D4D2C8"> err</span>
-<span style="color: #D4D2C8">        (if-let* ((buffer (pop-to-buffer-same-window </span><span style="color: #D5FF80">&quot;*elpaca-bootstrap*&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">                  ((zerop (</span><span style="color: #FFD173">apply</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;call-process</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;git&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">buffer </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;clone&quot;</span>
-<span style="color: #D4D2C8">                                                  </span><span style="color: #FFAD66">,@</span><span style="color: #D4D2C8">(when-let* ((depth (</span><span style="color: #FFD173">plist-get</span><span style="color: #D4D2C8"> order </span><span style="color: #FFD173">:depth</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">                                                      (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">format</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;--depth=%d&quot;</span><span style="color: #D4D2C8"> depth) </span><span style="color: #D5FF80">&quot;--no-single-branch&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">                                                  </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">plist-get</span><span style="color: #D4D2C8"> order </span><span style="color: #FFD173">:repo</span><span style="color: #D4D2C8">) </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">repo))))</span>
-<span style="color: #D4D2C8">                  ((zerop (</span><span style="color: #FFD173">call-process</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;git&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> buffer </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;checkout&quot;</span>
-<span style="color: #D4D2C8">                                        (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">plist-get</span><span style="color: #D4D2C8"> order </span><span style="color: #FFD173">:ref</span><span style="color: #D4D2C8">) </span><span style="color: #D5FF80">&quot;--&quot;</span><span style="color: #D4D2C8">))))</span>
-<span style="color: #D4D2C8">                  (emacs (</span><span style="color: #FFD173">concat</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">invocation-directory</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">invocation-name</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">                  ((zerop (</span><span style="color: #FFD173">call-process</span><span style="color: #D4D2C8"> emacs </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> buffer </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;-Q&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;-L&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;--batch&quot;</span>
-<span style="color: #D4D2C8">                                        </span><span style="color: #D5FF80">&quot;--eval&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;(byte-recompile-directory \&quot;.\&quot; 0 &#39;force)&quot;</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">                  ((</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;elpaca</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">                  ((elpaca-generate-autoloads </span><span style="color: #D5FF80">&quot;elpaca&quot;</span><span style="color: #D4D2C8"> repo)))</span>
-<span style="color: #D4D2C8">            (</span><span style="color: #FFAD66">progn</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">buffer-string</span><span style="color: #D4D2C8">)) (</span><span style="color: #FFD173">kill-buffer</span><span style="color: #D4D2C8"> buffer))</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #73D0FF">error</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">with-current-buffer</span><span style="color: #D4D2C8"> buffer (</span><span style="color: #FFD173">buffer-string</span><span style="color: #D4D2C8">))))</span>
-<span style="color: #D4D2C8">      ((</span><span style="color: #73D0FF">error</span><span style="color: #D4D2C8">) (</span><span style="color: #73D0FF">warn</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s&quot;</span><span style="color: #D4D2C8"> err) (delete-directory repo </span><span style="color: #DFBFFF">&#39;recursive</span><span style="color: #D4D2C8">))))</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;elpaca-autoloads</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;elpaca</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">    (elpaca-generate-autoloads </span><span style="color: #D5FF80">&quot;elpaca&quot;</span><span style="color: #D4D2C8"> repo)</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((load-source-file-function </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)) (</span><span style="color: #FFD173">load</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;./elpaca-autoloads&quot;</span><span style="color: #D4D2C8">))))</span>
-<span style="color: #D4D2C8">(add-hook </span><span style="color: #DFBFFF">&#39;after-init-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">elpaca-process-queues)</span>
-<span style="color: #D4D2C8">(elpaca </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">,@</span><span style="color: #D4D2C8">elpaca-order))</span>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; elpaca 0.11</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">progn</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> elpaca-installer-version </span><span style="color: #DFBFFF">0.11</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> elpaca-directory (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;elpaca/&quot;</span><span style="color: #D4D2C8"> user-emacs-directory))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> elpaca-builds-directory (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;builds/&quot;</span><span style="color: #D4D2C8"> elpaca-directory))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> elpaca-repos-directory (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;repos/&quot;</span><span style="color: #D4D2C8"> elpaca-directory))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> elpaca-order </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(elpaca </span><span style="color: #FFD173">:repo</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;https://github.com/progfolio/elpaca.git&quot;</span>
+<span style="color: #D4D2C8">                                </span><span style="color: #FFD173">:ref</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:depth</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:inherit</span><span style="color: #D4D2C8"> ignore</span>
+<span style="color: #D4D2C8">                                </span><span style="color: #FFD173">:files</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:defaults</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;elpaca-test.el&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:exclude</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;extensions&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                                </span><span style="color: #FFD173">:build</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:not</span><span style="color: #D4D2C8"> elpaca--activate-package)))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((repo  (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;elpaca/&quot;</span><span style="color: #D4D2C8"> elpaca-repos-directory))</span>
+<span style="color: #D4D2C8">         (build (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;elpaca/&quot;</span><span style="color: #D4D2C8"> elpaca-builds-directory))</span>
+<span style="color: #D4D2C8">         (order (</span><span style="color: #FFD173">cdr</span><span style="color: #D4D2C8"> elpaca-order))</span>
+<span style="color: #D4D2C8">         (default-directory repo))</span>
+<span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;load-path</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-exists-p</span><span style="color: #D4D2C8"> build) build repo))</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-exists-p</span><span style="color: #D4D2C8"> repo)</span>
+<span style="color: #D4D2C8">      (make-directory repo </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">&lt;=</span><span style="color: #D4D2C8"> emacs-major-version </span><span style="color: #DFBFFF">28</span><span style="color: #D4D2C8">) (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;subr-x</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">condition-case-unless-debug</span><span style="color: #D4D2C8"> err</span>
+<span style="color: #D4D2C8">          (if-let* ((buffer (pop-to-buffer-same-window </span><span style="color: #D5FF80">&quot;*elpaca-bootstrap*&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                    ((zerop (</span><span style="color: #FFD173">apply</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;call-process</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;git&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">buffer </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;clone&quot;</span>
+<span style="color: #D4D2C8">                                                    </span><span style="color: #FFAD66">,@</span><span style="color: #D4D2C8">(when-let* ((depth (</span><span style="color: #FFD173">plist-get</span><span style="color: #D4D2C8"> order </span><span style="color: #FFD173">:depth</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">                                                        (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">format</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;--depth=%d&quot;</span><span style="color: #D4D2C8"> depth) </span><span style="color: #D5FF80">&quot;--no-single-branch&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                                                    </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">plist-get</span><span style="color: #D4D2C8"> order </span><span style="color: #FFD173">:repo</span><span style="color: #D4D2C8">) </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">repo))))</span>
+<span style="color: #D4D2C8">                    ((zerop (</span><span style="color: #FFD173">call-process</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;git&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> buffer </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;checkout&quot;</span>
+<span style="color: #D4D2C8">                                          (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">plist-get</span><span style="color: #D4D2C8"> order </span><span style="color: #FFD173">:ref</span><span style="color: #D4D2C8">) </span><span style="color: #D5FF80">&quot;--&quot;</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">                    (emacs (</span><span style="color: #FFD173">concat</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">invocation-directory</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">invocation-name</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                    ((zerop (</span><span style="color: #FFD173">call-process</span><span style="color: #D4D2C8"> emacs </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> buffer </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;-Q&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;-L&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;--batch&quot;</span>
+<span style="color: #D4D2C8">                                          </span><span style="color: #D5FF80">&quot;--eval&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;(byte-recompile-directory \&quot;.\&quot; 0 &#39;force)&quot;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">                    ((</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;elpaca</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                    ((elpaca-generate-autoloads </span><span style="color: #D5FF80">&quot;elpaca&quot;</span><span style="color: #D4D2C8"> repo)))</span>
+<span style="color: #D4D2C8">              (</span><span style="color: #FFAD66">progn</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">buffer-string</span><span style="color: #D4D2C8">)) (</span><span style="color: #FFD173">kill-buffer</span><span style="color: #D4D2C8"> buffer))</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #73D0FF">error</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">with-current-buffer</span><span style="color: #D4D2C8"> buffer (</span><span style="color: #FFD173">buffer-string</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">        ((</span><span style="color: #73D0FF">error</span><span style="color: #D4D2C8">) (</span><span style="color: #73D0FF">warn</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s&quot;</span><span style="color: #D4D2C8"> err) (delete-directory repo </span><span style="color: #DFBFFF">&#39;recursive</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;elpaca-autoloads</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;elpaca</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">      (elpaca-generate-autoloads </span><span style="color: #D5FF80">&quot;elpaca&quot;</span><span style="color: #D4D2C8"> repo)</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((load-source-file-function </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)) (</span><span style="color: #FFD173">load</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;./elpaca-autoloads&quot;</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;after-init-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">elpaca-process-queues)</span>
+<span style="color: #D4D2C8">  (elpaca </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">,@</span><span style="color: #D4D2C8">elpaca-order)))</span>
 
-<span style="color: #7E8AA1">;; setup use-package</span>
+
+<span style="color: #7E8AA1">;; install use-package</span>
 <span style="color: #D4D2C8">(elpaca elpaca-use-package</span>
-<span style="color: #D4D2C8">        (elpaca-use-package-mode)</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> use-package-always-ensure </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> use-package-always-defer </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (elpaca-use-package-mode)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> use-package-always-ensure </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> use-package-always-defer </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #7E8AA1">;; hack: exclude all externally installed packages from elpaca.</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">progn</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;elpaca</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;cl-lib</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">eval-when-compile</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;subr-x</span><span style="color: #D4D2C8">)) </span><span style="color: #7E8AA1">;; is this ok?</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +elpaca-get-external-pkgs ()</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Based on </span><span style="color: #DFBFFF">`package-load-all-descriptors&#39;</span><span style="color: #D5FF80">.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((pkg-dir-lst </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">          (res </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (dir (</span><span style="color: #FFD173">cons</span><span style="color: #D4D2C8"> package-user-dir package-directory-list))</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-directory-p</span><span style="color: #D4D2C8"> dir)</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (pkg-dir (</span><span style="color: #FFD173">directory-files</span><span style="color: #D4D2C8"> dir </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\`[^.]&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-directory-p</span><span style="color: #D4D2C8"> pkg-dir)</span>
+<span style="color: #D4D2C8">              (</span><span style="color: #FFD173">push</span><span style="color: #D4D2C8"> pkg-dir pkg-dir-lst)))))</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (pkg-dir pkg-dir-lst)</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((pkg-file (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> (package--description-file pkg-dir)</span>
+<span style="color: #D4D2C8">                                          pkg-dir))</span>
+<span style="color: #D4D2C8">              (signed-file (</span><span style="color: #FFD173">concat</span><span style="color: #D4D2C8"> pkg-dir </span><span style="color: #D5FF80">&quot;.signed&quot;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-exists-p</span><span style="color: #D4D2C8"> pkg-file)</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">with-temp-buffer</span>
+<span style="color: #D4D2C8">              (</span><span style="color: #FFD173">insert-file-contents</span><span style="color: #D4D2C8"> pkg-file)</span>
+<span style="color: #D4D2C8">              (</span><span style="color: #FFD173">goto-char</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">point-min</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">              (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((pkg-text (</span><span style="color: #FFD173">read</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">current-buffer</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">                (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (not (</span><span style="color: #FFD173">eq</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;define-package</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">car-safe</span><span style="color: #D4D2C8"> pkg-text)))</span>
+<span style="color: #D4D2C8">                    (</span><span style="color: #73D0FF">error</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Package %s doesn&#39;t have \&quot;define-package\&quot;&quot;</span><span style="color: #D4D2C8"> pkg-file)</span>
+<span style="color: #D4D2C8">                  (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((name (cadr pkg-text)))</span>
+<span style="color: #D4D2C8">                    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> name</span>
+<span style="color: #D4D2C8">                      (</span><span style="color: #FFD173">cl-pushnew</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">intern</span><span style="color: #D4D2C8"> name) res)))))))))</span>
+<span style="color: #D4D2C8">      res))</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (pkg (+elpaca-get-external-pkgs))</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">push</span><span style="color: #D4D2C8"> pkg elpaca-ignored-dependencies)))</span>
 </code></pre></div>
 <h4 id="leaf">leaf</h4>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(elpaca leaf</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8">) </span><span style="color: #7E8AA1">; deferred by default. demand with :leaf-defer nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8">                       </span><span style="color: #7E8AA1">; deferred by default. demand with :leaf-defer nil</span>
+<span style="color: #D4D2C8">  )</span>
 
 <span style="color: #D4D2C8">(elpaca leaf-keywords</span>
 <span style="color: #D4D2C8">  (leaf-keywords-init)</span>
@@ -677,52 +693,6 @@
 
 <span style="color: #7E8AA1">;; hack: fix org version mismatch</span>
 <span style="color: #D4D2C8">(elpaca org)</span>
-</code></pre></div>
-<h4 id="elpaca-exclude-external-pkgs">elpaca - exclude external pkgs</h4>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;;; Exclude all externally installed packages from elpaca.</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;elpaca</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;cl-lib</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">eval-when-compile</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;subr-x</span><span style="color: #D4D2C8">)) </span><span style="color: #7E8AA1">;; is this ok?</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/elpaca-get-external-pkgs ()</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Based on </span><span style="color: #DFBFFF">`package-load-all-descriptors&#39;</span><span style="color: #D5FF80">.&quot;</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((pkg-dir-lst </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">        (res </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (dir (</span><span style="color: #FFD173">cons</span><span style="color: #D4D2C8"> package-user-dir package-directory-list))</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-directory-p</span><span style="color: #D4D2C8"> dir)</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (pkg-dir (</span><span style="color: #FFD173">directory-files</span><span style="color: #D4D2C8"> dir </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\`[^.]&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-directory-p</span><span style="color: #D4D2C8"> pkg-dir)</span>
-<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">push</span><span style="color: #D4D2C8"> pkg-dir pkg-dir-lst)))))</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (pkg-dir pkg-dir-lst)</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((pkg-file (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> (package--description-file pkg-dir)</span>
-<span style="color: #D4D2C8">                                        pkg-dir))</span>
-<span style="color: #D4D2C8">            (signed-file (</span><span style="color: #FFD173">concat</span><span style="color: #D4D2C8"> pkg-dir </span><span style="color: #D5FF80">&quot;.signed&quot;</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-exists-p</span><span style="color: #D4D2C8"> pkg-file)</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">with-temp-buffer</span>
-<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">insert-file-contents</span><span style="color: #D4D2C8"> pkg-file)</span>
-<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">goto-char</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">point-min</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">            (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((pkg-text (</span><span style="color: #FFD173">read</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">current-buffer</span><span style="color: #D4D2C8">))))</span>
-<span style="color: #D4D2C8">              (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (not (</span><span style="color: #FFD173">eq</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;define-package</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">car-safe</span><span style="color: #D4D2C8"> pkg-text)))</span>
-<span style="color: #D4D2C8">                  (</span><span style="color: #73D0FF">error</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Package %s doesn&#39;t have \&quot;define-package\&quot;&quot;</span><span style="color: #D4D2C8"> pkg-file)</span>
-<span style="color: #D4D2C8">                (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((name (cadr pkg-text)))</span>
-<span style="color: #D4D2C8">                  (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> name</span>
-<span style="color: #D4D2C8">                    (</span><span style="color: #FFD173">cl-pushnew</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">intern</span><span style="color: #D4D2C8"> name) res)))))))))</span>
-<span style="color: #D4D2C8">    res))</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (pkg (my/elpaca-get-external-pkgs))</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">push</span><span style="color: #D4D2C8"> pkg elpaca-ignored-dependencies))</span>
-</code></pre></div>
-<h4 id="startup-hooks">startup hooks</h4>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(add-hook </span><span style="color: #DFBFFF">&#39;emacs-startup-hook</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
-<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;*** Emacs loaded in %s seconds with %d garbage collections.&quot;</span>
-<span style="color: #D4D2C8">                     (emacs-init-time </span><span style="color: #D5FF80">&quot;%.2f&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">                     gcs-done)))</span>
-
-<span style="color: #D4D2C8">(add-hook </span><span style="color: #DFBFFF">&#39;elpaca-after-init-hook</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
-<span style="color: #D4D2C8">            (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> gc-cons-threshold (</span><span style="color: #FFD173">*</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">10000</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">10000</span><span style="color: #D4D2C8">))))</span>
 </code></pre></div>
 <h4 id="necessary-packages">necessary packages</h4>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">use-package</span><span style="color: #D4D2C8"> general </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
@@ -743,25 +713,143 @@
 
 <span style="color: #D4D2C8">(</span><span style="color: #FFD173">use-package</span><span style="color: #D4D2C8"> hydra </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:demand</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">use-package</span><span style="color: #D4D2C8"> dash </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:demand</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> -debug (label)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Debugging helper function for dash.el.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (m)</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s: %S&quot;</span><span style="color: #D4D2C8"> label m)</span>
+<span style="color: #D4D2C8">      m)))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;cl-lib</span><span style="color: #D4D2C8">)</span>
+</code></pre></div>
+<h4 id="load-path">load-path</h4>
+<h5 id="adding-to-the-load-path">adding to the load-path</h5>
+<p>;; <code>load-path':
+;; - A variable; a list of paths.
+;;   - Paths to search for when loading an elisp file (like with</code>require').
+;; - Typically, for every elisp package, you add its root dir to this list so
+;;   that its main .el file is visible, and thus loadable.
+;; - To make adding paths to this variable easier, we define the following
+;;   function.</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +add-to-load-path-recursively (path depth </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> exclude-self)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Add PATH and its recursive subdirs to </span><span style="color: #DFBFFF">`load-path&#39;</span><span style="color: #D5FF80">.</span>
+
+<span style="color: #D5FF80">DEPTH specifies how deeply to recurse. 0 for just PATH, 1 for PATH and its</span>
+<span style="color: #D5FF80">subdirs, n&gt;1 for till depth n, and -1 for infinite depth.</span>
+
+<span style="color: #D5FF80">If EXCLUDE-SELF is non-nil, exclude PATH, and include only its recursive</span>
+<span style="color: #D5FF80">subdirs.</span>
+
+<span style="color: #D5FF80">If PATH or a subdir contains a =.nosearch= file, it&#39;s excluded.</span>
+
+<span style="color: #D5FF80">This function returns a list of paths that were added to (or already exist in)</span>
+<span style="color: #DFBFFF">`load-path&#39;</span><span style="color: #D5FF80">.&quot;</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">cl-labels</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #7E8AA1">;; return t if .nosearch file exists within dir</span>
+<span style="color: #D4D2C8">       (nosearch-subfile-p (d)</span>
+<span style="color: #D4D2C8">         (</span><span style="color: #FFD173">file-exists-p</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;.nosearch&quot;</span><span style="color: #D4D2C8"> d)))</span>
+
+<span style="color: #D4D2C8">       </span><span style="color: #7E8AA1">;; collect recursive subdirs</span>
+<span style="color: #D4D2C8">       (collect-fn (current-dir current-depth)</span>
+<span style="color: #D4D2C8">         (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">integerp</span><span style="color: #D4D2C8"> current-depth)</span>
+<span style="color: #D4D2C8">                    </span><span style="color: #7E8AA1">;; base case (unless inf depth)</span>
+<span style="color: #D4D2C8">                    (</span><span style="color: #FFD173">/=</span><span style="color: #D4D2C8"> current-depth </span><span style="color: #DFBFFF">0</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                    (</span><span style="color: #FFD173">file-directory-p</span><span style="color: #D4D2C8"> current-dir))</span>
+<span style="color: #D4D2C8">           (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((subdirs</span>
+<span style="color: #D4D2C8">                  (-&gt;&gt; (</span><span style="color: #FFD173">directory-files</span><span style="color: #D4D2C8"> current-dir </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">                                        directory-files-no-dot-files-regexp)</span>
+<span style="color: #D4D2C8">                       (-filter </span><span style="color: #FFD173">#&#39;file-directory-p</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                       (-remove </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">nosearch-subfile-p))))</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; collect [ subdirs + (recurse subdirs) ]</span>
+<span style="color: #D4D2C8">             (-&gt;&gt; subdirs</span>
+<span style="color: #D4D2C8">                  (-mapcat (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (sub)</span>
+<span style="color: #D4D2C8">                             (collect-fn sub (</span><span style="color: #FFD173">1-</span><span style="color: #D4D2C8"> current-depth))))</span>
+<span style="color: #D4D2C8">                  (</span><span style="color: #FFD173">append</span><span style="color: #D4D2C8"> subdirs))))))</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((collected (collect-fn path depth))</span>
+<span style="color: #D4D2C8">           (result (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> exclude-self (nosearch-subfile-p path))</span>
+<span style="color: #D4D2C8">                       collected</span>
+<span style="color: #D4D2C8">                     (</span><span style="color: #FFD173">cons</span><span style="color: #D4D2C8"> path collected))))</span>
+
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; add result to `load-path&#39;</span>
+<span style="color: #D4D2C8">      (--each result (add-to-list </span><span style="color: #DFBFFF">&#39;load-path</span><span style="color: #D4D2C8"> it))</span>
+<span style="color: #D4D2C8">      result)))</span>
+
+<span style="color: #D4D2C8">(+add-to-load-path-recursively +emacs-src-dir </span><span style="color: #DFBFFF">-1</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">(+add-to-load-path-recursively +emacs-submodules-dir </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
+</code></pre></div>
+<h5 id="loading-functions">loading functions</h5>
+<p>;; <code>require'
+;; - A function that searches for and loads a corresponding elisp file from the
+;;</code>load-path'.
+;;   - Any files loaded with <code>require' will be saved to the</code>features' var,
+;;     so it can keep track of which files were loaded, prevent duplicate loads,
+;;     and manage dependencies.
+;;     - A side effect is that re-running <code>require' with the same arg will do
+;;       nothing.
+;; - By default, if it throws an error, it terminates Emacs initialization. To
+;;   prevent this, we write a wrapper</code>+require' that catches any errors and
+;;   converts them into warnings.</p>
+<p>;; <code>load'
+;; - A function similar to</code>require', but with some key differences:
+;;   - Can take any arbitrary file path.
+;;   - Allows dupulicate loads.
+;;   - Does not add to the <code>features' var.
+;; - We make a wrapper</code>+load' for this function as well.</p>
+<p>;; A macro <code>+require-or-load' is also defined, which runs</code>+require' if not yet
+;; loaded, and `+load' if already loaded.</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defmacro</span><span style="color: #D4D2C8"> +require (feature </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> filename noerror)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;A wrapper around </span><span style="color: #DFBFFF">`require&#39;</span><span style="color: #D5FF80"> to warn instead of error.&quot;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">progn</span>
+<span style="color: #D4D2C8">     (</span><span style="color: #FFD173">condition-case-unless-debug</span><span style="color: #D4D2C8"> err</span>
+<span style="color: #D4D2C8">         (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">feature </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">filename </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">noerror)</span>
+<span style="color: #D4D2C8">       (</span><span style="color: #73D0FF">error</span>
+<span style="color: #D4D2C8">        (display-warning </span><span style="color: #DFBFFF">&#39;require</span>
+<span style="color: #D4D2C8">                         (</span><span style="color: #FFD173">format</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Failed to require: %s&quot;</span><span style="color: #D4D2C8"> err)</span>
+<span style="color: #D4D2C8">                         </span><span style="color: #FFD173">:error</span><span style="color: #D4D2C8">)))))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defmacro</span><span style="color: #D4D2C8"> +load (file </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> noerror nomessage nosuffix must-suffix)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;A wrapper around </span><span style="color: #DFBFFF">`load&#39;</span><span style="color: #D5FF80"> to warn instead of error.&quot;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">progn</span>
+<span style="color: #D4D2C8">     (</span><span style="color: #FFD173">condition-case-unless-debug</span><span style="color: #D4D2C8"> err</span>
+<span style="color: #D4D2C8">         (</span><span style="color: #FFD173">load</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">file </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">noerror </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">nomessage </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">nosuffix </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">must-suffix)</span>
+<span style="color: #D4D2C8">       (</span><span style="color: #73D0FF">error</span>
+<span style="color: #D4D2C8">        (display-warning </span><span style="color: #DFBFFF">&#39;load</span>
+<span style="color: #D4D2C8">                         (</span><span style="color: #FFD173">format</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Failed to load: %s&quot;</span><span style="color: #D4D2C8"> err)</span>
+<span style="color: #D4D2C8">                         </span><span style="color: #FFD173">:error</span><span style="color: #D4D2C8">)))))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defmacro</span><span style="color: #D4D2C8"> +require-or-load (feature)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;If FEATURE is loaded, run </span><span style="color: #DFBFFF">`+load&#39;</span><span style="color: #D5FF80">, Else, run </span><span style="color: #DFBFFF">`+require&#39;</span><span style="color: #D5FF80">.&quot;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">progn</span>
+<span style="color: #D4D2C8">     (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">symbolp</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">feature)</span>
+<span style="color: #D4D2C8">       (</span><span style="color: #73D0FF">error</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Expected symbol, got: %S&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">feature))</span>
+<span style="color: #D4D2C8">     (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">featurep</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">feature)</span>
+<span style="color: #D4D2C8">         (+load (</span><span style="color: #FFD173">symbol-name</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">feature))</span>
+<span style="color: #D4D2C8">       (+require </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">feature))))</span>
+</code></pre></div>
+<h4 id="startup-hooks">startup hooks</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(add-hook </span><span style="color: #DFBFFF">&#39;emacs-startup-hook</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;*** Emacs loaded in %s seconds with %d garbage collections.&quot;</span>
+<span style="color: #D4D2C8">                     (emacs-init-time </span><span style="color: #D5FF80">&quot;%.2f&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                     gcs-done)))</span>
+
+<span style="color: #D4D2C8">(add-hook </span><span style="color: #DFBFFF">&#39;elpaca-after-init-hook</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> gc-cons-threshold (</span><span style="color: #FFD173">*</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">10000</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">10000</span><span style="color: #D4D2C8">))))</span>
+
+<span style="color: #D4D2C8">(add-hook </span><span style="color: #DFBFFF">&#39;elpaca-after-init-hook</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-exists-p</span><span style="color: #D4D2C8"> custom-file)</span>
+<span style="color: #D4D2C8">              (</span><span style="color: #FFD173">load</span><span style="color: #D4D2C8"> custom-file))))</span>
 </code></pre></div>
 <h4 id="import">import</h4>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-base</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-kbd</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-completion</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-ide</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-org</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-latex</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-workspaces</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-programs</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-ui</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-misc</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-to-sort</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-documentation</span><span style="color: #D4D2C8">)</span>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; load ./src/src.el</span>
+<span style="color: #D4D2C8">(+require-or-load </span><span style="color: #DFBFFF">&#39;src</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
-<h4 id="end">end</h4>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;init</span><span style="color: #D4D2C8">)</span>
-<span style="color: #7E8AA1">;;; init.el ends here</span>
-</code></pre></div>
+<h5 id="end">end</h5>
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>
