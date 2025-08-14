@@ -702,4 +702,4 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 ;;   "nNn" 'denote
 ;;   "")
 
-(provide 'my-to-sort)
+(provide '+to-sort)

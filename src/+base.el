@@ -1,4 +1,4 @@
-;;; my-base.el ---                                   -*- lexical-binding: t; -*-
+;;; +base.el ---                                   -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  lispcat
 
@@ -228,6 +228,6 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 
 ;;; end
-(provide 'my-base)
-;;; my-base.el ends here
+(provide '+base)
+;;; +base.el ends here
 

@@ -1,4 +1,4 @@
-;;; my-org.el --- org mode setup                     -*- lexical-binding: t; -*-
+;;; +org.el --- org mode setup                     -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  lispcat
 
@@ -382,8 +382,8 @@ The property will be removed if ran with a \\[universal-argument]."
     (visual-fill-column-mode 1)))
 
 
-(provide 'my-org)
-;;; my-org.el ends here
+(provide '+org)
+;;; +org.el ends here
 
 
 

@@ -58,4 +58,4 @@
   (setq preview-orientation 'below)
   )
 
-(provide 'my-latex)
+(provide '+latex)

@@ -404,4 +404,4 @@
 ;;          ("C-c c -" . inverse-add-global-abbrev)
 ;;          ("C-c c e" . edit-abbrevs)))
 
-(provide 'my-completion)
+(provide '+completion)

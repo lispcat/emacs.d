@@ -702,4 +702,4 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (outline-indent-ellipsis . " ▼")
   (outline-blank-line . t))
 
-(provide 'my-ide)
+(provide '+ide)

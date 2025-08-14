@@ -20,4 +20,4 @@
 
 (leaf impatient-mode)
 
-(provide 'my-misc)
+(provide '+misc)

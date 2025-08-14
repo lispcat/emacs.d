@@ -40,4 +40,4 @@
   ;; run `+elfeed-feeds-update-var' before running `elfeed-update'
   (advice-add #'elfeed-update :before #'+elfeed-feeds-update-var))
 
-(provide 'my-programs)
+(provide '+programs)

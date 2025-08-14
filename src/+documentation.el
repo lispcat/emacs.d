@@ -1,4 +1,4 @@
-;;; my-documentation.el --- auto docs generator      -*- lexical-binding: t; -*-
+;;; +documentation.el --- auto docs generator      -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  lispcat
 
@@ -197,5 +197,5 @@
 ;;                                     end                                    ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(provide 'my-documentation)
-;;; my-documentation.el ends here
+(provide '+documentation)
+;;; +documentation.el ends here

@@ -236,4 +236,4 @@
        (completing-read "Font awesome: " (fontawesome--construct-candidates))
        (fontawesome--construct-candidates))))))
 
-(provide 'my-kbd)
+(provide '+kbd)
