@@ -1,4 +1,4 @@
-;;; src.el ---                                       -*- lexical-binding: t; -*-
+;;; _src.el ---                                      -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  lispcat
 
@@ -42,7 +42,6 @@
 (+require-or-load 'my-to-sort)
 (+require-or-load 'my-documentation)
 
-
 ;;; end
-(provide 'src)
-;;; src.el ends here
+(provide '_src)
+;;; _src.el ends here

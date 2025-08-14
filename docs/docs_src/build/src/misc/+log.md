@@ -1,14 +1,12 @@
-# +log - logging functions
+# λ +log - logging functions
 
 *Author:* lispcat <187922791+lispcat@users.noreply.github.com><br>
 
 logging functions
 
-# Code
+# ⊢ post-init
 
-## post-init
-
-### log src-dir state
+## • log src-dir state
 
 
 ```emacs-lisp

@@ -1,5 +1,3 @@
-# Code
-
 ```emacs-lisp
   `((hack . "Hack")
     (tamzenPL-16

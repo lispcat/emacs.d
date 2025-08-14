@@ -5,8 +5,6 @@ TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)
 a framework for minibuffer completion
 (https://github.com/minad/vertico)
 
-# Code
-
 ```emacs-lisp
   :init
   (vertico-mode 1)

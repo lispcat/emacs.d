@@ -1,5 +1,3 @@
-# Code
-
 ```emacs-lisp
 (defvar prefer-lsp-mode? nil)
 
@@ -133,7 +131,7 @@
 
 ```
 
-## langs
+# ⊢ langs
 
 ```emacs-lisp
 
@@ -557,7 +555,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 
 ```
 
-## Code formatting
+# ⊢ Code formatting
 
 ```emacs-lisp
 

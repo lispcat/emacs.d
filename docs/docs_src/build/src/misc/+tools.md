@@ -1,9 +1,7 @@
-# +tools - misc tools
+# λ +tools - misc tools
 
 *Author:* lispcat <187922791+lispcat@users.noreply.github.com><br>
 
-
-# Code
 
 ```emacs-lisp
 
@@ -25,7 +23,7 @@
 
 ```
 
-### end
+## • end
 
 ```emacs-lisp
 

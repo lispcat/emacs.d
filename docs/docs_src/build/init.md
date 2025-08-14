@@ -1,13 +1,11 @@
-# init - the main init file
+# λ init - the main init file
 
 *Author:* lispcat <187922791+lispcat@users.noreply.github.com><br>
 
 The main init file.
 This is automatically ran at startup after early-init.el.
 
-# Code
-
-## Vars
+# ⊢ Vars
 
 Set various vars for sane defaults.
 
@@ -20,7 +18,7 @@ Set various vars for sane defaults.
 
 ```
 
-## no-littering
+# ⊢ no-littering
 
 ```emacs-lisp
 
@@ -55,7 +53,7 @@ Set various vars for sane defaults.
 
 ```
 
-## elpaca
+# ⊢ elpaca
 
 ```emacs-lisp
 
@@ -143,7 +141,7 @@ Set various vars for sane defaults.
 
 ```
 
-## leaf
+# ⊢ leaf
 
 ```emacs-lisp
 
@@ -163,7 +161,7 @@ Set various vars for sane defaults.
 
 ```
 
-## necessary packages
+# ⊢ necessary packages
 
 ```emacs-lisp
 
@@ -199,9 +197,9 @@ Set various vars for sane defaults.
 
 ```
 
-## load-path
+# ⊢ load-path
 
-### adding to the load-path
+## • adding to the load-path
 
 ## `load-path`
 
@@ -261,7 +259,7 @@ This function returns a list of paths that were added to (or already exist in)
 
 ```
 
-### loading functions
+## • loading functions
 
 `require`
 
@@ -276,6 +274,7 @@ This function returns a list of paths that were added to (or already exist in)
   prevent this, we write a wrapper `+require` that catches any errors and
   converts them into warnings.
 
+
 `load`
 
 - A function similar to `require`, but with some key differences:
@@ -284,8 +283,11 @@ This function returns a list of paths that were added to (or already exist in)
   - Does not add to the `features` var.
 - We make a wrapper `+load` for this function as well.
 
-A macro `+require-or-load` is also defined, which runs `+require` if not yet
-loaded, and `+load` if already loaded.
+
+`+require-or-load`
+
+- Runs `+require` if not yet loaded, and `+load` if already loaded.
+
 
 ```emacs-lisp
 (defmacro +require (feature &optional filename noerror)
@@ -319,7 +321,7 @@ loaded, and `+load` if already loaded.
 
 ```
 
-## startup hooks
+# ⊢ startup hooks
 
 ```emacs-lisp
 
@@ -340,16 +342,16 @@ loaded, and `+load` if already loaded.
 
 ```
 
-## import
+# ⊢ import
 
 ```emacs-lisp
 
 ;; load ./src/src.el
-(+require-or-load 'src)
+(+require-or-load '_src)
 
 ```
 
-### end
+## • end
 
 ```emacs-lisp
 

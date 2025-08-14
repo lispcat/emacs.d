@@ -3,11 +3,14 @@ nav:
   - Home: index.md
   - About: about.md
 
-  - Src:
+  - Init:
     - early-init: build/early-init.md
     - init: build/init.md
+  - Src:
+    - src: build/src/_src.md
     - "build/src/*.md"
 
   - Misc:
+    - "build/src/misc/*.md"
     - "*/*.md"
     - "*.md"

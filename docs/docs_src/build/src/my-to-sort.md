@@ -1,5 +1,3 @@
-# Code
-
 ```emacs-lisp
   :init (omni-quotes-mode 1)
   :bind (("M-s q m" . omni-quotes-mode)

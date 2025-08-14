@@ -293,6 +293,7 @@ This function returns a list of paths that were added to (or already exist in)
 ;; - By default, if it throws an error, it terminates Emacs initialization. To
 ;;   prevent this, we write a wrapper `+require' that catches any errors and
 ;;   converts them into warnings.
+;;
 
 ;;
 ;; `load'
@@ -302,9 +303,13 @@ This function returns a list of paths that were added to (or already exist in)
 ;;   - Allows dupulicate loads.
 ;;   - Does not add to the `features' var.
 ;; - We make a wrapper `+load' for this function as well.
+;;
 
-;; A macro `+require-or-load' is also defined, which runs `+require' if not yet
-;; loaded, and `+load' if already loaded.
+;;
+;; `+require-or-load'
+;;
+;; - Runs `+require' if not yet loaded, and `+load' if already loaded.
+;;
 
 ;; --
 
@@ -369,7 +374,7 @@ This function returns a list of paths that were added to (or already exist in)
 ;; --
 
 ;; load ./src/src.el
-(+require-or-load 'src)
+(+require-or-load '_src)
 
 ;; --
 

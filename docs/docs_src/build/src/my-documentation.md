@@ -1,13 +1,11 @@
-# my-documentation - auto docs generator
+# λ my-documentation - auto docs generator
 
 *Author:* lispcat <187922791+lispcat@users.noreply.github.com><br>
 
 Automatically generates documentation using el2markdown.
 Converts elisp files into markdown docs.
 
-# Code
-
-## make package accessible
+# ⊢ make package accessible
 
 ```emacs-lisp
 
@@ -177,7 +175,7 @@ Converts elisp files into markdown docs.
 
 ```
 
-## end
+# ⊢ end
 
 ```emacs-lisp
 

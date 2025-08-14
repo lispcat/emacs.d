@@ -1,5 +1,3 @@
-# Code
-
 ```emacs-lisp
   :setq
   (eat-term-name . "xterm-256color")

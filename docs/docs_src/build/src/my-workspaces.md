@@ -4,8 +4,6 @@ maybe have each persp have its own save file, and when autosaving, save each per
 maybe have a function to delete a persp from the main autosave file?
 - prompt available perspectives from main autosave file, after selection, delete each from file.
 
-# Code
-
 ```emacs-lisp
   :bind-keymap
   ("C-c w w" . persp-key-map)

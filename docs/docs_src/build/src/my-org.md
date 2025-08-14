@@ -1,9 +1,7 @@
-# my-org - org mode setup
+# λ my-org - org mode setup
 
 *Author:* lispcat <187922791+lispcat@users.noreply.github.com><br>
 
-
-# Code
 
 ```emacs-lisp
 

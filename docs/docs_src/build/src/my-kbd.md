@@ -1,7 +1,5 @@
 Actuates Meta key by default
 
-# Code
-
 ```emacs-lisp
 
 ;; Shorten yes/no prompts to y/n

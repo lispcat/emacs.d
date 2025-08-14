@@ -1,5 +1,3 @@
-# Code
-
 ```emacs-lisp
   :config
   (eval-after-load "quail/latin-ltx"
