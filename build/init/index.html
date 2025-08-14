@@ -727,13 +727,15 @@ This is automatically ran at startup after early-init.el.</p>
 </code></pre></div>
 <h4 id="load-path">load-path</h4>
 <h5 id="adding-to-the-load-path">adding to the load-path</h5>
-<p><code>load-path</code>:
-- A variable; a list of paths.
-  - Paths to search for when loading an elisp file (like with <code>require</code>).
-- Typically, for every elisp package, you add its root dir to this list so
-  that its main .el file is visible, and thus loadable.
-- To make adding paths to this variable easier, we define the following
-  function.</p>
+<h4 id="load-path_1"><code>load-path</code></h4>
+<ul>
+<li>A variable; a list of paths.</li>
+<li>Paths to search for when loading an elisp file (like with <code>require</code>).</li>
+<li>Typically, for every elisp package, you add its root dir to this list so
+  that its main .el file is visible, and thus loadable.</li>
+<li>To make adding paths to this variable easier, we define the following
+  function.</li>
+</ul>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +add-to-load-path-recursively (path depth </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> exclude-self)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Add PATH and its recursive subdirs to </span><span style="color: #DFBFFF">`load-path&#39;</span><span style="color: #D5FF80">.</span>
 
@@ -781,23 +783,29 @@ This is automatically ran at startup after early-init.el.</p>
 <span style="color: #D4D2C8">(+add-to-load-path-recursively +emacs-submodules-dir </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
 <h5 id="loading-functions">loading functions</h5>
-<p><code>require</code>
-- A function that searches for and loads a corresponding elisp file from the
- <code>load-path</code>.
-  - Any files loaded with <code>require</code> will be saved to the <code>features</code> var,
+<p><code>require</code></p>
+<ul>
+<li>A function that searches for and loads a corresponding elisp file from the
+ <code>load-path</code>.</li>
+<li>Any files loaded with <code>require</code> will be saved to the <code>features</code> var,
     so it can keep track of which files were loaded, prevent duplicate loads,
-    and manage dependencies.
-    - A side effect is that re-running <code>require</code> with the same arg will do
-      nothing.
-- By default, if it throws an error, it terminates Emacs initialization. To
+    and manage dependencies.<ul>
+<li>A side effect is that re-running <code>require</code> with the same arg will do
+  nothing.</li>
+</ul>
+</li>
+<li>By default, if it throws an error, it terminates Emacs initialization. To
   prevent this, we write a wrapper <code>+require</code> that catches any errors and
-  converts them into warnings.</p>
-<p><code>load</code>
-- A function similar to <code>require</code>, but with some key differences:
-  - Can take any arbitrary file path.
-  - Allows dupulicate loads.
-  - Does not add to the <code>features</code> var.
-- We make a wrapper <code>+load</code> for this function as well.</p>
+  converts them into warnings.</li>
+</ul>
+<p><code>load</code></p>
+<ul>
+<li>A function similar to <code>require</code>, but with some key differences:</li>
+<li>Can take any arbitrary file path.</li>
+<li>Allows dupulicate loads.</li>
+<li>Does not add to the <code>features</code> var.</li>
+<li>We make a wrapper <code>+load</code> for this function as well.</li>
+</ul>
 <p>A macro <code>+require-or-load</code> is also defined, which runs <code>+require</code> if not yet
 loaded, and <code>+load</code> if already loaded.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defmacro</span><span style="color: #D4D2C8"> +require (feature </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> filename noerror)</span>

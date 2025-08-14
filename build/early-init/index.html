@@ -604,14 +604,18 @@ a different one), and etc.</p>
 <span style="color: #D4D2C8">   (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;init.el&quot;</span><span style="color: #D4D2C8"> +emacs-root-dir)))</span>
 </code></pre></div>
 <h5 id="directory-vars-setq">Directory Vars : setq:</h5>
-<p>More on the local-dir:
-- By default, Emacs throws temp and state files into
+<h4 id="more-on-the-local-dir">More on the local-dir</h4>
+<ul>
+<li>By default, Emacs throws temp and state files into
   the <code>user-emacs-directory</code>, or the root of the configuration directory.
   This can get pretty messy, so we set the user-emacs-directory to a
-  subdirectory, the local-dir from earlier.</p>
-<p>The custom-file:
-- Any customizations saved using Emacs' "customize" interface will be added
-  to the <code>custom-file</code>. This file is later loaded in init.el.</p>
+  subdirectory, the local-dir from earlier.</li>
+</ul>
+<h4 id="the-custom-file">The custom-file</h4>
+<ul>
+<li>Any customizations saved using Emacs' "customize" interface will be added
+  to the <code>custom-file</code>. This file is later loaded in init.el.</li>
+</ul>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; set main dir to local dir</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> user-emacs-directory +emacs-local-dir)</span>
 
