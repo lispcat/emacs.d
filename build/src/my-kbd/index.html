@@ -555,6 +555,243 @@
 <section id="mkdocs-terminal-content">
     <p>Actuates Meta key by default</p>
 <h3 id="code">Code</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; Shorten yes/no prompts to y/n</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defalias</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;yes-or-no-p</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;y-or-n-p</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #7E8AA1">;; By default, Emacs thinks two spaces after a period is a sentence.</span>
+<span style="color: #7E8AA1">;; This changes that to just one space.</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> sentence-end-double-space </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #7E8AA1">;; nice keybinds for navigation</span>
+<span style="color: #D4D2C8">(global-set-key (kbd </span><span style="color: #D5FF80">&quot;M-p&quot;</span><span style="color: #D4D2C8">) (kbd </span><span style="color: #D5FF80">&quot;M-- 1 C-v&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">(global-set-key (kbd </span><span style="color: #D5FF80">&quot;M-n&quot;</span><span style="color: #D4D2C8">) (kbd </span><span style="color: #D5FF80">&quot;M-- 1 M-v&quot;</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +meow-setup ()</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> meow-cheatsheet-layout meow-cheatsheet-layout-dvp)</span>
+<span style="color: #D4D2C8">  (meow-motion-overwrite-define-key</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; custom keybinding for motion state</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;&lt;escape&gt;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> ignore)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;t&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;p&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #7E8AA1">;; improved solution? (access Motion &quot;t&quot; with &quot;SPC t&quot;)</span>
+<span style="color: #D4D2C8">   )</span>
+<span style="color: #D4D2C8">  (meow-leader-define-key</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;u&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-universal-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;t&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;H-t&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;p&quot; . &quot;H-p&quot;)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;u&quot; . ctl-x-map)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;1&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;2&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;3&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;4&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;5&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;6&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;7&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;8&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;9&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;0&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;/&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-keypad-describe-key)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;?&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-cheatsheet))</span>
+<span style="color: #D4D2C8">  (meow-normal-define-key</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; make S-&lt;num&gt; easier to hit with DVP by using symbols.</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;*&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-expand-0)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;=&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-expand-9)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;!&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-expand-8)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;[&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-expand-7)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;]&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-expand-6)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;{&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-expand-5)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;+&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-expand-4)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;}&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-expand-3)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;)&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-expand-2)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;(&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-expand-1)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;1&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;2&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;3&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;4&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;5&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;6&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;7&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;8&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;9&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;0&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> digit-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; symbols</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;-&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> negative-argument)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-reverse)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;:&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-goto-line) </span><span style="color: #7E8AA1">;; moved from &quot;Q&quot; and &quot;E&quot;</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;,&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-inner-of-thing)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-bounds-of-thing)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;&lt;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-beginning-of-thing)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;&gt;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-end-of-thing)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; basic letters</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;a&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-append)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;A&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-open-below)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;b&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-back-word)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;B&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-back-symbol)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;c&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-change)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;d&quot; . ri/meow-delete-or-kill)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;d&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-delete) </span><span style="color: #7E8AA1">; i want &quot;d&quot; to delete char after meow-prev/next-word, so dont use former</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;D&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-backward-delete)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;e&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-line)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;E&quot; . meow-goto-line) ;; removed, since &quot;:&quot; for it works</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;f&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-find)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;F&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-search) </span><span style="color: #7E8AA1">;; moved from &quot;s&quot; (&quot;s&quot; is used for movement)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;g&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-cancel-selection)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;G&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-grab)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; H Directional key moved to the bottom</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;i&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-insert)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;I&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-open-above)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;j&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-join)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;k&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-kill)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;l&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-till)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;m&quot; . meow-mark-word) ;; swap with w, next-word (because &quot;b&quot;/&quot;m&quot; is easy for mvmnt)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;M&quot; . meow-mark-symbol) ;; swap with W, next-symbol (because &quot;b&quot;/&quot;m&quot; is easy for mvmnt)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;m&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-next-word)   </span><span style="color: #7E8AA1">;; moved from &quot;w&quot;, mark-word</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;M&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-next-symbol) </span><span style="color: #7E8AA1">;; moved from &quot;W&quot;, mark-symbol</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; N Directional key moved to the bottom</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;o&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-block)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;O&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-to-block)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;p&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-prev)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;P&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-prev-expand)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;q&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-quit)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;Q&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> ri/quit-temp-window)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;Q&quot; . meow-goto-line) ;; move to &quot; : &quot;</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;r&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-replace)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;R&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-swap-grab)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;s&quot; . meow-search) ;; move to F, replace with directional keys</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; S Directional key moved to the bottom</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; T Directional key moved to the bottom</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;u&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-undo)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;U&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-undo-in-selection)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;v&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-visit)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;w&quot; . meow-next-word) ;; swap with m, mark-word/symbol</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;W&quot; . meow-next-symbol)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;w&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-mark-word)   </span><span style="color: #7E8AA1">;; moved from &quot;m&quot;, mark-word</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;W&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-mark-symbol) </span><span style="color: #7E8AA1">;; moved from &quot;M&quot;, mark-symbol</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;x&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-save)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;X&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-sync-grab)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;y&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-yank)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;z&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-pop-selection)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> repeat)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;/&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> ri/scroll-down-half-page) </span><span style="color: #7E8AA1">;; new keys</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;?&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> ri/scroll-up-half-page)   </span><span style="color: #7E8AA1">;; new keys</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;&lt;escape&gt;&quot; . ignore)</span>
+
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;@&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-universal-argument)</span>
+
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; Directional keys:</span>
+
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &lt;-  ^  v  -&gt;</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;h&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-left)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;H&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-left-expand)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;t&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-prev)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;T&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-prev-expand)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;n&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-next)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;N&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-next-expand)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;s&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-right)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;S&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-right-expand)</span>
+
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; ^  &lt;-  v  -&gt;</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;h&quot; . meow-prev)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;H&quot; . meow-prev-expand)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;t&quot; . meow-left)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;T&quot; . meow-left-expand)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;n&quot; . meow-next)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;N&quot; . meow-next-expand)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;s&quot; . meow-right)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;S&quot; . meow-right-expand)</span>
+
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; ^  /  &lt;-  -&gt;  v</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;h&quot; . meow-left)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;H&quot; . meow-left-expand)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;t&quot; . meow-right)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;T&quot; . meow-right-expand)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;n&quot; . meow-prev)</span>
+<span style="color: #D4D2C8">   </span><span style="color: #7E8AA1">;; &#39;(&quot;N&quot; . meow-prev-expand)</span>
+<span style="color: #D4D2C8">   )</span>
+
+<span style="color: #D4D2C8">  (meow-global-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">(leaf meow</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
+<span style="color: #D4D2C8">  (meow-use-cursor-position-hack </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (meow-replace-state-name-list</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((normal </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;&lt;N&gt;&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">       (motion </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;&lt;M&gt;&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">       (keypad </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;&lt;K&gt;&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">       (</span><span style="color: #FFD173">insert</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;&lt;I&gt;&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">       (beacon </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;&lt;B&gt;&quot;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (+meow-setup)</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> ri/meow-exit-all-and-save ()</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;When run, exit meow insert mode, exit snippet, then save buffer.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; (execute-kbd-macro (kbd &quot;&lt;escape&gt;&quot;))</span>
+<span style="color: #D4D2C8">    (meow-insert-exit)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">buffer-modified-p</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">current-buffer</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">      (save-buffer)))</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> ri/meow-insert-default-modes</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(vterm-mode</span>
+<span style="color: #D4D2C8">      eshell-mode)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Start these modes in meow-insert-mode.&quot;</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; start certain modes in insert-mode</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (mode ri/meow-insert-default-modes)</span>
+<span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;meow-mode-state-list</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">mode </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">insert</span><span style="color: #D4D2C8">)))</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> ri/meow-SPC-ignore-list</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(Info-mode</span>
+<span style="color: #D4D2C8">      gnus-summary-mode</span>
+<span style="color: #D4D2C8">      gnus-article-mode</span>
+<span style="color: #D4D2C8">      w3m-mode)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Disable meow-keypad in these modes.&quot;</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  (meow-define-keys </span><span style="color: #DFBFFF">&#39;insert</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; &#39;(&quot;C-g&quot; . ri/kbd-escape)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;C-g&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> meow-insert-exit)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; &#39;(&quot;C-g&quot; . &quot;&lt;escape&gt;&quot;)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;C-M-g&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> ri/meow-exit-all-and-save))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; enter meow insert mode after creating new org heading</span>
+<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;org-insert-heading-hook</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;meow-insert</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  )</span>
+
+<span style="color: #7E8AA1">;; avy</span>
+<span style="color: #D4D2C8">(leaf avy</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
+<span style="color: #D4D2C8">  (general-my-map</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;j&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;avy&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;jj&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;avy-goto-char-timer</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;jc&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;avy-goto-char-2</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;jl&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;avy-goto-line</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> avy-timeout-seconds </span><span style="color: #DFBFFF">0.3</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> avy-keys (</span><span style="color: #FFD173">mapcar</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (c)</span>
+<span style="color: #D4D2C8">                           (</span><span style="color: #FFD173">string-to-char</span><span style="color: #D4D2C8"> c))</span>
+<span style="color: #D4D2C8">                         (split-string </span><span style="color: #D5FF80">&quot;a o e u h t n s k b&quot;</span><span style="color: #D4D2C8">))))</span>
+
+<span style="color: #7E8AA1">;; spellchecking</span>
+<span style="color: #D4D2C8">(leaf jinx </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> org-mode-hook markdown-mode-hook text-mode-hook</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
+<span style="color: #D4D2C8">  ((</span><span style="color: #D5FF80">&quot;M-$&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> jinx-correct)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-M-$&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> jinx-languages)))</span>
+
+<span style="color: #D4D2C8">(leaf fontawesome</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> vertico-fontawesome fontawesome--construct-candidates</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; vertico variant</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> vertico-fontawesome ()</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;vertico</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">insert</span>
+<span style="color: #D4D2C8">     (</span><span style="color: #FFD173">cdr</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">assoc</span>
+<span style="color: #D4D2C8">       (</span><span style="color: #FFD173">completing-read</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Font awesome: &quot;</span><span style="color: #D4D2C8"> (fontawesome--construct-candidates))</span>
+<span style="color: #D4D2C8">       (fontawesome--construct-candidates))))))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-kbd</span><span style="color: #D4D2C8">)</span>
+</code></pre></div>
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>

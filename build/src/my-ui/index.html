@@ -554,6 +554,225 @@
 
 <section id="mkdocs-terminal-content">
     <h3 id="code">Code</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">((hack </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Hack&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (tamzenPL-16</span>
+<span style="color: #D4D2C8">     </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;-Misc-TamzenForPowerline-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (ttyp0-17   </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8">   </span><span style="color: #D5FF80">&quot;-UW  -Ttyp0-regular-normal-normal-*-17-*-*-*-m-*-iso8859-1&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (ttyp0-17-b </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8">        </span><span style="color: #D5FF80">&quot;-UW-Ttyp0-bold-normal-normal-*-17-*-*-*-c-90-iso8859-1&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (ttyp0-16   </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8">   </span><span style="color: #D5FF80">&quot;-UW  -Ttyp0-regular-normal-normal-*-16-*-*-*-m-*-iso8859-1&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (ttyp0-16-i </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8">   </span><span style="color: #D5FF80">&quot;-UW  -Ttyp0-regular-italic-normal-*-16-*-*-*-m-*-iso10646-1&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (gb-16 </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;-AW-Greybeard 16px-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (fira-code </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Fira Code&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (maple-mono </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Maple Mono&quot;</span><span style="color: #D4D2C8">)))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +get-font (font)</span>
+<span style="color: #D4D2C8">  (alist-get font +font-alist))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +fontconfig ()</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Set default font face.&quot;</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((font</span>
+<span style="color: #D4D2C8">         </span><span style="color: #DFBFFF">&#39;fira-code</span>
+<span style="color: #D4D2C8">         </span><span style="color: #7E8AA1">;; &#39;ttyp0-16</span>
+<span style="color: #D4D2C8">         </span><span style="color: #7E8AA1">;; &#39;fira-code</span>
+<span style="color: #D4D2C8">         ))</span>
+<span style="color: #D4D2C8">    (set-face-attribute </span><span style="color: #DFBFFF">&#39;default</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:font</span><span style="color: #D4D2C8"> (+get-font font)))</span>
+<span style="color: #D4D2C8">  )</span>
+
+<span style="color: #D4D2C8">(+fontconfig)</span>
+
+<span style="color: #7E8AA1">;; HACK: fix bitmap fonts on emacsclient frames</span>
+<span style="color: #D4D2C8">(add-hook </span><span style="color: #DFBFFF">&#39;server-after-make-frame-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">+fontconfig)</span>
+
+<span style="color: #7E8AA1">;; all the icons</span>
+<span style="color: #D4D2C8">(leaf all-the-icons</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Use &#39;prepend for the NS and Mac ports or Emacs will crash.</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">set-fontset-font</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;unicode</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">font-spec</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:family</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;all-the-icons&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;append</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">set-fontset-font</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;unicode</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">font-spec</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:family</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;file-icons&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;append</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">set-fontset-font</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;unicode</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">font-spec</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:family</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Material Icons&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;append</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">set-fontset-font</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;unicode</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">font-spec</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:family</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;github-octicons&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;append</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">set-fontset-font</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;unicode</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">font-spec</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:family</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;FontAwesome&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;append</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">set-fontset-font</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;unicode</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">font-spec</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:family</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Weather Icons&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;append</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #7E8AA1">;;; Function: `load-theme&#39; but fixed theme-bleeding issue.</span>
+
+<span style="color: #7E8AA1">;;; obsolete, replaced with consult-theme.</span>
+
+<span style="color: #7E8AA1">;; (defun +load-theme (theme &amp;optional no-confirm no-enable)</span>
+<span style="color: #7E8AA1">;;   &quot;Prevent `load-theme&#39; from having theme-bleeding issues.</span>
+<span style="color: #7E8AA1">;; The args THEME, NO-CONFIRM and NO-ENABLE are passed to `load-theme&#39;.&quot;</span>
+<span style="color: #7E8AA1">;;   (interactive</span>
+<span style="color: #7E8AA1">;;    (list</span>
+<span style="color: #7E8AA1">;;     (intern (completing-read &quot;Load custom theme: &quot;</span>
+<span style="color: #7E8AA1">;;                              (mapcar #&#39;symbol-name</span>
+<span style="color: #7E8AA1">;;                                      (custom-available-themes))))</span>
+<span style="color: #7E8AA1">;;     nil nil))</span>
+<span style="color: #7E8AA1">;;   ;; disable all enabled themes</span>
+<span style="color: #7E8AA1">;;   (mapc #&#39;disable-theme custom-enabled-themes)</span>
+<span style="color: #7E8AA1">;;   ;; enable theme</span>
+<span style="color: #7E8AA1">;;   (if (custom-theme-p theme)</span>
+<span style="color: #7E8AA1">;;       (enable-theme theme)</span>
+<span style="color: #7E8AA1">;;     (load-theme theme :no-confirm))</span>
+<span style="color: #7E8AA1">;;   )</span>
+
+
+<span style="color: #7E8AA1">;;; Function: sets a random theme.</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +set-random-theme ()</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Set a random theme.&quot;</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((available-themes (custom-available-themes))</span>
+<span style="color: #D4D2C8">         (current-theme (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> custom-enabled-themes))</span>
+<span style="color: #D4D2C8">         (themes-except-current (remove current-theme available-themes))</span>
+<span style="color: #D4D2C8">         (chosen-theme (</span><span style="color: #FFD173">nth</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">random</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">length</span><span style="color: #D4D2C8"> themes-except-current))</span>
+<span style="color: #D4D2C8">                            themes-except-current)))</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; disable all enabled themes</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">mapc</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">disable-theme custom-enabled-themes)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; enable randomly chosen theme</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (custom-theme-p chosen-theme)</span>
+<span style="color: #D4D2C8">        (enable-theme chosen-theme)</span>
+<span style="color: #D4D2C8">      (load-theme chosen-theme </span><span style="color: #FFD173">:no-confirm</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; mesg</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Enabled theme: %s&quot;</span><span style="color: #D4D2C8"> chosen-theme)))</span>
+
+<span style="color: #7E8AA1">;; Install themes</span>
+
+<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:preface</span>
+<span style="color: #D4D2C8">  (leaf kaolin-themes</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (leaf ef-themes</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (leaf doom-themes</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFD173">:setq</span>
+<span style="color: #D4D2C8">    (doom-themes-enable-bold   </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">) </span><span style="color: #7E8AA1">; if nil, bold is universally disabled</span>
+<span style="color: #D4D2C8">    (doom-themes-enable-italic </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">) </span><span style="color: #7E8AA1">; if nil, italics is universally disabled</span>
+<span style="color: #D4D2C8">    )</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:leaf-defer</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c T t&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> consult-theme)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c T r&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +set-random-theme))</span>
+
+<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> doom-themes kaolin-themes ef-themes</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (+set-random-theme))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> +transparency-value </span><span style="color: #DFBFFF">100</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +native-transparency-supported? ()</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Whether native-transparency is supported on this version of Emacs.&quot;</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (version&lt;= </span><span style="color: #D5FF80">&quot;29&quot;</span><span style="color: #D4D2C8"> emacs-version)</span>
+<span style="color: #D4D2C8">      </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Native transparency is not supported.&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +toggle-transparency ()</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Toggle transparency with </span><span style="color: #DFBFFF">`+transparency-value&#39;</span><span style="color: #D5FF80">.&quot;</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (+native-transparency-supported?)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((alpha (</span><span style="color: #FFD173">frame-parameter</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;alpha-background</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">      (set-frame-parameter</span>
+<span style="color: #D4D2C8">       </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;alpha-background</span>
+<span style="color: #D4D2C8">       (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">eql</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">cond</span><span style="color: #D4D2C8"> ((</span><span style="color: #FFD173">numberp</span><span style="color: #D4D2C8"> alpha) alpha)</span>
+<span style="color: #D4D2C8">                      ((</span><span style="color: #FFD173">numberp</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">cdr</span><span style="color: #D4D2C8"> alpha)) (</span><span style="color: #FFD173">cdr</span><span style="color: #D4D2C8"> alpha))</span>
+<span style="color: #D4D2C8">                      </span><span style="color: #7E8AA1">;; Also handle undocumented (&lt;active&gt; &lt;inactive&gt;) form.</span>
+<span style="color: #D4D2C8">                      ((</span><span style="color: #FFD173">numberp</span><span style="color: #D4D2C8"> (cadr alpha)) (cadr alpha)))</span>
+<span style="color: #D4D2C8">                </span><span style="color: #DFBFFF">100</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">           +transparency-value</span>
+<span style="color: #D4D2C8">         </span><span style="color: #DFBFFF">100</span><span style="color: #D4D2C8">)))))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +set-transparency (value)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Set the transparency of the frame window to VALUE.&quot;</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;nTransparency Value 0 - 100 opaque: &quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (+native-transparency-supported?)</span>
+<span style="color: #D4D2C8">    (set-frame-parameter (</span><span style="color: #FFD173">selected-frame</span><span style="color: #D4D2C8">) </span><span style="color: #DFBFFF">&#39;alpha-background</span><span style="color: #D4D2C8"> value)))</span>
+
+<span style="color: #7E8AA1">;; list of programming modes to disable line-numbers on</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> +display-line-numbers-exclude </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">())</span>
+
+<span style="color: #7E8AA1">;; enable line-numbers on programming modes</span>
+<span style="color: #D4D2C8">(add-hook </span><span style="color: #DFBFFF">&#39;prog-mode-hook</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">memq</span><span style="color: #D4D2C8"> major-mode +display-line-numbers-exclude)</span>
+<span style="color: #D4D2C8">              (display-line-numbers-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> display-line-numbers-type </span><span style="color: #DFBFFF">&#39;relative</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">(global-visual-line-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">(diminish </span><span style="color: #DFBFFF">&#39;visual-line-mode</span><span style="color: #D4D2C8">) </span><span style="color: #7E8AA1">; hide &quot;Wrap&quot; in mode-line</span>
+
+<span style="color: #D4D2C8">(leaf whitespace </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> ((prog-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +prog-mode-whitespace)</span>
+<span style="color: #D4D2C8">         (org-mode-hook  </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +org-mode-whitespace)</span>
+<span style="color: #D4D2C8">         (text-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +org-mode-whitespace))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> +base-whitespace-style </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(face trailing tabs missing-newline-at-eof))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +prog-mode-whitespace ()</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> whitespace-style (</span><span style="color: #FFD173">append</span><span style="color: #D4D2C8"> +base-whitespace-style</span>
+<span style="color: #D4D2C8">                                   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(tab-mark)))</span>
+<span style="color: #D4D2C8">    (whitespace-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +org-mode-whitespace ()</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> whitespace-style (</span><span style="color: #FFD173">append</span><span style="color: #D4D2C8"> +base-whitespace-style </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">()))</span>
+<span style="color: #D4D2C8">    (whitespace-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> whitespace-trailing </span><span style="color: #DFBFFF">&#39;whitespace-hspace</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #D4D2C8">(leaf solaire-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> real-buffer-p ()</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (solaire-mode-real-buffer-p)</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">equal</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">buffer-name</span><span style="color: #D4D2C8">) </span><span style="color: #D5FF80">&quot;*dashboard*&quot;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> solaire-mode-real-buffer-fn </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">real-buffer-p)</span>
+
+<span style="color: #D4D2C8">  (solaire-global-mode </span><span style="color: #DFBFFF">+1</span><span style="color: #D4D2C8">))</span>
+
+<span style="color: #7E8AA1">;; show column # on modeline</span>
+<span style="color: #D4D2C8">(column-number-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">(leaf doom-modeline</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (doom-modeline-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; :config</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (setq doom-modeline-modal-icon nil)</span>
+<span style="color: #D4D2C8">  )</span>
+
+<span style="color: #7E8AA1">;; Improve scroll</span>
+<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (auto-window-vscroll nil) ; TODO: what does this do?</span>
+<span style="color: #D4D2C8">  (scroll-preserve-screen-position </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">) </span><span style="color: #7E8AA1">; keep point in same position while scrolling</span>
+<span style="color: #D4D2C8">  (scroll-conservatively </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">101</span><span style="color: #D4D2C8">) </span><span style="color: #7E8AA1">; dont move cursor to center while scrolling</span>
+<span style="color: #D4D2C8">  (scroll-margin </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">2</span><span style="color: #D4D2C8">)           </span><span style="color: #7E8AA1">; scroll margin of one line</span>
+<span style="color: #D4D2C8">  (mouse-wheel-scroll-amount</span>
+<span style="color: #D4D2C8">   </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #DFBFFF">2</span><span style="color: #D4D2C8">                                      </span><span style="color: #7E8AA1">; faster vscroll speed</span>
+<span style="color: #D4D2C8">       ((shift) </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> hscroll)                    </span><span style="color: #7E8AA1">; S-&lt;scroll&gt; for hscroll</span>
+<span style="color: #D4D2C8">       ((meta) </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)                         </span><span style="color: #7E8AA1">; M-&lt;scroll&gt; for PgUp/PgDn</span>
+<span style="color: #D4D2C8">       ((control) </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> text-scale)               </span><span style="color: #7E8AA1">; C-&lt;scroll&gt; for zoom</span>
+<span style="color: #D4D2C8">       ((control meta) </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> global-text-scale))) </span><span style="color: #7E8AA1">; C-M-&lt;scroll&gt; for global zoom</span>
+<span style="color: #D4D2C8">  (mouse-wheel-scroll-amount-horizontal </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">2</span><span style="color: #D4D2C8">)) </span><span style="color: #7E8AA1">; faster hscroll speed</span>
+
+<span style="color: #D4D2C8">(leaf dashboard</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> dashboard-center-content </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">&lt;</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">length</span><span style="color: #D4D2C8"> command-line-args) </span><span style="color: #DFBFFF">2</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (add-hook </span><span style="color: #DFBFFF">&#39;window-size-change-functions</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">dashboard-resize-on-hook </span><span style="color: #DFBFFF">100</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (add-hook </span><span style="color: #DFBFFF">&#39;window-setup-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">dashboard-resize-on-hook)</span>
+<span style="color: #D4D2C8">    (add-hook </span><span style="color: #DFBFFF">&#39;elpaca-after-init-hook</span>
+<span style="color: #D4D2C8">              (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">                (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">get-buffer</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;*Warnings*&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> initial-buffer-choice (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> () (</span><span style="color: #FFD173">get-buffer</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;*Warnings*&quot;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">                  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> initial-buffer-choice (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> () (</span><span style="color: #FFD173">get-buffer-create</span><span style="color: #D4D2C8"> dashboard-buffer-name)))</span>
+<span style="color: #D4D2C8">                  (dashboard-insert-startupify-lists)</span>
+<span style="color: #D4D2C8">                  (dashboard-initialize))))))</span>
+
+<span style="color: #D4D2C8">(global-prettify-symbols-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-ui</span><span style="color: #D4D2C8">)</span>
+</code></pre></div>
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>

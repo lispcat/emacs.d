@@ -557,6 +557,302 @@
 maybe have a function to delete a persp from the main autosave file?
 - prompt available perspectives from main autosave file, after selection, delete each from file.</p>
 <h3 id="code">Code</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind-keymap</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c w w&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> persp-key-map)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c .&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> persp-key-map)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c (&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> persp-key-map)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span><span style="color: #D4D2C8"> (persp-key-map</span>
+<span style="color: #D4D2C8">         (</span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> my-persp-load-name-from-latest)</span>
+<span style="color: #D4D2C8">         (</span><span style="color: #D5FF80">&quot;D&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> my-persp-delete-name-from-latest))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
+<span style="color: #D4D2C8">  (wg-morph-on </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (persp-autokill-buffer-on-remove </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kill-weak</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (persp-auto-resume-time . 0.1)</span>
+<span style="color: #D4D2C8">  (persp-auto-resume-time </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">-1</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (persp-auto-save-opt </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">2</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; prevent issue with persp-special-last-buffer</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span>
+<span style="color: #D4D2C8">  (elpaca-after-init-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> () (persp-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; :init</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (setq persp-is-ibc-as-f-supported nil)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (persp-mode)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (message &quot;persp-mode enabled?&quot;)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (with-eval-after-load &#39;persp-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;   (message &quot;persp-mode enabled!!!&quot;))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (add-to-list &#39;find-file-hook (lambda () (message &quot;WOWWWW WHYYYY&quot;)))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span>
+<span style="color: #D4D2C8">  persp-consult-source </span><span style="color: #7E8AA1">;; defined below</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; dont save persp-nil to file</span>
+<span style="color: #D4D2C8">  (set-persp-parameter </span><span style="color: #DFBFFF">&#39;dont-save-to-file</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; consult-buffer integration</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> persp-consult-source</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:name</span><span style="color: #D4D2C8">     </span><span style="color: #D5FF80">&quot;Persp Buffers&quot;</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:narrow</span><span style="color: #D4D2C8">   </span><span style="color: #D5FF80">?</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:category</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;buffer</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:state</span><span style="color: #D4D2C8">    </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">consult--buffer-state</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:history</span><span style="color: #D4D2C8">  </span><span style="color: #DFBFFF">&#39;buffer-name-history</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:default</span><span style="color: #D4D2C8">  </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:items</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((current-persp (get-current-persp)))</span>
+<span style="color: #D4D2C8">              (consult--buffer-query</span>
+<span style="color: #D4D2C8">               </span><span style="color: #FFD173">:sort</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;visibility</span>
+<span style="color: #D4D2C8">               </span><span style="color: #FFD173">:predicate</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (buf)</span>
+<span style="color: #D4D2C8">                            (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> current-persp</span>
+<span style="color: #D4D2C8">                                 (persp-contain-buffer-p buf)))</span>
+<span style="color: #D4D2C8">               </span><span style="color: #FFD173">:as</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;buffer-name</span><span style="color: #D4D2C8">)))))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> persp-rest-consult-source</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:name</span><span style="color: #D4D2C8">     </span><span style="color: #D5FF80">&quot;Other Buffers&quot;</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:narrow</span><span style="color: #D4D2C8">   </span><span style="color: #D5FF80">?s</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:category</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;buffer</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:state</span><span style="color: #D4D2C8">    </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">consult--buffer-state</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:history</span><span style="color: #D4D2C8">  </span><span style="color: #DFBFFF">&#39;buffer-name-history</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:default</span><span style="color: #D4D2C8">  </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:items</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((current-persp (get-current-persp)))</span>
+<span style="color: #D4D2C8">              (consult--buffer-query</span>
+<span style="color: #D4D2C8">               </span><span style="color: #FFD173">:sort</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;visibility</span>
+<span style="color: #D4D2C8">               </span><span style="color: #FFD173">:predicate</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (buf)</span>
+<span style="color: #D4D2C8">                            (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> current-persp</span>
+<span style="color: #D4D2C8">                                (not (persp-contain-buffer-p buf))</span>
+<span style="color: #D4D2C8">                              </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">               </span><span style="color: #FFD173">:as</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;buffer-name</span><span style="color: #D4D2C8">)))))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;consult</span>
+<span style="color: #D4D2C8">    (consult-customize consult--source-buffer </span><span style="color: #FFD173">:hidden</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:default</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;consult-buffer-sources</span><span style="color: #D4D2C8"> persp-rest-consult-source)</span>
+<span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;consult-buffer-sources</span><span style="color: #D4D2C8"> persp-consult-source))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; load from file</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">cl-defun</span><span style="color: #D4D2C8"> my-persp-load-name-from-latest (</span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> (fname persp-auto-save-fname)</span>
+<span style="color: #D4D2C8">                                                      (phash *persp-hash*)</span>
+<span style="color: #D4D2C8">                                                      name savelist)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Load and switch to a perspective via name from the latest backup file.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> savelist</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> savelist (persp-savelist-from-savefile fname)))</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> savelist</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((available-names (persp-list-persp-names-in-file fname savelist))</span>
+<span style="color: #D4D2C8">             (loaded-names (persp-names-current-frame-fast-ordered))</span>
+<span style="color: #D4D2C8">             (unloaded-names (seq-remove (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (p) (</span><span style="color: #FFD173">member</span><span style="color: #D4D2C8"> p loaded-names)) available-names)))</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> unloaded-names</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> name</span>
+<span style="color: #D4D2C8">                (persp-read-persp</span>
+<span style="color: #D4D2C8">                 </span><span style="color: #D5FF80">&quot;to load&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> unloaded-names </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;push</span><span style="color: #D4D2C8">)))))</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> name</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((names-regexp (regexp-opt (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> name))))</span>
+<span style="color: #D4D2C8">        (persp-load-state-from-file fname phash names-regexp </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> savelist))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; switch to new loaded persp</span>
+<span style="color: #D4D2C8">      (persp-frame-switch name)))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; don&#39;t overwrite backup file with current; merge.</span>
+<span style="color: #D4D2C8">  (advice-add </span><span style="color: #DFBFFF">&#39;persp-save-state-to-file</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:around</span>
+<span style="color: #D4D2C8">              (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (orig-fun </span><span style="color: #FFAD66">&amp;rest</span><span style="color: #D4D2C8"> args)</span>
+<span style="color: #D4D2C8">                </span><span style="color: #7E8AA1">;; We need to modify the fourth optional parameter</span>
+<span style="color: #D4D2C8">                </span><span style="color: #7E8AA1">;; Default arguments structure:</span>
+<span style="color: #D4D2C8">                </span><span style="color: #7E8AA1">;; (fname phash respect-persp-file-parameter keep-others-in-non-parametric-file)</span>
+<span style="color: #D4D2C8">                (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((fname (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">nth</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">0</span><span style="color: #D4D2C8"> args) persp-auto-save-fname))</span>
+<span style="color: #D4D2C8">                      (phash (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">nth</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8"> args) *persp-hash*))</span>
+<span style="color: #D4D2C8">                      (respect-param (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">nth</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">2</span><span style="color: #D4D2C8"> args) persp-auto-save-persps-to-their-file))</span>
+<span style="color: #D4D2C8">                      </span><span style="color: #7E8AA1">;; Always set the fourth parameter to &#39;yes regardless of what was passed</span>
+<span style="color: #D4D2C8">                      (keep-others </span><span style="color: #DFBFFF">&#39;yes</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                  </span><span style="color: #7E8AA1">;; Call the original function with modified arguments</span>
+<span style="color: #D4D2C8">                  (</span><span style="color: #FFD173">funcall</span><span style="color: #D4D2C8"> orig-fun fname phash respect-param keep-others))))</span>
+
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; delete persp from file</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my-persp-delete-name-from-latest ()</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((fname persp-auto-save-fname)</span>
+<span style="color: #D4D2C8">           (savelist (persp-savelist-from-savefile fname))</span>
+<span style="color: #D4D2C8">           (available-names (persp-list-persp-names-in-file fname savelist))</span>
+<span style="color: #D4D2C8">           (names (persp-read-persp</span>
+<span style="color: #D4D2C8">                   </span><span style="color: #D5FF80">&quot;to delete&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;reverse</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> available-names </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;push</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">           (filtered-savelist (cl-remove-if</span>
+<span style="color: #D4D2C8">                               (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (expr)</span>
+<span style="color: #D4D2C8">                                 (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">listp</span><span style="color: #D4D2C8"> expr)</span>
+<span style="color: #D4D2C8">                                      (</span><span style="color: #FFD173">eq</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> expr) </span><span style="color: #DFBFFF">&#39;def-persp</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                                      (seq-contains-p names (cadr expr))))</span>
+<span style="color: #D4D2C8">                               savelist)))</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (y-or-n-p (</span><span style="color: #FFD173">format</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Delete %s?&quot;</span><span style="color: #D4D2C8"> names))</span>
+<span style="color: #D4D2C8">          (persp-savelist-to-file filtered-savelist fname))))</span>
+<span style="color: #D4D2C8">  )</span>
+
+<span style="color: #7E8AA1">;; enable persp-mode-project-bridge mode</span>
+
+<span style="color: #7E8AA1">;; (when nil</span>
+<span style="color: #7E8AA1">;;   (with-eval-after-load &quot;persp-mode&quot;</span>
+<span style="color: #7E8AA1">;;     (defvar persp-mode-projectile-bridge-before-switch-selected-window-buffer nil)</span>
+
+<span style="color: #7E8AA1">;;     ;; (setq persp-add-buffer-on-find-file &#39;if-not-autopersp)</span>
+
+<span style="color: #7E8AA1">;;     (persp-def-auto-persp</span>
+<span style="color: #7E8AA1">;;      &quot;projectile&quot;</span>
+<span style="color: #7E8AA1">;;      :parameters &#39;((dont-save-to-file . t)</span>
+<span style="color: #7E8AA1">;;                    (persp-mode-projectile-bridge . t))</span>
+<span style="color: #7E8AA1">;;      :hooks &#39;(projectile-before-switch-project-hook</span>
+<span style="color: #7E8AA1">;;               projectile-after-switch-project-hook</span>
+<span style="color: #7E8AA1">;;               projectile-find-file-hook</span>
+<span style="color: #7E8AA1">;;               find-file-hook)</span>
+<span style="color: #7E8AA1">;;      :dyn-env &#39;((after-switch-to-buffer-adv-suspend t))</span>
+<span style="color: #7E8AA1">;;      :switch &#39;frame</span>
+<span style="color: #7E8AA1">;;      :predicate</span>
+<span style="color: #7E8AA1">;;      #&#39;(lambda (buffer &amp;optional state)</span>
+<span style="color: #7E8AA1">;;          (if (eq &#39;projectile-before-switch-project-hook</span>
+<span style="color: #7E8AA1">;;                  (alist-get &#39;hook state))</span>
+<span style="color: #7E8AA1">;;              state</span>
+<span style="color: #7E8AA1">;;            (and</span>
+<span style="color: #7E8AA1">;;             projectile-mode</span>
+<span style="color: #7E8AA1">;;             (buffer-live-p buffer)</span>
+<span style="color: #7E8AA1">;;             (buffer-file-name buffer)</span>
+<span style="color: #7E8AA1">;;             ;; (not git-commit-mode)</span>
+<span style="color: #7E8AA1">;;             (projectile-project-p)</span>
+<span style="color: #7E8AA1">;;             (or state t))))</span>
+<span style="color: #7E8AA1">;;      :get-name</span>
+<span style="color: #7E8AA1">;;      #&#39;(lambda (state)</span>
+<span style="color: #7E8AA1">;;          (if (eq &#39;projectile-before-switch-project-hook</span>
+<span style="color: #7E8AA1">;;                  (alist-get &#39;hook state))</span>
+<span style="color: #7E8AA1">;;              state</span>
+<span style="color: #7E8AA1">;;            (push (cons &#39;persp-name</span>
+<span style="color: #7E8AA1">;;                        (concat &quot;[p] &quot;</span>
+<span style="color: #7E8AA1">;;                                (with-current-buffer (alist-get &#39;buffer state)</span>
+<span style="color: #7E8AA1">;;                                  (projectile-project-name))))</span>
+<span style="color: #7E8AA1">;;                  state)</span>
+<span style="color: #7E8AA1">;;            state))</span>
+<span style="color: #7E8AA1">;;      :on-match</span>
+<span style="color: #7E8AA1">;;      #&#39;(lambda (state)</span>
+<span style="color: #7E8AA1">;;          (let ((hook (alist-get &#39;hook state))</span>
+<span style="color: #7E8AA1">;;                (persp (alist-get &#39;persp state))</span>
+<span style="color: #7E8AA1">;;                (buffer (alist-get &#39;buffer state)))</span>
+<span style="color: #7E8AA1">;;            (pcase hook</span>
+<span style="color: #7E8AA1">;;              (projectile-before-switch-project-hook</span>
+<span style="color: #7E8AA1">;;               (let ((win (if (minibuffer-window-active-p (selected-window))</span>
+<span style="color: #7E8AA1">;;                              (minibuffer-selected-window)</span>
+<span style="color: #7E8AA1">;;                            (selected-window))))</span>
+<span style="color: #7E8AA1">;;                 (when (window-live-p win)</span>
+<span style="color: #7E8AA1">;;                   (setq persp-mode-projectile-bridge-before-switch-selected-window-buffer</span>
+<span style="color: #7E8AA1">;;                         (window-buffer win)))))</span>
+
+<span style="color: #7E8AA1">;;              (projectile-after-switch-project-hook</span>
+<span style="color: #7E8AA1">;;               (when (buffer-live-p</span>
+<span style="color: #7E8AA1">;;                      persp-mode-projectile-bridge-before-switch-selected-window-buffer)</span>
+<span style="color: #7E8AA1">;;                 (let ((win (selected-window)))</span>
+<span style="color: #7E8AA1">;;                   (unless (eq (window-buffer win)</span>
+<span style="color: #7E8AA1">;;                               persp-mode-projectile-bridge-before-switch-selected-window-buffer)</span>
+<span style="color: #7E8AA1">;;                     (set-window-buffer</span>
+<span style="color: #7E8AA1">;;                      win persp-mode-projectile-bridge-before-switch-selected-window-buffer)))))</span>
+
+<span style="color: #7E8AA1">;;              (find-file-hook</span>
+<span style="color: #7E8AA1">;;               (setcdr (assq :switch state) nil)))</span>
+<span style="color: #7E8AA1">;;            (if (pcase hook</span>
+<span style="color: #7E8AA1">;;                  (projectile-before-switch-project-hook nil)</span>
+<span style="color: #7E8AA1">;;                  (t t))</span>
+<span style="color: #7E8AA1">;;                (persp--auto-persp-default-on-match state)</span>
+<span style="color: #7E8AA1">;;              (setcdr (assq :after-match state) nil)))</span>
+<span style="color: #7E8AA1">;;          state)</span>
+<span style="color: #7E8AA1">;;      :after-match</span>
+<span style="color: #7E8AA1">;;      #&#39;(lambda (state)</span>
+<span style="color: #7E8AA1">;;          (when (eq &#39;find-file-hook (alist-get &#39;hook state))</span>
+<span style="color: #7E8AA1">;;            (run-at-time 0.5 nil</span>
+<span style="color: #7E8AA1">;;                         #&#39;(lambda (buf persp)</span>
+<span style="color: #7E8AA1">;;                             (when (and (eq persp (get-current-persp))</span>
+<span style="color: #7E8AA1">;;                                        (not (eq buf (window-buffer (selected-window)))))</span>
+<span style="color: #7E8AA1">;;                               ;; (switch-to-buffer buf)</span>
+<span style="color: #7E8AA1">;;                               (persp-add-buffer buf persp t nil)))</span>
+<span style="color: #7E8AA1">;;                         (alist-get &#39;buffer state)</span>
+<span style="color: #7E8AA1">;;                         (get-current-persp)))</span>
+<span style="color: #7E8AA1">;;          (persp--auto-persp-default-after-match state)))</span>
+
+<span style="color: #7E8AA1">;;     ;; (add-hook &#39;persp-after-load-state-functions</span>
+<span style="color: #7E8AA1">;;     ;;           #&#39;(lambda (&amp;rest args) (persp-auto-persps-pickup-buffers)) t)</span>
+<span style="color: #7E8AA1">;;     ))</span>
+
+<span style="color: #7E8AA1">;; Shows groups for all perspectives. But can&#39;t show same buffer in multiple groups.</span>
+
+<span style="color: #7E8AA1">;; (with-eval-after-load &quot;ibuffer&quot;</span>
+
+<span style="color: #7E8AA1">;;   (require &#39;ibuf-ext)</span>
+
+<span style="color: #7E8AA1">;;   (define-ibuffer-filter persp</span>
+<span style="color: #7E8AA1">;;       &quot;Toggle current view to buffers of current perspective.&quot;</span>
+<span style="color: #7E8AA1">;;     (:description &quot;persp-mode&quot;</span>
+<span style="color: #7E8AA1">;;                   :reader (persp-prompt nil nil (safe-persp-name (get-frame-persp)) t))</span>
+<span style="color: #7E8AA1">;;     (find buf (safe-persp-buffers (persp-get-by-name qualifier))))</span>
+
+<span style="color: #7E8AA1">;;   (defun persp-add-ibuffer-group ()</span>
+<span style="color: #7E8AA1">;;     (let ((perspslist (mapcar #&#39;(lambda (pn)</span>
+<span style="color: #7E8AA1">;;                                   (list pn (cons &#39;persp pn)))</span>
+<span style="color: #7E8AA1">;;                               (nconc</span>
+<span style="color: #7E8AA1">;;                                (cl-delete persp-nil-name</span>
+<span style="color: #7E8AA1">;;                                           (persp-names-current-frame-fast-ordered)</span>
+<span style="color: #7E8AA1">;;                                           :test &#39;string=)</span>
+<span style="color: #7E8AA1">;;                                (list persp-nil-name)))))</span>
+<span style="color: #7E8AA1">;;       (setq ibuffer-saved-filter-groups</span>
+<span style="color: #7E8AA1">;;             (cl-delete &quot;persp-mode&quot; ibuffer-saved-filter-groups</span>
+<span style="color: #7E8AA1">;;                        :test &#39;string= :key &#39;car))</span>
+<span style="color: #7E8AA1">;;       (push</span>
+<span style="color: #7E8AA1">;;        (cons &quot;persp-mode&quot; perspslist)</span>
+<span style="color: #7E8AA1">;;        ibuffer-saved-filter-groups)))</span>
+
+<span style="color: #7E8AA1">;;   (defun persp-ibuffer-visit-buffer ()</span>
+<span style="color: #7E8AA1">;;     (interactive)</span>
+<span style="color: #7E8AA1">;;     (let ((buf (ibuffer-current-buffer t))</span>
+<span style="color: #7E8AA1">;;           (persp-name (get-text-property</span>
+<span style="color: #7E8AA1">;;                        (line-beginning-position) &#39;ibuffer-filter-group)))</span>
+<span style="color: #7E8AA1">;;       (persp-switch persp-name)</span>
+<span style="color: #7E8AA1">;;       (switch-to-buffer buf)))</span>
+
+<span style="color: #7E8AA1">;;   (define-key ibuffer-mode-map (kbd &quot;RET&quot;) &#39;persp-ibuffer-visit-buffer)</span>
+
+<span style="color: #7E8AA1">;;   (add-hook &#39;ibuffer-mode-hook</span>
+<span style="color: #7E8AA1">;;             #&#39;(lambda ()</span>
+<span style="color: #7E8AA1">;;                 (persp-add-ibuffer-group)</span>
+<span style="color: #7E8AA1">;;                 (ibuffer-switch-to-saved-filter-groups &quot;persp-mode&quot;))))</span>
+
+<span style="color: #7E8AA1">;; (leaf perspective</span>
+<span style="color: #7E8AA1">;;   :init</span>
+<span style="color: #7E8AA1">;;   (persp-mode)</span>
+<span style="color: #7E8AA1">;;   ;; :custom</span>
+<span style="color: #7E8AA1">;;   ;; `(persp-mode-prefix-key . ,(kbd &quot;C-c .&quot;))</span>
+<span style="color: #7E8AA1">;;   :bind</span>
+<span style="color: #7E8AA1">;;   (&quot;C-x C-b&quot; . persp-list-buffers) ; or use a nicer switcher, see below</span>
+<span style="color: #7E8AA1">;;   (&quot;C-c .&quot; . perspective-map)</span>
+<span style="color: #7E8AA1">;;   (perspective-map</span>
+<span style="color: #7E8AA1">;;    (&quot;S&quot; . persp-state-save)</span>
+<span style="color: #7E8AA1">;;    (&quot;M-s&quot; . persp-state-save)</span>
+<span style="color: #7E8AA1">;;    (&quot;C-s&quot; . nil))</span>
+<span style="color: #7E8AA1">;;   :hook</span>
+<span style="color: #7E8AA1">;;   (kill-emacs-hook . persp-state-save)</span>
+<span style="color: #7E8AA1">;;   :config</span>
+<span style="color: #7E8AA1">;;   ;; default backup file</span>
+<span style="color: #7E8AA1">;;   (setq persp-state-default-file</span>
+<span style="color: #7E8AA1">;;         (file-name-concat persp-save-dir &quot;persp-auto-save&quot;))</span>
+<span style="color: #7E8AA1">;;   ;; prev/next buffers</span>
+<span style="color: #7E8AA1">;;   (setq switch-to-prev-buffer-skip</span>
+<span style="color: #7E8AA1">;;         (lambda (win buff bury-or-kill)</span>
+<span style="color: #7E8AA1">;;           (not (persp-is-current-buffer buff))))</span>
+<span style="color: #7E8AA1">;;   ;; consult-buffer</span>
+<span style="color: #7E8AA1">;;   (with-eval-after-load &#39;consult</span>
+<span style="color: #7E8AA1">;;     (setq +persp-consult-source</span>
+<span style="color: #7E8AA1">;;           &#39;(:name &quot;Perspective&quot;</span>
+<span style="color: #7E8AA1">;;                   :narrow 115           ; ?s</span>
+<span style="color: #7E8AA1">;;                   :category buffer</span>
+<span style="color: #7E8AA1">;;                   :state consult--buffer-state</span>
+<span style="color: #7E8AA1">;;                   :history buffer-name-history</span>
+<span style="color: #7E8AA1">;;                   :default t</span>
+<span style="color: #7E8AA1">;;                   :items #[0 &quot;\300\301\302\303\304\305\306&amp;\207&quot;</span>
+<span style="color: #7E8AA1">;;                              [consult--buffer-query</span>
+<span style="color: #7E8AA1">;;                               :sort visibility</span>
+<span style="color: #7E8AA1">;;                               :predicate (lambda (buf)</span>
+<span style="color: #7E8AA1">;;                                            (persp-is-current-buffer buf t))</span>
+<span style="color: #7E8AA1">;;                               :as buffer-name]</span>
+<span style="color: #7E8AA1">;;                              7]))</span>
+<span style="color: #7E8AA1">;;     (consult-customize consult--source-buffer :hidden t :default nil)</span>
+<span style="color: #7E8AA1">;;     (add-to-list &#39;consult-buffer-sources +persp-consult-source)))</span>
+
+<span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;my-workspaces</span><span style="color: #D4D2C8">)</span>
+</code></pre></div>
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>

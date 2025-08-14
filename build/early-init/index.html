@@ -563,9 +563,9 @@ throughout the rest of the config.</p>
 <h3 id="code">Code</h3>
 <h4 id="vars">vars</h4>
 <h5 id="pivotal-vars-to-set-first">Pivotal vars to set first:</h5>
-<p>;; Here we set pivotal variables, such as setting the garbage collection
-;; frequency, disabling autoload for the default package manager (to opt in for
-;; a different one), and etc.</p>
+<p>Here we set pivotal variables, such as setting the garbage collection
+frequency, disabling autoload for the default package manager (to opt in for
+a different one), and etc.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; set startup gc</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> gc-cons-threshold (</span><span style="color: #FFD173">*</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">50</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1000</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1000</span><span style="color: #D4D2C8">))</span>
 
@@ -573,14 +573,16 @@ throughout the rest of the config.</p>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> package-enable-at-startup </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
 <h5 id="directory-vars-defvar">Directory Vars : defvar:</h5>
-<p>;; Here we define various path variables.</p>
-<p>;; - root-dir: root of the Emacs config directory (usually "~/.emacs.d/").
-;; - src-dir: modularized config files; contains most of my config.
-;; - local-dir: the root of the Emacs config directory, as Emacs and its
-;;   installed packages understands it to be (more on this later).
-;; - submodules-dir: contains git submodules.
-;; - config-file: the main config file, mostly used for accessibility purposes
-;;   (e.g. a command to open the main config file).</p>
+<p>Here we define various path variables.</p>
+<ul>
+<li>root-dir: root of the Emacs config directory (usually "~/.emacs.d/").</li>
+<li>src-dir: modularized config files; contains most of my config.</li>
+<li>local-dir: the root of the Emacs config directory, as Emacs and its
+  installed packages understands it to be (more on this later).</li>
+<li>submodules-dir: contains git submodules.</li>
+<li>config-file: the main config file, mostly used for accessibility purposes
+  (e.g. a command to open the main config file).</li>
+</ul>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> +emacs-root-dir</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">file-name-as-directory</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">;; add trailing slash</span>
 <span style="color: #D4D2C8">   (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> user-emacs-directory)))</span>
@@ -602,14 +604,14 @@ throughout the rest of the config.</p>
 <span style="color: #D4D2C8">   (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;init.el&quot;</span><span style="color: #D4D2C8"> +emacs-root-dir)))</span>
 </code></pre></div>
 <h5 id="directory-vars-setq">Directory Vars : setq:</h5>
-<p>;; More on the local-dir:
-;; - By default, Emacs throws temp and state files into
-;;   the `user-emacs-directory', or the root of the configuration directory.
-;;   This can get pretty messy, so we set the user-emacs-directory to a
-;;   subdirectory, the local-dir from earlier.</p>
-<p>;; The custom-file:
-;; - Any customizations saved using Emacs' "customize" interface will be added
-;;   to the `custom-file'. This file is later loaded in init.el.</p>
+<p>More on the local-dir:
+- By default, Emacs throws temp and state files into
+  the <code>user-emacs-directory</code>, or the root of the configuration directory.
+  This can get pretty messy, so we set the user-emacs-directory to a
+  subdirectory, the local-dir from earlier.</p>
+<p>The custom-file:
+- Any customizations saved using Emacs' "customize" interface will be added
+  to the <code>custom-file</code>. This file is later loaded in init.el.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; set main dir to local dir</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> user-emacs-directory +emacs-local-dir)</span>
 
@@ -617,8 +619,8 @@ throughout the rest of the config.</p>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> custom-file (</span><span style="color: #FFD173">expand-file-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;custom-vars.el&quot;</span><span style="color: #D4D2C8"> +emacs-local-dir))</span>
 </code></pre></div>
 <h5 id="eln-cache-dir-set-to-localvareln-cache">eln-cache dir - set to ./local/var/eln-cache</h5>
-<p>;; The eln-cache dir contains compiled .el files (.eln).
-;; To keep the emacs-root-dir tidy, we override this path.</p>
+<p>The eln-cache dir contains compiled .el files (.eln).
+To keep the emacs-root-dir tidy, we override this path.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; only works on Emacs 29</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">fboundp</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;startup-redirect-eln-cache</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">           (</span><span style="color: #FFD173">fboundp</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;native-comp-available-p</span><span style="color: #D4D2C8">)</span>
@@ -629,10 +631,10 @@ throughout the rest of the config.</p>
 </code></pre></div>
 <h4 id="ui">UI</h4>
 <h5 id="gui">GUI</h5>
-<p>;; The Emacs GUI has a lot of bloat by default, so they're disabled here (e.g.
-;; tool-bar, menu-bar, scroll-bar).</p>
-<p>;; These UI elements are typically loaded right after early-init.el loads, so
-;; we disable them now.</p>
+<p>The Emacs GUI has a lot of bloat by default, so they're disabled here (e.g.
+tool-bar, menu-bar, scroll-bar).</p>
+<p>These UI elements are typically loaded right after early-init.el loads, so
+we disable them now.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; disable tool-bar-setup</span>
 <span style="color: #D4D2C8">(advice-add </span><span style="color: #DFBFFF">&#39;tool-bar-setup</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:override</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">ignore)</span>
 
@@ -654,8 +656,8 @@ throughout the rest of the config.</p>
 <span style="color: #D4D2C8">        ))</span>
 </code></pre></div>
 <h5 id="transparency">transparency</h5>
-<p>;; We enable transparency by default by adding an entry to default-frame-alist,
-;; unless an entry for it already exists.</p>
+<p>We enable transparency by default by adding an entry to default-frame-alist,
+unless an entry for it already exists.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((value </span><span style="color: #DFBFFF">95</span><span style="color: #D4D2C8">))</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">assoc</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;alpha-background</span><span style="color: #D4D2C8"> default-frame-alist)</span>
 <span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;default-frame-alist</span>
@@ -667,23 +669,26 @@ throughout the rest of the config.</p>
 <span style="color: #7E8AA1">;; (push &#39;(visibility . nil) initial-frame-alist)</span>
 </code></pre></div>
 <h5 id="default-background-color">default background color</h5>
-<p>;; In some display environments, during startup, Emacs will show its window.
-;; During this period, a theme will yet to be set. So it will show the default
-;; theme (white, flashbang), so this entry to default-frame-alist will set this
-;; default background color to black.
-;; use color black for startup frame</p>
+<p>In some display environments, during startup, Emacs will show its window.
+During this period, a theme will yet to be set. So it will show the default
+theme (white, flashbang), so this entry to default-frame-alist will set this
+default background color to black.
+use color black for startup frame</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; TODO: broken</span>
 <span style="color: #7E8AA1">;; (add-to-list &#39;default-frame-alist</span>
 <span style="color: #7E8AA1">;;              &#39;(background-color . &quot;#999999&quot;))</span>
 </code></pre></div>
 <h4 id="misc">misc</h4>
 <h5 id="lsp">lsp</h5>
-<p>;; Some tweaks for lsp-mode to increase performance.
-;; <a href="https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization">https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization</a></p>
+<p>Some tweaks for lsp-mode to increase performance.
+<a href="https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization">https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization</a></p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(setenv </span><span style="color: #D5FF80">&quot;LSP_USE_PLISTS&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;true&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> lsp-use-plists </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
 <h5 id="end">end</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;early-init</span><span style="color: #D4D2C8">)</span>
+<span style="color: #7E8AA1">;;; early-init.el ends here</span>
+</code></pre></div>
 <hr />
 <p><em>Last updated: { git_revision_date_localized }</em></p>
 </section>
