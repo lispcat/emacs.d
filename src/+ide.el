@@ -6,17 +6,17 @@
 (setq-default indent-tabs-mode nil)
 (setq tab-always-indent t)
 
-(leaf compile :ensure nil
+(leaf compile :elpaca nil
   :config
   (setq compilation-scroll-output t))
 
 (leaf flycheck
   :hook prog-mode-hook)
 
-(leaf emacs :ensure nil
+(leaf emacs :elpaca nil
   :hook goto-address-mode)
 
-(leaf project :ensure nil
+(leaf project :elpaca nil
   :bind-keymap ("C-c P" . project-prefix-map)
   :init
   (defun project-compile-interactive ()
@@ -81,7 +81,7 @@
 ;; Steps:
 ;; - install emacs-lsp-booster
 ;; - use plist for deserialization (FOLLOW GUIDE)
-(leaf emacs :ensure nil
+(leaf emacs :elpaca nil
   :config
   (setq read-process-output-max (* 1024 1024)) ;; 1mb
   (defun lsp-booster--advice-json-parse (old-fn &rest args)
@@ -115,7 +115,7 @@
   (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
 
 ;; for non-programming too
-(leaf elec-pair :ensure nil
+(leaf elec-pair :elpaca nil
   :require t
   :config
   ;; disable "<" pair expansion
@@ -145,7 +145,7 @@
 (leaf paredit
   :hook `,@+lisp-mode-hooks)
 
-(leaf emacs :ensure nil
+(leaf emacs :elpaca nil
   :hook ((emacs-lisp-mode-hook . (lambda ()
                                    (auto-fill-mode)
                                    (setq-local fill-column 80))))
@@ -219,7 +219,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 (with-eval-after-load 'flycheck
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
-(leaf scheme-mode :ensure nil
+(leaf scheme-mode :elpaca nil
   :disabled t
   :mode "\\.sld\\'" "\\.scm\\'")
 
@@ -302,7 +302,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
                                        )))))
 
 
-;; (leaf rustic :ensure nil
+;; (leaf rustic :elpaca nil
 ;;   ;; :disabled t
 ;;   :if use-eglot?
 ;;   :init
@@ -336,7 +336,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;    :repo "cordx56/rustowl"
 ;;    :files (:defaults "emacs/*")))
 
-(leaf cc-mode :ensure nil
+(leaf cc-mode :elpaca nil
   :hook ((c-mode-hook . lsp)
          (c-mode-hook . (lambda ()
                           (setq-local lsp-idle-delay 0.1
@@ -347,7 +347,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (add-to-list 'c-default-style '(c-mode . "cc-mode"))
   (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
 
-;; (leaf cc-mode :ensure nil
+;; (leaf cc-mode :elpaca nil
 ;;   :if use-eglot?
 ;;   :hook ((c-mode-hook . eglot-ensure)
 ;;          (c-mode-hook . (lambda ()
@@ -417,7 +417,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 (leaf ron-mode
   :require t)
 
-(leaf emacs :ensure nil ;; kerolox!
+(leaf emacs :elpaca nil ;; kerolox!
 
   ;; Major-mode for .rp1 files
   (define-derived-mode kerolox-mode prog-mode "kerolox"

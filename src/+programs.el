@@ -12,7 +12,7 @@
   (eat-semi-char-mode-map
    ("M-o" . ace-window)))
 
-(leaf eshell :ensure nil
+(leaf eshell :elpaca nil
   :bind
   ("C-c a e" . eshell))
 

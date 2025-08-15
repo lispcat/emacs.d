@@ -16,7 +16,7 @@
   )
 
 ;; A few more useful configurations...
-(leaf emacs :ensure nil
+(leaf emacs :elpaca nil
   :init
   ;; Support opening new minibuffers from inside existing minibuffers.
   (setq enable-recursive-minibuffers t)
@@ -275,7 +275,7 @@
 
 ;; https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for-yasnippets-when-using-eglot
 
-(leaf yasnippet :ensure yasnippet-snippets
+(leaf yasnippet :elpaca yasnippet-snippets
   :commands yas-reload-all
   :hook (prog-mode-hook . yas-minor-mode)
   :bind
@@ -290,7 +290,7 @@
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand t)
 
-(leaf isearch :ensure nil
+(leaf isearch :elpaca nil
   :bind
   ("C-M-s" . isearch-forward)
   ("C-M-r" . isearch-backward))
@@ -399,7 +399,7 @@
 ;; The package is young and doesn't have comprehensive coverage.
 ;; (use-package tempel-collection)
 
-;; (leaf abbrev :ensure nil
+;; (leaf abbrev :elpaca nil
 ;;   :bind (("C-c c a" . add-global-abbrev)
 ;;          ("C-c c -" . inverse-add-global-abbrev)
 ;;          ("C-c c e" . edit-abbrevs)))

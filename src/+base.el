@@ -75,16 +75,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; remember recent files
-(leaf recentf :ensure nil
+(leaf recentf :elpaca nil
   :hook emacs-startup-hook)
 
 ;; go to previous location in file when reopening
-(leaf saveplace :ensure nil
+(leaf saveplace :elpaca nil
   :init
   (save-place-mode 1))
 
 ;; persist minibuffer history over restarts
-(leaf savehist :ensure nil
+(leaf savehist :elpaca nil
   :init
   (savehist-mode 1))
 
@@ -196,7 +196,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;;                                    dired                                   ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(leaf dired :ensure nil
+(leaf dired :elpaca nil
   :setq
   (dired-listing-switches . "-Ahl --group-directories-first -X")
   (dired-auto-revert-buffer . t)        ; auto update file changes

@@ -1,4 +1,4 @@
-(leaf quail :ensure nil
+(leaf quail :elpaca nil
   :config
   (eval-after-load "quail/latin-ltx"
     `(progn

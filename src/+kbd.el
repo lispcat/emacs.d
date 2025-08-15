@@ -217,7 +217,7 @@
                          (split-string "a o e u h t n s k b"))))
 
 ;; spellchecking
-(leaf jinx :ensure nil
+(leaf jinx :elpaca nil
   :hook org-mode-hook markdown-mode-hook text-mode-hook
   :bind
   (("M-$" . jinx-correct)

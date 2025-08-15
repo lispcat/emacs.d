@@ -29,7 +29,7 @@
 
 (require 'leaf)
 
-(leaf org :ensure nil
+(leaf org :elpaca nil
   :setq
   (org-directory . "~/Notes/org")
   (org-tags-column . -55)               ; column where tags are indented to
@@ -159,7 +159,7 @@ If in a list, inserts a new sublist after the current list."
 (leaf org-auto-tangle
   :hook org-mode-hook)
 
-(leaf org-agenda :ensure nil
+(leaf org-agenda :elpaca nil
   :after org
   :init
   (leader-bind
@@ -269,7 +269,7 @@ The property will be removed if ran with a \\[universal-argument]."
          (message "meow: %s" num)
          (org-entry-put (point) "NOTER_PAGE" num))))))
 
-(leaf org-capture :ensure nil
+(leaf org-capture :elpaca nil
   :after org
   :init
   (leader-bind

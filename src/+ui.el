@@ -149,7 +149,7 @@
 (global-visual-line-mode 1)
 (diminish 'visual-line-mode) ; hide "Wrap" in mode-line
 
-(leaf whitespace :ensure nil
+(leaf whitespace :elpaca nil
   :hook ((prog-mode-hook . +prog-mode-whitespace)
          (org-mode-hook  . +org-mode-whitespace)
          (text-mode-hook . +org-mode-whitespace))
@@ -185,7 +185,7 @@
   )
 
 ;; Improve scroll
-(leaf emacs :ensure nil
+(leaf emacs :elpaca nil
   :setq
   ;; (auto-window-vscroll nil) ; TODO: what does this do?
   (scroll-preserve-screen-position . t) ; keep point in same position while scrolling
