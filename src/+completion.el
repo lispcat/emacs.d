@@ -106,7 +106,7 @@
           ("M-r" . consult-history)) ;; previous-matching-history-element
          )
   :init
-  (general-my-map
+  (leader-key
     "s" search-map
     "Tt" 'consult-theme
     "bb" 'consult-buffer
@@ -116,7 +116,7 @@
 ;; used to go to a file in a bookmarked dir n stuff (one ex)
 (leaf consult-dir
   :init
-  (general-my-map
+  (leader-key
     "fd" 'consult-dir)
   :bind (("C-x C-d" . consult-dir)      ; default?
          (vertico-map

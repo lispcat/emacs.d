@@ -49,7 +49,7 @@
   ;; (org-ellipsis . " ▾")
 
   :init
-  (general-my-map
+  (leader-key
     "o" '(:ignore t :which-key "org"))
 
   ;; :hook (org-mode-hook . indent-tabs-mode)
@@ -162,7 +162,7 @@ If in a list, inserts a new sublist after the current list."
 (leaf org-agenda :ensure nil
   :after org
   :init
-  (general-my-map
+  (leader-key
     "oa" 'org-agenda)
 
   :bind (org-agenda-mode-map
@@ -272,7 +272,7 @@ The property will be removed if ran with a \\[universal-argument]."
 (leaf org-capture :ensure nil
   :after org
   :init
-  (general-my-map
+  (leader-key
     "oc" 'org-capture)
 
   :config

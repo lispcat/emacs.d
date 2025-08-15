@@ -185,7 +185,7 @@
 (use-package general :ensure (:wait t)
   :demand t
   :config
-  (general-create-definer general-my-map
+  (general-create-definer leader-key
     :prefix "C-c"))
 
 (use-package diminish :ensure (:wait t)

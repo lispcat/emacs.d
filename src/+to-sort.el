@@ -415,7 +415,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
 
   :init
-  (general-my-map
+  (leader-key
     "e" '(:ignore t :which-key "emms")
     "e e" 'emms
     "e k" 'emms-playlist-current-kill
@@ -463,7 +463,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
 (leaf denote
   :init
-  (general-my-map
+  (leader-key
     "n" '(:ignore t :which-key "denote")
     "nn" 'denote
     "ns" 'denote-subdirectory
@@ -582,7 +582,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
 (leaf denote-journal
   :config
-  (general-my-map
+  (leader-key
     ;; journal
 
     "nj" '(:ignore t :which-key "journal")
@@ -606,7 +606,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
   :after org
   :bind ("M-s n" . consult-notes)
   :init
-  (general-my-map
+  (leader-key
     "nf" 'consult-notes
     "ng" 'consult-notes-search-in-all-notes)
   :config
@@ -643,7 +643,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 (leaf denote-explore
   :after denote
   :init
-  (general-my-map
+  (leader-key
     "ne" '(:ignore t :which-key "explore")
 
     ;; random walks
@@ -682,7 +682,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 (leaf denote-menu
   :after denote
   :init
-  (general-my-map
+  (leader-key
     "nm" 'list-denotes)
   :bind (denote-menu-mode-map
          ("c" . denote-menu-clear-filters)
@@ -697,7 +697,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
   (setq denote-menu-title-column-width 50))
 
 ;;; set common keys
-;; (general-my-map
+;; (leader-key
 ;;   "nN" '(:ignore t :which-key "Favorites")
 ;;   "nNn" 'denote
 ;;   "")
