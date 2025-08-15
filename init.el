@@ -185,7 +185,7 @@
 (use-package general :ensure (:wait t)
   :demand t
   :config
-  (general-create-definer leader-key
+  (general-create-definer leader-bind
     :prefix "C-c"))
 
 (use-package diminish :ensure (:wait t)

@@ -28,29 +28,47 @@
 ;;                                   buffers                                  ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; revert buffer when its file is changed on the filesystem
+;;; -- autorevert -------------------------------------------------------------
+
+;; If a file is open as a buffer and its contents are changed on the disk, to
+;; update that buffer, you need to run `revert-buffer'.
+;;
+;; `autorevert-mode' automatically runs `revert-buffer' when it receives a
+;; filesystem notification (if `auto-revert-use-notify' is non-nil), or at every
+;; `auto-revert-interval'.
+
+;; --
 
 (leaf autorevert :elpaca nil
   :require t
   :diminish autorevert-mode
-  :init
-  (global-auto-revert-mode 1)
-  :setq
+  :init (global-auto-revert-mode 1)
+  :custom
+  ;; less verbose (don't print "Reverting buffer" in *Messages*)
+  (auto-revert-verbose . nil)
+  ;; work on non-file buffers (i.e. dired)
   (global-auto-revert-non-file-buffers . t)
-  (auto-revert-use-notify . nil)
-  (auto-revert-interval . 5))
+  ;; manual check interval
+  (auto-revert-interval . 10)
+  ;; respond to Filesystem Notifications by the OS (instant updates)
+  (auto-revert-use-notify . t))
 
-(leader-key
-  "k" 'kill-current-buffer
-  "b" '(:ignore t :which-key "buffer")
-  "bk" 'kill-current-buffer
-  "bn" 'next-buffer
-  "bp" 'previous-buffer
-  "bo" '(+last-selected-buffer :which-key "last-buffer")
-  "bb" 'switch-to-buffer
-  "bs" 'save-buffer)
+;; --
+
+;;; -- SPC-b binds ------------------------------------------------------------
 
 (defalias '+last-selected-buffer 'mode-line-other-buffer)
+
+(leader-bind
+  "k" '(kill-current-buffer     :wk "kill-current")
+
+  "b" '(:ignore t               :wk "Buffer")
+  "bk" '(kill-current-buffer    :wk "kill-current")
+  "bn" '(next-buffer            :wk "next")
+  "bp" '(previous-buffer        :wk "prev")
+  "bo" '(+last-selected-buffer  :wk "last-buffer")
+  "bb" '(switch-to-buffer       :wk "switch-buffer")
+  "bs" '(save-buffer            :wk "save-buffer"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                   history                                  ;
@@ -83,8 +101,8 @@
   :bind
   ("M-o" . ace-window)
   :init
-  (leader-key
-    "w" '(:ignore t :which-key "window")
+  (leader-bind
+    "w" '(:ignore t :wk "window")
     "wd" 'delete-window
     "w+" 'balance-windows
     "wa" 'balance-windows-area
@@ -92,10 +110,10 @@
     "wv" 'split-window-horizontally
     "ws" 'split-window-vertically
     ;; select window directionally
-    "wp" '(windmove-up    :which-key "select up")
-    "wn" '(windmove-down  :which-key "select down")
-    "wf" '(windmove-right :which-key "select right")
-    "wb" '(windmove-left  :which-key "select left")
+    "wp" '(windmove-up    :wk "select up")
+    "wn" '(windmove-down  :wk "select down")
+    "wf" '(windmove-right :wk "select right")
+    "wb" '(windmove-left  :wk "select left")
     ;; misc
     "wm" 'switch-to-minibuffer))
 
@@ -187,11 +205,11 @@ _SPC_ cancel	_o_nly this   	_d_elete
          ("s" . dired-find-file)
          ("r" . dired-sort-toggle-or-edit))
   :init
-  (leader-key
-    "d" '(:ignore t :which-key "dired")
+  (leader-bind
+    "d" '(:ignore t :wk "dired")
     "dd" 'find-file
     "dj" 'dired-jump
-    "f" '(:ignore t :which-key "files")
+    "f" '(:ignore t :wk "files")
     "ff" 'find-file
     "fp" '+open-emacs-config-file
     "fa" '+open-agenda-file)
@@ -243,8 +261,8 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (profiler-stop)
   (profiler-report))
 
-(leader-key
-  "D" '(:ignore t :which-key "debug")
+(leader-bind
+  "D" '(:ignore t :wk "debug")
   "Ds" 'profiler-start
   "Dr" '+profiler-report)
 

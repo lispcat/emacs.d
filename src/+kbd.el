@@ -205,8 +205,8 @@
 ;; avy
 (leaf avy
   :init
-  (leader-key
-    "j" '(:ignore t :which-key "avy")
+  (leader-bind
+    "j" '(:ignore t :wk "avy")
     "jj" 'avy-goto-char-timer
     "jc" 'avy-goto-char-2
     "jl" 'avy-goto-line)

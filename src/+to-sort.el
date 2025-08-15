@@ -415,8 +415,8 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
 
   :init
-  (leader-key
-    "e" '(:ignore t :which-key "emms")
+  (leader-bind
+    "e" '(:ignore t :wk "emms")
     "e e" 'emms
     "e k" 'emms-playlist-current-kill
 
@@ -426,26 +426,26 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
     ;; browse
     "e B" 'emms-smart-browse
-    "e b" '(:ignore t :which-key "browse")
+    "e b" '(:ignore t :wk "browse")
     "e b b" 'emms-browser
     "e b a" 'emms-browse-by-album
     "e b A" 'emms-browse-by-artist
 
     ;; control
-    "e c" '(:ignore t :which-key "control")
+    "e c" '(:ignore t :wk "control")
     "e c P" 'emms-pause
     "e c n" 'emms-next
     "e c p" 'emms-previous
     "e c s" 'emms-seek-to
 
     ;; info
-    "e i" '(:ignore t :which-key "info")
+    "e i" '(:ignore t :wk "info")
     "e i i" 'emms-show
     "e i a" 'emms-show-all
     "e i m" 'emms-player-mpd-show
 
     ;; sort
-    "e S" '(:ignore t :which-key "sort")
+    "e S" '(:ignore t :wk "sort")
     "e S n" 'emms-playlist-sort-by-natural-order
     "e S r" 'emms-playlist-sort-by-random
     "e S o" 'emms-playlist-sort-by-info-note))
@@ -463,44 +463,44 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
 (leaf denote
   :init
-  (leader-key
-    "n" '(:ignore t :which-key "denote")
+  (leader-bind
+    "n" '(:ignore t :wk "denote")
     "nn" 'denote
     "ns" 'denote-subdirectory
     ;; "nf" 'denote-open-or-create ;; moved to consult-notes
 
     ;; renaming
-    "nr" '(:ignore t :which-key "rename file")
-    "nrf" '(denote-rename-file :which-key "rename file")
-    "nrt" '(denote-rename-file-title :which-key "rename title")
-    "nrk" '(denote-rename-file-keywords :which-key "rename keywords")
+    "nr" '(:ignore t :wk "rename file")
+    "nrf" '(denote-rename-file :wk "rename file")
+    "nrt" '(denote-rename-file-title :wk "rename title")
+    "nrk" '(denote-rename-file-keywords :wk "rename keywords")
 
     ;; dired
-    "nd" '(:ignore t :which-key "dired")
-    "ndj" '(+denote-directory-jump :which-key "jump to denote dir")
-    "ndr" '(denote-dired-rename-marked-files :which-key "marked rename")
+    "nd" '(:ignore t :wk "dired")
+    "ndj" '(+denote-directory-jump :wk "jump to denote dir")
+    "ndr" '(denote-dired-rename-marked-files :wk "marked rename")
     "ndk" '(denote-dired-rename-marked-files-add-keywords
-            :which-key "marked add keywords")
+            :wk "marked add keywords")
     "ndK" '(denote-dired-rename-marked-files-remove-keywords
-            :which-key "marked remove keywords")
+            :wk "marked remove keywords")
 
     ;; links
-    "nl" '(:ignore t :which-key "links")
-    "nll" '(denote-find-link :which-key "find links in file")
-    "nln" '(denote-link :which-key "new link")
-    "nla" '(denote-add-links :which-key "add links for metanote")
+    "nl" '(:ignore t :wk "links")
+    "nll" '(denote-find-link :wk "find links in file")
+    "nln" '(denote-link :wk "new link")
+    "nla" '(denote-add-links :wk "add links for metanote")
 
     ;; backlinks
-    "nb" '(:ignore t :which-key "backlinks")
-    "nbb" '(denote-find-backlink :which-key "find backlinks")
-    "nbl" '(denote-backlinks :which-key "list backlinks")
+    "nb" '(:ignore t :wk "backlinks")
+    "nbb" '(denote-find-backlink :wk "find backlinks")
+    "nbl" '(denote-backlinks :wk "list backlinks")
 
     ;; org-dblocks
-    "no" '(:ignore t :which-key "org-dblocks")
-    "nol" '(denote-org-extras-dblock-insert-links :which-key "dblock links")
-    "nof" '(denote-org-extras-dblock-insert-files :which-key "dblock files")
-    "nob" '(denote-org-extras-dblock-insert-backlinks :which-key "dblock backlinks")
-    "noa" '(+denote-insert-file-local-dblock-update-mode :which-key "insert file-local dblock mode")
+    "no" '(:ignore t :wk "org-dblocks")
+    "nol" '(denote-org-extras-dblock-insert-links :wk "dblock links")
+    "nof" '(denote-org-extras-dblock-insert-files :wk "dblock files")
+    "nob" '(denote-org-extras-dblock-insert-backlinks :wk "dblock backlinks")
+    "noa" '(+denote-insert-file-local-dblock-update-mode :wk "insert file-local dblock mode")
     )
 
   :config
@@ -582,10 +582,10 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 
 (leaf denote-journal
   :config
-  (leader-key
+  (leader-bind
     ;; journal
 
-    "nj" '(:ignore t :which-key "journal")
+    "nj" '(:ignore t :wk "journal")
     "njN" 'denote-journal-new-entry
     "njc" 'denote-journal-link-or-create-entry
     "njn" 'denote-journal-new-or-existing-entry))
@@ -606,7 +606,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
   :after org
   :bind ("M-s n" . consult-notes)
   :init
-  (leader-key
+  (leader-bind
     "nf" 'consult-notes
     "ng" 'consult-notes-search-in-all-notes)
   :config
@@ -643,34 +643,34 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 (leaf denote-explore
   :after denote
   :init
-  (leader-key
-    "ne" '(:ignore t :which-key "explore")
+  (leader-bind
+    "ne" '(:ignore t :wk "explore")
 
     ;; random walks
-    "new" '(:ignore t :which-key "random walks")
-    "newl" '(denote-explore-random-link :which-key "random link")
-    "newr" '(denote-explore-random-regex :which-key "random regex")
-    "newk" '(denote-explore-random-keyword :which-key "random keyword")
+    "new" '(:ignore t :wk "random walks")
+    "newl" '(denote-explore-random-link :wk "random link")
+    "newr" '(denote-explore-random-regex :wk "random regex")
+    "newk" '(denote-explore-random-keyword :wk "random keyword")
 
     ;; janitor
-    "nej" '(:ignore t :which-key "janitor")
-    "nejj" '(denote-explore-sync-metadata :which-key "sync filenames from metadata")
-    "nejm" '(denote-explore-sync-metadata :which-key "sync filenames from metadata")
-    "nejs" '(denote-explore-sort-keywords :which-key "sort order of all keywords")
-    "nejr" '(denote-explore-rename-keyword :which-key "rename keyword")
-    "nej0" '(denote-explore-zero-keywords :which-key "0 keywords")
-    "nej1" '(denote-explore-single-keywords :which-key "1 keywords")
+    "nej" '(:ignore t :wk "janitor")
+    "nejj" '(denote-explore-sync-metadata :wk "sync filenames from metadata")
+    "nejm" '(denote-explore-sync-metadata :wk "sync filenames from metadata")
+    "nejs" '(denote-explore-sort-keywords :wk "sort order of all keywords")
+    "nejr" '(denote-explore-rename-keyword :wk "rename keyword")
+    "nej0" '(denote-explore-zero-keywords :wk "0 keywords")
+    "nej1" '(denote-explore-single-keywords :wk "1 keywords")
 
     ;; visualize
-    "nen" '(:ignore t :which-key "network")
-    "nenn" '(denote-explore-network :which-key "network")
-    "nenr" '(denote-explore-network-regenerate :which-key "network regenerate")
-    "nend" '(denote-explore-degree-barchart :which-key "degree barchart")
+    "nen" '(:ignore t :wk "network")
+    "nenn" '(denote-explore-network :wk "network")
+    "nenr" '(denote-explore-network-regenerate :wk "network regenerate")
+    "nend" '(denote-explore-degree-barchart :wk "degree barchart")
 
     ;; stats
-    "nes" '(:ignore t :which-key "stats")
-    "nesk" '(denote-explore-barchart-keywords :which-key "barchart keywords")
-    "nese" '(denote-explore-barchart-filetypes :which-key "barchart filetypes"))
+    "nes" '(:ignore t :wk "stats")
+    "nesk" '(denote-explore-barchart-keywords :wk "barchart keywords")
+    "nese" '(denote-explore-barchart-filetypes :wk "barchart filetypes"))
 
   ;; :config
   ;; (setq denote-explore-network-format )
@@ -682,7 +682,7 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 (leaf denote-menu
   :after denote
   :init
-  (leader-key
+  (leader-bind
     "nm" 'list-denotes)
   :bind (denote-menu-mode-map
          ("c" . denote-menu-clear-filters)
@@ -697,8 +697,8 @@ a buffer-local variable `emms-playlistedit-orig-path'."
   (setq denote-menu-title-column-width 50))
 
 ;;; set common keys
-;; (leader-key
-;;   "nN" '(:ignore t :which-key "Favorites")
+;; (leader-bind
+;;   "nN" '(:ignore t :wk "Favorites")
 ;;   "nNn" 'denote
 ;;   "")
 

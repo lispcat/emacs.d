@@ -148,7 +148,50 @@
 (leaf emacs :ensure nil
   :hook ((emacs-lisp-mode-hook . (lambda ()
                                    (auto-fill-mode)
-                                   (setq-local fill-column 80)))))
+                                   (setq-local fill-column 80))))
+  :config
+  (defun my/elisp-custom-keyword-lax-capf ()
+    "Provide lax completion when in s-expr with preceding :custom keyword."
+    (when (and (derived-mode-p 'emacs-lisp-mode)
+               (my/elisp-custom-keyword-lax-capf--pred))
+      ;; get elisp-capf result
+      (when-let ((result (elisp-completion-at-point)))
+        ;; capf new
+        (append (take 3 result)
+                (list :annotation-function
+                      (lambda (cand)
+                        (let ((sym (intern-soft cand)))
+                          (cond
+                           ((and sym (boundp sym)) " <var>")
+                           ((and sym (fboundp sym)) " <func>")
+                           ((keywordp sym) " <key>")
+                           (t "")))))))))
+
+  (defun my/elisp-custom-keyword-lax-capf--pred ()
+    "Predicate for `my/elisp-custom-keyword-lax-capf'.
+
+Checks if the point is under `use-package' or `leaf',
+and that the last keyword was :custom."
+    (when-let*
+        ((limit
+          (save-excursion
+            (condition-case nil
+                ;; go up till find use-package or leaf
+                (progn
+                  (while (not (looking-at-p "(\\(use-package\\|leaf\\)\\b"))
+                    (backward-up-list))
+                  (point))
+              ;; no matches
+              (error nil)))))
+      ;; search backwards, find last keyword, if ":custom" ret t
+      (save-excursion
+        (when (re-search-backward " \\(:\\w+\\)" limit t)
+          (string= (match-string 1) ":custom")))))
+
+  (add-hook 'emacs-lisp-mode-hook
+            (lambda ()
+              (add-hook 'completion-at-point-functions
+                        #'my/elisp-custom-keyword-lax-capf nil t))))
 
 (leaf orglink
   :hook emacs-lisp-mode-hook)

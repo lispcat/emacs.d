@@ -49,8 +49,8 @@
   ;; (org-ellipsis . " ▾")
 
   :init
-  (leader-key
-    "o" '(:ignore t :which-key "org"))
+  (leader-bind
+    "o" '(:ignore t :wk "org"))
 
   ;; :hook (org-mode-hook . indent-tabs-mode)
 
@@ -162,7 +162,7 @@ If in a list, inserts a new sublist after the current list."
 (leaf org-agenda :ensure nil
   :after org
   :init
-  (leader-key
+  (leader-bind
     "oa" 'org-agenda)
 
   :bind (org-agenda-mode-map
@@ -272,7 +272,7 @@ The property will be removed if ran with a \\[universal-argument]."
 (leaf org-capture :ensure nil
   :after org
   :init
-  (leader-key
+  (leader-bind
     "oc" 'org-capture)
 
   :config
