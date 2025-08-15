@@ -348,18 +348,35 @@ This function returns a list of paths that were added to (or already exist in)
 ;;                                startup hooks                               ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;
+;; `emacs-startup-hook'
+;;
+;; - evals after emacs-startup.
+;;
+
+;;
+;; `elpaca-after-init-hook'
+;;
+;; - evals after elpaca finishes installing all packages.
+;; - essentially `after-init-hook' but elpaca-compatible.
+;;
+
+
 ;; --
 
+;; print init time
 (add-hook 'emacs-startup-hook
           (lambda ()
             (message "*** Emacs loaded in %s seconds with %d garbage collections."
                      (emacs-init-time "%.2f")
                      gcs-done)))
 
+;; increase gc freq
 (add-hook 'elpaca-after-init-hook
           (lambda ()
             (setq gc-cons-threshold (* 10000 10000))))
 
+;; load saved customizations file
 (add-hook 'elpaca-after-init-hook
           (lambda ()
             (when (file-exists-p custom-file)
@@ -370,6 +387,8 @@ This function returns a list of paths that were added to (or already exist in)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                   import                                   ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; The rest of the configuration is loaded from `./src/src.el`.
 
 ;; --
 

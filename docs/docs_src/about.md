@@ -1,5 +1,5 @@
 
-# About
+# λ About
 
 ## Why Emacs?
 

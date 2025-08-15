@@ -4,9 +4,9 @@
 
 logging functions
 
-# ⊢ post-init
+# > post-init
 
-## • log src-dir state
+## ‣ log src-dir state
 
 
 ```emacs-lisp
@@ -86,4 +86,4 @@ were not loaded, they're identified and logged using this function."
 
 ---
 
-*Last updated: { git_revision_date_localized }*
+*Last updated: August 14, 2025*

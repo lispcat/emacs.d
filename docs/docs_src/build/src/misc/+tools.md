@@ -23,7 +23,7 @@
 
 ```
 
-## • end
+## ‣ end
 
 ```emacs-lisp
 
@@ -35,4 +35,4 @@
 
 ---
 
-*Last updated: { git_revision_date_localized }*
+*Last updated: August 14, 2025*

@@ -1,4 +1,4 @@
-(defvar prefer-eglot-mode? nil)
+```emacs-lisp
 (defvar prefer-lsp-mode? nil)
 
 (auto-insert-mode)  ;;; Adds hook to find-files-hook
@@ -129,9 +129,11 @@
   ;; global
   (electric-pair-mode 1))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    langs                                   ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+```
+
+# > langs
+
+```emacs-lisp
 
 (setq +lisp-mode-hooks
       '(emacs-lisp-mode-hook
@@ -551,9 +553,11 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (setq treesit-auto-install 'prompt)
   (global-treesit-auto-mode))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                               Code formatting                              ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+```
+
+# > Code formatting
+
+```emacs-lisp
 
 (leaf outline-indent
   :doc "Optimal folding: https://github.com/jamescherti/outline-indent.el"
@@ -703,3 +707,10 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (outline-blank-line . t))
 
 (provide '+ide)
+```
+
+
+
+---
+
+*Last updated: August 14, 2025*

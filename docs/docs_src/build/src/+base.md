@@ -1,36 +1,15 @@
-;;; +base.el ---                                   -*- lexical-binding: t; -*-
+# λ +base - 
 
-;; Copyright (C) 2025  lispcat
+*Author:* lispcat <187922791+lispcat@users.noreply.github.com><br>
 
-;; Author: lispcat <187922791+lispcat@users.noreply.github.com>
-;; Keywords: local
 
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
+```emacs-lisp
 
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-;;; Commentary:
-
-;;
-
-;;; Code:
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                   buffers                                  ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq user-full-name "lispcat")
+(setq user-mail-address "187922791+lispcat@users.noreply.github.com")
 
 ;; revert buffer when its file is changed on the filesystem
-
-(leaf autorevert :elpaca nil
+(leaf autorevert :ensure nil
   :require t
   :diminish autorevert-mode
   :init
@@ -52,10 +31,6 @@
 
 (defalias '+last-selected-buffer 'mode-line-other-buffer)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                   history                                  ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; remember recent files
 (leaf recentf :ensure nil
   :hook emacs-startup-hook)
@@ -69,10 +44,6 @@
 (leaf savehist :ensure nil
   :init
   (savehist-mode 1))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                   windows                                  ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (leaf ace-window
   :setq
@@ -160,10 +131,6 @@ _SPC_ cancel	_o_nly this   	_d_elete
   ("SPC" nil)
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    files                                   ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defun +open-emacs-config-file ()
   "Open emacs config file."
   (interactive)
@@ -173,10 +140,6 @@ _SPC_ cancel	_o_nly this   	_d_elete
   "Open agenda file."
   (interactive)
   (find-file "~/Notes/org/agenda.org"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    dired                                   ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (leaf dired :ensure nil
   :setq
@@ -213,10 +176,6 @@ _SPC_ cancel	_o_nly this   	_d_elete
        ("odt"  ("libreoffice"))
        ("html" ("librewolf")))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    misc                                    ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (leaf helpful
   :commands helpful--bookmark-jump
   :setq
@@ -248,11 +207,15 @@ _SPC_ cancel	_o_nly this   	_d_elete
   "Ds" 'profiler-start
   "Dr" '+profiler-report)
 
-(setq user-full-name "lispcat")
-(setq user-mail-address "187922791+lispcat@users.noreply.github.com")
-
 
 ;;; end
 (provide '+base)
 ;;; +base.el ends here
 
+```
+
+
+
+---
+
+*Last updated: August 14, 2025*

@@ -5,7 +5,7 @@
 The main init file.
 This is automatically ran at startup after early-init.el.
 
-# ⊢ Vars
+# > Vars
 
 Set various vars for sane defaults.
 
@@ -18,7 +18,7 @@ Set various vars for sane defaults.
 
 ```
 
-# ⊢ no-littering
+# > no-littering
 
 ```emacs-lisp
 
@@ -53,7 +53,7 @@ Set various vars for sane defaults.
 
 ```
 
-# ⊢ elpaca
+# > elpaca
 
 ```emacs-lisp
 
@@ -141,7 +141,7 @@ Set various vars for sane defaults.
 
 ```
 
-# ⊢ leaf
+# > leaf
 
 ```emacs-lisp
 
@@ -161,7 +161,7 @@ Set various vars for sane defaults.
 
 ```
 
-# ⊢ necessary packages
+# > necessary packages
 
 ```emacs-lisp
 
@@ -197,9 +197,9 @@ Set various vars for sane defaults.
 
 ```
 
-# ⊢ load-path
+# > load-path
 
-## • adding to the load-path
+## ‣ adding to the load-path
 
 ## `load-path`
 
@@ -259,7 +259,7 @@ This function returns a list of paths that were added to (or already exist in)
 
 ```
 
-## • loading functions
+## ‣ loading functions
 
 `require`
 
@@ -321,20 +321,33 @@ This function returns a list of paths that were added to (or already exist in)
 
 ```
 
-# ⊢ startup hooks
+# > startup hooks
+
+`emacs-startup-hook`
+
+- evals after emacs-startup.
+
+
+`elpaca-after-init-hook`
+
+- evals after elpaca finishes installing all packages.
+- essentially `after-init-hook` but elpaca-compatible.
+
 
 ```emacs-lisp
-
+;; print init time
 (add-hook 'emacs-startup-hook
           (lambda ()
             (message "*** Emacs loaded in %s seconds with %d garbage collections."
                      (emacs-init-time "%.2f")
                      gcs-done)))
 
+;; increase gc freq
 (add-hook 'elpaca-after-init-hook
           (lambda ()
             (setq gc-cons-threshold (* 10000 10000))))
 
+;; load saved customizations file
 (add-hook 'elpaca-after-init-hook
           (lambda ()
             (when (file-exists-p custom-file)
@@ -342,16 +355,17 @@ This function returns a list of paths that were added to (or already exist in)
 
 ```
 
-# ⊢ import
+# > import
+
+The rest of the configuration is loaded from `./src/src.el`.
 
 ```emacs-lisp
-
 ;; load ./src/src.el
 (+require-or-load '_src)
 
 ```
 
-## • end
+## ‣ end
 
 ```emacs-lisp
 
@@ -363,4 +377,4 @@ This function returns a list of paths that were added to (or already exist in)
 
 ---
 
-*Last updated: { git_revision_date_localized }*
+*Last updated: August 14, 2025*

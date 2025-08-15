@@ -8,9 +8,25 @@ nav:
     - init: build/init.md
   - Src:
     - src: build/src/_src.md
+    - base: build/src/+base.md
+    - kbd: build/src/+kbd.md
+    - completion: build/src/+completion.md
+    - ide: build/src/+ide.md
+    - org: build/src/+org.md
+    - latex: build/src/+latex.md
+    - workspaces: build/src/+workspaces.md
+    - programs: build/src/+programs.md
+    - ui: build/src/+ui.md
+    - misc: build/src/+misc.md
+    - tosort: build/src/+to-sort.md
+    - documentation: build/src/+documentation.md
+
     - "build/src/*.md"
 
   - Misc:
+    - log: build/src/misc/+log.md
+    - tools: build/src/misc/+tools.md
+
     - "build/src/misc/*.md"
     - "*/*.md"
     - "*.md"

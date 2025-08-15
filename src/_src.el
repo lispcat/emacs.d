@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;;
+;; This file loads files from this directory.
 
 ;;; Code:
 

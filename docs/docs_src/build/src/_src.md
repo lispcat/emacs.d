@@ -2,6 +2,7 @@
 
 *Author:* lispcat <187922791+lispcat@users.noreply.github.com><br>
 
+This file loads files from this directory.
 
 ```emacs-lisp
 
@@ -32,4 +33,4 @@
 
 ---
 
-*Last updated: { git_revision_date_localized }*
+*Last updated: August 14, 2025*

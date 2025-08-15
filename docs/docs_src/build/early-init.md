@@ -8,9 +8,9 @@ At load-time, the Emacs GUI is yet to be created, so here we disable and
 modify GUI elements, as well as define path variables that will be used
 throughout the rest of the config.
 
-# ⊢ Vars
+# > Vars
 
-## • Pivotal vars to set first:
+## ‣ Pivotal vars to set first:
 
 Here we set pivotal variables, such as setting the garbage collection
 frequency, disabling autoload for the default package manager (to opt in for
@@ -25,7 +25,7 @@ a different one), and etc.
 
 ```
 
-## • Directory Vars : defvar:
+## ‣ Directory Vars : defvar:
 
 Here we define various path variables.
 
@@ -60,7 +60,7 @@ Here we define various path variables.
 
 ```
 
-## • Directory Vars : setq:
+## ‣ Directory Vars : setq:
 
 ## More on the local-dir
 
@@ -83,7 +83,7 @@ Here we define various path variables.
 
 ```
 
-## • eln-cache dir - set to ./local/var/eln-cache
+## ‣ eln-cache dir - set to ./local/var/eln-cache
 
 The eln-cache dir contains compiled .el files (.eln).
 To keep the emacs-root-dir tidy, we override this path.
@@ -99,9 +99,9 @@ To keep the emacs-root-dir tidy, we override this path.
 
 ```
 
-# ⊢ UI
+# > UI
 
-## • GUI
+## ‣ GUI
 
 The Emacs GUI has a lot of bloat by default, so they're disabled here (e.g.
 tool-bar, menu-bar, scroll-bar).
@@ -132,7 +132,7 @@ we disable them now.
 
 ```
 
-## • transparency
+## ‣ transparency
 
 We enable transparency by default by adding an entry to default-frame-alist,
 unless an entry for it already exists.
@@ -150,7 +150,7 @@ unless an entry for it already exists.
 
 ```
 
-## • default background color
+## ‣ default background color
 
 In some display environments, during startup, Emacs will show its window.
 During this period, a theme will yet to be set. So it will show the default
@@ -165,9 +165,9 @@ use color black for startup frame
 
 ```
 
-# ⊢ misc
+# > misc
 
-## • lsp
+## ‣ lsp
 
 Some tweaks for lsp-mode to increase performance.
 <https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization>
@@ -178,7 +178,7 @@ Some tweaks for lsp-mode to increase performance.
 
 ```
 
-## • end
+## ‣ end
 
 ```emacs-lisp
 (provide 'early-init)
@@ -189,4 +189,4 @@ Some tweaks for lsp-mode to increase performance.
 
 ---
 
-*Last updated: { git_revision_date_localized }*
+*Last updated: August 14, 2025*
