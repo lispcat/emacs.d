@@ -634,13 +634,13 @@
 <nav>
     <ul>
         <li><a href="#base-">λ +base -</a></li>
-        <li><a href="#buffers">&gt; buffers</a></li>
-        <li><a href="#history">&gt; history</a></li>
-        <li><a href="#windows">&gt; windows</a></li>
-        <li><a href="#files">&gt; files</a></li>
-        <li><a href="#dired">&gt; dired</a></li>
-        <li><a href="#misc">&gt; misc</a></li>
-        <li><a href="#end">&gt; end</a></li>
+        <li><a href="#buffers">% Buffers</a></li>
+        <li><a href="#history">% History</a></li>
+        <li><a href="#windows">% Windows</a></li>
+        <li><a href="#files">% Files</a></li>
+        <li><a href="#dired">% Dired</a></li>
+        <li><a href="#misc">% Misc</a></li>
+        <li><a href="#end">% end</a></li>
         
     </ul>
 </nav>
@@ -656,8 +656,8 @@
     <h3 id="base-">λ +base -</h3>
 <p><em>Author:</em> lispcat <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;">&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;</a><br></p>
 <p>Set up mostly built-in Emacs functionality.</p>
-<h3 id="buffers">&gt; buffers</h3>
-<h4 id="autorevert">‣ autorevert</h4>
+<h3 id="buffers">% Buffers</h3>
+<h4 id="autorevert">&gt; autorevert</h4>
 <p>If a file is open as a buffer and its contents are changed on the disk, to
 update that buffer, you need to run <code>revert-buffer</code>.</p>
 <p><code>autorevert-mode</code> automatically runs <code>revert-buffer</code> when it receives a
@@ -676,7 +676,7 @@ filesystem notification (if <code>auto-revert-use-notify</code> is non-nil), or 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; respond to Filesystem Notifications by the OS (instant updates)</span>
 <span style="color: #D4D2C8">  (auto-revert-use-notify </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
 </code></pre></div>
-<h4 id="spc-b-binds">‣ SPC-b binds</h4>
+<h4 id="spc-b-binds">&gt; SPC-b binds</h4>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defalias</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+last-selected-buffer</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;mode-line-other-buffer</span><span style="color: #D4D2C8">)</span>
 
 <span style="color: #D4D2C8">(leader-bind</span>
@@ -690,15 +690,15 @@ filesystem notification (if <code>auto-revert-use-notify</code> is non-nil), or 
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bb&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(switch-to-buffer       </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;switch-buffer&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bs&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(save-buffer            </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;save-buffer&quot;</span><span style="color: #D4D2C8">))</span>
 </code></pre></div>
-<h3 id="history">&gt; history</h3>
-<h4 id="recentf">‣ recentf</h4>
+<h3 id="history">% History</h3>
+<h4 id="recentf">&gt; recentf</h4>
 <p><code>recentf-mode</code> tracks recently opened files that you can search through and
 open with <code>recentf</code>.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span>
 <span style="color: #D4D2C8">  (emacs-startup-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> recentf-mode))</span>
 </code></pre></div>
-<h4 id="saveplace">‣ saveplace</h4>
+<h4 id="saveplace">&gt; saveplace</h4>
 <p><code>save-place-mode</code> saves your cursor location in a file, so that when
 re-opening a file, your cursor jumps to your last location.
 Persists over restarts.</p>
@@ -706,14 +706,14 @@ Persists over restarts.</p>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  (save-place-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
 </code></pre></div>
-<h4 id="savehist">‣ savehist</h4>
+<h4 id="savehist">&gt; savehist</h4>
 <p><code>savehist-mode</code> persists minibuffer history over restarts.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  (savehist-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
 </code></pre></div>
-<h3 id="windows">&gt; windows</h3>
-<h4 id="ace-window">‣ ace-window</h4>
+<h3 id="windows">% Windows</h3>
+<h4 id="ace-window">&gt; ace-window</h4>
 <p>Efficiently switch between Emacs windows.</p>
 <p>repo: https://github.com/abo-abo/ace-window</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf ace-window</span>
@@ -741,7 +741,7 @@ Persists over restarts.</p>
 <span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; misc</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wm&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;switch-to-minibuffer</span><span style="color: #D4D2C8">))</span>
 </code></pre></div>
-<h4 id="hydra-window">‣ hydra: window</h4>
+<h4 id="hydra-window">&gt; hydra: window</h4>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; A hydra for quick window switching</span>
 <span style="color: #D4D2C8">(defhydra hydra-window ()</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;</span>
@@ -804,7 +804,7 @@ Persists over restarts.</p>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;SPC&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  )</span>
 </code></pre></div>
-<h3 id="files">&gt; files</h3>
+<h3 id="files">% Files</h3>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +open-emacs-config-file ()</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Open emacs config file.&quot;</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
@@ -816,7 +816,7 @@ Persists over restarts.</p>
 <span style="color: #D4D2C8">  (when-let* ((f (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> org-agenda-files)))</span>
 <span style="color: #D4D2C8">    (find-file f)))</span>
 </code></pre></div>
-<h3 id="dired">&gt; dired</h3>
+<h3 id="dired">% Dired</h3>
 <p>Emacs' built-in file manager.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf dired </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:custom</span>
@@ -842,11 +842,11 @@ Persists over restarts.</p>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (executable-find </span><span style="color: #D5FF80">&quot;trash&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> delete-by-moving-to-trash </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)))</span>
 </code></pre></div>
-<h4 id="dired-launch">‣ dired-launch</h4>
+<h4 id="dired-launch">&gt; dired-launch</h4>
 <p>Easily launch external applications from dired.</p>
 <p>repo: https://codeberg.org/thomp/dired-launch</p>
-<p>--</p>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> dired</span>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf dired-launch</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> dired</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (dired-launch-enable)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:custom</span>
@@ -856,12 +856,12 @@ Persists over restarts.</p>
 <span style="color: #D4D2C8">       (</span><span style="color: #D5FF80">&quot;odt&quot;</span><span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;libreoffice&quot;</span><span style="color: #D4D2C8">))</span>
 <span style="color: #D4D2C8">       (</span><span style="color: #D5FF80">&quot;html&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #D5FF80">&quot;librewolf&quot;</span><span style="color: #D4D2C8">)))))</span>
 </code></pre></div>
-<h3 id="misc">&gt; misc</h3>
-<h4 id="helpful">‣ helpful</h4>
+<h3 id="misc">% Misc</h3>
+<h4 id="helpful">&gt; helpful</h4>
 <p>Improve Emacs' help buffer with much more contextual info.</p>
 <p>repo: https://github.com/Wilfred/helpful</p>
-<p>--</p>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> helpful--bookmark-jump</span>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf helpful</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> helpful--bookmark-jump</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
 <span style="color: #D4D2C8">  (counsel-describe-function-function </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">helpful-callable)</span>
 <span style="color: #D4D2C8">  (counsel-describe-variable-function </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">helpful-variable)</span>
@@ -876,12 +876,12 @@ Persists over restarts.</p>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-h M&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> which-key-show-major-mode)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-h E&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> describe-keymap))</span>
 </code></pre></div>
-<h4 id="auto-sudoedit">‣ auto-sudoedit</h4>
+<h4 id="auto-sudoedit">&gt; auto-sudoedit</h4>
 <p>Automatically re-open files with sudo when needed.</p>
-<p>--</p>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> auto-sudoedit-sudoedit)</span>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf auto-sudoedit</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> auto-sudoedit-sudoedit)</span>
 </code></pre></div>
-<h4 id="profiling">‣ profiling</h4>
+<h4 id="profiling">&gt; profiling</h4>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +profiler-report ()</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Profiler stop and report.&quot;</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
@@ -893,11 +893,11 @@ Persists over restarts.</p>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Ds&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;profiler-start</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Dr&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+profiler-report</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
-<h4 id="user-info">‣ user info</h4>
+<h4 id="user-info">&gt; user info</h4>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">user-full-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;lispcat&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> user-mail-address </span><span style="color: #D5FF80">&quot;187922791+lispcat@users.noreply.github.com&quot;</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
-<h3 id="end">&gt; end</h3>
+<h3 id="end">% end</h3>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+base</span><span style="color: #D4D2C8">)</span>
 <span style="color: #7E8AA1">;;; +base.el ends here</span>
 </code></pre></div>

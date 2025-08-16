@@ -634,14 +634,14 @@
 <nav>
     <ul>
         <li><a href="#init-the-main-init-file">λ init - the main init file</a></li>
-        <li><a href="#vars">&gt; Vars</a></li>
-        <li><a href="#no-littering">&gt; no-littering</a></li>
-        <li><a href="#elpaca">&gt; elpaca</a></li>
-        <li><a href="#leaf">&gt; leaf</a></li>
-        <li><a href="#necessary-packages">&gt; necessary packages</a></li>
-        <li><a href="#load-path">&gt; load-path</a></li>
-        <li><a href="#startup-hooks">&gt; startup hooks</a></li>
-        <li><a href="#import">&gt; import</a></li>
+        <li><a href="#vars">% Vars</a></li>
+        <li><a href="#no-littering">% no-littering</a></li>
+        <li><a href="#elpaca">% elpaca</a></li>
+        <li><a href="#leaf">% leaf</a></li>
+        <li><a href="#necessary-packages">% necessary packages</a></li>
+        <li><a href="#load-path">% load-path</a></li>
+        <li><a href="#startup-hooks">% startup hooks</a></li>
+        <li><a href="#import">% import</a></li>
         
     </ul>
 </nav>
@@ -658,7 +658,7 @@
 <p><em>Author:</em> lispcat <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;">&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;</a><br></p>
 <p>The main init file.
 This is automatically ran at startup after early-init.el.</p>
-<h3 id="vars">&gt; Vars</h3>
+<h3 id="vars">% Vars</h3>
 <p>Set various vars for sane defaults.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; run .el instead of .elc if newer</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> load-prefer-newer </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
@@ -666,7 +666,7 @@ This is automatically ran at startup after early-init.el.</p>
 <span style="color: #7E8AA1">;; silence compiler warnings</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> native-comp-async-report-warnings-errors </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
-<h3 id="no-littering">&gt; no-littering</h3>
+<h3 id="no-littering">% no-littering</h3>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">progn</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">;; no-littering</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; manually add</span>
@@ -696,7 +696,7 @@ This is automatically ran at startup after early-init.el.</p>
 <span style="color: #D4D2C8">            (</span><span style="color: #D5FF80">&quot;\\`/dev/shm\\([^/]*/\\)*\\(.*\\)\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\2&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">            (</span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">auto-save-dir </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)))))</span>
 </code></pre></div>
-<h3 id="elpaca">&gt; elpaca</h3>
+<h3 id="elpaca">% elpaca</h3>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; elpaca 0.11</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">progn</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> elpaca-installer-version </span><span style="color: #DFBFFF">0.11</span><span style="color: #D4D2C8">)</span>
@@ -779,7 +779,7 @@ This is automatically ran at startup after early-init.el.</p>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (pkg (+elpaca-get-external-pkgs))</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFD173">push</span><span style="color: #D4D2C8"> pkg elpaca-ignored-dependencies)))</span>
 </code></pre></div>
-<h3 id="leaf">&gt; leaf</h3>
+<h3 id="leaf">% leaf</h3>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(elpaca leaf</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8">                       </span><span style="color: #7E8AA1">; deferred by default. demand with :leaf-defer nil</span>
 <span style="color: #D4D2C8">  )</span>
@@ -793,7 +793,7 @@ This is automatically ran at startup after early-init.el.</p>
 <span style="color: #7E8AA1">;; hack: fix org version mismatch</span>
 <span style="color: #D4D2C8">(elpaca org)</span>
 </code></pre></div>
-<h3 id="necessary-packages">&gt; necessary packages</h3>
+<h3 id="necessary-packages">% necessary packages</h3>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">use-package</span><span style="color: #D4D2C8"> general </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:demand</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
@@ -824,8 +824,8 @@ This is automatically ran at startup after early-init.el.</p>
 
 <span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;cl-lib</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
-<h3 id="load-path">&gt; load-path</h3>
-<h4 id="adding-to-the-load-path">‣ adding to the load-path</h4>
+<h3 id="load-path">% load-path</h3>
+<h4 id="adding-to-the-load-path">&gt; adding to the load-path</h4>
 <h4 id="load-path_1"><code>load-path</code></h4>
 <ul>
 <li>A variable; a list of paths.</li>
@@ -881,7 +881,7 @@ This is automatically ran at startup after early-init.el.</p>
 <span style="color: #D4D2C8">(+add-to-load-path-recursively +emacs-src-dir </span><span style="color: #DFBFFF">-1</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">(+add-to-load-path-recursively +emacs-submodules-dir </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
-<h4 id="loading-functions">‣ loading functions</h4>
+<h4 id="loading-functions">&gt; loading functions</h4>
 <p><code>require</code></p>
 <ul>
 <li>A function that searches for and loads a corresponding elisp file from the
@@ -938,7 +938,7 @@ This is automatically ran at startup after early-init.el.</p>
 <span style="color: #D4D2C8">         (+load (</span><span style="color: #FFD173">symbol-name</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">feature))</span>
 <span style="color: #D4D2C8">       (+require </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">feature))))</span>
 </code></pre></div>
-<h3 id="startup-hooks">&gt; startup hooks</h3>
+<h3 id="startup-hooks">% startup hooks</h3>
 <p><code>emacs-startup-hook</code></p>
 <ul>
 <li>evals after emacs-startup.</li>
@@ -966,12 +966,12 @@ This is automatically ran at startup after early-init.el.</p>
 <span style="color: #D4D2C8">            (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">file-exists-p</span><span style="color: #D4D2C8"> custom-file)</span>
 <span style="color: #D4D2C8">              (</span><span style="color: #FFD173">load</span><span style="color: #D4D2C8"> custom-file))))</span>
 </code></pre></div>
-<h3 id="import">&gt; import</h3>
+<h3 id="import">% import</h3>
 <p>The rest of the configuration is loaded from <code>./src/src.el</code>.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; load ./src/src.el</span>
 <span style="color: #D4D2C8">(+require-or-load </span><span style="color: #DFBFFF">&#39;_src</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
-<h4 id="end">‣ end</h4>
+<h4 id="end">&gt; end</h4>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;init</span><span style="color: #D4D2C8">)</span>
 <span style="color: #7E8AA1">;;; init.el ends here</span>
 </code></pre></div>
