@@ -592,7 +592,7 @@
         
             <a class="
 
-    terminal-mkdocs-side-nav-item" href="../misc/%2Blog/">+log</a>
+    terminal-mkdocs-side-nav-item" href="../misc/%2Blog/">log</a>
         
     
     
@@ -613,7 +613,7 @@
         
             <a class="
 
-    terminal-mkdocs-side-nav-item" href="../misc/%2Btools/">+tools</a>
+    terminal-mkdocs-side-nav-item" href="../misc/%2Btools/">tools</a>
         
     
     
@@ -653,7 +653,7 @@
 
 <span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;leaf</span><span style="color: #D4D2C8">)</span>
 
-<span style="color: #D4D2C8">(leaf org </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">(leaf org </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
 <span style="color: #D4D2C8">  (org-directory </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;~/Notes/org&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  (org-tags-column </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">-55</span><span style="color: #D4D2C8">)               </span><span style="color: #7E8AA1">; column where tags are indented to</span>
@@ -673,8 +673,8 @@
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (org-ellipsis . &quot; ▾&quot;)</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
-<span style="color: #D4D2C8">  (general-my-map</span>
-<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;o&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;org&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (leader-bind</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;o&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;org&quot;</span><span style="color: #D4D2C8">))</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; :hook (org-mode-hook . indent-tabs-mode)</span>
 
@@ -783,10 +783,10 @@
 <span style="color: #D4D2C8">(leaf org-auto-tangle</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> org-mode-hook)</span>
 
-<span style="color: #D4D2C8">(leaf org-agenda </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">(leaf org-agenda </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> org</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
-<span style="color: #D4D2C8">  (general-my-map</span>
+<span style="color: #D4D2C8">  (leader-bind</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;oa&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;org-agenda</span><span style="color: #D4D2C8">)</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span><span style="color: #D4D2C8"> (org-agenda-mode-map</span>
@@ -798,8 +798,9 @@
 <span style="color: #D4D2C8">                    </span><span style="color: #D5FF80">&quot;|&quot;</span>
 <span style="color: #D4D2C8">                    </span><span style="color: #D5FF80">&quot;DONE(d/!)&quot;</span><span style="color: #D4D2C8">)))</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> org-agenda-files</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;~/Notes/org/Inbox.org&quot;</span>
-<span style="color: #D4D2C8">              </span><span style="color: #D5FF80">&quot;~/Notes/org/agenda.org&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">;; &quot;~/Notes/org/Inbox.org&quot;</span>
+<span style="color: #D4D2C8">              </span><span style="color: #7E8AA1">;; &quot;~/Notes/org/agenda.org&quot;</span>
+<span style="color: #D4D2C8">              </span><span style="color: #D5FF80">&quot;~/Notes/denote/20250728T235116--todo__todo.org&quot;</span><span style="color: #D4D2C8">))</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> org-tag-alist</span>
 <span style="color: #D4D2C8">        </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #7E8AA1">;; Places</span>
 <span style="color: #D4D2C8">          (</span><span style="color: #D5FF80">&quot;@home&quot;</span><span style="color: #D4D2C8">   </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">?H</span><span style="color: #D4D2C8">)</span>
@@ -893,10 +894,10 @@
 <span style="color: #D4D2C8">         (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;meow: %s&quot;</span><span style="color: #D4D2C8"> num)</span>
 <span style="color: #D4D2C8">         (org-entry-put (</span><span style="color: #FFD173">point</span><span style="color: #D4D2C8">) </span><span style="color: #D5FF80">&quot;NOTER_PAGE&quot;</span><span style="color: #D4D2C8"> num))))))</span>
 
-<span style="color: #D4D2C8">(leaf org-capture </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">(leaf org-capture </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> org</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
-<span style="color: #D4D2C8">  (general-my-map</span>
+<span style="color: #D4D2C8">  (leader-bind</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;oc&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;org-capture</span><span style="color: #D4D2C8">)</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
@@ -1010,7 +1011,7 @@
 <span style="color: #7E8AA1">;;; +org.el ends here</span>
 </code></pre></div>
 <hr />
-<p><em>Last updated: { git_revision_date_localized }</em></p>
+<p><em>Last updated: August 16, 2025</em></p>
 </section>
 
 <section id="mkdocs-terminal-after-content">

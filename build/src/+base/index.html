@@ -592,7 +592,7 @@
         
             <a class="
 
-    terminal-mkdocs-side-nav-item" href="../misc/%2Blog/">+log</a>
+    terminal-mkdocs-side-nav-item" href="../misc/%2Blog/">log</a>
         
     
     
@@ -613,7 +613,7 @@
         
             <a class="
 
-    terminal-mkdocs-side-nav-item" href="../misc/%2Btools/">+tools</a>
+    terminal-mkdocs-side-nav-item" href="../misc/%2Btools/">tools</a>
         
     
     
@@ -634,6 +634,13 @@
 <nav>
     <ul>
         <li><a href="#base-">λ +base -</a></li>
+        <li><a href="#buffers">&gt; buffers</a></li>
+        <li><a href="#history">&gt; history</a></li>
+        <li><a href="#windows">&gt; windows</a></li>
+        <li><a href="#files">&gt; files</a></li>
+        <li><a href="#dired">&gt; dired</a></li>
+        <li><a href="#misc">&gt; misc</a></li>
+        <li><a href="#end">&gt; end</a></li>
         
     </ul>
 </nav>
@@ -648,48 +655,69 @@
 <section id="mkdocs-terminal-content">
     <h3 id="base-">λ +base -</h3>
 <p><em>Author:</em> lispcat <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;">&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;</a><br></p>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">user-full-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;lispcat&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> user-mail-address </span><span style="color: #D5FF80">&quot;187922791+lispcat@users.noreply.github.com&quot;</span><span style="color: #D4D2C8">)</span>
-
-<span style="color: #7E8AA1">;; revert buffer when its file is changed on the filesystem</span>
-<span style="color: #D4D2C8">(leaf autorevert </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:diminish</span><span style="color: #D4D2C8"> autorevert-mode</span>
+<p>Set up mostly built-in Emacs functionality.</p>
+<h3 id="buffers">&gt; buffers</h3>
+<h4 id="autorevert">‣ autorevert</h4>
+<p>If a file is open as a buffer and its contents are changed on the disk, to
+update that buffer, you need to run <code>revert-buffer</code>.</p>
+<p><code>autorevert-mode</code> automatically runs <code>revert-buffer</code> when it receives a
+filesystem notification (if <code>auto-revert-use-notify</code> is non-nil), or at every
+<code>auto-revert-interval</code>.</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  (global-auto-revert-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:custom</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; less verbose (don&#39;t print &quot;Reverting buffer&quot; in *Messages*)</span>
+<span style="color: #D4D2C8">  (auto-revert-verbose </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; work on non-file buffers (i.e. dired)</span>
 <span style="color: #D4D2C8">  (global-auto-revert-non-file-buffers </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (auto-revert-use-notify </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (auto-revert-interval </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">5</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; manual check interval</span>
+<span style="color: #D4D2C8">  (auto-revert-interval </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">10</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; respond to Filesystem Notifications by the OS (instant updates)</span>
+<span style="color: #D4D2C8">  (auto-revert-use-notify </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
+</code></pre></div>
+<h4 id="spc-b-binds">‣ SPC-b binds</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defalias</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+last-selected-buffer</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;mode-line-other-buffer</span><span style="color: #D4D2C8">)</span>
 
-<span style="color: #D4D2C8">(general-my-map</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;k&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kill-current-buffer</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;b&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;buffer&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bk&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kill-current-buffer</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bn&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;next-buffer</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bp&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;previous-buffer</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bo&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(+last-selected-buffer </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;last-buffer&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bb&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;switch-to-buffer</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bs&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;save-buffer</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">(leader-bind</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;k&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(kill-current-buffer     </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;kill-current&quot;</span><span style="color: #D4D2C8">)</span>
 
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defalias</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+last-selected-buffer</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;mode-line-other-buffer</span><span style="color: #D4D2C8">)</span>
-
-<span style="color: #7E8AA1">;; remember recent files</span>
-<span style="color: #D4D2C8">(leaf recentf </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> emacs-startup-hook)</span>
-
-<span style="color: #7E8AA1">;; go to previous location in file when reopening</span>
-<span style="color: #D4D2C8">(leaf saveplace </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;b&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">               </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Buffer&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bk&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(kill-current-buffer    </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;kill-current&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bn&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(next-buffer            </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;next&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bp&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(previous-buffer        </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;prev&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bo&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(+last-selected-buffer  </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;last-buffer&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bb&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(switch-to-buffer       </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;switch-buffer&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;bs&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(save-buffer            </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;save-buffer&quot;</span><span style="color: #D4D2C8">))</span>
+</code></pre></div>
+<h3 id="history">&gt; history</h3>
+<h4 id="recentf">‣ recentf</h4>
+<p><code>recentf-mode</code> tracks recently opened files that you can search through and
+open with <code>recentf</code>.</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span>
+<span style="color: #D4D2C8">  (emacs-startup-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> recentf-mode))</span>
+</code></pre></div>
+<h4 id="saveplace">‣ saveplace</h4>
+<p><code>save-place-mode</code> saves your cursor location in a file, so that when
+re-opening a file, your cursor jumps to your last location.
+Persists over restarts.</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  (save-place-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #7E8AA1">;; persist minibuffer history over restarts</span>
-<span style="color: #D4D2C8">(leaf savehist </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+</code></pre></div>
+<h4 id="savehist">‣ savehist</h4>
+<p><code>savehist-mode</code> persists minibuffer history over restarts.</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  (savehist-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #D4D2C8">(leaf ace-window</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
+</code></pre></div>
+<h3 id="windows">&gt; windows</h3>
+<h4 id="ace-window">‣ ace-window</h4>
+<p>Efficiently switch between Emacs windows.</p>
+<p>repo: https://github.com/abo-abo/ace-window</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf ace-window</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:custom</span>
 <span style="color: #D4D2C8">  (aw-keys </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">?a</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">?o</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">?e</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">?u</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">?h</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">?t</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">?n</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">?s</span><span style="color: #D4D2C8">))</span>
 <span style="color: #D4D2C8">  (aw-scope </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;frame</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  (aw-background </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
@@ -697,8 +725,8 @@
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;M-o&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> ace-window)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
-<span style="color: #D4D2C8">  (general-my-map</span>
-<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;w&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;window&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (leader-bind</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;w&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;window&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wd&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;delete-window</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;w+&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;balance-windows</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wa&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;balance-windows-area</span>
@@ -706,13 +734,15 @@
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wv&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;split-window-horizontally</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;ws&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;split-window-vertically</span>
 <span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; select window directionally</span>
-<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wp&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(windmove-up    </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;select up&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wn&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(windmove-down  </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;select down&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wf&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(windmove-right </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;select right&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wb&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(windmove-left  </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;select left&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wp&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(windmove-up    </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;select up&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wn&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(windmove-down  </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;select down&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wf&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(windmove-right </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;select right&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wb&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(windmove-left  </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;select left&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; misc</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;wm&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;switch-to-minibuffer</span><span style="color: #D4D2C8">))</span>
-
+</code></pre></div>
+<h4 id="hydra-window">‣ hydra: window</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; A hydra for quick window switching</span>
 <span style="color: #D4D2C8">(defhydra hydra-window ()</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;</span>
 <span style="color: #D5FF80">Movement^^        ^Split^         ^Switch^      ^Resize^</span>
@@ -773,8 +803,9 @@
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;Z&quot;</span><span style="color: #D4D2C8"> winner-redo)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;SPC&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  )</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +open-emacs-config-file ()</span>
+</code></pre></div>
+<h3 id="files">&gt; files</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +open-emacs-config-file ()</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Open emacs config file.&quot;</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  (find-file +emacs-config-file))</span>
@@ -782,10 +813,13 @@
 <span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +open-agenda-file ()</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Open agenda file.&quot;</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (find-file </span><span style="color: #D5FF80">&quot;~/Notes/org/agenda.org&quot;</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #D4D2C8">(leaf dired </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
+<span style="color: #D4D2C8">  (when-let* ((f (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> org-agenda-files)))</span>
+<span style="color: #D4D2C8">    (find-file f)))</span>
+</code></pre></div>
+<h3 id="dired">&gt; dired</h3>
+<p>Emacs' built-in file manager.</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf dired </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:custom</span>
 <span style="color: #D4D2C8">  (dired-listing-switches </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;-Ahl --group-directories-first -X&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  (dired-auto-revert-buffer </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)        </span><span style="color: #7E8AA1">; auto update file changes</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span><span style="color: #D4D2C8"> (dired-mode-map</span>
@@ -793,11 +827,11 @@
 <span style="color: #D4D2C8">         (</span><span style="color: #D5FF80">&quot;s&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> dired-find-file)</span>
 <span style="color: #D4D2C8">         (</span><span style="color: #D5FF80">&quot;r&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> dired-sort-toggle-or-edit))</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
-<span style="color: #D4D2C8">  (general-my-map</span>
-<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;d&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;dired&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (leader-bind</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;d&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;dired&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;dd&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;find-file</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;dj&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;dired-jump</span>
-<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;f&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;files&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;f&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;files&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;ff&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;find-file</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;fp&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+open-emacs-config-file</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;fa&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+open-agenda-file</span><span style="color: #D4D2C8">)</span>
@@ -807,20 +841,27 @@
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; use trash if trash executable is found</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (executable-find </span><span style="color: #D5FF80">&quot;trash&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> delete-by-moving-to-trash </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)))</span>
-
-<span style="color: #D4D2C8">(leaf dired-launch</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> dired</span>
+</code></pre></div>
+<h4 id="dired-launch">‣ dired-launch</h4>
+<p>Easily launch external applications from dired.</p>
+<p>repo: https://codeberg.org/thomp/dired-launch</p>
+<p>--</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> dired</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (dired-launch-enable)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:custom</span>
 <span style="color: #D4D2C8">  (dired-launch-extensions-map</span>
 <span style="color: #D4D2C8">   </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((</span><span style="color: #D5FF80">&quot;pptx&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #D5FF80">&quot;libreoffice&quot;</span><span style="color: #D4D2C8">))</span>
 <span style="color: #D4D2C8">       (</span><span style="color: #D5FF80">&quot;docx&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #D5FF80">&quot;libreoffice&quot;</span><span style="color: #D4D2C8">))</span>
 <span style="color: #D4D2C8">       (</span><span style="color: #D5FF80">&quot;odt&quot;</span><span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;libreoffice&quot;</span><span style="color: #D4D2C8">))</span>
 <span style="color: #D4D2C8">       (</span><span style="color: #D5FF80">&quot;html&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #D5FF80">&quot;librewolf&quot;</span><span style="color: #D4D2C8">)))))</span>
-
-<span style="color: #D4D2C8">(leaf helpful</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> helpful--bookmark-jump</span>
+</code></pre></div>
+<h3 id="misc">&gt; misc</h3>
+<h4 id="helpful">‣ helpful</h4>
+<p>Improve Emacs' help buffer with much more contextual info.</p>
+<p>repo: https://github.com/Wilfred/helpful</p>
+<p>--</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> helpful--bookmark-jump</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
 <span style="color: #D4D2C8">  (counsel-describe-function-function </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">helpful-callable)</span>
 <span style="color: #D4D2C8">  (counsel-describe-variable-function </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">helpful-variable)</span>
@@ -831,32 +872,37 @@
 <span style="color: #D4D2C8">  ([remap describe-command] </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> helpful-command)</span>
 <span style="color: #D4D2C8">  ([remap describe-key] </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> helpful-key)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-h h&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> helpful-at-point)</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-h H&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> view-hello-file)          </span><span style="color: #7E8AA1">; command originally at &quot;C-h h&quot;</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-h H&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> view-hello-file)           </span><span style="color: #7E8AA1">; command originally at &quot;C-h h&quot;</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-h M&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> which-key-show-major-mode)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-h E&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> describe-keymap))</span>
-
-<span style="color: #7E8AA1">;; sudoedit</span>
-<span style="color: #D4D2C8">(leaf auto-sudoedit</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> auto-sudoedit-sudoedit)</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +profiler-report ()</span>
+</code></pre></div>
+<h4 id="auto-sudoedit">‣ auto-sudoedit</h4>
+<p>Automatically re-open files with sudo when needed.</p>
+<p>--</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> auto-sudoedit-sudoedit)</span>
+</code></pre></div>
+<h4 id="profiling">‣ profiling</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +profiler-report ()</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Profiler stop and report.&quot;</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  (profiler-stop)</span>
 <span style="color: #D4D2C8">  (profiler-report))</span>
 
-<span style="color: #D4D2C8">(general-my-map</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;D&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:which-key</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;debug&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">(leader-bind</span>
+<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;D&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;debug&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Ds&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;profiler-start</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Dr&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+profiler-report</span><span style="color: #D4D2C8">)</span>
-
-
-<span style="color: #7E8AA1">;;; end</span>
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+base</span><span style="color: #D4D2C8">)</span>
+</code></pre></div>
+<h4 id="user-info">‣ user info</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">user-full-name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;lispcat&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> user-mail-address </span><span style="color: #D5FF80">&quot;187922791+lispcat@users.noreply.github.com&quot;</span><span style="color: #D4D2C8">)</span>
+</code></pre></div>
+<h3 id="end">&gt; end</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+base</span><span style="color: #D4D2C8">)</span>
 <span style="color: #7E8AA1">;;; +base.el ends here</span>
 </code></pre></div>
 <hr />
-<p><em>Last updated: { git_revision_date_localized }</em></p>
+<p><em>Last updated: August 16, 2025</em></p>
 </section>
 
 <section id="mkdocs-terminal-after-content">

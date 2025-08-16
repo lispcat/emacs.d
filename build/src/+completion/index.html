@@ -592,7 +592,7 @@
         
             <a class="
 
-    terminal-mkdocs-side-nav-item" href="../misc/%2Blog/">+log</a>
+    terminal-mkdocs-side-nav-item" href="../misc/%2Blog/">log</a>
         
     
     
@@ -613,7 +613,7 @@
         
             <a class="
 
-    terminal-mkdocs-side-nav-item" href="../misc/%2Btools/">+tools</a>
+    terminal-mkdocs-side-nav-item" href="../misc/%2Btools/">tools</a>
         
     
     
@@ -630,6 +630,13 @@
         
     </ul>
   
+</nav><hr>
+<nav>
+    <ul>
+        <li><a href="#completion-">λ +completion -</a></li>
+        <li><a href="#misc">&gt; misc</a></li>
+        
+    </ul>
 </nav>
 </aside>
             <main id="terminal-mkdocs-main-content">
@@ -640,12 +647,18 @@
     
 
 <section id="mkdocs-terminal-content">
-    <p>? : corfu, kind-icon, wgrep?, consult-dir, cape
-^ more at ~/code/cloned/daviwil-dots/.emacs.d/modules/dw-interface.el
-TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)</p>
-<p>a framework for minibuffer completion
-(https://github.com/minad/vertico)</p>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
+    <h3 id="completion-">λ +completion -</h3>
+<p><em>Author:</em> lispcat <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;">&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;</a><br></p>
+<p>This file contains configuration to Emacs' completion.</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; ? : corfu, kind-icon, wgrep?, consult-dir, cape</span>
+<span style="color: #7E8AA1">;; ^ more at ~/code/cloned/daviwil-dots/.emacs.d/modules/dw-interface.el</span>
+<span style="color: #7E8AA1">;; TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)</span>
+<span style="color: #7E8AA1">;;</span>
+<span style="color: #7E8AA1">;; a framework for minibuffer completion</span>
+<span style="color: #7E8AA1">;; (https://github.com/minad/vertico)</span>
+
+<span style="color: #D4D2C8">(leaf vertico</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  (vertico-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; :setq</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (vertico-scroll-margin . 0) ; Different scroll margin</span>
@@ -655,7 +668,7 @@ TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)</p
 <span style="color: #D4D2C8">  )</span>
 
 <span style="color: #7E8AA1">;; A few more useful configurations...</span>
-<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Support opening new minibuffers from inside existing minibuffers.</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> enable-recursive-minibuffers </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
@@ -745,7 +758,7 @@ TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)</p
 <span style="color: #D4D2C8">          (</span><span style="color: #D5FF80">&quot;M-r&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> consult-history)) </span><span style="color: #7E8AA1">;; previous-matching-history-element</span>
 <span style="color: #D4D2C8">         )</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
-<span style="color: #D4D2C8">  (general-my-map</span>
+<span style="color: #D4D2C8">  (leader-bind</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;s&quot;</span><span style="color: #D4D2C8"> search-map</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Tt&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;consult-theme</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;bb&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;consult-buffer</span>
@@ -755,7 +768,7 @@ TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)</p
 <span style="color: #7E8AA1">;; used to go to a file in a bookmarked dir n stuff (one ex)</span>
 <span style="color: #D4D2C8">(leaf consult-dir</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
-<span style="color: #D4D2C8">  (general-my-map</span>
+<span style="color: #D4D2C8">  (leader-bind</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;fd&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;consult-dir</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span><span style="color: #D4D2C8"> ((</span><span style="color: #D5FF80">&quot;C-x C-d&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> consult-dir)      </span><span style="color: #7E8AA1">; default?</span>
 <span style="color: #D4D2C8">         (vertico-map</span>
@@ -914,7 +927,7 @@ TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)</p
 
 <span style="color: #7E8AA1">;; https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for-yasnippets-when-using-eglot</span>
 
-<span style="color: #D4D2C8">(leaf yasnippet </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> yasnippet-snippets</span>
+<span style="color: #D4D2C8">(leaf yasnippet </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> yasnippet-snippets</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> yas-reload-all</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> (prog-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> yas-minor-mode)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
@@ -929,7 +942,7 @@ TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)</p
 <span style="color: #D4D2C8">(global-set-key [remap dabbrev-expand] </span><span style="color: #DFBFFF">&#39;hippie-expand</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">(add-to-list </span><span style="color: #DFBFFF">&#39;hippie-expand-try-functions-list</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">yas-hippie-try-expand </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
 
-<span style="color: #D4D2C8">(leaf isearch </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">(leaf isearch </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-M-s&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> isearch-forward)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-M-r&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> isearch-backward))</span>
@@ -1038,15 +1051,64 @@ TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)</p
 <span style="color: #7E8AA1">;; The package is young and doesn&#39;t have comprehensive coverage.</span>
 <span style="color: #7E8AA1">;; (use-package tempel-collection)</span>
 
-<span style="color: #7E8AA1">;; (leaf abbrev :ensure nil</span>
+<span style="color: #7E8AA1">;; (leaf abbrev :elpaca nil</span>
 <span style="color: #7E8AA1">;;   :bind ((&quot;C-c c a&quot; . add-global-abbrev)</span>
 <span style="color: #7E8AA1">;;          (&quot;C-c c -&quot; . inverse-add-global-abbrev)</span>
 <span style="color: #7E8AA1">;;          (&quot;C-c c e&quot; . edit-abbrevs)))</span>
+</code></pre></div>
+<h3 id="misc">&gt; misc</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/elisp-custom-keyword-lax-capf ()</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Provide lax completion when in s-expr with preceding :custom keyword.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (derived-mode-p </span><span style="color: #DFBFFF">&#39;emacs-lisp-mode</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">               (my/elisp-custom-keyword-lax-capf--pred))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; get elisp-capf result</span>
+<span style="color: #D4D2C8">      (when-let ((result (elisp-completion-at-point)))</span>
+<span style="color: #D4D2C8">        </span><span style="color: #7E8AA1">;; capf new</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">append</span><span style="color: #D4D2C8"> (take </span><span style="color: #DFBFFF">3</span><span style="color: #D4D2C8"> result)</span>
+<span style="color: #D4D2C8">                (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:annotation-function</span>
+<span style="color: #D4D2C8">                      (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (cand)</span>
+<span style="color: #D4D2C8">                        (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((sym (</span><span style="color: #FFD173">intern-soft</span><span style="color: #D4D2C8"> cand)))</span>
+<span style="color: #D4D2C8">                          (</span><span style="color: #FFAD66">cond</span>
+<span style="color: #D4D2C8">                           ((</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> sym (</span><span style="color: #FFD173">boundp</span><span style="color: #D4D2C8"> sym)) </span><span style="color: #D5FF80">&quot; &lt;var&gt;&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                           ((</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> sym (</span><span style="color: #FFD173">fboundp</span><span style="color: #D4D2C8"> sym)) </span><span style="color: #D5FF80">&quot; &lt;func&gt;&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                           ((</span><span style="color: #FFD173">keywordp</span><span style="color: #D4D2C8"> sym) </span><span style="color: #D5FF80">&quot; &lt;key&gt;&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                           (</span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;&quot;</span><span style="color: #D4D2C8">)))))))))</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/elisp-custom-keyword-lax-capf--pred ()</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Predicate for </span><span style="color: #DFBFFF">`my/elisp-custom-keyword-lax-capf&#39;</span><span style="color: #D5FF80">.</span>
+
+<span style="color: #D5FF80">Checks if the point is under </span><span style="color: #DFBFFF">`use-package&#39;</span><span style="color: #D5FF80"> or </span><span style="color: #DFBFFF">`leaf&#39;</span><span style="color: #D5FF80">,</span>
+<span style="color: #D5FF80">and that the last keyword was :custom.&quot;</span>
+<span style="color: #D4D2C8">    (when-let*</span>
+<span style="color: #D4D2C8">        ((limit</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFAD66">save-excursion</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFAD66">condition-case</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">                </span><span style="color: #7E8AA1">;; go up till find use-package or leaf</span>
+<span style="color: #D4D2C8">                (</span><span style="color: #FFAD66">progn</span>
+<span style="color: #D4D2C8">                  (</span><span style="color: #FFAD66">while</span><span style="color: #D4D2C8"> (not (looking-at-p </span><span style="color: #D5FF80">&quot;(\\(use-package\\|leaf\\)\\b&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                    (backward-up-list))</span>
+<span style="color: #D4D2C8">                  (</span><span style="color: #FFD173">point</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">              </span><span style="color: #7E8AA1">;; no matches</span>
+<span style="color: #D4D2C8">              (</span><span style="color: #73D0FF">error</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)))))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; search backwards, find last keyword, if &quot;:custom&quot; ret t</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">save-excursion</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">re-search-backward</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot; \\(:\\w+\\)&quot;</span><span style="color: #D4D2C8"> limit </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">string=</span><span style="color: #D4D2C8"> (match-string </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">) </span><span style="color: #D5FF80">&quot;:custom&quot;</span><span style="color: #D4D2C8">)))))</span>
+
+<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;emacs-lisp-mode-hook</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">              (add-hook </span><span style="color: #DFBFFF">&#39;completion-at-point-functions</span>
+<span style="color: #D4D2C8">                        </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">my/elisp-custom-keyword-lax-capf </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))))</span>
+
+
 
 <span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+completion</span><span style="color: #D4D2C8">)</span>
+<span style="color: #7E8AA1">;;; +completion.el ends here</span>
 </code></pre></div>
 <hr />
-<p><em>Last updated: { git_revision_date_localized }</em></p>
+<p><em>Last updated: August 16, 2025</em></p>
 </section>
 
 <section id="mkdocs-terminal-after-content">
