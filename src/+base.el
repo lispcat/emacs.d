@@ -20,29 +20,28 @@
 
 ;;; Commentary:
 
-;;
+;; Set up mostly built-in Emacs functionality.
 
 ;;; Code:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                   buffers                                  ;
+;;                                   Buffers                                  ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; -- autorevert -------------------------------------------------------------
 
 ;; If a file is open as a buffer and its contents are changed on the disk, to
 ;; update that buffer, you need to run `revert-buffer'.
-;;
+
 ;; `autorevert-mode' automatically runs `revert-buffer' when it receives a
 ;; filesystem notification (if `auto-revert-use-notify' is non-nil), or at every
 ;; `auto-revert-interval'.
 
 ;; --
 
-(leaf autorevert :elpaca nil
-  :require t
-  :diminish autorevert-mode
-  :init (global-auto-revert-mode 1)
+(leaf emacs :elpaca nil
+  :init
+  (global-auto-revert-mode 1)
   :custom
   ;; less verbose (don't print "Reverting buffer" in *Messages*)
   (auto-revert-verbose . nil)
@@ -71,29 +70,62 @@
   "bs" '(save-buffer            :wk "save-buffer"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                   history                                  ;
+;;                                   History                                  ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; remember recent files
-(leaf recentf :elpaca nil
-  :hook emacs-startup-hook)
+;;; -- recentf ----------------------------------------------------------------
 
-;; go to previous location in file when reopening
-(leaf saveplace :elpaca nil
+;; `recentf-mode' tracks recently opened files that you can search through and
+;; open with `recentf'.
+
+;; --
+
+(leaf emacs :elpaca nil
+  :hook
+  (emacs-startup-hook . recentf-mode))
+
+;; --
+
+;;; -- saveplace --------------------------------------------------------------
+
+;; `save-place-mode' saves your cursor location in a file, so that when
+;; re-opening a file, your cursor jumps to your last location.
+;; Persists over restarts.
+
+;; --
+
+(leaf emacs :elpaca nil
   :init
   (save-place-mode 1))
 
-;; persist minibuffer history over restarts
-(leaf savehist :elpaca nil
+;; --
+
+;;; -- savehist ---------------------------------------------------------------
+
+;; `savehist-mode' persists minibuffer history over restarts.
+
+;; --
+
+(leaf emacs :elpaca nil
   :init
   (savehist-mode 1))
 
+;; --
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                   windows                                  ;
+;;                                   Windows                                  ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;; -- ace-window -------------------------------------------------------------
+
+;; Efficiently switch between Emacs windows.
+;;
+;; repo: https://github.com/abo-abo/ace-window
+
+;; --
+
 (leaf ace-window
-  :setq
+  :custom
   (aw-keys . '(?a ?o ?e ?u ?h ?t ?n ?s))
   (aw-scope . 'frame)
   (aw-background . nil)
@@ -117,6 +149,11 @@
     ;; misc
     "wm" 'switch-to-minibuffer))
 
+;; --
+
+;;; -- hydra: window ----------------------------------------------------------
+
+;; A hydra for quick window switching
 (defhydra hydra-window ()
   "
 Movement^^        ^Split^         ^Switch^		^Resize^
@@ -179,7 +216,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    files                                   ;
+;;                                    Files                                   ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun +open-emacs-config-file ()
@@ -190,14 +227,19 @@ _SPC_ cancel	_o_nly this   	_d_elete
 (defun +open-agenda-file ()
   "Open agenda file."
   (interactive)
-  (find-file "~/Notes/org/agenda.org"))
+  (when-let* ((f (car org-agenda-files)))
+    (find-file f)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    dired                                   ;
+;;                                    Dired                                   ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Emacs' built-in file manager.
+
+;; --
 
 (leaf dired :elpaca nil
-  :setq
+  :custom
   (dired-listing-switches . "-Ahl --group-directories-first -X")
   (dired-auto-revert-buffer . t)        ; auto update file changes
   :bind (dired-mode-map
@@ -220,20 +262,40 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (when (executable-find "trash")
     (setq delete-by-moving-to-trash t)))
 
+;; --
+
+;;; -- dired-launch -----------------------------------------------------------
+
+;; Easily launch external applications from dired.
+;;
+;; repo: https://codeberg.org/thomp/dired-launch
+
+;; --
+
 (leaf dired-launch
   :after dired
   :config
   (dired-launch-enable)
-  :setq
+  :custom
   (dired-launch-extensions-map
    . '(("pptx" ("libreoffice"))
        ("docx" ("libreoffice"))
        ("odt"  ("libreoffice"))
        ("html" ("librewolf")))))
 
+;; --
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    misc                                    ;
+;;                                    Misc                                    ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; -- helpful ----------------------------------------------------------------
+
+;; Improve Emacs' help buffer with much more contextual info.
+;;
+;; repo: https://github.com/Wilfred/helpful
+
+;; --
 
 (leaf helpful
   :commands helpful--bookmark-jump
@@ -247,13 +309,24 @@ _SPC_ cancel	_o_nly this   	_d_elete
   ([remap describe-command] . helpful-command)
   ([remap describe-key] . helpful-key)
   ("C-h h" . helpful-at-point)
-  ("C-h H" . view-hello-file)          ; command originally at "C-h h"
+  ("C-h H" . view-hello-file)           ; command originally at "C-h h"
   ("C-h M" . which-key-show-major-mode)
   ("C-h E" . describe-keymap))
 
-;; sudoedit
+;; --
+
+;;; -- auto-sudoedit ----------------------------------------------------------
+
+;; Automatically re-open files with sudo when needed.
+
+;; --
+
 (leaf auto-sudoedit
   :commands auto-sudoedit-sudoedit)
+
+;; --
+
+;;; -- profiling --------------------------------------------------------------
 
 (defun +profiler-report ()
   "Profiler stop and report."
@@ -266,11 +339,15 @@ _SPC_ cancel	_o_nly this   	_d_elete
   "Ds" 'profiler-start
   "Dr" '+profiler-report)
 
+;;; -- user info --------------------------------------------------------------
+
 (setq user-full-name "lispcat")
 (setq user-mail-address "187922791+lispcat@users.noreply.github.com")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                     end                                    ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; end
 (provide '+base)
 ;;; +base.el ends here
 

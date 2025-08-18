@@ -148,50 +148,7 @@
 (leaf emacs :elpaca nil
   :hook ((emacs-lisp-mode-hook . (lambda ()
                                    (auto-fill-mode)
-                                   (setq-local fill-column 80))))
-  :config
-  (defun my/elisp-custom-keyword-lax-capf ()
-    "Provide lax completion when in s-expr with preceding :custom keyword."
-    (when (and (derived-mode-p 'emacs-lisp-mode)
-               (my/elisp-custom-keyword-lax-capf--pred))
-      ;; get elisp-capf result
-      (when-let ((result (elisp-completion-at-point)))
-        ;; capf new
-        (append (take 3 result)
-                (list :annotation-function
-                      (lambda (cand)
-                        (let ((sym (intern-soft cand)))
-                          (cond
-                           ((and sym (boundp sym)) " <var>")
-                           ((and sym (fboundp sym)) " <func>")
-                           ((keywordp sym) " <key>")
-                           (t "")))))))))
-
-  (defun my/elisp-custom-keyword-lax-capf--pred ()
-    "Predicate for `my/elisp-custom-keyword-lax-capf'.
-
-Checks if the point is under `use-package' or `leaf',
-and that the last keyword was :custom."
-    (when-let*
-        ((limit
-          (save-excursion
-            (condition-case nil
-                ;; go up till find use-package or leaf
-                (progn
-                  (while (not (looking-at-p "(\\(use-package\\|leaf\\)\\b"))
-                    (backward-up-list))
-                  (point))
-              ;; no matches
-              (error nil)))))
-      ;; search backwards, find last keyword, if ":custom" ret t
-      (save-excursion
-        (when (re-search-backward " \\(:\\w+\\)" limit t)
-          (string= (match-string 1) ":custom")))))
-
-  (add-hook 'emacs-lisp-mode-hook
-            (lambda ()
-              (add-hook 'completion-at-point-functions
-                        #'my/elisp-custom-keyword-lax-capf nil t))))
+                                   (setq-local fill-column 80)))))
 
 (leaf orglink
   :hook emacs-lisp-mode-hook)
@@ -601,10 +558,14 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 (leaf outline-indent
   :doc "Optimal folding: https://github.com/jamescherti/outline-indent.el"
   :commands outline-indent-minor-mode
+  :after org
+  :custom
+  (outline-indent-ellipsis . " ▼")
+  (outline-blank-line . t)
+
   :init
 
   ;; outline-cycle
-
   (defun +outline-cycle (&optional event)
     (interactive (list last-nonmenu-event))
     (save-excursion
@@ -625,7 +586,6 @@ Optional WIDTH parameter determines total width (defaults to 70)."
     ("<backtab>" +outline-cycle))
 
   ;; outline-cycle buffer
-
   (defun +outline-cycle-buffer (&optional level)
     (interactive (list (when current-prefix-arg
                          (prefix-numeric-value current-prefix-arg))))
@@ -659,7 +619,6 @@ Optional WIDTH parameter determines total width (defaults to 70)."
     ("<backtab>" +outline-cycle-buffer))
 
   ;; outline-cycle hydra
-
   (defun +outline-cycle-at-root (arg)
     (interactive "P")
     (let ((prev-loc (point-marker)))
@@ -674,7 +633,6 @@ Optional WIDTH parameter determines total width (defaults to 70)."
       (goto-char prev-loc)))
 
   ;; run outline-hide-body only after first focus (add to .dir-locals.el)
-
   (defun +hide-outline-on-open (func &rest args)
     "Hide outlines when opening files via dired or projectile."
     (let ((result (apply func args)))
@@ -690,6 +648,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   ;; (advice-add 'projectile-find-file-dwim :around #'+hide-outline-on-open)
 
   :bind
+
   (outline-minor-mode-map
    ("<backtab>" . +outline-cycle-at-root))
 
@@ -722,27 +681,63 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   ("C-c ; C" . outline-hide-children)
 
   :hook
-  ((emacs-lisp-mode-hook . outline-indent-minor-mode)
-   (outline-indent-minor-mode-hook
+  ((emacs-lisp-mode-hook
     . (lambda ()
+        (outline-indent-minor-mode)
         (setq-local make-window-start-visible t)
-        (pcase major-mode
-          ('emacs-lisp-mode
-           (setq-local outline-regexp
-                       (string-join
-                        '(
-                          ;; "^;;;+ .*"    ; ;;;+ space rest       (regular)
-                          "^;;+ .*"    ; ;;+ space rest (optimal?)
-                          "^;;$"       ; ^;;$ (alt)
-                          "^(...."      ; top-level parens
-                          ;; "^;;+ .* ;$"  ; ;;+ space rest ;      (cob)
-                          "^;;;;+$"     ; ;;;;+ (only, all the way) (cob)
-                          )
-                        "\\|"))
-           )))))
+        (let ((header-comment-p "^\\(;;;+\\) .*")
+              (cob-p (string-join
+                      '("^;;;;+$"
+                        "^;;+ +\\(.*\\) +;$")
+                      "\\|"))
+              (coh-p (string-join
+                      '("^;;; -- \\(.*\\) -+$")))
+              (def-p (string-join
+                      '("^("))))
+          (setq-local outline-regexp
+                      (string-join
+                       (list cob-p
+                             coh-p
+                             def-p
+                             header-comment-p)
+                       ;; '(
+                       ;;  ;; "^;;;+ .*"    ; ;;;+ space rest       (regular)
+                       ;;  "^;;+ .*"     ; ;;+ space rest (optimal?)
+                       ;;  "^;;$"        ; ^;;$ (alt)
+                       ;;  "^(...."      ; top-level parens
+                       ;;  ;; "^;;+ .* ;$"  ; ;;+ space rest ;      (cob)
+                       ;;  "^;;;;+$"     ; ;;;;+ (only, all the way) (cob)
+                       ;;  )
+                       "\\|"))
+          (setq-local outline-level
+                      (lambda ()
+                        (cond
+                         ((looking-at cob-p)
+                          1)
+                         ((looking-at coh-p)
+                          2)
+                         ((looking-at "^\\(;;;+\\) .*")
+                          (- (match-end 1) (match-beginning 1) 2))
+                         ((looking-at def-p)
+                          1000)
+                         (t 0))))
 
-  :setq
-  (outline-indent-ellipsis . " ▼")
-  (outline-blank-line . t))
+          ;; (setq-local outline-level
+          ;;             (lambda ()
+          ;;               (cond
+          ;;                ;; ((looking-at cob-p) 1)
+          ;;                ;; ((looking-at coh-p) 2)
+          ;;                ;; ((looking-at cow-p) 3)
+          ;;                ((looking-at def-p)
+          ;;                 (- (match-end 0) (match-beginning 0))))))
+          ;; (setq-local outline-level
+          ;;             (lambda ()
+          ;;               (cond
+          ;;                ((looking-at "^;;;+")
+          ;;                 (- (match-end 0) (match-beginning 0)))
+          ;;                ((looking-at "^(")
+          ;;                 1000)
+          ;;                nil)))
+          )))))
 
 (provide '+ide)

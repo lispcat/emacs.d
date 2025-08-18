@@ -20,30 +20,59 @@
 
 ;;; Commentary:
 
-;; 
+;; Configuration for Org-mode and friends.
+
+;; Org is a markup language and plain text file format, much like Markdown, but
+;; a lot more powerful.
 
 ;;; Code:
 
 ;; NOTE: ensure that the newest version of org is installed right after elpaca
 ;; setup
 
-(require 'leaf)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                     org                                    ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; General config options for org-mode.
+
+;; --
 
 (leaf org :elpaca nil
-  :setq
+  :custom
+  ;; default org directory
   (org-directory . "~/Notes/org")
-  (org-tags-column . -55)               ; column where tags are indented to
-  ;; (org-startup-folded . 'showall)  ; default folding mode
-  (org-startup-folded . 'nofold)        ; default folding mode
-  (org-startup-indented . t)            ; indent headings and its body
+
+  ;; column where tags are indented to
+  (org-tags-column . -55)
+
+  ;; default folding mode
+  (org-startup-folded . 'nofold)
+
+  ;; indent headings and its body
+  (org-startup-indented . t)
+
+  ;; more ergonomic C-a/C-e
   (org-special-ctrl-a/e . t)
-  (org-src-window-setup . 'current-window) ; edit code blocks in the same window
-  (org-return-follows-link . t)            ; RET can open links
-  (org-hide-emphasis-markers . t)          ; hide formatting chars (* / ~ = etc)
-  (org-src-preserve-indentation . t) ; remove annoying leading whitespace in code blocks
-  (org-fontify-whole-heading-line . t)
-  ;; (org-ellipsis . " ›")
-  (org-ellipsis . " ‣")
+
+  ;; edit src blocks in the same window
+  (org-src-window-setup . 'current-window)
+
+  ;; RET can open links
+  (org-return-follows-link . t)
+
+  ;; hide formatting chars (* / ~ = etc)
+  (org-hide-emphasis-markers . t)
+
+  ;; remove annoying leading whitespace in code blocks
+  (org-src-preserve-indentation . t)
+
+  ;; TODO: not sure what this does
+  ;; (org-fontify-whole-heading-line . t)
+
+  ;; custom ellipses when folded
+  ;; (org-ellipsis . " ‣")
+  (org-ellipsis . " ›")
   ;; (org-ellipsis . " …")
   ;; (org-ellipsis . " ⤵")
   ;; (org-ellipsis . " ▾")
@@ -52,22 +81,7 @@
   (leader-bind
     "o" '(:ignore t :wk "org"))
 
-  ;; :hook (org-mode-hook . indent-tabs-mode)
-
   :config
-  (defun +org-insert-subheading-respect-content ()
-    "Insert new subheading after the current heading's body.
-If in a list, inserts a new sublist after the current list."
-    (interactive)
-    (org-meta-return)
-    (org-metaright))
-
-  :bind
-  (org-mode-map
-   ("C-M-<return>"
-    . +org-insert-subheading-respect-content))
-
-  :defer-config
 
   ;; set org font sizes
   (dolist
@@ -78,17 +92,6 @@ If in a list, inserts a new sublist after the current list."
       ;;         (org-level-3 :height 1.1)))
       (pair '((org-document-title :height 1.9)))
     (apply #'set-face-attribute (car pair) nil (cdr pair)))
-
-  (require 'org-tempo)
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python"))
-  (add-to-list 'org-structure-template-alist '("gcc" . "src c"))
-  (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
-  (add-to-list 'org-structure-template-alist '("conf" . "src conf"))
-  (add-to-list 'org-structure-template-alist '("java" . "src java"))
-  (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
-  (add-to-list 'org-structure-template-alist '("clang" . "src c"))
 
   ;; fix syntax <> matching with paren
   (add-hook 'org-mode-hook (lambda ()
@@ -111,7 +114,57 @@ If in a list, inserts a new sublist after the current list."
   ;; Run once immediately to set colors if no theme is loaded
   (+org-todo-color-override)
 
-  )
+  ;; Shortcut for M-RET M-<right>
+  ;; In org-mode, this usually translates to either:
+  ;; - new subheading
+  ;; - new sublist
+  (defun +org-meta-ret-meta-right ()
+    "Shortcut for M-RET M-<right>."
+    (interactive)
+    (org-meta-return)
+    (org-metaright))
+
+  :bind
+  (org-mode-map
+   ("C-M-<return>" . +org-meta-ret-meta-right)))
+
+;; --
+
+;;; -- org-tempo --------------------------------------------------------------
+
+;; Ease the creation of src blocks (code blocks).
+
+;; To create src blocks, usually, you would press `C-c C-,` or run
+;; `org-insert-structure-template'.
+
+;; But with `org-tempo', with the config below, you can type `<sh TAB` to create
+;; an src block like this:
+;;
+;; ```
+;; #+begin_src shell
+;;
+;; #+end_src
+;; ```
+;;
+
+;; --
+
+(leaf org-tempo :elpaca nil
+  :after org
+  :config
+  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("gcc" . "src c"))
+  (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
+  (add-to-list 'org-structure-template-alist '("conf" . "src conf"))
+  (add-to-list 'org-structure-template-alist '("java" . "src java"))
+  (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
+  (add-to-list 'org-structure-template-alist '("clang" . "src c")))
+
+;; --
+
+;;; -- org-download -----------------------------------------------------------
 
 (leaf org-download
   :after org
@@ -119,6 +172,8 @@ If in a list, inserts a new sublist after the current list."
   (org-download-enable)
   :setq-default
   (org-download-image-dir . "_images"))
+
+;;; -- org-bullets ------------------------------------------------------------
 
 ;; TODO: replace with org-superstar
 (leaf org-bullets
@@ -134,8 +189,12 @@ If in a list, inserts a new sublist after the current list."
        "✧"
        "✿")))
 
+;;; -- toc-org ----------------------------------------------------------------
+
 (leaf toc-org
   :hook org-mode-hook)
+
+;;; -- anki-editor ------------------------------------------------------------
 
 (leaf anki-editor
   :commands (anki-editor-push-note-at-point
@@ -150,14 +209,19 @@ If in a list, inserts a new sublist after the current list."
       (anki-editor-mode 1)))
   (advice-add #'anki-editor--push-note :before #'+ensure-anki-editor-mode))
 
-(use-package f :ensure (:wait f))
+;;; -- image-slicing ----------------------------------------------------------
+
 (leaf image-slicing :ensure nil
   :hook org-mode-hook
   :setq
   (image-slicing-newline-trailing-text . nil))
 
+;;; -- org-auto-tangle --------------------------------------------------------
+
 (leaf org-auto-tangle
   :hook org-mode-hook)
+
+;;; -- org-agenda -------------------------------------------------------------
 
 (leaf org-agenda :elpaca nil
   :after org
@@ -174,8 +238,16 @@ If in a list, inserts a new sublist after the current list."
                     "|"
                     "DONE(d/!)")))
   (setq org-agenda-files
-        (list "~/Notes/org/Inbox.org"
-              "~/Notes/org/agenda.org"))
+        (list ;; "~/Notes/org/Inbox.org"
+         ;; "~/Notes/org/agenda.org"
+         "~/Notes/denote/20250728T235116--todo__todo.org"))
+  (defun +open-org-agenda-file ()
+    (interactive)
+    (find-file (car org-agenda-files)))
+
+  (leader-bind
+    "oo" '+open-org-agenda-file)
+
   (setq org-tag-alist
         '(;; Places
           ("@home"   . ?H)
@@ -216,6 +288,8 @@ If in a list, inserts a new sublist after the current list."
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit t))
 
+;;; -- org-super-agenda -------------------------------------------------------
+
 (leaf org-super-agenda
   :after org-agenda
   :require t
@@ -241,11 +315,17 @@ If in a list, inserts a new sublist after the current list."
                             :habit t)
                      (:discard (:anything t)))))))))))
 
+;;;; -- org-ql ----------------------------------------------------------------
+
 (leaf org-ql
   :after org)
 
+;;; -- org-pomodoro -----------------------------------------------------------
+
 (leaf org-pomodoro
   :after org)
+
+;;; -- org-noter --------------------------------------------------------------
 
 (leaf org-noter
   :after org
@@ -268,6 +348,8 @@ The property will be removed if ran with a \\[universal-argument]."
                             (format "%s" (aref vec 1)))))
          (message "meow: %s" num)
          (org-entry-put (point) "NOTER_PAGE" num))))))
+
+;;; -- org-capture ------------------------------------------------------------
 
 (leaf org-capture :elpaca nil
   :after org
@@ -300,6 +382,8 @@ The property will be removed if ran with a \\[universal-argument]."
            (file denote-last-path)
            #'denote-org-capture :no-save t :immediate-finish nil
            :kill-buffer t :jump-to-captured t))))
+
+;;; -- more org-anki stuff ----------------------------------------------------
 
 (defun +org-priority-to-anki ()
   (interactive)
@@ -371,6 +455,8 @@ The property will be removed if ran with a \\[universal-argument]."
                  (org-set-property "TIME" (format "%s" time-daily))
                  (org-set-property "EFFORT" (format "%s" effort))
                  (org-next-visible-heading -1))))))
+
+;;; -- visual fill column -----------------------------------------------------
 
 (leaf visual-fill-column
   :require t

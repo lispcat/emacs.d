@@ -1,3 +1,30 @@
+;;; +completion.el ---                               -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2025  lispcat
+
+;; Author: lispcat <187922791+lispcat@users.noreply.github.com>
+;; Keywords: local
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This file contains configuration to Emacs' completion.
+
+;;; Code:
+
+
 ;; ? : corfu, kind-icon, wgrep?, consult-dir, cape
 ;; ^ more at ~/code/cloned/daviwil-dots/.emacs.d/modules/dw-interface.el
 ;; TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)
@@ -404,4 +431,58 @@
 ;;          ("C-c c -" . inverse-add-global-abbrev)
 ;;          ("C-c c e" . edit-abbrevs)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                    misc                                    ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(leaf emacs :elpaca nil
+  :config
+  (defun my/elisp-custom-keyword-lax-capf ()
+    "Provide lax completion when in s-expr with preceding :custom keyword."
+    (when (and (derived-mode-p 'emacs-lisp-mode)
+               (my/elisp-custom-keyword-lax-capf--pred))
+      ;; get elisp-capf result
+      (when-let ((result (elisp-completion-at-point)))
+        ;; capf new
+        (append (take 3 result)
+                (list :annotation-function
+                      (lambda (cand)
+                        (let ((sym (intern-soft cand)))
+                          (cond
+                           ((and sym (boundp sym)) " <var>")
+                           ((and sym (fboundp sym)) " <func>")
+                           ((keywordp sym) " <key>")
+                           (t "")))))))))
+
+  (defun my/elisp-custom-keyword-lax-capf--pred ()
+    "Predicate for `my/elisp-custom-keyword-lax-capf'.
+
+Checks if the point is under `use-package' or `leaf',
+and that the last keyword was :custom."
+    (when-let*
+        ((limit
+          (save-excursion
+            (condition-case nil
+                ;; go up till find use-package or leaf
+                (progn
+                  (while (not (looking-at-p "(\\(use-package\\|leaf\\)\\b"))
+                    (backward-up-list))
+                  (point))
+              ;; no matches
+              (error nil)))))
+      ;; search backwards, find last keyword, if ":custom" ret t
+      (save-excursion
+        (when (re-search-backward " \\(:\\w+\\)" limit t)
+          (string= (match-string 1) ":custom")))))
+
+  (add-hook 'emacs-lisp-mode-hook
+            (lambda ()
+              (add-hook 'completion-at-point-functions
+                        #'my/elisp-custom-keyword-lax-capf nil t))))
+
+
+
 (provide '+completion)
+;;; +completion.el ends here
+

@@ -165,44 +165,53 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (elpaca leaf
-  :wait                       ; deferred by default. demand with :leaf-defer nil
-  )
+  ;; add my own keywords
+  (eval-after-load 'leaf
+    (lambda nil
+      (setq leaf-keywords
+            (append
+             leaf-keywords
+             `(:elpaca-wait `(,@leaf--body :wait))))))
+  :wait)
 
 (elpaca leaf-keywords
+  ;; custom keywords
   (leaf-keywords-init)
   (setq leaf-alias-keyword-alist '((:ensure . :elpaca)))
-  (setq leaf-defaults (append '(:ensure t) leaf-system-defaults))
+  (setq leaf-defaults (append '(:elpaca t) leaf-system-defaults))
   :wait)
 
 ;; hack: fix org version mismatch
-(elpaca org)
+;; (elpaca org)
 
+;; finish all queues now to prevent async issues later
+(elpaca-process-queues)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                             necessary packages                             ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package general :ensure (:wait t)
-  :demand t
-  :config
+(leaf general :elpaca-wait t
+  :init
   (general-create-definer leader-bind
     :prefix "C-c"))
 
-(use-package diminish :ensure (:wait t)
-  :demand t)
+(leaf diminish :elpaca-wait t
+  :require t)
 
-(use-package which-key :ensure (:wait t)
-  :demand t
-  :diminish which-key-mode
+(leaf which-key :elpaca-wait t
   :config
   (setq which-key-idle-delay 0.3)
-  (which-key-mode 1))
+  (which-key-mode 1)
+  :diminish which-key-mode)
 
-(use-package hydra :ensure (:wait t)
-  :demand t)
+;; lingering key menus for repeated keypresses
+(leaf hydra :elpaca-wait t)
 
-(use-package dash :ensure (:wait t)
-  :demand t
+;; functional programming library
+;; https://github.com/magnars/dash.el
+(leaf dash :elpaca-wait t
+  :require t
   :config
   (defun -debug (label)
     "Debugging helper function for dash.el."
@@ -210,11 +219,16 @@
       (message "%s: %S" label m)
       m)))
 
-(require 'cl-lib)
+;; files/dirs library
+;; https://github.com/rejeep/f.el
+(leaf f :elpaca-wait t)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                  load-path                                 ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;; string manipulation library
+;; ;; https://github.com/magnars/s.el
+(leaf s :elpaca-wait t)
+
+;; finish all queues now to prevent async issues later
+(elpaca-process-queues)
 
 ;;; -- adding to the load-path ------------------------------------------------
 
@@ -229,7 +243,6 @@
 ;;   function.
 
 ;; --
-
 (defun +add-to-load-path-recursively (path depth &optional exclude-self)
   "Add PATH and its recursive subdirs to `load-path'.
 

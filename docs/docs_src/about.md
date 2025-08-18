@@ -5,9 +5,7 @@
 
 Emacs is more than just a text editor. It's essentially a hacker's Swiss army knife with an infinite number of slots for new tools to add.
 
-## What i use it for
-
-To list a few:
+## What i use it for, to list a few:
 
 - IDE/text editing
 - file management
@@ -18,6 +16,7 @@ To list a few:
 - music player
 - calculator
 - calendar + scheduler/agenda
+- and much more...
 
 ## Notable features
 
@@ -28,7 +27,7 @@ Some neat features of my setup:
 
 ## License
 
-This project is licensed under the GPL3 License. See the [LICENSE](https://github.com/lispcat/emacs-config/blob/master/LICENSE) file for details.
+This project is licensed under the GPL3 License. See the [LICENSE](https://github.com/lispcat/emacs.d/blob/master/LICENSE) file for details.
 
 ## Acknowledgements
 
