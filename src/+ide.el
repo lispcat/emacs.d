@@ -1,20 +1,34 @@
+;;; TODO: obsolete?
+
 (defvar prefer-eglot-mode? nil)
 (defvar prefer-lsp-mode? nil)
 
+;;; templates for new files
+
 (auto-insert-mode)  ;;; Adds hook to find-files-hook
+
+;;; sane indentation defaults
 
 (setq-default indent-tabs-mode nil)
 (setq tab-always-indent t)
+
+;;; tweak compilation buffer
 
 (leaf compile :elpaca nil
   :config
   (setq compilation-scroll-output t))
 
+;;; enable syntax checker
+
 (leaf flycheck
   :hook prog-mode-hook)
 
+;;; buttonize URLs
+
 (leaf emacs :elpaca nil
   :hook goto-address-mode)
+
+;;; project.el
 
 (leaf project :elpaca nil
   :bind-keymap ("C-c P" . project-prefix-map)
@@ -36,6 +50,8 @@
   :config
   (setq projectile-compile-use-comint-mode t))
 
+;;; lsp-mode
+
 (leaf lsp-mode
   :commands (lsp lsp-deferred)
 
@@ -51,6 +67,8 @@
         lsp-keymap-prefix "C-c l"
         ;; problematic: https://github.com/emacs-lsp/lsp-mode/issues/4113
         lsp-update-inlay-hints-on-scroll nil))
+
+;;;; lsp-ui
 
 (leaf lsp-ui
   :bind
@@ -76,7 +94,7 @@
   (with-eval-after-load 'lsp-mode
     (define-key lsp-command-map (kbd "v i") #'lsp-ui-imenu)))
 
-;;; lsp-booster
+;;;; lsp-booster
 ;; use lsp-doctor for testing
 ;; Steps:
 ;; - install emacs-lsp-booster
@@ -112,7 +130,10 @@
             (message "Using emacs-lsp-booster for %s!" orig-result)
             (cons "emacs-lsp-booster" orig-result))
         orig-result)))
-  (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command))
+  (advice-add 'lsp-resolve-final-command :around
+              #'lsp-booster--advice-final-command))
+
+;;;; Automatic parenthesis pair matching
 
 ;; for non-programming too
 (leaf elec-pair :elpaca nil
@@ -133,27 +154,40 @@
 ;;                                    langs                                   ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;; Langs
+;;;; Lisp
+
 (setq +lisp-mode-hooks
       '(emacs-lisp-mode-hook
+        lisp-data-mode-hook
         scheme-mode-hook))
 
-;; rainbow parens
+;;;;; rainbow parens
+
+;; Highlight nested parens according to their depth.
+;; ---
+
 (leaf rainbow-delimiters
   :hook `,@+lisp-mode-hooks)
 
-;; paredit
+;;;;; paredit
+
 (leaf paredit
   :hook `,@+lisp-mode-hooks)
+
+;;;;; emacs-lisp
 
 (leaf emacs :elpaca nil
   :hook ((emacs-lisp-mode-hook . (lambda ()
                                    (auto-fill-mode)
                                    (setq-local fill-column 80)))))
 
+;;;;; org-style links in elisp
+
 (leaf orglink
   :hook emacs-lisp-mode-hook)
 
-;; other
+;;;;; elisp misc
 
 (defun create-banner-comment (text &optional width)
   "Create a banner comment with TEXT centered between semicolons.
@@ -173,8 +207,12 @@ Optional WIDTH parameter determines total width (defaults to 70)."
                     text
                     right-semis))))
 
+;;;;; tweak flycheck for elisp
+
 (with-eval-after-load 'flycheck
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+
+;;;;; scheme
 
 (leaf scheme-mode :elpaca nil
   :disabled t
@@ -191,6 +229,11 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 (leaf geiser-guile
   :disabled t
   :after geiser)
+
+;;;;; Clojure
+
+(leaf clojure-mode
+  :disabled t) ;;;; Rust
 
 (leaf rust-mode
   :require t
@@ -293,6 +336,8 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;    :repo "cordx56/rustowl"
 ;;    :files (:defaults "emacs/*")))
 
+;;;; C
+
 (leaf cc-mode :elpaca nil
   :hook ((c-mode-hook . lsp)
          (c-mode-hook . (lambda ()
@@ -316,6 +361,8 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;   (add-to-list 'c-default-style '(c-mode . "cc-mode"))
 ;;   (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
 
+;;;; Java
+
 (leaf lsp-java
   :mode "\\.java\\'"
   :config
@@ -332,6 +379,8 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;    ("C-c l T" . eglot-java-project-build-task)
 ;;    ("C-c l R" . eglot-java-project-build-refresh)))
 
+;;;; Markdown
+
 (leaf markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode))
@@ -345,15 +394,16 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   ;; (setq markdown-command "marked")
   (add-hook 'markdown-mode-hook #'+setup-markdown-mode))
 
-(leaf clojure-mode
-  :disabled t)
+;;;; Scala
 
 (leaf scala-mode
   :disabled t
   :interpreter "scala"
   :hook
   (lambda () (setq prettify-symbols-alist
-                   scala-prettify-symbols-alist)))
+              scala-prettify-symbols-alist)))
+
+;;;; Zig
 
 (leaf zig-mode
   :disabled t
@@ -361,18 +411,28 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   ;; (zig-format-on-save-mode 0)
   )
 
+;;;; Haskell
+
 (leaf haskell-mode
   :mode "\\.hs\\'")
+
+;;;; Nix
 
 (leaf nix-mode
   :mode "\\.nix\\'"
   :hook ((nix-mode-hook . lsp)))
 
+;;;; Yaml
+
 (leaf yaml-mode
   :mode "\\.yml\\'")
 
+;;;; Ron
+
 (leaf ron-mode
   :require t)
+
+;;;; Kerolox
 
 (leaf emacs :elpaca nil ;; kerolox!
 
@@ -391,7 +451,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
       :server-id 'saturn-v-lsp)))
 
 
-  ;;;; Kerolox treesit mode and LSP
+;;;;; Kerolox treesit mode and LSP
 
   (define-derived-mode kerolox-ts-mode kerolox-mode "kerolox[ts]"
     "Tree-sitter based major mode for editing kerolox (.rp1) files."
@@ -477,7 +537,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
       :server-id 'saturn-v-ts-lsp)))
 
 
-  ;;;; Tree-sitter generic ;;;;
+;;;;; kerolox - tree-sitter generic
 
   (with-eval-after-load 'treesit
     ;; Configure the language grammar source and mapping
@@ -500,17 +560,19 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (add-hook 'kerolox-ts-mode-hook #'lsp-deferred)
 
 
-  ;;;; Misc ;;;;
+;;;;; Kerolox misc
 
   ;; Remap regular mode to tree-sitter mode
   (setq major-mode-remap-alist
         '((kerolox-mode . kerolox-ts-mode)))
 
 
-  ;;;; Auto-mode-alist ;;;;
+;;;;; Kerolox - Auto-mode-alist
 
   ;; Associate file name pattern with major-mode
   (add-to-list 'auto-mode-alist '("\\.rp1\\'" . kerolox-ts-mode)))
+
+;;;; Lua-mode
 
 (leaf lua-mode
   :config
@@ -535,15 +597,38 @@ Optional WIDTH parameter determines total width (defaults to 70)."
               :override
               #'+lsp-clients-lua-language-server-test))
 
+;;;; Typst
+
+(use-package typst-ts-mode
+  :ensure (:type git :host codeberg :repo "meow_king/typst-ts-mode")
+  :demand t
+  :custom
+  (typst-ts-mode-grammar-location (expand-file-name
+                                   "tree-sitter/libtree-sitter-typst.so"
+                                   user-emacs-directory)))
+
+;;; Tooling
+
+;;;; direnv
+
 (leaf direnv
   :init
   (direnv-mode 1))
 
+;;;; Rainbow mode
+
+;; Add color to hex codes in buffer.
+;; --
+
 (leaf rainbow-mode
   :hook prog-mode-hook)
 
+;;;; Ansi-color... not sure what this is for
+
 (with-eval-after-load 'ansi-color
   (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter))
+
+;;;; Auto-install treesitter backends
 
 (leaf treesit-auto
   :require t
@@ -554,6 +639,13 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                               Code formatting                              ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Code folding
+
+;; TODO: look into: https://github.com/tarsius/outline-minor-faces
+;; is this worth it? alternative of
+
+;;;; Outline
 
 (leaf outline-indent
   :doc "Optimal folding: https://github.com/jamescherti/outline-indent.el"
@@ -696,10 +788,11 @@ Optional WIDTH parameter determines total width (defaults to 70)."
                       '("^("))))
           (setq-local outline-regexp
                       (string-join
-                       (list cob-p
-                             coh-p
-                             def-p
-                             header-comment-p)
+                       (list
+                        ;; cob-p
+                        ;; coh-p
+                        ;; def-p
+                        header-comment-p)
                        ;; '(
                        ;;  ;; "^;;;+ .*"    ; ;;;+ space rest       (regular)
                        ;;  "^;;+ .*"     ; ;;+ space rest (optimal?)
@@ -739,5 +832,34 @@ Optional WIDTH parameter determines total width (defaults to 70)."
           ;;                 1000)
           ;;                nil)))
           )))))
+
+;;;; Outline faces
+
+(leaf outline-minor-faces
+  :after outline outline-indent
+  :hook (outline-minor-mode-hook . outline-minor-faces-mode)
+  :config
+  ;; exclude custom fontlocking for
+  (defun +outline-minor-faces--exclude-defuns (orig-fn arg)
+    "Remove ^( patterns from the regex argument."
+    (let ((filtered-regex
+           (or (let ((regex "\\|^("))   ; Fixed: escaped the backslash properly
+                 (and (string-search regex arg)
+                      (string-replace regex "" arg))) ; Fixed: "" instead of nil
+               (let ((regex "^(\\|"))                 ; Fixed: escaped properly
+                 (and (string-search regex arg)
+                      (replace-regexp-in-string regex "" arg))) ; Fixed: "" instead of nil
+               (let ((regex "^("))
+                 (and (string-search regex arg)
+                      (replace-regexp-in-string regex "" arg)))))) ; Fixed: "" instead of nil
+      (if filtered-regex
+          (funcall orig-fn filtered-regex)
+        (funcall orig-fn arg))))
+  (advice-add 'outline-minor-faces--syntactic-matcher :around
+              #'+outline-minor-faces--exclude-defuns))
+
+(leaf backline
+  :after outline outline-indent
+  :config (advice-add 'outline-flag-region :after 'backline-update))
 
 (provide '+ide)

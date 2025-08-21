@@ -16,9 +16,13 @@
 (defun +fontconfig ()
   "Set default font face."
   (let ((font
-         'fira-code
-         ;; 'ttyp0-16
          ;; 'fira-code
+         ;; 'hack
+         ;; 'maple-mono
+         ;; 'ttyp0-16
+         ;; 'gb-16
+         ;; 'tamzenPL-16
+         'fira-code
          ))
     (set-face-attribute 'default nil :font (+get-font font)))
   )
@@ -165,14 +169,14 @@
   :config
   (setq whitespace-trailing 'whitespace-hspace))
 
-(leaf solaire-mode
-  :config
-  (defun real-buffer-p ()
-    (or (solaire-mode-real-buffer-p)
-        (equal (buffer-name) "*dashboard*")))
-  (setq solaire-mode-real-buffer-fn #'real-buffer-p)
+;; (leaf solaire-mode
+;;   :config
+;;   (defun real-buffer-p ()
+;;     (or (solaire-mode-real-buffer-p)
+;;         (equal (buffer-name) "*dashboard*")))
+;;   (setq solaire-mode-real-buffer-fn #'real-buffer-p)
 
-  (solaire-global-mode +1))
+;;   (solaire-global-mode +1))
 
 ;; show column # on modeline
 (column-number-mode 1)

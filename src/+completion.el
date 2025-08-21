@@ -24,6 +24,15 @@
 
 ;;; Code:
 
+;; TODO: set C-M-c to completion-at-point (orig C-M-i).
+
+;; TODO: try corfu + cape (follow system crafters vid)
+;; - https://www.youtube.com/watch?v=f0FMo_XxujU
+;; + tempel (replace org-tempo)
+
+;; TODO: start adding some setup.el in my config, little by little.
+
+;; TODO: org-modern (sexy as f)
 
 ;; ? : corfu, kind-icon, wgrep?, consult-dir, cape
 ;; ^ more at ~/code/cloned/daviwil-dots/.emacs.d/modules/dw-interface.el

@@ -217,7 +217,34 @@
     "Debugging helper function for dash.el."
     (lambda (m)
       (message "%s: %S" label m)
-      m)))
+      m))
+
+  (defmacro -tap (value form)
+    "Evaluate FORM with VALUE as its argument, then return VALUE unchanged.
+This is the non-anaphoric version - VALUE is passed as an argument to FORM."
+    `(let ((val ,value))
+       ,form
+       val))
+
+  ;; (defmacro --tap (value &rest body)
+;;     "Evaluate BODY with VALUE bound to `it`, then return VALUE unchanged.
+;; This is the anaphoric version - VALUE is available as `it` in BODY."
+;;     `(let ((it ,value))
+;;        ,@body
+;;        it))
+
+  ;; (defmacro --tap (value &rest body)
+;;     "Evaluate BODY with VALUE bound to `it`, then return VALUE unchanged.
+;; This is the anaphoric version - VALUE is available as `it` in BODY."
+;;     (declare (debug (form body)) (indent 1))
+;;     (let ((val (make-symbol "value")))
+;;       `(let ((,val ,value))
+;;          (let ((it ,val))
+;;            (ignore it)
+;;            ,@body)
+;;          ,val)))
+  )
+
 
 ;; files/dirs library
 ;; https://github.com/rejeep/f.el

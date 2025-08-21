@@ -307,7 +307,8 @@ _SPC_ cancel	_o_nly this   	_d_elete
   ([remap describe-symbol] . helpful-symbol)
   ([remap describe-variable] . helpful-variable)
   ([remap describe-command] . helpful-command)
-  ([remap describe-key] . helpful-key)
+  ;; ([remap describe-key] . helpful-key)
+  ("C-h k" . helpful-key)
   ("C-h h" . helpful-at-point)
   ("C-h H" . view-hello-file)           ; command originally at "C-h h"
   ("C-h M" . which-key-show-major-mode)
