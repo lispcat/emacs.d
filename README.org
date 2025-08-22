@@ -32,3 +32,17 @@ In depth documentation can be found here:
 * Notes
 
 - TODO: add old notes from old-README.org
+
+- Replace cob and col with headings with regex:
+
+  #+begin_src emacs-lisp
+(progn
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward ";;;+\n;; *\\(.*?\\) *;+\n;;;+" nil t)
+      (replace-match ";;; \\1")))
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "^;;; -- \\(.*\\) -+$" nil t)
+      (replace-match ";;;; \\1"))))
+  #+end_src

@@ -24,11 +24,9 @@
 
 ;;; Code:
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                   Buffers                                  ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Buffers
 
-;;; -- autorevert -------------------------------------------------------------
+;;;; autorevert
 
 ;; If a file is open as a buffer and its contents are changed on the disk, to
 ;; update that buffer, you need to run `revert-buffer'.
@@ -54,7 +52,7 @@
 
 ;; --
 
-;;; -- SPC-b binds ------------------------------------------------------------
+;;;; SPC-b binds
 
 (defalias '+last-selected-buffer 'mode-line-other-buffer)
 
@@ -69,11 +67,9 @@
   "bb" '(switch-to-buffer       :wk "switch-buffer")
   "bs" '(save-buffer            :wk "save-buffer"))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                   History                                  ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; History
 
-;;; -- recentf ----------------------------------------------------------------
+;;;; recentf
 
 ;; `recentf-mode' tracks recently opened files that you can search through and
 ;; open with `recentf'.
@@ -86,7 +82,7 @@
 
 ;; --
 
-;;; -- saveplace --------------------------------------------------------------
+;;;; saveplace
 
 ;; `save-place-mode' saves your cursor location in a file, so that when
 ;; re-opening a file, your cursor jumps to your last location.
@@ -100,7 +96,7 @@
 
 ;; --
 
-;;; -- savehist ---------------------------------------------------------------
+;;;; savehist
 
 ;; `savehist-mode' persists minibuffer history over restarts.
 
@@ -112,11 +108,9 @@
 
 ;; --
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                   Windows                                  ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Windows
 
-;;; -- ace-window -------------------------------------------------------------
+;;;; ace-window
 
 ;; Efficiently switch between Emacs windows.
 ;;
@@ -151,7 +145,7 @@
 
 ;; --
 
-;;; -- hydra: window ----------------------------------------------------------
+;;;; hydra: window
 
 ;; A hydra for quick window switching
 (defhydra hydra-window ()
@@ -215,9 +209,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   ("SPC" nil)
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    Files                                   ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Files
 
 (defun +open-emacs-config-file ()
   "Open emacs config file."
@@ -230,9 +222,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (when-let* ((f (car org-agenda-files)))
     (find-file f)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    Dired                                   ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Dired
 
 ;; Emacs' built-in file manager.
 
@@ -264,7 +254,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 ;; --
 
-;;; -- dired-launch -----------------------------------------------------------
+;;;; dired-launch
 
 ;; Easily launch external applications from dired.
 ;;
@@ -285,11 +275,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 ;; --
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    Misc                                    ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Misc
 
-;;; -- helpful ----------------------------------------------------------------
+;;;; helpful
 
 ;; Improve Emacs' help buffer with much more contextual info.
 ;;
@@ -316,7 +304,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 ;; --
 
-;;; -- auto-sudoedit ----------------------------------------------------------
+;;;; auto-sudoedit
 
 ;; Automatically re-open files with sudo when needed.
 
@@ -327,7 +315,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 ;; --
 
-;;; -- profiling --------------------------------------------------------------
+;;;; profiling
 
 (defun +profiler-report ()
   "Profiler stop and report."
@@ -340,14 +328,12 @@ _SPC_ cancel	_o_nly this   	_d_elete
   "Ds" 'profiler-start
   "Dr" '+profiler-report)
 
-;;; -- user info --------------------------------------------------------------
+;;;; user info
 
 (setq user-full-name "lispcat")
 (setq user-mail-address "187922791+lispcat@users.noreply.github.com")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                     end                                    ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; end
 
 (provide '+base)
 ;;; +base.el ends here

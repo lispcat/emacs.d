@@ -30,9 +30,7 @@
 ;; NOTE: ensure that the newest version of org is installed right after elpaca
 ;; setup
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                     org                                    ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; org
 
 ;; General config options for org-mode.
 
@@ -130,7 +128,7 @@
 
 ;; --
 
-;;; -- org-tempo --------------------------------------------------------------
+;;;; org-tempo
 
 ;; Ease the creation of src blocks (code blocks).
 
@@ -164,7 +162,7 @@
 
 ;; --
 
-;;; -- org-download -----------------------------------------------------------
+;;;; org-download
 
 (leaf org-download
   :after org
@@ -173,7 +171,7 @@
   :setq-default
   (org-download-image-dir . "_images"))
 
-;;; -- org-bullets ------------------------------------------------------------
+;;;; org-bullets
 
 ;; TODO: replace with org-superstar
 (leaf org-bullets
@@ -189,12 +187,12 @@
        "✧"
        "✿")))
 
-;;; -- toc-org ----------------------------------------------------------------
+;;;; toc-org
 
 (leaf toc-org
   :hook org-mode-hook)
 
-;;; -- anki-editor ------------------------------------------------------------
+;;;; anki-editor
 
 (leaf anki-editor
   :commands (anki-editor-push-note-at-point
@@ -209,19 +207,19 @@
       (anki-editor-mode 1)))
   (advice-add #'anki-editor--push-note :before #'+ensure-anki-editor-mode))
 
-;;; -- image-slicing ----------------------------------------------------------
+;;;; image-slicing
 
 (leaf image-slicing :ensure nil
   :hook org-mode-hook
   :setq
   (image-slicing-newline-trailing-text . nil))
 
-;;; -- org-auto-tangle --------------------------------------------------------
+;;;; org-auto-tangle
 
 (leaf org-auto-tangle
   :hook org-mode-hook)
 
-;;; -- org-agenda -------------------------------------------------------------
+;;;; org-agenda
 
 (leaf org-agenda :elpaca nil
   :after org
@@ -288,7 +286,7 @@
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit t))
 
-;;; -- org-super-agenda -------------------------------------------------------
+;;;; org-super-agenda
 
 (leaf org-super-agenda
   :after org-agenda
@@ -320,12 +318,12 @@
 (leaf org-ql
   :after org)
 
-;;; -- org-pomodoro -----------------------------------------------------------
+;;;; org-pomodoro
 
 (leaf org-pomodoro
   :after org)
 
-;;; -- org-noter --------------------------------------------------------------
+;;;; org-noter
 
 (leaf org-noter
   :after org
@@ -349,7 +347,7 @@ The property will be removed if ran with a \\[universal-argument]."
          (message "meow: %s" num)
          (org-entry-put (point) "NOTER_PAGE" num))))))
 
-;;; -- org-capture ------------------------------------------------------------
+;;;; org-capture
 
 (leaf org-capture :elpaca nil
   :after org
@@ -383,7 +381,7 @@ The property will be removed if ran with a \\[universal-argument]."
            #'denote-org-capture :no-save t :immediate-finish nil
            :kill-buffer t :jump-to-captured t))))
 
-;;; -- more org-anki stuff ----------------------------------------------------
+;;;; more org-anki stuff
 
 (defun +org-priority-to-anki ()
   (interactive)
@@ -456,7 +454,7 @@ The property will be removed if ran with a \\[universal-argument]."
                  (org-set-property "EFFORT" (format "%s" effort))
                  (org-next-visible-heading -1))))))
 
-;;; -- visual fill column -----------------------------------------------------
+;;;; visual fill column
 
 (leaf visual-fill-column
   :require t

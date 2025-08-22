@@ -28,11 +28,9 @@
 
 ;;; Code:
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    Vars                                    ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Vars
 
-;;; -- Pivotal vars to set first: ---------------------------------------------
+;;;; Pivotal vars to set first:
 
 ;; Here we set pivotal variables, such as setting the garbage collection
 ;; frequency, disabling autoload for the default package manager (to opt in for
@@ -48,7 +46,7 @@
 
 ;; --
 
-;;; -- Directory Vars : defvar: -----------------------------------------------
+;;;; Directory Vars : defvar:
 
 ;;
 ;; Here we define various path variables.
@@ -85,7 +83,7 @@
 
 ;; --
 
-;;; -- Directory Vars : setq: -------------------------------------------------
+;;;; Directory Vars : setq:
 
 ;;
 ;; More on the local-dir:
@@ -111,7 +109,7 @@
 
 ;; --
 
-;;; -- eln-cache dir - set to ./local/var/eln-cache ---------------------------
+;;;; eln-cache dir - set to ./local/var/eln-cache
 
 ;; The eln-cache dir contains compiled .el files (.eln).
 ;; To keep the emacs-root-dir tidy, we override this path.
@@ -128,11 +126,9 @@
 
 ;; --
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                     UI                                     ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; UI
 
-;;; -- GUI --------------------------------------------------------------------
+;;;; GUI
 
 ;; The Emacs GUI has a lot of bloat by default, so they're disabled here (e.g.
 ;; tool-bar, menu-bar, scroll-bar).
@@ -164,7 +160,7 @@
 
 ;; --
 
-;;; -- transparency -----------------------------------------------------------
+;;;; transparency
 
 ;; We enable transparency by default by adding an entry to default-frame-alist,
 ;; unless an entry for it already exists.
@@ -183,7 +179,7 @@
 
 ;; --
 
-;;; -- default background color -----------------------------------------------
+;;;; default background color
 
 ;; In some display environments, during startup, Emacs will show its window.
 ;; During this period, a theme will yet to be set. So it will show the default
@@ -199,11 +195,9 @@
 
 ;; --
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    misc                                    ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; misc
 
-;;; -- lsp --------------------------------------------------------------------
+;;;; lsp
 
 ;; Some tweaks for lsp-mode to increase performance.
 ;; <https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization>
@@ -215,6 +209,6 @@
 
 ;; --
 
-;;; -- end --------------------------------------------------------------------
+;;;; end
 (provide 'early-init)
 ;;; early-init.el ends here

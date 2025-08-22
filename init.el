@@ -25,9 +25,7 @@
 
 ;;; Code:
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    Vars                                    ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Vars
 
 ;; Set various vars for sane defaults.
 
@@ -41,9 +39,7 @@
 
 ;; --
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                no-littering                                ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; no-littering
 
 (progn ;; no-littering
 
@@ -74,9 +70,7 @@
             ("\\`/dev/shm\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
             ("." ,auto-save-dir t)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                   elpaca                                   ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; elpaca
 
 ;; elpaca 0.11
 (progn
@@ -160,9 +154,7 @@
   (dolist (pkg (+elpaca-get-external-pkgs))
     (push pkg elpaca-ignored-dependencies)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                    leaf                                    ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; leaf
 
 (elpaca leaf
   ;; add my own keywords
@@ -187,9 +179,7 @@
 ;; finish all queues now to prevent async issues later
 (elpaca-process-queues)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                             necessary packages                             ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; necessary packages
 
 (leaf general :elpaca-wait t
   :init
@@ -257,7 +247,7 @@ This is the non-anaphoric version - VALUE is passed as an argument to FORM."
 ;; finish all queues now to prevent async issues later
 (elpaca-process-queues)
 
-;;; -- adding to the load-path ------------------------------------------------
+;;;; adding to the load-path
 
 ;;
 ;; `load-path':
@@ -318,7 +308,7 @@ This function returns a list of paths that were added to (or already exist in)
 
 ;; --
 
-;;; -- loading functions ------------------------------------------------------
+;;;; loading functions
 
 ;;
 ;; `require'
@@ -384,9 +374,7 @@ This function returns a list of paths that were added to (or already exist in)
 
 ;; --
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                startup hooks                               ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; startup hooks
 
 ;;
 ;; `emacs-startup-hook'
@@ -424,9 +412,7 @@ This function returns a list of paths that were added to (or already exist in)
 
 ;; --
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                   import                                   ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; import
 
 ;; The rest of the configuration is loaded from `./src/src.el`.
 
@@ -437,7 +423,7 @@ This function returns a list of paths that were added to (or already exist in)
 
 ;; --
 
-;;; -- end --------------------------------------------------------------------
+;;;; end
 
 (provide 'init)
 ;;; init.el ends here

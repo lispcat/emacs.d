@@ -24,11 +24,9 @@
 
 ;;; Code:
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                  post-init                                 ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; post-init
 
-;;; -- log src-dir state ------------------------------------------------------
+;;;; log src-dir state
 
 ;;
 
@@ -80,7 +78,7 @@ were not loaded, they're identified and logged using this function."
          (_ (funcall (-debug "Log: +emacs-src-dir: invalid elisp files")
                      (-map #'file-name-nondirectory
                            (-difference elisp-files valid-elisp-files))))
-         
+
          (remove-existing
           ;; remove files already require'd
           (let ((removed-lst
@@ -104,6 +102,7 @@ were not loaded, they're identified and logged using this function."
 
 ;; --
 
+;;; end
 
 (provide '+log)
 ;;; +log.el ends here

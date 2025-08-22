@@ -40,7 +40,7 @@
              less
              difference)))
 
-;;; -- end --------------------------------------------------------------------
+;;; end
 
 (provide '+tools)
 ;;; +tools.el ends here
