@@ -630,6 +630,13 @@
         
     </ul>
   
+</nav><hr>
+<nav>
+    <ul>
+        <li><a href="#persp-mode">% Persp-mode</a></li>
+        <li><a href="#perspective">% Perspective</a></li>
+        
+    </ul>
 </nav>
 </aside>
             <main id="terminal-mkdocs-main-content">
@@ -642,8 +649,269 @@
 <section id="mkdocs-terminal-content">
     <p>maybe have each persp have its own save file, and when autosaving, save each persp?
 maybe have a function to delete a persp from the main autosave file?
-- prompt available perspectives from main autosave file, after selection, delete each from file.</p>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind-keymap</span>
+- prompt available perspectives from main autosave file, after selection,
+delete each from file.</p>
+<p>Activities</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:custom</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; only show tab bar if more than 3 activities open</span>
+<span style="color: #D4D2C8">  (tab-bar-show </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">3</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
+<span style="color: #D4D2C8">  (activities-mode)</span>
+<span style="color: #D4D2C8">  (activities-tabs-mode)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; prevent edebug default bindings from interfering</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (setq edebug-inhibit-emacs-lisp-mode-bindings t)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; create map</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +activities-define-existing ()</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((current-prefix-arg </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #DFBFFF">4</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">call-interactively</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">activities-define)))</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> activities-mode-map</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((map (</span><span style="color: #FFD173">make-sparse-keymap</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; Define keys in bulk</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">dolist</span>
+<span style="color: #D4D2C8">          (binding</span>
+<span style="color: #D4D2C8">           </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #7E8AA1">;; create new activity name.</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;N&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> activities-new)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; define new activity&#39;s default with current frame state.</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; (prefix) define pre-existing activity&#39; default with current frame state.</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;d&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +activities-define-existing)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; resume suspended activity</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; (prefix) resume activity with default state.</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +activities-resume-custom)</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;s&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +activities-resume-custom)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; save and close activity.</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; (&quot;k&quot; . activities-suspend)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; reset to default state and close activity.</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;c&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> activities-kill)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; switch to an opened activity</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; (&quot;s&quot; . activities-switch)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; permanently delete activity</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;k&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> activities-discard)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; switch to a buffer in the current activity.</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;b&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> activities-switch-buffer)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; revert activity to default state.</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;g&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> activities-revert)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; list activities in vtable buffer</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;l&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> activities-list)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; rename activity</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;R&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> activities-rename)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; next tab</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;n&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> tab-next)</span>
+<span style="color: #D4D2C8">             </span><span style="color: #7E8AA1">;; previous tab</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #D5FF80">&quot;p&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> tab-previous)))</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">define-key</span><span style="color: #D4D2C8"> map (kbd (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> binding)) (</span><span style="color: #FFD173">cdr</span><span style="color: #D4D2C8"> binding)))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; set up autoloads</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((cmds (</span><span style="color: #FFD173">mapcar</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;cdr</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">cdr</span><span style="color: #D4D2C8"> map))))</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">dolist</span><span style="color: #D4D2C8"> (c cmds)</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">fboundp</span><span style="color: #D4D2C8"> c)</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">autoload</span><span style="color: #D4D2C8"> c </span><span style="color: #D5FF80">&quot;activities&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; return map</span>
+<span style="color: #D4D2C8">      map))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; bind map</span>
+<span style="color: #D4D2C8">  (global-set-key (kbd </span><span style="color: #D5FF80">&quot;C-c .&quot;</span><span style="color: #D4D2C8">) activities-mode-map)</span>
+<span style="color: #D4D2C8">  (global-set-key (kbd </span><span style="color: #D5FF80">&quot;C-c x&quot;</span><span style="color: #D4D2C8">) activities-mode-map)</span>
+</code></pre></div>
+<h4 id="consult-integration">&gt; consult integration</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> activities-local-buffer-p (buffer)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Returns non-nil if BUFFER is present in </span><span style="color: #DFBFFF">`activities-current&#39;</span><span style="color: #D5FF80">.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (activities-current)</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">memq</span><span style="color: #D4D2C8"> buffer</span>
+<span style="color: #D4D2C8">            (activities-tabs--tab-parameter</span>
+<span style="color: #D4D2C8">             </span><span style="color: #DFBFFF">&#39;activities-buffer-list</span>
+<span style="color: #D4D2C8">             (activities-tabs--tab (activities-current))))))</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> activities-consult-source</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Activity&quot;</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:narrow</span><span style="color: #D4D2C8">   </span><span style="color: #D5FF80">?a</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:category</span><span style="color: #D4D2C8"> buffer</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:face</span><span style="color: #D4D2C8">     consult-buffer</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:history</span><span style="color: #D4D2C8">  buffer-name-history</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:state</span><span style="color: #D4D2C8">    </span><span style="color: #FFAD66">,</span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">consult--buffer-state</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:default</span><span style="color: #D4D2C8">  </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:enabled</span><span style="color: #D4D2C8">  </span><span style="color: #FFAD66">,</span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">activities-current</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:items</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> () (consult--buffer-query</span>
+<span style="color: #D4D2C8">                           </span><span style="color: #FFD173">:predicate</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">activities-local-buffer-p</span>
+<span style="color: #D4D2C8">                           </span><span style="color: #FFD173">:sort</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;visibility</span>
+<span style="color: #D4D2C8">                           </span><span style="color: #FFD173">:as</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;buffer-name</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Activities local buffers candidate source for </span><span style="color: #DFBFFF">`consult-buffer&#39;</span><span style="color: #D5FF80">.&quot;</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> activities-rest-consult-source</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Rest&quot;</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:narrow</span><span style="color: #D4D2C8">   </span><span style="color: #D5FF80">?r</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:category</span><span style="color: #D4D2C8"> buffer</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:face</span><span style="color: #D4D2C8">     consult-buffer</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:history</span><span style="color: #D4D2C8">  buffer-name-history</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:state</span><span style="color: #D4D2C8">    </span><span style="color: #FFAD66">,</span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">consult--buffer-state</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:enabled</span><span style="color: #D4D2C8">  </span><span style="color: #FFAD66">,</span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">activities-current</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:items</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> () (consult--buffer-query</span>
+<span style="color: #D4D2C8">                           </span><span style="color: #FFD173">:predicate</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (buf)</span>
+<span style="color: #D4D2C8">                                        (not (activities-local-buffer-p buf)))</span>
+<span style="color: #D4D2C8">                           </span><span style="color: #FFD173">:as</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;buffer-name</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Other buffers candidate source for </span><span style="color: #DFBFFF">`consult-buffer&#39;</span><span style="color: #D5FF80">.&quot;</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;consult</span>
+<span style="color: #D4D2C8">    (consult-customize consult--source-buffer </span><span style="color: #FFD173">:hidden</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:default</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #FFD173">:name</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Buffers&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:narrow</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">?b</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #FFD173">:enabled</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> () (not (activities-current))))</span>
+<span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;consult-buffer-sources</span><span style="color: #D4D2C8"> activities-rest-consult-source)</span>
+<span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;consult-buffer-sources</span><span style="color: #D4D2C8"> activities-consult-source))</span>
+</code></pre></div>
+<h5 id="exclude-consult-buffer-previews-from-activity-buffer-list">‣ exclude consult-buffer previews from activity-buffer-list</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;consult</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +consult-buffer--frame-buffers-around (orig-fn </span><span style="color: #FFAD66">&amp;rest</span><span style="color: #D4D2C8"> args)</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((_log </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">            (result </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">        (if-let* ((_predicates (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> activities-mode</span>
+<span style="color: #D4D2C8">                                    activities-tabs-mode</span>
+<span style="color: #D4D2C8">                                    tab-bar-mode</span>
+<span style="color: #D4D2C8">                                    (activities-current)))</span>
+<span style="color: #D4D2C8">                  (current-tab (tab-bar--current-tab))</span>
+<span style="color: #D4D2C8">                  (tab-index (tab-bar--current-tab-index))</span>
+<span style="color: #D4D2C8">                  (init-tab-buffers (alist-get </span><span style="color: #DFBFFF">&#39;activities-buffer-list</span><span style="color: #D4D2C8"> current-tab)))</span>
+<span style="color: #D4D2C8">            </span><span style="color: #7E8AA1">;; if-let then form</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFAD66">unwind-protect</span>
+<span style="color: #D4D2C8">                (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> result (</span><span style="color: #FFD173">apply</span><span style="color: #D4D2C8"> orig-fn args))</span>
+<span style="color: #D4D2C8">              </span><span style="color: #7E8AA1">;; re-fetch current tab after consult-buffer</span>
+<span style="color: #D4D2C8">              (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((updated-tab (tab-bar--current-tab))</span>
+<span style="color: #D4D2C8">                     (post-tab-buffers</span>
+<span style="color: #D4D2C8">                      (seq-filter </span><span style="color: #FFD173">#&#39;buffer-live-p</span>
+<span style="color: #D4D2C8">                                  (alist-get </span><span style="color: #DFBFFF">&#39;activities-buffer-list</span><span style="color: #D4D2C8"> updated-tab)))</span>
+<span style="color: #D4D2C8">                     (</span><span style="color: #FFD173">current-buffer</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">current-buffer</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                     </span><span style="color: #7E8AA1">;; remove new temp buffers from post-tab-buffers</span>
+<span style="color: #D4D2C8">                     (filtered-new</span>
+<span style="color: #D4D2C8">                      (seq-filter (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (buf)</span>
+<span style="color: #D4D2C8">                                    (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> buf</span>
+<span style="color: #D4D2C8">                                         (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">member</span><span style="color: #D4D2C8"> buf init-tab-buffers)</span>
+<span style="color: #D4D2C8">                                             (</span><span style="color: #FFD173">eq</span><span style="color: #D4D2C8"> buf </span><span style="color: #FFD173">current-buffer</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                                             (</span><span style="color: #FFD173">equal</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">buffer-name</span><span style="color: #D4D2C8"> buf)</span>
+<span style="color: #D4D2C8">                                                    </span><span style="color: #D5FF80">&quot; *Minibuf-1*&quot;</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">                                  post-tab-buffers)))</span>
+<span style="color: #D4D2C8">                </span><span style="color: #7E8AA1">;; debugging</span>
+<span style="color: #D4D2C8">                (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> _log</span>
+<span style="color: #D4D2C8">                  (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;LOG: activities: ignore consult-buffer previews: %S&quot;</span>
+<span style="color: #D4D2C8">                           (</span><span style="color: #FFD173">mapcar</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;buffer-name</span>
+<span style="color: #D4D2C8">                                   (seq-remove (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (x) (</span><span style="color: #FFD173">member</span><span style="color: #D4D2C8"> x filtered-new))</span>
+<span style="color: #D4D2C8">                                               post-tab-buffers))))</span>
+<span style="color: #D4D2C8">                </span><span style="color: #7E8AA1">;; update the tab&#39;s activities-buffer-list</span>
+<span style="color: #D4D2C8">                (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((tabs (</span><span style="color: #FFD173">funcall</span><span style="color: #D4D2C8"> tab-bar-tabs-function)))</span>
+<span style="color: #D4D2C8">                  (</span><span style="color: #FFD173">setf</span><span style="color: #D4D2C8"> (alist-get </span><span style="color: #DFBFFF">&#39;activities-buffer-list</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">nth</span><span style="color: #D4D2C8"> tab-index tabs))</span>
+<span style="color: #D4D2C8">                        filtered-new))</span>
+
+<span style="color: #D4D2C8">                result))</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;; if-let else form</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">apply</span><span style="color: #D4D2C8"> orig-fn args))))</span>
+
+<span style="color: #D4D2C8">    (advice-add </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">consult-buffer </span><span style="color: #FFD173">:around</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">+consult-buffer--frame-buffers-around))</span>
+</code></pre></div>
+<h5 id="frame-delete-n-restore-disabled">‣ Frame delete n restore (disabled)</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; ;; helper variable</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (defvar +activities--last-name nil)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; ;; save activities before deleting frame</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (add-to-list &#39;delete-frame-functions</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;              (lambda (frame)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;                (setq +activities--last-name (activities-current))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;                (activities-save-all)))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; ;; save activities before killing emacs</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (add-hook &#39;kill-emacs-hook #&#39;activities-save-all)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; ;; resume last activity when creating frame</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (add-hook &#39;after-make-frame-functions</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;           (lambda (frame)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;             (when +activities--last-name</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;               (with-selected-frame frame</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;                 (activities-resume +activities--last-name)))))</span>
+</code></pre></div>
+<h5 id="smart-resuming-exclude-running-in-frames-suspend-all-other">‣ smart resuming (exclude running in frames, suspend all other)</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; TODO: show this to https://github.com/alphapapa/activities.el/issues/22</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">cl-defun</span><span style="color: #D4D2C8"> +activities-resume-custom (activity </span><span style="color: #FFAD66">&amp;key</span><span style="color: #D4D2C8"> resetp)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Wrapper around </span><span style="color: #DFBFFF">`activities-resume&#39;</span><span style="color: #D5FF80">.</span>
+
+<span style="color: #D5FF80">When prompted, it excludes activities that are active in other frames.</span>
+<span style="color: #D5FF80">After evaluating, it suspends all non-current activities.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span>
+<span style="color: #D4D2C8">     (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> (activities-completing-read</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:activities</span><span style="color: #D4D2C8"> (+activities--exclude-other-frames)</span>
+<span style="color: #D4D2C8">            </span><span style="color: #FFD173">:prompt</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Resume activity&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:default</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">           </span><span style="color: #FFD173">:resetp</span><span style="color: #D4D2C8"> current-prefix-arg))</span>
+<span style="color: #D4D2C8">    (activities-suspend (activities-current))</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((result (</span><span style="color: #FFD173">apply</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">activities-resume</span>
+<span style="color: #D4D2C8">                         activity</span>
+<span style="color: #D4D2C8">                         (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> resetp (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:resetp</span><span style="color: #D4D2C8"> resetp)))))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; after apply</span>
+<span style="color: #D4D2C8">      (+activities--suspend-not-cur)</span>
+<span style="color: #D4D2C8">      result))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; helper function</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +activities--exclude-other-frames ()</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Return loadable activities, excluding already active in other frames.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> (</span><span style="color: #7E8AA1">;; activities loadable from file</span>
+<span style="color: #D4D2C8">          (activities-loadable (-map </span><span style="color: #FFD173">#&#39;car-safe</span><span style="color: #D4D2C8"> activities-activities))</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;; activities active in any frame except current</span>
+<span style="color: #D4D2C8">          (activities-active-in-other</span>
+<span style="color: #D4D2C8">           (-&gt;&gt;</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">frame-list</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">            (--remove (</span><span style="color: #FFD173">equal</span><span style="color: #D4D2C8"> it (</span><span style="color: #FFD173">selected-frame</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">            (-mapcat</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (frame)</span>
+<span style="color: #D4D2C8">               (</span><span style="color: #FFD173">with-selected-frame</span><span style="color: #D4D2C8"> frame</span>
+<span style="color: #D4D2C8">                 (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((active-names</span>
+<span style="color: #D4D2C8">                        (-&gt;&gt;</span>
+<span style="color: #D4D2C8">                         activities-activities</span>
+<span style="color: #D4D2C8">                         (-filter (-compose </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">activities-activity-active-p</span>
+<span style="color: #D4D2C8">                                            </span><span style="color: #FFD173">#&#39;cdr</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                         (-map </span><span style="color: #FFD173">#&#39;car-safe</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">                   (</span><span style="color: #FFAD66">prog1</span><span style="color: #D4D2C8"> active-names</span>
+<span style="color: #D4D2C8">                     (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;LOG: active-names: %S&quot;</span><span style="color: #D4D2C8"> active-names)</span>
+<span style="color: #D4D2C8">                     (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">&lt;=</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">length</span><span style="color: #D4D2C8"> active-names))</span>
+<span style="color: #D4D2C8">                                 (not active-names))</span>
+<span style="color: #D4D2C8">                       (</span><span style="color: #73D0FF">warn</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Expected no more than 1 activity in frame %s: %s&quot;</span>
+<span style="color: #D4D2C8">                             frame active-names)))))))</span>
+<span style="color: #D4D2C8">            (-non-nil)</span>
+<span style="color: #D4D2C8">            (-uniq))))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; from loadable, remove active-in-other</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;LOG: activities-loadable: %S&quot;</span><span style="color: #D4D2C8"> activities-loadable)</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;LOG: activities-active-in-other: %S&quot;</span><span style="color: #D4D2C8"> activities-active-in-other)</span>
+<span style="color: #D4D2C8">      (-&gt;&gt; activities-loadable</span>
+<span style="color: #D4D2C8">           (--remove (-contains? activities-active-in-other</span>
+<span style="color: #D4D2C8">                                 it))</span>
+<span style="color: #D4D2C8">           (--map (</span><span style="color: #FFD173">cons</span><span style="color: #D4D2C8"> it (activities-named it))))))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; helper function</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">cl-defun</span><span style="color: #D4D2C8"> +activities--suspend-not-cur (</span><span style="color: #FFAD66">&amp;rest</span><span style="color: #D4D2C8"> _args)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Suspend all non-current activities.&quot;</span>
+<span style="color: #D4D2C8">    (when-let*</span>
+<span style="color: #D4D2C8">        ((fn-get-active-lst</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> () (-&gt;&gt; activities-activities</span>
+<span style="color: #D4D2C8">                     (-filter (-compose </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">activities-activity-active-p </span><span style="color: #FFD173">#&#39;cdr</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                     (-map </span><span style="color: #FFD173">#&#39;car-safe</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">         (active-lst (</span><span style="color: #FFD173">funcall</span><span style="color: #D4D2C8"> fn-get-active-lst))</span>
+<span style="color: #D4D2C8">         (current (activities-activity-name (activities-current)))</span>
+<span style="color: #D4D2C8">         (not-current-lst</span>
+<span style="color: #D4D2C8">          (-&gt;&gt; active-lst (--remove (</span><span style="color: #FFD173">equal</span><span style="color: #D4D2C8"> current it)))))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; suspend all non-current activities</span>
+<span style="color: #D4D2C8">      (--each not-current-lst</span>
+<span style="color: #D4D2C8">        (activities-suspend (activities-named it)))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; assert expected length and current-value</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> active-lst (</span><span style="color: #FFD173">funcall</span><span style="color: #D4D2C8"> fn-get-active-lst))</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">&lt;=</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">length</span><span style="color: #D4D2C8"> active-lst))</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #73D0FF">warn</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;expected 1 or 0 length for active-lst: %s&quot;</span>
+<span style="color: #D4D2C8">              active-lst)</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">=</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">length</span><span style="color: #D4D2C8"> active-lst))</span>
+<span style="color: #D4D2C8">                   (</span><span style="color: #FFD173">equal</span><span style="color: #D4D2C8"> current (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> active-lst)))</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #73D0FF">warn</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;expected 1 elem of %s, got %S&quot;</span>
+<span style="color: #D4D2C8">                current (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> active-lst))))))</span>
+</code></pre></div>
+<h5 id="misc">‣ misc</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  )</span>
+</code></pre></div>
+<h3 id="persp-mode">% Persp-mode</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf persp-mode </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind-keymap</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c w w&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> persp-key-map)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c .&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> persp-key-map)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c (&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> persp-key-map)</span>
@@ -651,30 +919,28 @@ maybe have a function to delete a persp from the main autosave file?
 <span style="color: #D4D2C8">         (</span><span style="color: #D5FF80">&quot;.&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> my-persp-load-name-from-latest)</span>
 <span style="color: #D4D2C8">         (</span><span style="color: #D5FF80">&quot;D&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> my-persp-delete-name-from-latest))</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; animation</span>
 <span style="color: #D4D2C8">  (wg-morph-on </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; ?</span>
 <span style="color: #D4D2C8">  (persp-autokill-buffer-on-remove </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kill-weak</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (persp-auto-resume-time . 0.1)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; dont autoresume at startup</span>
 <span style="color: #D4D2C8">  (persp-auto-resume-time </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">-1</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; save on shutdown</span>
 <span style="color: #D4D2C8">  (persp-auto-save-opt </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">2</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; prevent issue with persp-special-last-buffer</span>
+
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span>
 <span style="color: #D4D2C8">  (elpaca-after-init-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> () (persp-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; :init</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (setq persp-is-ibc-as-f-supported nil)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (persp-mode)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (message &quot;persp-mode enabled?&quot;)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (with-eval-after-load &#39;persp-mode</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;   (message &quot;persp-mode enabled!!!&quot;))</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (add-to-list &#39;find-file-hook (lambda () (message &quot;WOWWWW WHYYYY&quot;)))</span>
+
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span>
-<span style="color: #D4D2C8">  persp-consult-source </span><span style="color: #7E8AA1">;; defined below</span>
+<span style="color: #D4D2C8">  persp-consult-source</span>
+
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; dont save persp-nil to file</span>
 <span style="color: #D4D2C8">  (set-persp-parameter </span><span style="color: #DFBFFF">&#39;dont-save-to-file</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; consult-buffer integration</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> persp-consult-source</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:name</span><span style="color: #D4D2C8">     </span><span style="color: #D5FF80">&quot;Persp Buffers&quot;</span>
-<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:narrow</span><span style="color: #D4D2C8">   </span><span style="color: #D5FF80">?</span>
+<span style="color: #D4D2C8">          </span><span style="color: #FFD173">:narrow</span><span style="color: #D4D2C8">   </span><span style="color: #D5FF80">?.</span>
 <span style="color: #D4D2C8">          </span><span style="color: #FFD173">:category</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;buffer</span>
 <span style="color: #D4D2C8">          </span><span style="color: #FFD173">:state</span><span style="color: #D4D2C8">    </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">consult--buffer-state</span>
 <span style="color: #D4D2C8">          </span><span style="color: #FFD173">:history</span><span style="color: #D4D2C8">  </span><span style="color: #DFBFFF">&#39;buffer-name-history</span>
@@ -705,32 +971,62 @@ maybe have a function to delete a persp from the main autosave file?
 <span style="color: #D4D2C8">                                (not (persp-contain-buffer-p buf))</span>
 <span style="color: #D4D2C8">                              </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
 <span style="color: #D4D2C8">               </span><span style="color: #FFD173">:as</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;buffer-name</span><span style="color: #D4D2C8">)))))</span>
+
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;consult</span>
 <span style="color: #D4D2C8">    (consult-customize consult--source-buffer </span><span style="color: #FFD173">:hidden</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:default</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;consult-buffer-sources</span><span style="color: #D4D2C8"> persp-rest-consult-source)</span>
 <span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;consult-buffer-sources</span><span style="color: #D4D2C8"> persp-consult-source))</span>
 
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; helper functions</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/persp--get-names-from-savelist (</span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> fname savelist)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((available (persp-list-persp-names-in-file fname savelist))</span>
+<span style="color: #D4D2C8">           (loaded (persp-names-current-frame-fast-ordered))</span>
+<span style="color: #D4D2C8">           (unloaded (seq-remove (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (p) (</span><span style="color: #FFD173">member</span><span style="color: #D4D2C8"> p loaded)) available)))</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> available loaded unloaded)))</span>
+
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> my/persp--prompt-for-persp-name (lst)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> lst</span>
+<span style="color: #D4D2C8">      (persp-read-persp</span>
+<span style="color: #D4D2C8">       </span><span style="color: #D5FF80">&quot;to load&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> lst </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;push</span><span style="color: #D4D2C8">)))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; TODO: relocate</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defmacro</span><span style="color: #D4D2C8"> +message-if-debug (format-string </span><span style="color: #FFAD66">&amp;rest</span><span style="color: #D4D2C8"> args)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> debug-on-error</span>
+<span style="color: #D4D2C8">      </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">format-string </span><span style="color: #FFAD66">,@</span><span style="color: #D4D2C8">args)))</span>
+
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; load from file</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">cl-defun</span><span style="color: #D4D2C8"> my-persp-load-name-from-latest (</span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> (fname persp-auto-save-fname)</span>
-<span style="color: #D4D2C8">                                                      (phash *persp-hash*)</span>
-<span style="color: #D4D2C8">                                                      name savelist)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">cl-defun</span><span style="color: #D4D2C8"> my-persp-load-name-from-latest</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> (fname persp-auto-save-fname)</span>
+<span style="color: #D4D2C8">                 (phash *persp-hash*)</span>
+<span style="color: #D4D2C8">                 (savelist (persp-savelist-from-savefile fname))</span>
+<span style="color: #D4D2C8">                 name)</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Load and switch to a perspective via name from the latest backup file.&quot;</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> savelist</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> savelist (persp-savelist-from-savefile fname)))</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; prompt for name from available</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> savelist</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((available-names (persp-list-persp-names-in-file fname savelist))</span>
-<span style="color: #D4D2C8">             (loaded-names (persp-names-current-frame-fast-ordered))</span>
-<span style="color: #D4D2C8">             (unloaded-names (seq-remove (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (p) (</span><span style="color: #FFD173">member</span><span style="color: #D4D2C8"> p loaded-names)) available-names)))</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> unloaded-names</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> name</span>
-<span style="color: #D4D2C8">                (persp-read-persp</span>
-<span style="color: #D4D2C8">                 </span><span style="color: #D5FF80">&quot;to load&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> unloaded-names </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;push</span><span style="color: #D4D2C8">)))))</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> name</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((names-regexp (regexp-opt (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> name))))</span>
-<span style="color: #D4D2C8">        (persp-load-state-from-file fname phash names-regexp </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> savelist))</span>
-<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; switch to new loaded persp</span>
-<span style="color: #D4D2C8">      (persp-frame-switch name)))</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">cl-destructuring-bind</span><span style="color: #D4D2C8"> (available loaded unloaded)</span>
+<span style="color: #D4D2C8">          (my/persp--get-names-from-savelist fname savelist)</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> unloaded</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> name</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> name (my/persp--prompt-for-persp-name unloaded)))</span>
+<span style="color: #D4D2C8">          (+message-if-debug </span><span style="color: #D5FF80">&quot;DEBUG: &gt; %s\n&gt; %s\n&gt; %s\n&gt; %s&quot;</span>
+<span style="color: #D4D2C8">                             fname</span>
+<span style="color: #D4D2C8">                             phash</span>
+<span style="color: #D4D2C8">                             (regexp-opt (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> name))</span>
+<span style="color: #D4D2C8">                             savelist)</span>
+<span style="color: #D4D2C8">          (persp-load-state-from-file fname phash</span>
+<span style="color: #D4D2C8">                                      (regexp-opt (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> name))</span>
+<span style="color: #D4D2C8">                                      </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> savelist)</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;; (persp-frame-switch name)</span>
+<span style="color: #D4D2C8">          )))</span>
+
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; (when name</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;;   (let ((names-regexp (regexp-opt (list name))))</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;;     (persp-load-state-from-file fname phash names-regexp t savelist))</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;;   ;; switch to new loaded persp</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;;   (persp-frame-switch name))</span>
+<span style="color: #D4D2C8">    )</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; don&#39;t overwrite backup file with current; merge.</span>
 <span style="color: #D4D2C8">  (advice-add </span><span style="color: #DFBFFF">&#39;persp-save-state-to-file</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:around</span>
@@ -895,52 +1191,46 @@ maybe have a function to delete a persp from the main autosave file?
 <span style="color: #7E8AA1">;;             #&#39;(lambda ()</span>
 <span style="color: #7E8AA1">;;                 (persp-add-ibuffer-group)</span>
 <span style="color: #7E8AA1">;;                 (ibuffer-switch-to-saved-filter-groups &quot;persp-mode&quot;))))</span>
+</code></pre></div>
+<h3 id="perspective">% Perspective</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf perspective </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
+<span style="color: #D4D2C8">  (persp-mode)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:custom</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(persp-mode-prefix-key </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">(kbd </span><span style="color: #D5FF80">&quot;C-c .&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c .&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> perspective-map)</span>
+<span style="color: #D4D2C8">  (perspective-map</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;S&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> persp-state-save)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;M-s&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> persp-state-save)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-s&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span>
+<span style="color: #D4D2C8">  (kill-emacs-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> persp-state-save)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; default backup file</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> persp-state-default-file</span>
+<span style="color: #D4D2C8">        (file-name-concat persp-save-dir </span><span style="color: #D5FF80">&quot;persp-auto-save&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; prev/next buffers</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> switch-to-prev-buffer-skip</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (win buff bury-or-kill)</span>
+<span style="color: #D4D2C8">          (not (persp-is-current-buffer buff))))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; consult-buffer</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;consult</span>
+<span style="color: #D4D2C8">    (consult-customize consult--source-buffer </span><span style="color: #FFD173">:hidden</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:default</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (add-to-list </span><span style="color: #DFBFFF">&#39;consult-buffer-sources</span><span style="color: #D4D2C8"> persp-consult-source))</span>
 
-<span style="color: #7E8AA1">;; (leaf perspective</span>
-<span style="color: #7E8AA1">;;   :init</span>
-<span style="color: #7E8AA1">;;   (persp-mode)</span>
-<span style="color: #7E8AA1">;;   ;; :custom</span>
-<span style="color: #7E8AA1">;;   ;; `(persp-mode-prefix-key . ,(kbd &quot;C-c .&quot;))</span>
-<span style="color: #7E8AA1">;;   :bind</span>
-<span style="color: #7E8AA1">;;   (&quot;C-x C-b&quot; . persp-list-buffers) ; or use a nicer switcher, see below</span>
-<span style="color: #7E8AA1">;;   (&quot;C-c .&quot; . perspective-map)</span>
-<span style="color: #7E8AA1">;;   (perspective-map</span>
-<span style="color: #7E8AA1">;;    (&quot;S&quot; . persp-state-save)</span>
-<span style="color: #7E8AA1">;;    (&quot;M-s&quot; . persp-state-save)</span>
-<span style="color: #7E8AA1">;;    (&quot;C-s&quot; . nil))</span>
-<span style="color: #7E8AA1">;;   :hook</span>
-<span style="color: #7E8AA1">;;   (kill-emacs-hook . persp-state-save)</span>
-<span style="color: #7E8AA1">;;   :config</span>
-<span style="color: #7E8AA1">;;   ;; default backup file</span>
-<span style="color: #7E8AA1">;;   (setq persp-state-default-file</span>
-<span style="color: #7E8AA1">;;         (file-name-concat persp-save-dir &quot;persp-auto-save&quot;))</span>
-<span style="color: #7E8AA1">;;   ;; prev/next buffers</span>
-<span style="color: #7E8AA1">;;   (setq switch-to-prev-buffer-skip</span>
-<span style="color: #7E8AA1">;;         (lambda (win buff bury-or-kill)</span>
-<span style="color: #7E8AA1">;;           (not (persp-is-current-buffer buff))))</span>
-<span style="color: #7E8AA1">;;   ;; consult-buffer</span>
-<span style="color: #7E8AA1">;;   (with-eval-after-load &#39;consult</span>
-<span style="color: #7E8AA1">;;     (setq +persp-consult-source</span>
-<span style="color: #7E8AA1">;;           &#39;(:name &quot;Perspective&quot;</span>
-<span style="color: #7E8AA1">;;                   :narrow 115           ; ?s</span>
-<span style="color: #7E8AA1">;;                   :category buffer</span>
-<span style="color: #7E8AA1">;;                   :state consult--buffer-state</span>
-<span style="color: #7E8AA1">;;                   :history buffer-name-history</span>
-<span style="color: #7E8AA1">;;                   :default t</span>
-<span style="color: #7E8AA1">;;                   :items #[0 &quot;\300\301\302\303\304\305\306&amp;\207&quot;</span>
-<span style="color: #7E8AA1">;;                              [consult--buffer-query</span>
-<span style="color: #7E8AA1">;;                               :sort visibility</span>
-<span style="color: #7E8AA1">;;                               :predicate (lambda (buf)</span>
-<span style="color: #7E8AA1">;;                                            (persp-is-current-buffer buf t))</span>
-<span style="color: #7E8AA1">;;                               :as buffer-name]</span>
-<span style="color: #7E8AA1">;;                              7]))</span>
-<span style="color: #7E8AA1">;;     (consult-customize consult--source-buffer :hidden t :default nil)</span>
-<span style="color: #7E8AA1">;;     (add-to-list &#39;consult-buffer-sources +persp-consult-source)))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; save activities before deleting frame</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;delete-frame-functions</span>
+<span style="color: #D4D2C8">               (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (frame)</span>
+<span style="color: #D4D2C8">                 (persp-save-state)))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; save activities before killing emacs</span>
+<span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;kill-emacs-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">persp-save-state)</span>
+<span style="color: #D4D2C8">  )</span>
 
 <span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+workspaces</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
 <hr />
-<p><em>Last updated: August 16, 2025</em></p>
+<p><em>Last updated: August 22, 2025</em></p>
 </section>
 
 <section id="mkdocs-terminal-after-content">

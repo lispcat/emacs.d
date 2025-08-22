@@ -634,6 +634,10 @@
 <nav>
     <ul>
         <li><a href="#org-org-mode-setup">λ +org - org mode setup</a></li>
+        <li><a href="#org">% org</a></li>
+        <li><a href="#org-modern">% Org-modern</a></li>
+        <li><a href="#end">% end</a></li>
+        <li><a href="#orgel-ends-here">% +org.el ends here</a></li>
         
     </ul>
 </nav>
@@ -648,26 +652,49 @@
 <section id="mkdocs-terminal-content">
     <h3 id="org-org-mode-setup">λ +org - org mode setup</h3>
 <p><em>Author:</em> lispcat <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;">&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;</a><br></p>
+<p>Configuration for Org-mode and friends.</p>
+<p>Org is a markup language and plain text file format, much like Markdown, but
+a lot more powerful.</p>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; NOTE: ensure that the newest version of org is installed right after elpaca</span>
 <span style="color: #7E8AA1">;; setup</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;leaf</span><span style="color: #D4D2C8">)</span>
-
-<span style="color: #D4D2C8">(leaf org </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
+</code></pre></div>
+<h3 id="org">% org</h3>
+<p>General config options for org-mode.</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf org </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:custom</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; default org directory</span>
 <span style="color: #D4D2C8">  (org-directory </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;~/Notes/org&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (org-tags-column </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">-55</span><span style="color: #D4D2C8">)               </span><span style="color: #7E8AA1">; column where tags are indented to</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (org-startup-folded . &#39;showall)  ; default folding mode</span>
-<span style="color: #D4D2C8">  (org-startup-folded </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;nofold</span><span style="color: #D4D2C8">)        </span><span style="color: #7E8AA1">; default folding mode</span>
-<span style="color: #D4D2C8">  (org-startup-indented </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)            </span><span style="color: #7E8AA1">; indent headings and its body</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; column where tags are indented to</span>
+<span style="color: #D4D2C8">  (org-tags-column </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">-55</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; default folding mode</span>
+<span style="color: #D4D2C8">  (org-startup-folded </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;nofold</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; indent headings and its body</span>
+<span style="color: #D4D2C8">  (org-startup-indented </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; more ergonomic C-a/C-e</span>
 <span style="color: #D4D2C8">  (org-special-ctrl-a/e </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (org-src-window-setup </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;current-window</span><span style="color: #D4D2C8">) </span><span style="color: #7E8AA1">; edit code blocks in the same window</span>
-<span style="color: #D4D2C8">  (org-return-follows-link </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)            </span><span style="color: #7E8AA1">; RET can open links</span>
-<span style="color: #D4D2C8">  (org-hide-emphasis-markers </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)          </span><span style="color: #7E8AA1">; hide formatting chars (* / ~ = etc)</span>
-<span style="color: #D4D2C8">  (org-src-preserve-indentation </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">) </span><span style="color: #7E8AA1">; remove annoying leading whitespace in code blocks</span>
-<span style="color: #D4D2C8">  (org-fontify-whole-heading-line </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (org-ellipsis . &quot; ›&quot;)</span>
-<span style="color: #D4D2C8">  (org-ellipsis </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot; ‣&quot;</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; edit src blocks in the same window</span>
+<span style="color: #D4D2C8">  (org-src-window-setup </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;current-window</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; RET can open links</span>
+<span style="color: #D4D2C8">  (org-return-follows-link </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; hide formatting chars (* / ~ = etc)</span>
+<span style="color: #D4D2C8">  (org-hide-emphasis-markers </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; remove annoying leading whitespace in code blocks</span>
+<span style="color: #D4D2C8">  (org-src-preserve-indentation </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; TODO: not sure what this does</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (org-fontify-whole-heading-line . t)</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; custom ellipses when folded</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (org-ellipsis . &quot; ‣&quot;)</span>
+<span style="color: #D4D2C8">  (org-ellipsis </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot; ›&quot;</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (org-ellipsis . &quot; …&quot;)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (org-ellipsis . &quot; ⤵&quot;)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (org-ellipsis . &quot; ▾&quot;)</span>
@@ -676,22 +703,7 @@
 <span style="color: #D4D2C8">  (leader-bind</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;o&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ignore</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:wk</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;org&quot;</span><span style="color: #D4D2C8">))</span>
 
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; :hook (org-mode-hook . indent-tabs-mode)</span>
-
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +org-insert-subheading-respect-content ()</span>
-<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Insert new subheading after the current heading&#39;s body.</span>
-<span style="color: #D5FF80">If in a list, inserts a new sublist after the current list.&quot;</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">    (org-meta-return)</span>
-<span style="color: #D4D2C8">    (org-metaright))</span>
-
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
-<span style="color: #D4D2C8">  (org-mode-map</span>
-<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-M-&lt;return&gt;&quot;</span>
-<span style="color: #D4D2C8">    </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +org-insert-subheading-respect-content))</span>
-
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:defer-config</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; set org font sizes</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">dolist</span>
@@ -702,17 +714,6 @@
 <span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;;         (org-level-3 :height 1.1)))</span>
 <span style="color: #D4D2C8">      (pair </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((org-document-title </span><span style="color: #FFD173">:height</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1.9</span><span style="color: #D4D2C8">)))</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFD173">apply</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">set-face-attribute (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> pair) </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">cdr</span><span style="color: #D4D2C8"> pair)))</span>
-
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;org-tempo</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;sh&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src shell&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;el&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src emacs-lisp&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;py&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src python&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;gcc&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src c&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;scm&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src scheme&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;conf&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src conf&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;java&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src java&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;unix&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src conf-unix&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;clang&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src c&quot;</span><span style="color: #D4D2C8">))</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; fix syntax &lt;&gt; matching with paren</span>
 <span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;org-mode-hook</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
@@ -735,16 +736,53 @@
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Run once immediately to set colors if no theme is loaded</span>
 <span style="color: #D4D2C8">  (+org-todo-color-override)</span>
 
-<span style="color: #D4D2C8">  )</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Shortcut for M-RET M-&lt;right&gt;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; In org-mode, this usually translates to either:</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; - new subheading</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; - new sublist</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +org-meta-ret-meta-right ()</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Shortcut for M-RET M-&lt;right&gt;.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (org-meta-return)</span>
+<span style="color: #D4D2C8">    (org-metaright))</span>
 
-<span style="color: #D4D2C8">(leaf org-download</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
+<span style="color: #D4D2C8">  (org-mode-map</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-M-&lt;return&gt;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +org-meta-ret-meta-right)))</span>
+</code></pre></div>
+<h4 id="org-tempo">&gt; org-tempo</h4>
+<p>Ease the creation of src blocks (code blocks).</p>
+<p>To create src blocks, usually, you would press <code>C-c C-,</code> or run
+<code>org-insert-structure-template</code>.</p>
+<p>But with <code>org-tempo</code>, with the config below, you can type <code>&lt;sh TAB</code> to create
+an src block like this:</p>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code>#+begin_src shell
+
+#+end_src
+</code></pre></div>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf org-tempo </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> org</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;sh&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src shell&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;el&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src emacs-lisp&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;py&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src python&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;gcc&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src c&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;scm&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src scheme&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;conf&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src conf&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;java&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src java&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;unix&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src conf-unix&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-structure-template-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;clang&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;src c&quot;</span><span style="color: #D4D2C8">)))</span>
+</code></pre></div>
+<h4 id="org-download">&gt; org-download</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf org-download</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> org</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (org-download-enable)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq-default</span>
 <span style="color: #D4D2C8">  (org-download-image-dir </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;_images&quot;</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #7E8AA1">;; TODO: replace with org-superstar</span>
+</code></pre></div>
+<h4 id="org-bullets">&gt; org-bullets</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; TODO: replace with org-superstar</span>
 <span style="color: #D4D2C8">(leaf org-bullets</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> org-mode-hook</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
@@ -757,11 +795,13 @@
 <span style="color: #D4D2C8">       </span><span style="color: #D5FF80">&quot;✦&quot;</span>
 <span style="color: #D4D2C8">       </span><span style="color: #D5FF80">&quot;✧&quot;</span>
 <span style="color: #D4D2C8">       </span><span style="color: #D5FF80">&quot;✿&quot;</span><span style="color: #D4D2C8">)))</span>
-
-<span style="color: #D4D2C8">(leaf toc-org</span>
+</code></pre></div>
+<h4 id="toc-org">&gt; toc-org</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf toc-org</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> org-mode-hook)</span>
-
-<span style="color: #D4D2C8">(leaf anki-editor</span>
+</code></pre></div>
+<h4 id="anki-editor">&gt; anki-editor</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf anki-editor</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> (anki-editor-push-note-at-point</span>
 <span style="color: #D4D2C8">             anki-editor-push-notes</span>
 <span style="color: #D4D2C8">             anki-editor-push-new-notes)</span>
@@ -773,17 +813,19 @@
 <span style="color: #D4D2C8">    (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> anki-editor-mode</span>
 <span style="color: #D4D2C8">      (anki-editor-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)))</span>
 <span style="color: #D4D2C8">  (advice-add </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">anki-editor--push-note </span><span style="color: #FFD173">:before</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">+ensure-anki-editor-mode))</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">use-package</span><span style="color: #D4D2C8"> f </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8"> f))</span>
-<span style="color: #D4D2C8">(leaf image-slicing </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+</code></pre></div>
+<h4 id="image-slicing">&gt; image-slicing</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf image-slicing </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> org-mode-hook</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
 <span style="color: #D4D2C8">  (image-slicing-newline-trailing-text </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #D4D2C8">(leaf org-auto-tangle</span>
+</code></pre></div>
+<h4 id="org-auto-tangle">&gt; org-auto-tangle</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf org-auto-tangle</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> org-mode-hook)</span>
-
-<span style="color: #D4D2C8">(leaf org-agenda </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+</code></pre></div>
+<h4 id="org-agenda">&gt; org-agenda</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf org-agenda </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> org</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  (leader-bind</span>
@@ -799,8 +841,15 @@
 <span style="color: #D4D2C8">                    </span><span style="color: #D5FF80">&quot;DONE(d/!)&quot;</span><span style="color: #D4D2C8">)))</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> org-agenda-files</span>
 <span style="color: #D4D2C8">        (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">;; &quot;~/Notes/org/Inbox.org&quot;</span>
-<span style="color: #D4D2C8">              </span><span style="color: #7E8AA1">;; &quot;~/Notes/org/agenda.org&quot;</span>
-<span style="color: #D4D2C8">              </span><span style="color: #D5FF80">&quot;~/Notes/denote/20250728T235116--todo__todo.org&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">         </span><span style="color: #7E8AA1">;; &quot;~/Notes/org/agenda.org&quot;</span>
+<span style="color: #D4D2C8">         </span><span style="color: #D5FF80">&quot;~/Notes/denote/20250728T235116--todo__todo.org&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +open-org-agenda-file ()</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (find-file (</span><span style="color: #FFD173">car</span><span style="color: #D4D2C8"> org-agenda-files)))</span>
+
+<span style="color: #D4D2C8">  (leader-bind</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;oo&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+open-org-agenda-file</span><span style="color: #D4D2C8">)</span>
+
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> org-tag-alist</span>
 <span style="color: #D4D2C8">        </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #7E8AA1">;; Places</span>
 <span style="color: #D4D2C8">          (</span><span style="color: #D5FF80">&quot;@home&quot;</span><span style="color: #D4D2C8">   </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">?H</span><span style="color: #D4D2C8">)</span>
@@ -840,8 +889,9 @@
 
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;org-habit</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;org-modules</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;org-habit</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #D4D2C8">(leaf org-super-agenda</span>
+</code></pre></div>
+<h4 id="org-super-agenda">&gt; org-super-agenda</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf org-super-agenda</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> org-agenda</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
@@ -865,14 +915,17 @@
 <span style="color: #D4D2C8">                   </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((</span><span style="color: #FFD173">:name</span><span style="color: #D4D2C8"> none</span>
 <span style="color: #D4D2C8">                            </span><span style="color: #FFD173">:habit</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">                     (</span><span style="color: #FFD173">:discard</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:anything</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)))))))))))</span>
-
-<span style="color: #D4D2C8">(leaf org-ql</span>
+</code></pre></div>
+<h4 id="-org-ql-">&gt; -- org-ql ----------------------------------------------------------------</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf org-ql</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> org)</span>
-
-<span style="color: #D4D2C8">(leaf org-pomodoro</span>
+</code></pre></div>
+<h4 id="org-pomodoro">&gt; org-pomodoro</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf org-pomodoro</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> org)</span>
-
-<span style="color: #D4D2C8">(leaf org-noter</span>
+</code></pre></div>
+<h4 id="org-noter">&gt; org-noter</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf org-noter</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> org</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span><span style="color: #D4D2C8"> ((</span><span style="color: #D5FF80">&quot;C-c o n&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> org-noter)</span>
 <span style="color: #D4D2C8">         (</span><span style="color: #D5FF80">&quot;C-c d n&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> org-noter-start-from-dired)</span>
@@ -893,8 +946,9 @@
 <span style="color: #D4D2C8">                            (</span><span style="color: #FFD173">format</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">aref</span><span style="color: #D4D2C8"> vec </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)))))</span>
 <span style="color: #D4D2C8">         (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;meow: %s&quot;</span><span style="color: #D4D2C8"> num)</span>
 <span style="color: #D4D2C8">         (org-entry-put (</span><span style="color: #FFD173">point</span><span style="color: #D4D2C8">) </span><span style="color: #D5FF80">&quot;NOTER_PAGE&quot;</span><span style="color: #D4D2C8"> num))))))</span>
-
-<span style="color: #D4D2C8">(leaf org-capture </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+</code></pre></div>
+<h4 id="org-capture">&gt; org-capture</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf org-capture </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> org</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  (leader-bind</span>
@@ -925,8 +979,9 @@
 <span style="color: #D4D2C8">           (file denote-last-path)</span>
 <span style="color: #D4D2C8">           </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">denote-org-capture </span><span style="color: #FFD173">:no-save</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:immediate-finish</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">           </span><span style="color: #FFD173">:kill-buffer</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:jump-to-captured</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))))</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +org-priority-to-anki ()</span>
+</code></pre></div>
+<h4 id="more-org-anki-stuff">&gt; more org-anki stuff</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +org-priority-to-anki ()</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; check connection with anki</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">unless</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">boundp</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;anki-editor-mode</span><span style="color: #D4D2C8">) anki-editor-mode)</span>
@@ -996,8 +1051,9 @@
 <span style="color: #D4D2C8">                 (org-set-property </span><span style="color: #D5FF80">&quot;TIME&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">format</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s&quot;</span><span style="color: #D4D2C8"> time-daily))</span>
 <span style="color: #D4D2C8">                 (org-set-property </span><span style="color: #D5FF80">&quot;EFFORT&quot;</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">format</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s&quot;</span><span style="color: #D4D2C8"> effort))</span>
 <span style="color: #D4D2C8">                 (org-next-visible-heading </span><span style="color: #DFBFFF">-1</span><span style="color: #D4D2C8">))))))</span>
-
-<span style="color: #D4D2C8">(leaf visual-fill-column</span>
+</code></pre></div>
+<h4 id="visual-fill-column">&gt; visual fill column</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf visual-fill-column</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> ((org-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +org-visual-fill))</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
@@ -1005,13 +1061,18 @@
 <span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> visual-fill-column-width </span><span style="color: #DFBFFF">100</span>
 <span style="color: #D4D2C8">          visual-fill-column-center-text </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">    (visual-fill-column-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)))</span>
-
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+org</span><span style="color: #D4D2C8">)</span>
-<span style="color: #7E8AA1">;;; +org.el ends here</span>
 </code></pre></div>
+<h3 id="org-modern">% Org-modern</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf org-modern</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
+<span style="color: #D4D2C8">  (global-org-modern-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
+</code></pre></div>
+<h3 id="end">% end</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+org</span><span style="color: #D4D2C8">)</span>
+</code></pre></div>
+<h3 id="orgel-ends-here">% +org.el ends here</h3>
 <hr />
-<p><em>Last updated: August 16, 2025</em></p>
+<p><em>Last updated: August 22, 2025</em></p>
 </section>
 
 <section id="mkdocs-terminal-after-content">

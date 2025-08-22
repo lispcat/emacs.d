@@ -633,8 +633,21 @@
 </nav><hr>
 <nav>
     <ul>
+        <li><a href="#ide-">λ +ide -</a></li>
+        <li><a href="#templates-for-new-files">% templates for new files</a></li>
+        <li><a href="#sane-indentation-defaults">% sane indentation defaults</a></li>
+        <li><a href="#tweak-compilation-buffer">% tweak compilation buffer</a></li>
+        <li><a href="#enable-syntax-checker">% enable syntax checker</a></li>
+        <li><a href="#buttonize-urls">% buttonize URLs</a></li>
+        <li><a href="#projectel">% project.el</a></li>
+        <li><a href="#lsp-mode">% lsp-mode</a></li>
         <li><a href="#langs">% langs</a></li>
+        <li><a href="#langs_1">% Langs</a></li>
+        <li><a href="#tooling">% Tooling</a></li>
         <li><a href="#code-formatting">% Code formatting</a></li>
+        <li><a href="#code-folding">% Code folding</a></li>
+        <li><a href="#end">% end</a></li>
+        <li><a href="#ideel-ends-here">% +ide.el ends here</a></li>
         
     </ul>
 </nav>
@@ -647,24 +660,31 @@
     
 
 <section id="mkdocs-terminal-content">
-    <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">defvar</span><span style="color: #D4D2C8"> prefer-lsp-mode? </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
-
-<span style="color: #D4D2C8">(auto-insert-mode)  </span><span style="color: #7E8AA1">;;; Adds hook to find-files-hook</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq-default</span><span style="color: #D4D2C8"> indent-tabs-mode </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
+    <h3 id="ide-">λ +ide -</h3>
+<p><em>Author:</em> lispcat <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;">&#49;&#56;&#55;&#57;&#50;&#50;&#55;&#57;&#49;&#43;&#108;&#105;&#115;&#112;&#99;&#97;&#116;&#64;&#117;&#115;&#101;&#114;&#115;&#46;&#110;&#111;&#114;&#101;&#112;&#108;&#121;&#46;&#103;&#105;&#116;&#104;&#117;&#98;&#46;&#99;&#111;&#109;</a><br></p>
+<p>Configure Emacs for IDE functionality.</p>
+<h3 id="templates-for-new-files">% templates for new files</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(auto-insert-mode)  </span><span style="color: #7E8AA1">;;; Adds hook to find-files-hook</span>
+</code></pre></div>
+<h3 id="sane-indentation-defaults">% sane indentation defaults</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq-default</span><span style="color: #D4D2C8"> indent-tabs-mode </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> tab-always-indent </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-
-<span style="color: #D4D2C8">(leaf compile </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+</code></pre></div>
+<h3 id="tweak-compilation-buffer">% tweak compilation buffer</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf compile </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> compilation-scroll-output </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #D4D2C8">(leaf flycheck</span>
+</code></pre></div>
+<h3 id="enable-syntax-checker">% enable syntax checker</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf flycheck</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> prog-mode-hook)</span>
-
-<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+</code></pre></div>
+<h3 id="buttonize-urls">% buttonize URLs</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> goto-address-mode)</span>
-
-<span style="color: #D4D2C8">(leaf project </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+</code></pre></div>
+<h3 id="projectel">% project.el</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf project </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind-keymap</span><span style="color: #D4D2C8"> (</span><span style="color: #D5FF80">&quot;C-c P&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> project-prefix-map)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> project-compile-interactive ()</span>
@@ -683,8 +703,9 @@
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c p&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> projectile-command-map)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> projectile-compile-use-comint-mode </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #D4D2C8">(leaf lsp-mode</span>
+</code></pre></div>
+<h3 id="lsp-mode">% lsp-mode</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf lsp-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> (lsp lsp-deferred)</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> (lsp-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-enable-which-key-integration)</span>
@@ -699,8 +720,9 @@
 <span style="color: #D4D2C8">        lsp-keymap-prefix </span><span style="color: #D5FF80">&quot;C-c l&quot;</span>
 <span style="color: #D4D2C8">        </span><span style="color: #7E8AA1">;; problematic: https://github.com/emacs-lsp/lsp-mode/issues/4113</span>
 <span style="color: #D4D2C8">        lsp-update-inlay-hints-on-scroll </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #D4D2C8">(leaf lsp-ui</span>
+</code></pre></div>
+<h4 id="lsp-ui">&gt; lsp-ui</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf lsp-ui</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
 <span style="color: #D4D2C8">  (lsp-ui-mode-map</span>
 <span style="color: #D4D2C8">   ([remap xref-find-definitions] </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp-ui-peek-find-definitions)</span>
@@ -723,9 +745,9 @@
 
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;lsp-mode</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFD173">define-key</span><span style="color: #D4D2C8"> lsp-command-map (kbd </span><span style="color: #D5FF80">&quot;v i&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp-ui-imenu)))</span>
-
-<span style="color: #7E8AA1">;;; lsp-booster</span>
-<span style="color: #7E8AA1">;; use lsp-doctor for testing</span>
+</code></pre></div>
+<h4 id="lsp-booster">&gt; lsp-booster</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; use lsp-doctor for testing</span>
 <span style="color: #7E8AA1">;; Steps:</span>
 <span style="color: #7E8AA1">;; - install emacs-lsp-booster</span>
 <span style="color: #7E8AA1">;; - use plist for deserialization (FOLLOW GUIDE)</span>
@@ -760,9 +782,11 @@
 <span style="color: #D4D2C8">            (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Using emacs-lsp-booster for %s!&quot;</span><span style="color: #D4D2C8"> orig-result)</span>
 <span style="color: #D4D2C8">            (</span><span style="color: #FFD173">cons</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;emacs-lsp-booster&quot;</span><span style="color: #D4D2C8"> orig-result))</span>
 <span style="color: #D4D2C8">        orig-result)))</span>
-<span style="color: #D4D2C8">  (advice-add </span><span style="color: #DFBFFF">&#39;lsp-resolve-final-command</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:around</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp-booster--advice-final-command))</span>
-
-<span style="color: #7E8AA1">;; for non-programming too</span>
+<span style="color: #D4D2C8">  (advice-add </span><span style="color: #DFBFFF">&#39;lsp-resolve-final-command</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:around</span>
+<span style="color: #D4D2C8">              </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp-booster--advice-final-command))</span>
+</code></pre></div>
+<h4 id="automatic-parenthesis-pair-matching">&gt; Automatic parenthesis pair matching</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; for non-programming too</span>
 <span style="color: #D4D2C8">(leaf elec-pair </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
@@ -778,29 +802,36 @@
 <span style="color: #D4D2C8">  (electric-pair-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
 </code></pre></div>
 <h3 id="langs">% langs</h3>
+<h3 id="langs_1">% Langs</h3>
+<h4 id="lisp">&gt; Lisp</h4>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> +lisp-mode-hooks</span>
 <span style="color: #D4D2C8">      </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(emacs-lisp-mode-hook</span>
+<span style="color: #D4D2C8">        lisp-data-mode-hook</span>
 <span style="color: #D4D2C8">        scheme-mode-hook))</span>
+</code></pre></div>
+<h5 id="rainbow-parens">‣ rainbow parens</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; Highlight nested parens according to their depth.</span>
+<span style="color: #7E8AA1">;; ---</span>
 
-<span style="color: #7E8AA1">;; rainbow parens</span>
 <span style="color: #D4D2C8">(leaf rainbow-delimiters</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`,@</span><span style="color: #D4D2C8">+lisp-mode-hooks)</span>
-
-<span style="color: #7E8AA1">;; paredit</span>
-<span style="color: #D4D2C8">(leaf paredit</span>
+</code></pre></div>
+<h5 id="paredit">‣ paredit</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf paredit</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`,@</span><span style="color: #D4D2C8">+lisp-mode-hooks)</span>
-
-<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+</code></pre></div>
+<h5 id="emacs-lisp">‣ emacs-lisp</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> ((emacs-lisp-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
 <span style="color: #D4D2C8">                                   (auto-fill-mode)</span>
 <span style="color: #D4D2C8">                                   (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> fill-column </span><span style="color: #DFBFFF">80</span><span style="color: #D4D2C8">)))))</span>
-
-<span style="color: #D4D2C8">(leaf orglink</span>
+</code></pre></div>
+<h5 id="org-style-links-in-elisp">‣ org-style links in elisp</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf orglink</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> emacs-lisp-mode-hook)</span>
-
-<span style="color: #7E8AA1">;; other</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> create-banner-comment (text </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> width)</span>
+</code></pre></div>
+<h5 id="elisp-misc">‣ elisp misc</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> create-banner-comment (text </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> width)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Create a banner comment with TEXT centered between semicolons.</span>
 <span style="color: #D5FF80">Optional WIDTH parameter determines total width (defaults to 70).&quot;</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;sText: &quot;</span><span style="color: #D4D2C8">)</span>
@@ -817,11 +848,13 @@
 <span style="color: #D4D2C8">                    left-semis</span>
 <span style="color: #D4D2C8">                    text</span>
 <span style="color: #D4D2C8">                    right-semis))))</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;flycheck</span>
+</code></pre></div>
+<h5 id="tweak-flycheck-for-elisp">‣ tweak flycheck for elisp</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;flycheck</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq-default</span><span style="color: #D4D2C8"> flycheck-disabled-checkers </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(emacs-lisp-checkdoc)))</span>
-
-<span style="color: #D4D2C8">(leaf scheme-mode </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+</code></pre></div>
+<h5 id="scheme">‣ scheme</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf scheme-mode </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.sld\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.scm\\&#39;&quot;</span><span style="color: #D4D2C8">)</span>
 
@@ -836,6 +869,10 @@
 <span style="color: #D4D2C8">(leaf geiser-guile</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> geiser)</span>
+</code></pre></div>
+<h5 id="clojure">‣ Clojure</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf clojure-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">) </span><span style="color: #7E8AA1">;;;; Rust</span>
 
 <span style="color: #D4D2C8">(leaf rust-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
@@ -937,8 +974,9 @@
 <span style="color: #7E8AA1">;;    :host github</span>
 <span style="color: #7E8AA1">;;    :repo &quot;cordx56/rustowl&quot;</span>
 <span style="color: #7E8AA1">;;    :files (:defaults &quot;emacs/*&quot;)))</span>
-
-<span style="color: #D4D2C8">(leaf cc-mode </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+</code></pre></div>
+<h4 id="c">&gt; C</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf cc-mode </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> ((c-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp)</span>
 <span style="color: #D4D2C8">         (c-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
 <span style="color: #D4D2C8">                          (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> lsp-idle-delay </span><span style="color: #DFBFFF">0.1</span>
@@ -960,8 +998,9 @@
 <span style="color: #7E8AA1">;;   :config</span>
 <span style="color: #7E8AA1">;;   (add-to-list &#39;c-default-style &#39;(c-mode . &quot;cc-mode&quot;))</span>
 <span style="color: #7E8AA1">;;   (define-key c-mode-map (kbd &quot;&lt;f8&gt;&quot;) #&#39;project-compile-interactive))</span>
-
-<span style="color: #D4D2C8">(leaf lsp-java</span>
+</code></pre></div>
+<h4 id="java">&gt; Java</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf lsp-java</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.java\\&#39;&quot;</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;java-mode-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp))</span>
@@ -976,8 +1015,9 @@
 <span style="color: #7E8AA1">;;    (&quot;C-c l N&quot; . eglot-java-project-new)</span>
 <span style="color: #7E8AA1">;;    (&quot;C-c l T&quot; . eglot-java-project-build-task)</span>
 <span style="color: #7E8AA1">;;    (&quot;C-c l R&quot; . eglot-java-project-build-refresh)))</span>
-
-<span style="color: #D4D2C8">(leaf markdown-mode</span>
+</code></pre></div>
+<h4 id="markdown">&gt; Markdown</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf markdown-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> ((</span><span style="color: #D5FF80">&quot;README\\.md\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> gfm-mode)</span>
 <span style="color: #D4D2C8">         (</span><span style="color: #D5FF80">&quot;\\.md\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> markdown-mode))</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
@@ -989,37 +1029,41 @@
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (setq markdown-command &quot;marked&quot;)</span>
 <span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;markdown-mode-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">+setup-markdown-mode))</span>
-
-<span style="color: #D4D2C8">(leaf clojure-mode</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-
-<span style="color: #D4D2C8">(leaf scala-mode</span>
+</code></pre></div>
+<h4 id="scala">&gt; Scala</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf scala-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:interpreter</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;scala&quot;</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> () (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> prettify-symbols-alist</span>
-<span style="color: #D4D2C8">                   scala-prettify-symbols-alist)))</span>
-
-<span style="color: #D4D2C8">(leaf zig-mode</span>
+<span style="color: #D4D2C8">              scala-prettify-symbols-alist)))</span>
+</code></pre></div>
+<h4 id="zig">&gt; Zig</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf zig-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:disabled</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; :config</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (zig-format-on-save-mode 0)</span>
 <span style="color: #D4D2C8">  )</span>
-
-<span style="color: #D4D2C8">(leaf haskell-mode</span>
+</code></pre></div>
+<h4 id="haskell">&gt; Haskell</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf haskell-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.hs\\&#39;&quot;</span><span style="color: #D4D2C8">)</span>
-
-<span style="color: #D4D2C8">(leaf nix-mode</span>
+</code></pre></div>
+<h4 id="nix">&gt; Nix</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf nix-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.nix\\&#39;&quot;</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> ((nix-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> lsp)))</span>
-
-<span style="color: #D4D2C8">(leaf yaml-mode</span>
+</code></pre></div>
+<h4 id="yaml">&gt; Yaml</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf yaml-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:mode</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;\\.yml\\&#39;&quot;</span><span style="color: #D4D2C8">)</span>
-
-<span style="color: #D4D2C8">(leaf ron-mode</span>
+</code></pre></div>
+<h4 id="ron">&gt; Ron</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf ron-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-
-<span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">;; kerolox!</span>
+</code></pre></div>
+<h4 id="kerolox">&gt; Kerolox</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf emacs </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #7E8AA1">;; kerolox!</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Major-mode for .rp1 files</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">define-derived-mode</span><span style="color: #D4D2C8"> kerolox-mode prog-mode </span><span style="color: #D5FF80">&quot;kerolox&quot;</span>
@@ -1034,11 +1078,9 @@
 <span style="color: #D4D2C8">      </span><span style="color: #FFD173">:new-connection</span><span style="color: #D4D2C8"> (lsp-stdio-connection </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;/home/sui/Code/cloned/saturn-v/target/release/saturn-v&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;lsp&quot;</span><span style="color: #D4D2C8">))</span>
 <span style="color: #D4D2C8">      </span><span style="color: #FFD173">:major-modes</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(kerolox-mode)</span>
 <span style="color: #D4D2C8">      </span><span style="color: #FFD173">:server-id</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;saturn-v-lsp</span><span style="color: #D4D2C8">)))</span>
-
-
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;;; Kerolox treesit mode and LSP</span>
-
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">define-derived-mode</span><span style="color: #D4D2C8"> kerolox-ts-mode kerolox-mode </span><span style="color: #D5FF80">&quot;kerolox[ts]&quot;</span>
+</code></pre></div>
+<h5 id="kerolox-treesit-mode-and-lsp">‣ Kerolox treesit mode and LSP</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  (</span><span style="color: #FFD173">define-derived-mode</span><span style="color: #D4D2C8"> kerolox-ts-mode kerolox-mode </span><span style="color: #D5FF80">&quot;kerolox[ts]&quot;</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Tree-sitter based major mode for editing kerolox (.rp1) files.&quot;</span>
 <span style="color: #D4D2C8">    </span><span style="color: #FFD173">:group</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;kerolox</span>
 
@@ -1120,11 +1162,9 @@
 <span style="color: #D4D2C8">      </span><span style="color: #FFD173">:new-connection</span><span style="color: #D4D2C8"> (lsp-stdio-connection </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;/home/sui/Code/cloned/saturn-v/target/release/saturn-v&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;lsp&quot;</span><span style="color: #D4D2C8">))</span>
 <span style="color: #D4D2C8">      </span><span style="color: #FFD173">:major-modes</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(kerolox-ts-mode)</span>
 <span style="color: #D4D2C8">      </span><span style="color: #FFD173">:server-id</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;saturn-v-ts-lsp</span><span style="color: #D4D2C8">)))</span>
-
-
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;;; Tree-sitter generic ;;;;</span>
-
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;treesit</span>
+</code></pre></div>
+<h5 id="kerolox-tree-sitter-generic">‣ kerolox - tree-sitter generic</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;treesit</span>
 <span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; Configure the language grammar source and mapping</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">fboundp</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;treesit-available-p</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">               (treesit-available-p))</span>
@@ -1143,21 +1183,18 @@
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Auto-start LSP when opening .rp1 files with tree-sitter mode</span>
 <span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;kerolox-ts-mode-hook</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp-deferred)</span>
-
-
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;;; Misc ;;;;</span>
-
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Remap regular mode to tree-sitter mode</span>
+</code></pre></div>
+<h5 id="kerolox-misc">‣ Kerolox misc</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Remap regular mode to tree-sitter mode</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> major-mode-remap-alist</span>
 <span style="color: #D4D2C8">        </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((kerolox-mode </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> kerolox-ts-mode)))</span>
-
-
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;;; Auto-mode-alist ;;;;</span>
-
-<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Associate file name pattern with major-mode</span>
+</code></pre></div>
+<h5 id="kerolox-auto-mode-alist">‣ Kerolox - Auto-mode-alist</h5>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; Associate file name pattern with major-mode</span>
 <span style="color: #D4D2C8">  (add-to-list </span><span style="color: #DFBFFF">&#39;auto-mode-alist</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;\\.rp1\\&#39;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> kerolox-ts-mode)))</span>
-
-<span style="color: #D4D2C8">(leaf lua-mode</span>
+</code></pre></div>
+<h4 id="lua-mode">&gt; Lua-mode</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf lua-mode</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;lsp-lua</span>
 <span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; fix issue with externally installed server</span>
@@ -1179,52 +1216,81 @@
 <span style="color: #D4D2C8">  (advice-add </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">lsp-clients-lua-language-server-test</span>
 <span style="color: #D4D2C8">              </span><span style="color: #FFD173">:override</span>
 <span style="color: #D4D2C8">              </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">+lsp-clients-lua-language-server-test))</span>
-
-<span style="color: #D4D2C8">(leaf direnv</span>
+</code></pre></div>
+<h4 id="typst">&gt; Typst</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">use-package</span><span style="color: #D4D2C8"> typst-ts-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:type</span><span style="color: #D4D2C8"> git </span><span style="color: #FFD173">:host</span><span style="color: #D4D2C8"> codeberg </span><span style="color: #FFD173">:repo</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;meow_king/typst-ts-mode&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:demand</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:custom</span>
+<span style="color: #D4D2C8">  (typst-ts-mode-grammar-location (</span><span style="color: #FFD173">expand-file-name</span>
+<span style="color: #D4D2C8">                                   </span><span style="color: #D5FF80">&quot;tree-sitter/libtree-sitter-typst.so&quot;</span>
+<span style="color: #D4D2C8">                                   user-emacs-directory)))</span>
+</code></pre></div>
+<h3 id="tooling">% Tooling</h3>
+<h4 id="direnv">&gt; direnv</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf direnv</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  (direnv-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #D4D2C8">(leaf rainbow-mode</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> prog-mode-hook)</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;ansi-color</span>
+</code></pre></div>
+<h4 id="rainbow-mode">&gt; Rainbow mode</h4>
+<h4 id="add-color-to-hex-codes-in-buffer">Add color to hex codes in buffer.</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> prog-mode-hook)</span>
+</code></pre></div>
+<h4 id="ansi-color-not-sure-what-this-is-for">&gt; Ansi-color... not sure what this is for</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">with-eval-after-load</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;ansi-color</span>
 <span style="color: #D4D2C8">  (add-hook </span><span style="color: #DFBFFF">&#39;compilation-filter-hook</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;ansi-color-compilation-filter</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #D4D2C8">(leaf treesit-auto</span>
+</code></pre></div>
+<h4 id="auto-install-treesitter-backends">&gt; Auto-install treesitter backends</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf treesit-auto</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> treesit-auto-install </span><span style="color: #DFBFFF">&#39;prompt</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  (global-treesit-auto-mode))</span>
 </code></pre></div>
 <h3 id="code-formatting">% Code formatting</h3>
+<h3 id="code-folding">% Code folding</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; TODO: look into: https://github.com/tarsius/outline-minor-faces</span>
+<span style="color: #7E8AA1">;; is this worth it? alternative of</span>
+</code></pre></div>
+<h4 id="outline">&gt; Outline</h4>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf outline-indent</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:doc</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Optimal folding: https://github.com/jamescherti/outline-indent.el&quot;</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:commands</span><span style="color: #D4D2C8"> outline-indent-minor-mode</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> org</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:custom</span>
+<span style="color: #D4D2C8">  (outline-indent-ellipsis </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot; ▼&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (outline-blank-line . t)</span>
+
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; outline-cycle</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +outline-toggle (</span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> meta)</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; go to prev heading</span>
+<span style="color: #D4D2C8">    (outline-back-to-heading)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">;; toggle</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (not (outline-invisible-p (pos-eol)))</span>
+<span style="color: #D4D2C8">        </span><span style="color: #7E8AA1">;; hide</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFAD66">progn</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;; hide below, only headings</span>
+<span style="color: #D4D2C8">          (outline-hide-subtree)</span>
+<span style="color: #D4D2C8">          (outline-show-branches))</span>
+<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; show</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> meta</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;; show subtree</span>
+<span style="color: #D4D2C8">          (outline-show-subtree)</span>
+<span style="color: #D4D2C8">        </span><span style="color: #7E8AA1">;; show current</span>
+<span style="color: #D4D2C8">        (outline-show-entry))))</span>
 
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +outline-cycle (</span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> event)</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> last-nonmenu-event))</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">save-excursion</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (mouse-event-p event)</span>
-<span style="color: #D4D2C8">        (mouse-set-point event))</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">condition-case</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">pcase</span><span style="color: #D4D2C8"> (outline--cycle-state)</span>
-<span style="color: #D4D2C8">            (</span><span style="color: #DFBFFF">&#39;show-all</span>
-<span style="color: #D4D2C8">             (outline-hide-subtree)</span>
-<span style="color: #D4D2C8">             (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Hide all&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">            ((</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;hide-all</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;headings-only</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">             (outline-show-subtree)</span>
-<span style="color: #D4D2C8">             (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Show all&quot;</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">        (outline-before-first-heading </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +outline-toggle-meta ()</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">    (+outline-toggle </span><span style="color: #DFBFFF">&#39;t</span><span style="color: #D4D2C8">))</span>
 
-<span style="color: #D4D2C8">  (defhydra +outline-cycle-hydra ()</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #D5FF80">&quot;;&quot;</span><span style="color: #D4D2C8"> +outline-cycle)</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #D5FF80">&quot;&lt;backtab&gt;&quot;</span><span style="color: #D4D2C8"> +outline-cycle))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (defhydra +outline-cycle-hydra ()</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;   (&quot;;&quot; +outline-cycle)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;   (&quot;&lt;backtab&gt;&quot; +outline-cycle))</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; outline-cycle buffer</span>
-
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +outline-cycle-buffer (</span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> level)</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">list</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> current-prefix-arg</span>
 <span style="color: #D4D2C8">                         (</span><span style="color: #FFD173">prefix-numeric-value</span><span style="color: #D4D2C8"> current-prefix-arg))))</span>
@@ -1258,39 +1324,55 @@
 <span style="color: #D4D2C8">    (</span><span style="color: #D5FF80">&quot;&lt;backtab&gt;&quot;</span><span style="color: #D4D2C8"> +outline-cycle-buffer))</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; outline-cycle hydra</span>
-
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +outline-cycle-at-root (arg)</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;P&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((prev-loc (</span><span style="color: #FFD173">point-marker</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> arg</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #FFAD66">progn</span>
-<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">end-of-line</span><span style="color: #D4D2C8">) (outline-previous-heading)</span>
-<span style="color: #D4D2C8">            (+outline-cycle-buffer)</span>
-<span style="color: #D4D2C8">            (+outline-cycle-buffer-hydra/body))</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">end-of-line</span><span style="color: #D4D2C8">) (outline-previous-heading)</span>
-<span style="color: #D4D2C8">        (+outline-cycle)</span>
-<span style="color: #D4D2C8">        (+outline-cycle-hydra/body))</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">goto-char</span><span style="color: #D4D2C8"> prev-loc)))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (defun +outline-cycle-at-root (arg)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;   (interactive &quot;P&quot;)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;   (let ((prev-loc (point-marker)))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;     (if arg</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;         (progn</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;           (end-of-line) (outline-previous-heading)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;           (+outline-cycle-buffer)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;           (+outline-cycle-buffer-hydra/body))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;       (end-of-line) (outline-previous-heading)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;       (+outline-cycle)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;       (+outline-cycle-hydra/body))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;     (goto-char prev-loc)))</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; run outline-hide-body only after first focus (add to .dir-locals.el)</span>
-
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +hide-outline-on-open (func </span><span style="color: #FFAD66">&amp;rest</span><span style="color: #D4D2C8"> args)</span>
-<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Hide outlines when opening files via dired or projectile.&quot;</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((result (</span><span style="color: #FFD173">apply</span><span style="color: #D4D2C8"> func args)))</span>
-<span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">;; After the file is opened, hide outlines if conditions are met</span>
-<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">when</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">buffer-file-name</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">                 outline-indent-minor-mode)</span>
-<span style="color: #D4D2C8">        (outline-hide-body))</span>
-<span style="color: #D4D2C8">      result))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (defun +hide-outline-on-open (func &amp;rest args)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;   &quot;Hide outlines when opening files via dired or projectile.&quot;</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;   (let ((result (apply func args)))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;     ;; After the file is opened, hide outlines if conditions are met</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;     (when (and (buffer-file-name)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;                outline-indent-minor-mode)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;       (outline-hide-body))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;;     result))</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (advice-add &#39;find-file :around #&#39;+hide-outline-on-open)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (advice-add &#39;dired-find-file :around #&#39;+hide-outline-on-open)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (advice-add &#39;projectile-find-file :around #&#39;+hide-outline-on-open)</span>
 <span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (advice-add &#39;projectile-find-file-dwim :around #&#39;+hide-outline-on-open)</span>
 
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; special TAB, cycle if on heading</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +indent-for-tab-command--outline-advice (orig-fn </span><span style="color: #FFAD66">&amp;rest</span><span style="color: #D4D2C8"> args)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Advice for alternative TAB behavior if over outline heading.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">eq</span><span style="color: #D4D2C8"> major-mode </span><span style="color: #DFBFFF">&#39;emacs-lisp-mode</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">             (</span><span style="color: #FFAD66">save-excursion</span>
+<span style="color: #D4D2C8">               (</span><span style="color: #FFD173">beginning-of-line</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">               (</span><span style="color: #FFD173">looking-at</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;^;;;+ .*$&quot;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">        (+outline-toggle)</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFD173">apply</span><span style="color: #D4D2C8"> orig-fn args)))</span>
+
+<span style="color: #D4D2C8">  (advice-add </span><span style="color: #DFBFFF">&#39;indent-for-tab-command</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:around</span>
+<span style="color: #D4D2C8">              </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">+indent-for-tab-command--outline-advice)</span>
+
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:bind</span>
+
 <span style="color: #D4D2C8">  (outline-minor-mode-map</span>
-<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;&lt;backtab&gt;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +outline-cycle-at-root))</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;&lt;backtab&gt;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +outline-toggle-meta))</span>
+
+<span style="color: #D4D2C8">  (emacs-lisp-mode-map</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-n&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> outline-next-visible-heading)</span>
+<span style="color: #D4D2C8">   (</span><span style="color: #D5FF80">&quot;C-c C-p&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> outline-previous-visible-heading))</span>
 
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c ; ;&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +outline-cycle-buffer)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c ; r&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> +outline-cycle-at-root)</span>
@@ -1321,33 +1403,100 @@
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-c ; C&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> outline-hide-children)</span>
 
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span>
-<span style="color: #D4D2C8">  ((emacs-lisp-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> outline-indent-minor-mode)</span>
-<span style="color: #D4D2C8">   (outline-indent-minor-mode-hook</span>
+<span style="color: #D4D2C8">  ((emacs-lisp-mode-hook</span>
 <span style="color: #D4D2C8">    </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">        (outline-indent-minor-mode)</span>
 <span style="color: #D4D2C8">        (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> make-window-start-visible </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">pcase</span><span style="color: #D4D2C8"> major-mode</span>
-<span style="color: #D4D2C8">          (</span><span style="color: #DFBFFF">&#39;emacs-lisp-mode</span>
-<span style="color: #D4D2C8">           (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> outline-regexp</span>
-<span style="color: #D4D2C8">                       (string-join</span>
-<span style="color: #D4D2C8">                        </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span>
-<span style="color: #D4D2C8">                          </span><span style="color: #7E8AA1">;; &quot;^;;;+ .*&quot;    ; ;;;+ space rest       (regular)</span>
-<span style="color: #D4D2C8">                          </span><span style="color: #D5FF80">&quot;^;;+ .*&quot;</span><span style="color: #D4D2C8">    </span><span style="color: #7E8AA1">; ;;+ space rest (optimal?)</span>
-<span style="color: #D4D2C8">                          </span><span style="color: #D5FF80">&quot;^;;$&quot;</span><span style="color: #D4D2C8">       </span><span style="color: #7E8AA1">; ^;;$ (alt)</span>
-<span style="color: #D4D2C8">                          </span><span style="color: #D5FF80">&quot;^(....&quot;</span><span style="color: #D4D2C8">      </span><span style="color: #7E8AA1">; top-level parens</span>
-<span style="color: #D4D2C8">                          </span><span style="color: #7E8AA1">;; &quot;^;;+ .* ;$&quot;  ; ;;+ space rest ;      (cob)</span>
-<span style="color: #D4D2C8">                          </span><span style="color: #D5FF80">&quot;^;;;;+$&quot;</span><span style="color: #D4D2C8">     </span><span style="color: #7E8AA1">; ;;;;+ (only, all the way) (cob)</span>
-<span style="color: #D4D2C8">                          )</span>
-<span style="color: #D4D2C8">                        </span><span style="color: #D5FF80">&quot;\\|&quot;</span><span style="color: #D4D2C8">))</span>
-<span style="color: #D4D2C8">           )))))</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((header-comment-p </span><span style="color: #D5FF80">&quot;^\\(;;;+\\) .*&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">              (cob-p (string-join</span>
+<span style="color: #D4D2C8">                      </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;^;;;;+$&quot;</span>
+<span style="color: #D4D2C8">                        </span><span style="color: #D5FF80">&quot;^;;+ +\\(.*\\) +;$&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                      </span><span style="color: #D5FF80">&quot;\\|&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">              (coh-p (string-join</span>
+<span style="color: #D4D2C8">                      </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;^;;; -- \\(.*\\) -+$&quot;</span><span style="color: #D4D2C8">)))</span>
+<span style="color: #D4D2C8">              (def-p (string-join</span>
+<span style="color: #D4D2C8">                      </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #D5FF80">&quot;^(&quot;</span><span style="color: #D4D2C8">))))</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> outline-regexp</span>
+<span style="color: #D4D2C8">                      (string-join</span>
+<span style="color: #D4D2C8">                       (</span><span style="color: #FFD173">list</span>
+<span style="color: #D4D2C8">                        </span><span style="color: #7E8AA1">;; cob-p</span>
+<span style="color: #D4D2C8">                        </span><span style="color: #7E8AA1">;; coh-p</span>
+<span style="color: #D4D2C8">                        </span><span style="color: #7E8AA1">;; def-p</span>
+<span style="color: #D4D2C8">                        header-comment-p)</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #7E8AA1">;; &#39;(</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #7E8AA1">;;  ;; &quot;^;;;+ .*&quot;    ; ;;;+ space rest       (regular)</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #7E8AA1">;;  &quot;^;;+ .*&quot;     ; ;;+ space rest (optimal?)</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #7E8AA1">;;  &quot;^;;$&quot;        ; ^;;$ (alt)</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #7E8AA1">;;  &quot;^(....&quot;      ; top-level parens</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #7E8AA1">;;  ;; &quot;^;;+ .* ;$&quot;  ; ;;+ space rest ;      (cob)</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #7E8AA1">;;  &quot;^;;;;+$&quot;     ; ;;;;+ (only, all the way) (cob)</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #7E8AA1">;;  )</span>
+<span style="color: #D4D2C8">                       </span><span style="color: #D5FF80">&quot;\\|&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">setq-local</span><span style="color: #D4D2C8"> outline-level</span>
+<span style="color: #D4D2C8">                      (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> ()</span>
+<span style="color: #D4D2C8">                        (</span><span style="color: #FFAD66">cond</span>
+<span style="color: #D4D2C8">                         </span><span style="color: #7E8AA1">;; ((looking-at cob-p)</span>
+<span style="color: #D4D2C8">                         </span><span style="color: #7E8AA1">;;  1)</span>
+<span style="color: #D4D2C8">                         </span><span style="color: #7E8AA1">;; ((looking-at coh-p)</span>
+<span style="color: #D4D2C8">                         </span><span style="color: #7E8AA1">;;  2)</span>
+<span style="color: #D4D2C8">                         ((</span><span style="color: #FFD173">looking-at</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;^\\(;;;+\\) .*&quot;</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                          (</span><span style="color: #FFD173">-</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">match-end</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">) (</span><span style="color: #FFD173">match-beginning</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">) </span><span style="color: #DFBFFF">2</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                         ((</span><span style="color: #FFD173">looking-at</span><span style="color: #D4D2C8"> def-p)</span>
+<span style="color: #D4D2C8">                          </span><span style="color: #DFBFFF">1000</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">                         (</span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">0</span><span style="color: #D4D2C8">))))</span>
 
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:setq</span>
-<span style="color: #D4D2C8">  (outline-indent-ellipsis </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot; ▼&quot;</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (outline-blank-line </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+ide</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;; (setq-local outline-level</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;             (lambda ()</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;               (cond</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;                ;; ((looking-at cob-p) 1)</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;                ;; ((looking-at coh-p) 2)</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;                ;; ((looking-at cow-p) 3)</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;                ((looking-at def-p)</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;                 (- (match-end 0) (match-beginning 0))))))</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;; (setq-local outline-level</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;             (lambda ()</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;               (cond</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;                ((looking-at &quot;^;;;+&quot;)</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;                 (- (match-end 0) (match-beginning 0)))</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;                ((looking-at &quot;^(&quot;)</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;                 1000)</span>
+<span style="color: #D4D2C8">          </span><span style="color: #7E8AA1">;;                nil)))</span>
+<span style="color: #D4D2C8">          )))))</span>
 </code></pre></div>
+<h4 id="outline-faces">&gt; Outline faces</h4>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf outline-minor-faces</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> outline outline-indent</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:hook</span><span style="color: #D4D2C8"> (outline-minor-mode-hook </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> outline-minor-faces-mode)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; exclude custom fontlocking for</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +outline-minor-faces--exclude-defuns (orig-fn arg)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Remove ^( patterns from the regex argument.&quot;</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((filtered-regex</span>
+<span style="color: #D4D2C8">           (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((regex </span><span style="color: #D5FF80">&quot;\\|^(&quot;</span><span style="color: #D4D2C8">))   </span><span style="color: #7E8AA1">; Fixed: escaped the backslash properly</span>
+<span style="color: #D4D2C8">                 (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (string-search regex arg)</span>
+<span style="color: #D4D2C8">                      (string-replace regex </span><span style="color: #D5FF80">&quot;&quot;</span><span style="color: #D4D2C8"> arg))) </span><span style="color: #7E8AA1">; Fixed: &quot;&quot; instead of nil</span>
+<span style="color: #D4D2C8">               (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((regex </span><span style="color: #D5FF80">&quot;^(\\|&quot;</span><span style="color: #D4D2C8">))                 </span><span style="color: #7E8AA1">; Fixed: escaped properly</span>
+<span style="color: #D4D2C8">                 (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (string-search regex arg)</span>
+<span style="color: #D4D2C8">                      (replace-regexp-in-string regex </span><span style="color: #D5FF80">&quot;&quot;</span><span style="color: #D4D2C8"> arg))) </span><span style="color: #7E8AA1">; Fixed: &quot;&quot; instead of nil</span>
+<span style="color: #D4D2C8">               (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((regex </span><span style="color: #D5FF80">&quot;^(&quot;</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">                 (</span><span style="color: #FFAD66">and</span><span style="color: #D4D2C8"> (string-search regex arg)</span>
+<span style="color: #D4D2C8">                      (replace-regexp-in-string regex </span><span style="color: #D5FF80">&quot;&quot;</span><span style="color: #D4D2C8"> arg)))))) </span><span style="color: #7E8AA1">; Fixed: &quot;&quot; instead of nil</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">if</span><span style="color: #D4D2C8"> filtered-regex</span>
+<span style="color: #D4D2C8">          (</span><span style="color: #FFD173">funcall</span><span style="color: #D4D2C8"> orig-fn filtered-regex)</span>
+<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">funcall</span><span style="color: #D4D2C8"> orig-fn arg))))</span>
+<span style="color: #D4D2C8">  (advice-add </span><span style="color: #DFBFFF">&#39;outline-minor-faces--syntactic-matcher</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:around</span>
+<span style="color: #D4D2C8">              </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">+outline-minor-faces--exclude-defuns))</span>
+
+<span style="color: #D4D2C8">(leaf backline</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> outline outline-indent</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span><span style="color: #D4D2C8"> (advice-add </span><span style="color: #DFBFFF">&#39;outline-flag-region</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:after</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;backline-update</span><span style="color: #D4D2C8">))</span>
+</code></pre></div>
+<h3 id="end">% end</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+ide</span><span style="color: #D4D2C8">)</span>
+</code></pre></div>
+<h3 id="ideel-ends-here">% +ide.el ends here</h3>
 <hr />
-<p><em>Last updated: August 16, 2025</em></p>
+<p><em>Last updated: August 22, 2025</em></p>
 </section>
 
 <section id="mkdocs-terminal-after-content">

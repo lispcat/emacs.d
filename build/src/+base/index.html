@@ -641,6 +641,7 @@
         <li><a href="#dired">% Dired</a></li>
         <li><a href="#misc">% Misc</a></li>
         <li><a href="#end">% end</a></li>
+        <li><a href="#baseel-ends-here">% +base.el ends here</a></li>
         
     </ul>
 </nav>
@@ -870,7 +871,8 @@ Persists over restarts.</p>
 <span style="color: #D4D2C8">  ([remap describe-symbol] </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> helpful-symbol)</span>
 <span style="color: #D4D2C8">  ([remap describe-variable] </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> helpful-variable)</span>
 <span style="color: #D4D2C8">  ([remap describe-command] </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> helpful-command)</span>
-<span style="color: #D4D2C8">  ([remap describe-key] </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> helpful-key)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; ([remap describe-key] . helpful-key)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-h k&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> helpful-key)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-h h&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> helpful-at-point)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-h H&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> view-hello-file)           </span><span style="color: #7E8AA1">; command originally at &quot;C-h h&quot;</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #D5FF80">&quot;C-h M&quot;</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> which-key-show-major-mode)</span>
@@ -899,10 +901,10 @@ Persists over restarts.</p>
 </code></pre></div>
 <h3 id="end">% end</h3>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+base</span><span style="color: #D4D2C8">)</span>
-<span style="color: #7E8AA1">;;; +base.el ends here</span>
 </code></pre></div>
+<h3 id="baseel-ends-here">% +base.el ends here</h3>
 <hr />
-<p><em>Last updated: August 16, 2025</em></p>
+<p><em>Last updated: August 22, 2025</em></p>
 </section>
 
 <section id="mkdocs-terminal-after-content">

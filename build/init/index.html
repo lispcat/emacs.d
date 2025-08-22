@@ -639,9 +639,9 @@
         <li><a href="#elpaca">% elpaca</a></li>
         <li><a href="#leaf">% leaf</a></li>
         <li><a href="#necessary-packages">% necessary packages</a></li>
-        <li><a href="#load-path">% load-path</a></li>
         <li><a href="#startup-hooks">% startup hooks</a></li>
         <li><a href="#import">% import</a></li>
+        <li><a href="#initel-ends-here">% init.el ends here</a></li>
         
     </ul>
 </nav>
@@ -781,52 +781,97 @@ This is automatically ran at startup after early-init.el.</p>
 </code></pre></div>
 <h3 id="leaf">% leaf</h3>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(elpaca leaf</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8">                       </span><span style="color: #7E8AA1">; deferred by default. demand with :leaf-defer nil</span>
-<span style="color: #D4D2C8">  )</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; add my own keywords</span>
+<span style="color: #D4D2C8">  (eval-after-load </span><span style="color: #DFBFFF">&#39;leaf</span>
+<span style="color: #D4D2C8">    (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span>
+<span style="color: #D4D2C8">      (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> leaf-keywords</span>
+<span style="color: #D4D2C8">            (</span><span style="color: #FFD173">append</span>
+<span style="color: #D4D2C8">             leaf-keywords</span>
+<span style="color: #D4D2C8">             </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:elpaca-wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">,@</span><span style="color: #D4D2C8">leaf--body </span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8">))))))</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8">)</span>
 
 <span style="color: #D4D2C8">(elpaca leaf-keywords</span>
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; custom keywords</span>
 <span style="color: #D4D2C8">  (leaf-keywords-init)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> leaf-alias-keyword-alist </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">((</span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">.</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> leaf-defaults (</span><span style="color: #FFD173">append</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">) leaf-system-defaults))</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> leaf-defaults (</span><span style="color: #FFD173">append</span><span style="color: #D4D2C8"> </span><span style="color: #FFAD66">&#39;</span><span style="color: #D4D2C8">(</span><span style="color: #FFD173">:elpaca</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">) leaf-system-defaults))</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8">)</span>
 
 <span style="color: #7E8AA1">;; hack: fix org version mismatch</span>
-<span style="color: #D4D2C8">(elpaca org)</span>
+<span style="color: #7E8AA1">;; (elpaca org)</span>
+
+<span style="color: #7E8AA1">;; finish all queues now to prevent async issues later</span>
+<span style="color: #D4D2C8">(elpaca-process-queues)</span>
 </code></pre></div>
 <h3 id="necessary-packages">% necessary packages</h3>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">use-package</span><span style="color: #D4D2C8"> general </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:demand</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(leaf general </span><span style="color: #FFD173">:elpaca-wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:init</span>
 <span style="color: #D4D2C8">  (general-create-definer leader-bind</span>
 <span style="color: #D4D2C8">    </span><span style="color: #FFD173">:prefix</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;C-c&quot;</span><span style="color: #D4D2C8">))</span>
 
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">use-package</span><span style="color: #D4D2C8"> diminish </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:demand</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">(leaf diminish </span><span style="color: #FFD173">:elpaca-wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
 
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">use-package</span><span style="color: #D4D2C8"> which-key </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:demand</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:diminish</span><span style="color: #D4D2C8"> which-key-mode</span>
+<span style="color: #D4D2C8">(leaf which-key </span><span style="color: #FFD173">:elpaca-wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> which-key-idle-delay </span><span style="color: #DFBFFF">0.3</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  (which-key-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">))</span>
+<span style="color: #D4D2C8">  (which-key-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:diminish</span><span style="color: #D4D2C8"> which-key-mode)</span>
 
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">use-package</span><span style="color: #D4D2C8"> hydra </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:demand</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+<span style="color: #7E8AA1">;; lingering key menus for repeated keypresses</span>
+<span style="color: #D4D2C8">(leaf hydra </span><span style="color: #FFD173">:elpaca-wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
 
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">use-package</span><span style="color: #D4D2C8"> dash </span><span style="color: #FFD173">:ensure</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">:wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:demand</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #7E8AA1">;; functional programming library</span>
+<span style="color: #7E8AA1">;; https://github.com/magnars/dash.el</span>
+<span style="color: #D4D2C8">(leaf dash </span><span style="color: #FFD173">:elpaca-wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
+<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:require</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span>
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> -debug (label)</span>
 <span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Debugging helper function for dash.el.&quot;</span>
 <span style="color: #D4D2C8">    (</span><span style="color: #FFD173">lambda</span><span style="color: #D4D2C8"> (m)</span>
 <span style="color: #D4D2C8">      (</span><span style="color: #FFD173">message</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;%s: %S&quot;</span><span style="color: #D4D2C8"> label m)</span>
-<span style="color: #D4D2C8">      m)))</span>
+<span style="color: #D4D2C8">      m))</span>
 
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">require</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;cl-lib</span><span style="color: #D4D2C8">)</span>
+<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defmacro</span><span style="color: #D4D2C8"> -tap (value form)</span>
+<span style="color: #D4D2C8">    </span><span style="color: #D5FF80">&quot;Evaluate FORM with VALUE as its argument, then return VALUE unchanged.</span>
+<span style="color: #D5FF80">This is the non-anaphoric version - VALUE is passed as an argument to FORM.&quot;</span>
+<span style="color: #D4D2C8">    </span><span style="color: #FFAD66">`</span><span style="color: #D4D2C8">(</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((val </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">value))</span>
+<span style="color: #D4D2C8">       </span><span style="color: #FFAD66">,</span><span style="color: #D4D2C8">form</span>
+<span style="color: #D4D2C8">       val))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (defmacro --tap (value &amp;rest body)</span>
+<span style="color: #7E8AA1">;;     &quot;Evaluate BODY with VALUE bound to `it`, then return VALUE unchanged.</span>
+<span style="color: #7E8AA1">;; This is the anaphoric version - VALUE is available as `it` in BODY.&quot;</span>
+<span style="color: #7E8AA1">;;     `(let ((it ,value))</span>
+<span style="color: #7E8AA1">;;        ,@body</span>
+<span style="color: #7E8AA1">;;        it))</span>
+
+<span style="color: #D4D2C8">  </span><span style="color: #7E8AA1">;; (defmacro --tap (value &amp;rest body)</span>
+<span style="color: #7E8AA1">;;     &quot;Evaluate BODY with VALUE bound to `it`, then return VALUE unchanged.</span>
+<span style="color: #7E8AA1">;; This is the anaphoric version - VALUE is available as `it` in BODY.&quot;</span>
+<span style="color: #7E8AA1">;;     (declare (debug (form body)) (indent 1))</span>
+<span style="color: #7E8AA1">;;     (let ((val (make-symbol &quot;value&quot;)))</span>
+<span style="color: #7E8AA1">;;       `(let ((,val ,value))</span>
+<span style="color: #7E8AA1">;;          (let ((it ,val))</span>
+<span style="color: #7E8AA1">;;            (ignore it)</span>
+<span style="color: #7E8AA1">;;            ,@body)</span>
+<span style="color: #7E8AA1">;;          ,val)))</span>
+<span style="color: #D4D2C8">  )</span>
+
+
+<span style="color: #7E8AA1">;; files/dirs library</span>
+<span style="color: #7E8AA1">;; https://github.com/rejeep/f.el</span>
+<span style="color: #D4D2C8">(leaf f </span><span style="color: #FFD173">:elpaca-wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #7E8AA1">;; ;; string manipulation library</span>
+<span style="color: #7E8AA1">;; ;; https://github.com/magnars/s.el</span>
+<span style="color: #D4D2C8">(leaf s </span><span style="color: #FFD173">:elpaca-wait</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8">)</span>
+
+<span style="color: #7E8AA1">;; finish all queues now to prevent async issues later</span>
+<span style="color: #D4D2C8">(elpaca-process-queues)</span>
 </code></pre></div>
-<h3 id="load-path">% load-path</h3>
 <h4 id="adding-to-the-load-path">&gt; adding to the load-path</h4>
-<h4 id="load-path_1"><code>load-path</code></h4>
+<h4 id="load-path"><code>load-path</code></h4>
 <ul>
 <li>A variable; a list of paths.</li>
 <li>Paths to search for when loading an elisp file (like with <code>require</code>).</li>
@@ -835,8 +880,7 @@ This is automatically ran at startup after early-init.el.</p>
 <li>To make adding paths to this variable easier, we define the following
   function.</li>
 </ul>
-<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +add-to-load-path-recursively (path depth </span><span style="color: #FFAD66">&amp;optional</span><span style="color: #D4D2C8"> exclude-self)</span>
-<span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Add PATH and its recursive subdirs to </span><span style="color: #DFBFFF">`load-path&#39;</span><span style="color: #D5FF80">.</span>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Add PATH and its recursive subdirs to </span><span style="color: #DFBFFF">`load-path&#39;</span><span style="color: #D5FF80">.</span>
 
 <span style="color: #D5FF80">DEPTH specifies how deeply to recurse. 0 for just PATH, 1 for PATH and its</span>
 <span style="color: #D5FF80">subdirs, n&gt;1 for till depth n, and -1 for infinite depth.</span>
@@ -973,10 +1017,10 @@ This is automatically ran at startup after early-init.el.</p>
 </code></pre></div>
 <h4 id="end">&gt; end</h4>
 <div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;init</span><span style="color: #D4D2C8">)</span>
-<span style="color: #7E8AA1">;;; init.el ends here</span>
 </code></pre></div>
+<h3 id="initel-ends-here">% init.el ends here</h3>
 <hr />
-<p><em>Last updated: August 16, 2025</em></p>
+<p><em>Last updated: August 22, 2025</em></p>
 </section>
 
 <section id="mkdocs-terminal-after-content">

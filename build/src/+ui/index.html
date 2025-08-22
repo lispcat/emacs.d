@@ -630,6 +630,14 @@
         
     </ul>
   
+</nav><hr>
+<nav>
+    <ul>
+        <li><a href="#function-load-theme-but-fixed-theme-bleeding-issue">% Function: load-theme but fixed theme-bleeding issue</a></li>
+        <li><a href="#obsolete-replaced-with-consult-theme">% obsolete, replaced with consult-theme</a></li>
+        <li><a href="#function-sets-a-random-theme">% Function: sets a random theme</a></li>
+        
+    </ul>
 </nav>
 </aside>
             <main id="terminal-mkdocs-main-content">
@@ -657,9 +665,13 @@
 <span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +fontconfig ()</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Set default font face.&quot;</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let</span><span style="color: #D4D2C8"> ((font</span>
-<span style="color: #D4D2C8">         </span><span style="color: #DFBFFF">&#39;fira-code</span>
-<span style="color: #D4D2C8">         </span><span style="color: #7E8AA1">;; &#39;ttyp0-16</span>
 <span style="color: #D4D2C8">         </span><span style="color: #7E8AA1">;; &#39;fira-code</span>
+<span style="color: #D4D2C8">         </span><span style="color: #7E8AA1">;; &#39;hack</span>
+<span style="color: #D4D2C8">         </span><span style="color: #7E8AA1">;; &#39;maple-mono</span>
+<span style="color: #D4D2C8">         </span><span style="color: #7E8AA1">;; &#39;ttyp0-16</span>
+<span style="color: #D4D2C8">         </span><span style="color: #7E8AA1">;; &#39;gb-16</span>
+<span style="color: #D4D2C8">         </span><span style="color: #7E8AA1">;; &#39;tamzenPL-16</span>
+<span style="color: #D4D2C8">         </span><span style="color: #DFBFFF">&#39;fira-code</span>
 <span style="color: #D4D2C8">         ))</span>
 <span style="color: #D4D2C8">    (set-face-attribute </span><span style="color: #DFBFFF">&#39;default</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:font</span><span style="color: #D4D2C8"> (+get-font font)))</span>
 <span style="color: #D4D2C8">  )</span>
@@ -679,12 +691,10 @@
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">set-fontset-font</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;unicode</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">font-spec</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:family</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;github-octicons&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;append</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">set-fontset-font</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;unicode</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">font-spec</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:family</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;FontAwesome&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;append</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFD173">set-fontset-font</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">t</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;unicode</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">font-spec</span><span style="color: #D4D2C8"> </span><span style="color: #FFD173">:family</span><span style="color: #D4D2C8"> </span><span style="color: #D5FF80">&quot;Weather Icons&quot;</span><span style="color: #D4D2C8">) </span><span style="color: #FFD173">nil</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;append</span><span style="color: #D4D2C8">))</span>
-
-<span style="color: #7E8AA1">;;; Function: `load-theme&#39; but fixed theme-bleeding issue.</span>
-
-<span style="color: #7E8AA1">;;; obsolete, replaced with consult-theme.</span>
-
-<span style="color: #7E8AA1">;; (defun +load-theme (theme &amp;optional no-confirm no-enable)</span>
+</code></pre></div>
+<h3 id="function-load-theme-but-fixed-theme-bleeding-issue">% Function: <code>load-theme</code> but fixed theme-bleeding issue</h3>
+<h3 id="obsolete-replaced-with-consult-theme">% obsolete, replaced with consult-theme</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #7E8AA1">;; (defun +load-theme (theme &amp;optional no-confirm no-enable)</span>
 <span style="color: #7E8AA1">;;   &quot;Prevent `load-theme&#39; from having theme-bleeding issues.</span>
 <span style="color: #7E8AA1">;; The args THEME, NO-CONFIRM and NO-ENABLE are passed to `load-theme&#39;.&quot;</span>
 <span style="color: #7E8AA1">;;   (interactive</span>
@@ -700,11 +710,9 @@
 <span style="color: #7E8AA1">;;       (enable-theme theme)</span>
 <span style="color: #7E8AA1">;;     (load-theme theme :no-confirm))</span>
 <span style="color: #7E8AA1">;;   )</span>
-
-
-<span style="color: #7E8AA1">;;; Function: sets a random theme.</span>
-
-<span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +set-random-theme ()</span>
+</code></pre></div>
+<h3 id="function-sets-a-random-theme">% Function: sets a random theme</h3>
+<div class="highlight" style="background: #1d2331"><pre style="line-height: 125%;"><span></span><code><span style="color: #D4D2C8">(</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> +set-random-theme ()</span>
 <span style="color: #D4D2C8">  </span><span style="color: #D5FF80">&quot;Set a random theme.&quot;</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">interactive</span><span style="color: #D4D2C8">)</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">let*</span><span style="color: #D4D2C8"> ((available-themes (custom-available-themes))</span>
@@ -806,14 +814,14 @@
 <span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
 <span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> whitespace-trailing </span><span style="color: #DFBFFF">&#39;whitespace-hspace</span><span style="color: #D4D2C8">))</span>
 
-<span style="color: #D4D2C8">(leaf solaire-mode</span>
-<span style="color: #D4D2C8">  </span><span style="color: #FFD173">:config</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFD173">defun</span><span style="color: #D4D2C8"> real-buffer-p ()</span>
-<span style="color: #D4D2C8">    (</span><span style="color: #FFAD66">or</span><span style="color: #D4D2C8"> (solaire-mode-real-buffer-p)</span>
-<span style="color: #D4D2C8">        (</span><span style="color: #FFD173">equal</span><span style="color: #D4D2C8"> (</span><span style="color: #FFD173">buffer-name</span><span style="color: #D4D2C8">) </span><span style="color: #D5FF80">&quot;*dashboard*&quot;</span><span style="color: #D4D2C8">)))</span>
-<span style="color: #D4D2C8">  (</span><span style="color: #FFAD66">setq</span><span style="color: #D4D2C8"> solaire-mode-real-buffer-fn </span><span style="color: #FFD173">#&#39;</span><span style="color: #D4D2C8">real-buffer-p)</span>
+<span style="color: #7E8AA1">;; (leaf solaire-mode</span>
+<span style="color: #7E8AA1">;;   :config</span>
+<span style="color: #7E8AA1">;;   (defun real-buffer-p ()</span>
+<span style="color: #7E8AA1">;;     (or (solaire-mode-real-buffer-p)</span>
+<span style="color: #7E8AA1">;;         (equal (buffer-name) &quot;*dashboard*&quot;)))</span>
+<span style="color: #7E8AA1">;;   (setq solaire-mode-real-buffer-fn #&#39;real-buffer-p)</span>
 
-<span style="color: #D4D2C8">  (solaire-global-mode </span><span style="color: #DFBFFF">+1</span><span style="color: #D4D2C8">))</span>
+<span style="color: #7E8AA1">;;   (solaire-global-mode +1))</span>
 
 <span style="color: #7E8AA1">;; show column # on modeline</span>
 <span style="color: #D4D2C8">(column-number-mode </span><span style="color: #DFBFFF">1</span><span style="color: #D4D2C8">)</span>
@@ -860,7 +868,7 @@
 <span style="color: #D4D2C8">(</span><span style="color: #FFD173">provide</span><span style="color: #D4D2C8"> </span><span style="color: #DFBFFF">&#39;+ui</span><span style="color: #D4D2C8">)</span>
 </code></pre></div>
 <hr />
-<p><em>Last updated: August 16, 2025</em></p>
+<p><em>Last updated: August 22, 2025</em></p>
 </section>
 
 <section id="mkdocs-terminal-after-content">
