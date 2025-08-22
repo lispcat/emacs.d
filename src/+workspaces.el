@@ -91,9 +91,9 @@
             :default  t
             :enabled  ,#'activities-current
             :items ,(lambda () (consult--buffer-query
-                                :predicate #'activities-local-buffer-p
-                                :sort 'visibility
-                                :as #'buffer-name)))
+                           :predicate #'activities-local-buffer-p
+                           :sort 'visibility
+                           :as #'buffer-name)))
     "Activities local buffers candidate source for `consult-buffer'.")
 
   (defvar activities-rest-consult-source
@@ -105,9 +105,9 @@
             :state    ,#'consult--buffer-state
             :enabled  ,#'activities-current
             :items ,(lambda () (consult--buffer-query
-                                :predicate (lambda (buf)
-                                             (not (activities-local-buffer-p buf)))
-                                :as #'buffer-name)))
+                           :predicate (lambda (buf)
+                                        (not (activities-local-buffer-p buf)))
+                           :as #'buffer-name)))
     "Other buffers candidate source for `consult-buffer'.")
 
   (with-eval-after-load 'consult
@@ -199,6 +199,7 @@ After evaluating, it suspends all non-current activities."
             :activities (+activities--exclude-other-frames)
             :prompt "Resume activity" :default nil)
            :resetp current-prefix-arg))
+    (activities-suspend (activities-current))
     (let ((result (apply #'activities-resume
                          activity
                          (when resetp (list :resetp resetp)))))

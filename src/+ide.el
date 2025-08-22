@@ -1,7 +1,28 @@
-;;; TODO: obsolete?
+;;; +ide.el ---                                      -*- lexical-binding: t; -*-
 
-(defvar prefer-eglot-mode? nil)
-(defvar prefer-lsp-mode? nil)
+;; Copyright (C) 2025  lispcat
+
+;; Author: lispcat <187922791+lispcat@users.noreply.github.com>
+;; Keywords: local
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; Configure Emacs for IDE functionality.
+
+;;; Code:
 
 ;;; templates for new files
 
@@ -155,6 +176,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; Langs
+
 ;;;; Lisp
 
 (setq +lisp-mode-hooks
@@ -653,29 +675,36 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :after org
   :custom
   (outline-indent-ellipsis . " ▼")
-  (outline-blank-line . t)
+  ;; (outline-blank-line . t)
 
   :init
 
   ;; outline-cycle
-  (defun +outline-cycle (&optional event)
-    (interactive (list last-nonmenu-event))
-    (save-excursion
-      (when (mouse-event-p event)
-        (mouse-set-point event))
-      (condition-case nil
-          (pcase (outline--cycle-state)
-            ('show-all
-             (outline-hide-subtree)
-             (message "Hide all"))
-            ((or 'hide-all 'headings-only)
-             (outline-show-subtree)
-             (message "Show all")))
-        (outline-before-first-heading nil))))
+  (defun +outline-toggle (&optional meta)
+    (interactive)
+    ;; go to prev heading
+    (outline-back-to-heading)
+    ;; toggle
+    (if (not (outline-invisible-p (pos-eol)))
+        ;; hide
+        (progn
+          ;; hide below, only headings
+          (outline-hide-subtree)
+          (outline-show-branches))
+      ;; show
+      (if meta
+          ;; show subtree
+          (outline-show-subtree)
+        ;; show current
+        (outline-show-entry))))
 
-  (defhydra +outline-cycle-hydra ()
-    (";" +outline-cycle)
-    ("<backtab>" +outline-cycle))
+  (defun +outline-toggle-meta ()
+    (interactive)
+    (+outline-toggle 't))
+
+  ;; (defhydra +outline-cycle-hydra ()
+  ;;   (";" +outline-cycle)
+  ;;   ("<backtab>" +outline-cycle))
 
   ;; outline-cycle buffer
   (defun +outline-cycle-buffer (&optional level)
@@ -711,38 +740,55 @@ Optional WIDTH parameter determines total width (defaults to 70)."
     ("<backtab>" +outline-cycle-buffer))
 
   ;; outline-cycle hydra
-  (defun +outline-cycle-at-root (arg)
-    (interactive "P")
-    (let ((prev-loc (point-marker)))
-      (if arg
-          (progn
-            (end-of-line) (outline-previous-heading)
-            (+outline-cycle-buffer)
-            (+outline-cycle-buffer-hydra/body))
-        (end-of-line) (outline-previous-heading)
-        (+outline-cycle)
-        (+outline-cycle-hydra/body))
-      (goto-char prev-loc)))
+  ;; (defun +outline-cycle-at-root (arg)
+  ;;   (interactive "P")
+  ;;   (let ((prev-loc (point-marker)))
+  ;;     (if arg
+  ;;         (progn
+  ;;           (end-of-line) (outline-previous-heading)
+  ;;           (+outline-cycle-buffer)
+  ;;           (+outline-cycle-buffer-hydra/body))
+  ;;       (end-of-line) (outline-previous-heading)
+  ;;       (+outline-cycle)
+  ;;       (+outline-cycle-hydra/body))
+  ;;     (goto-char prev-loc)))
 
   ;; run outline-hide-body only after first focus (add to .dir-locals.el)
-  (defun +hide-outline-on-open (func &rest args)
-    "Hide outlines when opening files via dired or projectile."
-    (let ((result (apply func args)))
-      ;; After the file is opened, hide outlines if conditions are met
-      (when (and (buffer-file-name)
-                 outline-indent-minor-mode)
-        (outline-hide-body))
-      result))
+  ;; (defun +hide-outline-on-open (func &rest args)
+  ;;   "Hide outlines when opening files via dired or projectile."
+  ;;   (let ((result (apply func args)))
+  ;;     ;; After the file is opened, hide outlines if conditions are met
+  ;;     (when (and (buffer-file-name)
+  ;;                outline-indent-minor-mode)
+  ;;       (outline-hide-body))
+  ;;     result))
 
   ;; (advice-add 'find-file :around #'+hide-outline-on-open)
   ;; (advice-add 'dired-find-file :around #'+hide-outline-on-open)
   ;; (advice-add 'projectile-find-file :around #'+hide-outline-on-open)
   ;; (advice-add 'projectile-find-file-dwim :around #'+hide-outline-on-open)
 
+  ;; special TAB, cycle if on heading
+  (defun +indent-for-tab-command--outline-advice (orig-fn &rest args)
+    "Advice for alternative TAB behavior if over outline heading."
+    (if (and (eq major-mode 'emacs-lisp-mode)
+             (save-excursion
+               (beginning-of-line)
+               (looking-at "^;;;+ .*$")))
+        (+outline-toggle)
+      (apply orig-fn args)))
+
+  (advice-add 'indent-for-tab-command :around
+              #'+indent-for-tab-command--outline-advice)
+
   :bind
 
   (outline-minor-mode-map
-   ("<backtab>" . +outline-cycle-at-root))
+   ("<backtab>" . +outline-toggle-meta))
+
+  (emacs-lisp-mode-map
+   ("C-c C-n" . outline-next-visible-heading)
+   ("C-c C-p" . outline-previous-visible-heading))
 
   ("C-c ; ;" . +outline-cycle-buffer)
   ("C-c ; r" . +outline-cycle-at-root)
@@ -805,10 +851,10 @@ Optional WIDTH parameter determines total width (defaults to 70)."
           (setq-local outline-level
                       (lambda ()
                         (cond
-                         ((looking-at cob-p)
-                          1)
-                         ((looking-at coh-p)
-                          2)
+                         ;; ((looking-at cob-p)
+                         ;;  1)
+                         ;; ((looking-at coh-p)
+                         ;;  2)
                          ((looking-at "^\\(;;;+\\) .*")
                           (- (match-end 1) (match-beginning 1) 2))
                          ((looking-at def-p)
@@ -862,4 +908,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :after outline outline-indent
   :config (advice-add 'outline-flag-region :after 'backline-update))
 
+;;; end
+
 (provide '+ide)
+;;; +ide.el ends here

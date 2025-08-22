@@ -467,9 +467,13 @@ The property will be removed if ran with a \\[universal-argument]."
           visual-fill-column-center-text t)
     (visual-fill-column-mode 1)))
 
+;;; Org-modern
 
+(leaf org-modern
+  :init
+  (global-org-modern-mode 1))
+
+;;; end
 (provide '+org)
+
 ;;; +org.el ends here
-
-
-
