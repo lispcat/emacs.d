@@ -225,10 +225,12 @@
   :after org
   :init
   (leader-bind
-    "oa" 'org-agenda)
+    "oa" 'org-agenda
+    "a" 'org-agenda-list)
 
   :bind (org-agenda-mode-map
-         (")" . 'org-agenda-todo))
+         (")" . '(lambda () (interactive)
+                   (org-agenda-todo 'done))))
 
   :config
   (setq org-todo-keywords

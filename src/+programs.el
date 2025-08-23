@@ -8,13 +8,13 @@
                               shell-file-name)
                           " -c tmux"))
   :bind
-  ("C-c a a" . eat)
+  ("C-c i a" . eat)
   (eat-semi-char-mode-map
    ("M-o" . ace-window)))
 
 (leaf eshell :elpaca nil
   :bind
-  ("C-c a e" . eshell))
+  ("C-c i e" . eshell))
 
 (leaf magit
   :preface (elpaca transient) ; HACK: magit needs newer version

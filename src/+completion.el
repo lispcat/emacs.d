@@ -32,14 +32,14 @@
 
 ;; TODO: start adding some setup.el in my config, little by little.
 
-;; TODO: org-modern (sexy as f)
-
 ;; ? : corfu, kind-icon, wgrep?, consult-dir, cape
 ;; ^ more at ~/code/cloned/daviwil-dots/.emacs.d/modules/dw-interface.el
 ;; TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)
 ;;
 ;; a framework for minibuffer completion
 ;; (https://github.com/minad/vertico)
+
+;;; Vertico
 
 (leaf vertico
   :init
@@ -76,6 +76,8 @@
         '(read-only t cursor-intangible t face minibuffer-prompt))
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
+;;; Consult
+
 (leaf consult
   :bind (;; generic binds
          ("C-s" . consult-line)
@@ -85,14 +87,14 @@
          ;; ("C-c )" . consult-kmacro)
 
          ;; C-x bindings in `ctl-x-map'
-         ("C-x M-:" . consult-complex-command) ;; repeat-complex-command
-         ("C-x b" . consult-buffer)            ;; switch-to-buffer
+         ("C-x M-:" . consult-complex-command)     ;; repeat-complex-command
+         ("C-x b" . consult-buffer)                ;; switch-to-buffer
          ("C-x 4 b" . consult-buffer-other-window) ;; switch-to-buffer-other-window
          ("C-x 5 b" . consult-buffer-other-frame) ;; switch-to-buffer-other-frame
-         ("C-x t b" . consult-buffer-other-tab) ;; switch-to-buffer-other-tab
-         ("C-x r b" . consult-bookmark)         ;; bookmark-jump
-         ("C-x p b" . consult-project-buffer) ;; project-switch-to-buffer
-         ("C-x p C-b" . consult-project-buffer) ;; project-switch-to-buffer
+         ("C-x t b" . consult-buffer-other-tab)   ;; switch-to-buffer-other-tab
+         ("C-x r b" . consult-bookmark)           ;; bookmark-jump
+         ("C-x p b" . consult-project-buffer)     ;; project-switch-to-buffer
+         ("C-x p C-b" . consult-project-buffer)   ;; project-switch-to-buffer
 
          ;; Custom M-# bindings for fast register access
          ("M-#" . consult-register-store)
@@ -105,10 +107,10 @@
 
          ;; M-g bindings in `goto-map'
          ("M-g e" . consult-compile-error)
-         ("M-g f" . consult-flymake) ;; Alternative: consult-flycheck
+         ("M-g f" . consult-flymake)     ;; Alternative: consult-flycheck
          ("M-g g" . consult-goto-line)   ;; goto-line
          ("M-g M-g" . consult-goto-line) ;; goto-line
-         ("M-g o" . consult-outline) ;; Alternative: consult-org-heading
+         ("M-g o" . consult-outline)     ;; Alternative: consult-org-heading
          ("M-g m" . consult-mark)
          ("M-g k" . consult-global-mark)
          ("M-g i" . consult-imenu)
@@ -138,7 +140,7 @@
 
          ;; Minibuffer history
          (minibuffer-local-map
-          ("M-s" . consult-history) ;; next-matching-history-element
+          ("M-s" . consult-history)  ;; next-matching-history-element
           ("M-r" . consult-history)) ;; previous-matching-history-element
          )
   :init
@@ -148,6 +150,8 @@
     "bb" 'consult-buffer
     "fr" 'consult-recent-file
     "fm" 'consult-bookmark))
+
+;;;; consult-dir
 
 ;; used to go to a file in a bookmarked dir n stuff (one ex)
 (leaf consult-dir
@@ -183,6 +187,8 @@
 ;;           `(eval-after-load ',f
 ;;              (lambda () ,@body))))))
 
+;;; Embark
+
 (leaf embark
   :bind
   (("C-." . embark-act)
@@ -208,9 +214,13 @@
                  nil
                  (window-parameters (mode-line-format . none)))))
 
+;;;; embark - consult integration
+
 (leaf embark-consult
   :after embark consult
   :hook (embark-collect-mode-hook . consult-preview-at-point-mode))
+
+;;; Orderless
 
 (leaf orderless
   :require t
@@ -222,6 +232,8 @@
   (completion-category-defaults . nil)
   (completion-category-overrides . '((file (styles partial-completion)))))
 
+;;; Marginalia
+
 (leaf marginalia
   :init
   (marginalia-mode 1)
@@ -229,6 +241,8 @@
           ("M-A" . marginalia-cycle))
          (completion-list-mode-map
           ("M-A" . marginalia-cycle))))
+
+;;; Company
 
 ;; TODO: disable most backends by default add a bunch per mode (org should only have a few
 (leaf company
@@ -307,7 +321,8 @@
   :config
   (company-quickhelp-mode 1))
 
-;; TODO: this is set up for eglot only, not lsp-mode
+
+;;; Yasnippet
 
 ;; https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for-yasnippets-when-using-eglot
 
@@ -331,7 +346,7 @@
   ("C-M-s" . isearch-forward)
   ("C-M-r" . isearch-backward))
 
-;;; CULPRIT OF HANGING, DISABLED.
+;;; Corfu
 
 ;; (leaf corfu
 ;;   :require t
@@ -360,6 +375,8 @@
 ;;          ("C-RET" . corfu-insert))
 ;;   :init
 ;;   (global-corfu-mode))
+
+;;; Cape
 
 ;; (leaf cape
 ;;   ;; :disabled t
@@ -396,6 +413,8 @@
 ;;                       completion-at-point-functions))
 ;;     )
 ;;   :hook (prog-mode-hook . +capfs-add-yasnippet))
+
+;;; Tempel
 
 ;; Configure Tempel
 ;; (use-package tempel
@@ -440,8 +459,7 @@
 ;;          ("C-c c -" . inverse-add-global-abbrev)
 ;;          ("C-c c e" . edit-abbrevs)))
 
-;;; misc
-
+;;; Use-package - lax completion for :custom
 
 (leaf emacs :elpaca nil
   :config

@@ -199,7 +199,8 @@ After evaluating, it suspends all non-current activities."
             :activities (+activities--exclude-other-frames)
             :prompt "Resume activity" :default nil)
            :resetp current-prefix-arg))
-    (activities-suspend (activities-current))
+    (when-let* ((current (activities-current)))
+      (activities-suspend current))
     (let ((result (apply #'activities-resume
                          activity
                          (when resetp (list :resetp resetp)))))

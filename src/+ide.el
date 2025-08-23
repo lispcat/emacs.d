@@ -44,7 +44,7 @@
 (leaf flycheck
   :hook prog-mode-hook)
 
-;;; buttonize URLs
+;;; URLs buttonize
 
 (leaf emacs :elpaca nil
   :hook goto-address-mode)
@@ -171,8 +171,6 @@
   ;; global
   (electric-pair-mode 1))
 
-;;; langs
-
 ;;; Langs
 
 ;;;; Lisp
@@ -232,7 +230,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 (with-eval-after-load 'flycheck
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 
-;;;;; scheme
+;;;;; Scheme
 
 (leaf scheme-mode :elpaca nil
   :disabled t
@@ -671,36 +669,66 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :after org
   :custom
   (outline-indent-ellipsis . " ▼")
-  ;; (outline-blank-line . t)
 
   :init
 
   ;; outline-cycle
-  (defun +outline-toggle (&optional meta)
-    (interactive)
+  (defun +outline-toggle (&optional univ)
+    "Toggle previous heading.
+
+If hide, fold only current heading.
+If show, open only current heading.
+
+If ran with Universal Argument, run `+outline-cycle-buffer' instead."
+    (interactive "P")
     ;; go to prev heading
     (outline-back-to-heading)
-    ;; toggle
-    (if (not (outline-invisible-p (pos-eol)))
-        ;; hide
-        (progn
-          ;; hide below, only headings
-          (outline-hide-subtree)
-          (outline-show-branches))
-      ;; show
-      (if meta
-          ;; show subtree
-          (outline-show-subtree)
-        ;; show current
-        (outline-show-entry))))
+    ;; universal arg
+    (if current-prefix-arg
+        (+outline-cycle-buffer)
+      ;; toggle
+      (let ((action
+             (if (outline-invisible-p (pos-eol))
+                 'to-show
+               'to-hide)))
+        (pcase action
+          ('to-hide
+           (outline-hide-entry))
+          ('to-show
+           (outline-show-entry))
+          (_ (error "bug"))))))
 
-  (defun +outline-toggle-meta ()
-    (interactive)
-    (+outline-toggle 't))
+  (+defhydra-repeat +outline-toggle
+                    (";" "<backtab>"))
 
-  ;; (defhydra +outline-cycle-hydra ()
-  ;;   (";" +outline-cycle)
-  ;;   ("<backtab>" +outline-cycle))
+  (defun +outline-toggle-meta (&optional univ)
+    "Toggle subtree at previous heading.
+
+If hide, fold current and all subheadings, and show tree.
+If show, open /everything/ under the heading.
+
+If ran with Universal Argument, run `+outline-cycle-buffer' instead."
+    (interactive "P")
+    ;; go to prev heading
+    (outline-back-to-heading)
+    ;; universal arg
+    (if current-prefix-arg
+        (+outline-cycle-buffer)
+      ;; toggle
+      (let ((action
+             (if (outline-invisible-p (pos-eol))
+                 'to-show
+               'to-hide)))
+        (pcase action
+          ('to-hide
+           (outline-hide-subtree)
+           (outline-show-branches))
+          ('to-show
+           (outline-show-subtree))
+          (_ (error "bug"))))))
+
+  (+defhydra-repeat +outline-toggle-meta
+                    (";" "<backtab>"))
 
   ;; outline-cycle buffer
   (defun +outline-cycle-buffer (&optional level)
@@ -731,23 +759,21 @@ Optional WIDTH parameter determines total width (defaults to 70)."
         (setq outline--cycle-buffer-state 'show-all)
         (message "Show all")))))
 
-  (defhydra +outline-cycle-buffer-hydra ()
-    (";" +outline-cycle-buffer)
-    ("<backtab>" +outline-cycle-buffer))
+  (+defhydra-repeat +outline-cycle-buffer
+                    (";" "<backtab>"))
 
-  ;; outline-cycle hydra
-  ;; (defun +outline-cycle-at-root (arg)
-  ;;   (interactive "P")
-  ;;   (let ((prev-loc (point-marker)))
-  ;;     (if arg
-  ;;         (progn
-  ;;           (end-of-line) (outline-previous-heading)
-  ;;           (+outline-cycle-buffer)
-  ;;           (+outline-cycle-buffer-hydra/body))
-  ;;       (end-of-line) (outline-previous-heading)
-  ;;       (+outline-cycle)
-  ;;       (+outline-cycle-hydra/body))
-  ;;     (goto-char prev-loc)))
+  ;; special TAB, cycle if on heading
+  (defun +indent-for-tab-command--outline-advice (orig-fn &rest args)
+    "Advice for alternative TAB behavior if over outline heading."
+    (if (and (eq major-mode 'emacs-lisp-mode)
+             (save-excursion
+               (beginning-of-line)
+               (looking-at "^;;;+ .*$")))
+        (+outline-toggle)
+      (apply orig-fn args)))
+
+  (advice-add 'indent-for-tab-command :around
+              #'+indent-for-tab-command--outline-advice)
 
   ;; run outline-hide-body only after first focus (add to .dir-locals.el)
   ;; (defun +hide-outline-on-open (func &rest args)
@@ -764,48 +790,23 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   ;; (advice-add 'projectile-find-file :around #'+hide-outline-on-open)
   ;; (advice-add 'projectile-find-file-dwim :around #'+hide-outline-on-open)
 
-  ;; special TAB, cycle if on heading
-  (defun +indent-for-tab-command--outline-advice (orig-fn &rest args)
-    "Advice for alternative TAB behavior if over outline heading."
-    (if (and (eq major-mode 'emacs-lisp-mode)
-             (save-excursion
-               (beginning-of-line)
-               (looking-at "^;;;+ .*$")))
-        (+outline-toggle)
-      (apply orig-fn args)))
-
-  (advice-add 'indent-for-tab-command :around
-              #'+indent-for-tab-command--outline-advice)
-
   :bind
 
   (outline-minor-mode-map
    ("<backtab>" . +outline-toggle-meta))
 
   (emacs-lisp-mode-map
-   ("C-c C-n" . outline-next-visible-heading)
-   ("C-c C-p" . outline-previous-visible-heading))
-
-  ("C-c ; ;" . +outline-cycle-buffer)
-  ("C-c ; r" . +outline-cycle-at-root)
+   ("C-c C-n" . outline-forward-same-level)
+   ("C-c C-p" . outline-backward-same-level))
 
   ;; buffer
+  ("C-c ; ;" . +outline-cycle-buffer)
   ("C-c ; s" . outline-show-all)
   ("C-c ; h" . outline-hide-body)
-  ("C-c ; b" . outline-show-all)
-  ("C-c ; B" . outline-hide-body)
-
-  ;; point
-  ("C-c ; p" . outline-show-entry)
-  ("C-c ; P" . outline-hide-entry)
 
   ;; subtree
   ("C-c ; t" . outline-show-subtree)
   ("C-c ; T" . outline-hide-subtree)
-
-  ;; navigation/content/structure
-  ("C-c ; n" . outline-show-branches)
-  ("C-c ; N" . outline-hide-leaves)
 
   ;; other/current
   ("C-c ; O" . outline-hide-other)
@@ -813,6 +814,20 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   ;; children
   ("C-c ; c" . outline-show-children)
   ("C-c ; C" . outline-hide-children)
+
+  ;; move
+  ("C-c ; <up>" . outline-indent-move-subtree-up)
+  ("C-c ; <down>" . outline-indent-move-subtree-down)
+  ("C-c ; <right>" . outline-indent-shift-right)
+  ("C-c ; <left>" . outline-indent-shift-left)
+
+  ; navigation
+  ("C-c ; p" . outline-previous-visible-heading)
+  ("C-c ; n" . outline-next-visible-heading)
+  ("C-c ; b" . outline-backward-same-level)
+  ("C-c ; f" . outline-forward-same-level)
+
+  ;; navigation
 
   :hook
   ((emacs-lisp-mode-hook
@@ -882,23 +897,24 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   :hook (outline-minor-mode-hook . outline-minor-faces-mode)
   :config
   ;; exclude custom fontlocking for
-  (defun +outline-minor-faces--exclude-defuns (orig-fn arg)
-    "Remove ^( patterns from the regex argument."
-    (let ((filtered-regex
-           (or (let ((regex "\\|^("))   ; Fixed: escaped the backslash properly
-                 (and (string-search regex arg)
-                      (string-replace regex "" arg))) ; Fixed: "" instead of nil
-               (let ((regex "^(\\|"))                 ; Fixed: escaped properly
-                 (and (string-search regex arg)
-                      (replace-regexp-in-string regex "" arg))) ; Fixed: "" instead of nil
-               (let ((regex "^("))
-                 (and (string-search regex arg)
-                      (replace-regexp-in-string regex "" arg)))))) ; Fixed: "" instead of nil
-      (if filtered-regex
-          (funcall orig-fn filtered-regex)
-        (funcall orig-fn arg))))
-  (advice-add 'outline-minor-faces--syntactic-matcher :around
-              #'+outline-minor-faces--exclude-defuns))
+  ;; (defun +outline-minor-faces--exclude-defuns (orig-fn arg)
+  ;;   "Remove ^( patterns from the regex argument."
+  ;;   (let ((filtered-regex
+  ;;          (or (let ((regex "\\|^("))   ; Fixed: escaped the backslash properly
+  ;;                (and (string-search regex arg)
+  ;;                     (string-replace regex "" arg))) ; Fixed: "" instead of nil
+  ;;              (let ((regex "^(\\|"))                 ; Fixed: escaped properly
+  ;;                (and (string-search regex arg)
+  ;;                     (replace-regexp-in-string regex "" arg))) ; Fixed: "" instead of nil
+  ;;              (let ((regex "^("))
+  ;;                (and (string-search regex arg)
+  ;;                     (replace-regexp-in-string regex "" arg)))))) ; Fixed: "" instead of nil
+  ;;     (if filtered-regex
+  ;;         (funcall orig-fn filtered-regex)
+  ;;       (funcall orig-fn arg))))
+  ;; (advice-add 'outline-minor-faces--syntactic-matcher :around
+  ;;             #'+outline-minor-faces--exclude-defuns)
+  )
 
 (leaf backline
   :after outline outline-indent
