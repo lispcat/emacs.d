@@ -97,8 +97,8 @@
     "Activities local buffers candidate source for `consult-buffer'.")
 
   (defvar activities-rest-consult-source
-    `(:name "Rest"
-            :narrow   ?r
+    `(:name "Other"
+            :narrow   ?o
             :category buffer
             :face     consult-buffer
             :history  buffer-name-history
@@ -117,7 +117,7 @@
     (add-to-list 'consult-buffer-sources activities-rest-consult-source)
     (add-to-list 'consult-buffer-sources activities-consult-source))
 
-;;;;; exclude consult-buffer previews from activity-buffer-list
+;;;;; fix: consult-buffer previews
 
   (with-eval-after-load 'consult
     (defun +consult-buffer--frame-buffers-around (orig-fn &rest args)
@@ -165,7 +165,7 @@
 
     (advice-add #'consult-buffer :around #'+consult-buffer--frame-buffers-around))
 
-;;;;; Frame delete n restore (disabled)
+;;;;; feat: frame restore (disabled)
 
   ;; ;; helper variable
   ;; (defvar +activities--last-name nil)
@@ -185,9 +185,7 @@
   ;;               (with-selected-frame frame
   ;;                 (activities-resume +activities--last-name)))))
 
-;;;;; smart resuming (exclude running in frames, suspend all other)
-
-  ;; TODO: show this to https://github.com/alphapapa/activities.el/issues/22
+;;;;; feat: resume-custom
 
   (cl-defun +activities-resume-custom (activity &key resetp)
     "Wrapper around `activities-resume'.
@@ -200,7 +198,7 @@ After evaluating, it suspends all non-current activities."
             :prompt "Resume activity" :default nil)
            :resetp current-prefix-arg))
     (when-let* ((current (activities-current)))
-      (activities-suspend current))
+      (activities-suspend (activities-current)))
     (let ((result (apply #'activities-resume
                          activity
                          (when resetp (list :resetp resetp)))))

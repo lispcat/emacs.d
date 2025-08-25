@@ -1,3 +1,6 @@
+
+;; https://devfonts.gafi.dev/
+
 (defvar +font-alist
   `((hack . "Hack")
     (tamzenPL-16
@@ -8,13 +11,14 @@
     (ttyp0-16-i .   "-UW  -Ttyp0-regular-italic-normal-*-16-*-*-*-m-*-iso10646-1")
     (gb-16 . "-AW-Greybeard 16px-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1")
     (fira-code . "Fira Code")
-    (maple-mono . "Maple Mono")))
+    (maple-mono . "Maple Mono")
+    (jb-mono . "Jetbrains Mono")))
 
 (defun +get-font (font)
   (alist-get font +font-alist))
 
+;; default
 (defun +fontconfig ()
-  "Set default font face."
   (let ((font
          ;; 'fira-code
          ;; 'hack
@@ -25,6 +29,19 @@
          'fira-code
          ))
     (set-face-attribute 'default nil :font (+get-font font)))
+  ;; variable
+  ;; (set-face-attribute 'variable-pitch nil
+  ;;                     :font
+  ;;                     ;; "Liberation Sans"
+  ;;                     ;; "Recursive"
+  ;;                     ;; "Vollkorn"
+  ;;                     ;; "XITS"
+  ;;                     ;; "XITS Math"
+
+  ;;                     ;; :family "Fira Code"
+  ;;                     ;; :height 120
+  ;;                     ;; :weight 'normal
+  ;;                     )
   )
 
 (+fontconfig)

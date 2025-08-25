@@ -331,6 +331,20 @@ If PATH does not exist, abort the evaluation."
     :debug '(form)
     :repeatable t)
 
+;;;; :option* (shorthand)
+
+  (setup-define :option*
+    (lambda (name val)
+      `(customize-set-variable
+        ',(intern (format "%s-%s" (setup-get 'feature) name))
+        ,val
+        ,(format "Set for %s's setup block" (setup-get 'feature))))
+    :documentation "Set the option NAME to VAL.
+NAME is not the name of the option itself, but of the option with
+the feature prefix."
+    :debug '(sexp form)
+    :repeatable t)
+
 ;;;; :doc
 
   (defvar setup--doc-alist nil "AList of docs for setup blocks.")
@@ -395,23 +409,53 @@ The expansion is a string indicating the package has been disabled."
 ;;;; catch errors, throw warnings
 
   ;; method 1
-  (setq setup-modifier-list '(setup-wrap-to-demote-errors))
+  ;; (setq setup-modifier-list '(setup-wrap-to-demote-errors))
 
   ;; method 2
-  ;; (progn
-  ;;   (defun my-protect-setup (expansion)
-  ;;     "Wrap `setup' output with `condition-case'."
-  ;;     (let ((err (gensym "setup-err")))
-  ;;       `(condition-case ,err
-  ;;            ,expansion
-  ;;          (error
-  ;;           (display-warning 'setup (concat "Problem in config: "
-  ;;                                           (error-message-string ,err)
-  ;;                                           ": \n"
-  ;;                                           (with-output-to-string
-  ;;                                             (pp (quote ,expansion))))
-  ;;                            :error)))))
-  ;;   (advice-add 'setup :filter-return #'my-protect-setup))
+  (progn
+    (defun my-protect-setup (expansion)
+      "Wrap `setup' output with `condition-case'."
+      (let ((err (gensym "setup-err")))
+        `(condition-case ,err
+             ,expansion
+           (error
+            (display-warning 'setup (concat "Problem in config: "
+                                            (error-message-string ,err)
+                                            ": \n"
+                                            (with-output-to-string
+                                              (pp (quote ,expansion))))
+                             :error)))))
+    (advice-add 'setup :filter-return #'my-protect-setup))
+
+;;;; custom require macro
+
+  (setq setup-macros (assq-delete-all ':require setup-macros))
+
+  (setup-define :require
+    (lambda (&optional feature)
+      (let ((pkg-feature (or feature
+                             (setup-get 'feature)
+                             (error "No feature specified and no context available"))))
+        `(unless (require ',pkg-feature nil t)
+           ,(setup-quit))))
+    :documentation "Try to require FEATURE, or stop evaluating body.
+If FEATURE is The first FEATURE can be used to deduce the feature context.")
+
+;;;; custom option macro
+
+  ;; (setup-define :option-l
+;;     (lambda (lst)
+;;       `(progn
+;;          ,@(mapcar
+;;             (lambda (e)
+;;               (custom-load-symbol ',name)
+;;               (funcall (or (get ',name 'custom-set) #'set-default)
+;;                        ',name ,val)))))
+;;     :documentation "Try to require FEATURE, or stop evaluating body.
+;; If FEATURE is The first FEATURE can be used to deduce the feature context.")
+
+
+;;;; end of setup macros
 
   )
 
@@ -419,30 +463,27 @@ The expansion is a string indicating the package has been disabled."
 
 ;;; necessary packages
 
-;; (-setup general
-;;   (general-create-definer leader-bind
-;;     :prefix "C-c"))
+;; fix issues with 
+(-setup exec-path-from-shell
+  (when (or (memq window-system '(pgtk x ns mac))
+            (daemonp))
+    (exec-path-from-shell-initialize)))
 
-(leaf general
-  :init
-  (general-create-definer leader-bind
-    :prefix "C-c"))
+;; quickly set up keybinds
+(-setup general
+  (general-create-definer leader-bind :prefix "C-c"))
 
-;; (-setup diminish
-;;   :require t)
+;; hide modes from the modeline
+(-setup diminish
+  (:require))
 
-(leaf diminish :elpaca-wait t
-  :require t)
-
-(leaf which-key :elpaca-wait t
-  :config
-  (setq which-key-idle-delay 0.3)
-  (which-key-mode 1)
-  :diminish which-key-mode)
+;; display keystroke options
+(-setup which-key
+  (:option* idle-delay 0.3)
+  (which-key-mode 1))
 
 ;; lingering key menus for repeated keypresses
-(leaf hydra :elpaca-wait t
-  :config
+(-setup hydra
   (defmacro +defhydra-repeat (fn keys)
     (let* ((fn-hydra (intern (concat (symbol-name fn) "-hydra"))))
       `(defhydra ,fn-hydra ()
@@ -452,15 +493,18 @@ The expansion is a string indicating the package has been disabled."
 
 ;; functional programming library
 ;; https://github.com/magnars/dash.el
-(leaf dash :elpaca-wait t
-  :require t
-  :config
+(-setup dash
+  (:require)
+  ;; (require 'dash)
+
+  ;; FIXME
   (defun -debug (label)
     "Debugging helper function for dash.el."
     (lambda (m)
       (message "%s: %S" label m)
       m))
 
+  ;; FIXME
   (defmacro -tap (value form)
     "Evaluate FORM with VALUE as its argument, then return VALUE unchanged.
 This is the non-anaphoric version - VALUE is passed as an argument to FORM."
@@ -468,33 +512,69 @@ This is the non-anaphoric version - VALUE is passed as an argument to FORM."
        ,form
        val))
 
-  ;; (defmacro --tap (value &rest body)
-;;     "Evaluate BODY with VALUE bound to `it`, then return VALUE unchanged.
-;; This is the anaphoric version - VALUE is available as `it` in BODY."
-;;     `(let ((it ,value))
-;;        ,@body
-;;        it))
+  ;; FIXME
+  (defmacro --tap (value &rest body)
+    "Evaluate BODY with VALUE bound to `it`, then return VALUE unchanged.
+  This is the anaphoric version - VALUE is available as `it` in BODY."
+    `(let ((it ,value))
+       ,@body
+       it))
 
-  ;; (defmacro --tap (value &rest body)
-;;     "Evaluate BODY with VALUE bound to `it`, then return VALUE unchanged.
-;; This is the anaphoric version - VALUE is available as `it` in BODY."
-;;     (declare (debug (form body)) (indent 1))
-;;     (let ((val (make-symbol "value")))
-;;       `(let ((,val ,value))
-;;          (let ((it ,val))
-;;            (ignore it)
-;;            ,@body)
-;;          ,val)))
-  )
+  ;; FIXME
+  (defmacro --tap (value &rest body)
+    "Evaluate BODY with VALUE bound to `it`, then return VALUE unchanged.
+  This is the anaphoric version - VALUE is available as `it` in BODY."
+    (declare (debug (form body)) (indent 1))
+    (let ((val (make-symbol "value")))
+      `(let ((,val ,value))
+         (let ((it ,val))
+           (ignore it)
+           ,@body)
+         ,val))))
+
+;; (leaf dash :elpaca-wait t
+;;   :require t
+;;   :config
+;;   (defun -debug (label)
+;;     "Debugging helper function for dash.el."
+;;     (lambda (m)
+;;       (message "%s: %S" label m)
+;;       m))
+
+;;   (defmacro -tap (value form)
+;;     "Evaluate FORM with VALUE as its argument, then return VALUE unchanged.
+;; This is the non-anaphoric version - VALUE is passed as an argument to FORM."
+;;     `(let ((val ,value))
+;;        ,form
+;;        val))
+
+;;   (defmacro --tap (value &rest body)
+;;       "Evaluate BODY with VALUE bound to `it`, then return VALUE unchanged.
+;;   This is the anaphoric version - VALUE is available as `it` in BODY."
+;;       `(let ((it ,value))
+;;          ,@body
+;;          it))
+
+;;   (defmacro --tap (value &rest body)
+;;       "Evaluate BODY with VALUE bound to `it`, then return VALUE unchanged.
+;;   This is the anaphoric version - VALUE is available as `it` in BODY."
+;;       (declare (debug (form body)) (indent 1))
+;;       (let ((val (make-symbol "value")))
+;;         `(let ((,val ,value))
+;;            (let ((it ,val))
+;;              (ignore it)
+;;              ,@body)
+;;            ,val)))
+;;   )
 
 
 ;; files/dirs library
 ;; https://github.com/rejeep/f.el
-(leaf f :elpaca-wait t)
+(-setup f)
 
 ;; ;; string manipulation library
 ;; ;; https://github.com/magnars/s.el
-(leaf s :elpaca-wait t)
+(-setup s)
 
 ;; finish all queues now to prevent async issues later
 (elpaca-wait)

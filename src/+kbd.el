@@ -61,7 +61,7 @@
    ;; symbols
    '("-" . negative-argument)
    '(";" . meow-reverse)
-   '(":" . meow-goto-line) ;; moved from "Q" and "E"
+   '(":" . consult-goto-line) ;; moved from "Q" and "E"
    '("," . meow-inner-of-thing)
    '("." . meow-bounds-of-thing)
    '("<" . meow-beginning-of-thing)

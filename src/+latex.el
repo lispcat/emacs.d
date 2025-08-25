@@ -33,6 +33,8 @@
                    ("\\boxtr"  . ?├)   ; box tee right
                    ("\\boxtl"  . ?┤)   ; box tee left
                    ("\\boxc"   . ?┼)   ; box cross
+                   ;; ("\\vec"   . ?̅)
+                   ("\\vec"   . ?̄)
                    )))))
 
 (leaf auctex

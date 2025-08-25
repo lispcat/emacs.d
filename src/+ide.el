@@ -51,6 +51,7 @@
 
 ;;; project.el
 
+;; FIXME: workaround to get completing-read regexp search?
 (leaf project :elpaca nil
   :bind-keymap ("C-c P" . project-prefix-map)
   :init
@@ -59,9 +60,17 @@
     (interactive)
     (let ((current-prefix-arg '(4)))
       (call-interactively #'project-compile)))
+  :config
+  (setq xref-search-program 'ripgrep)
   :bind
   (project-prefix-map
    ("C" . project-compile-interactive)))
+
+(-setup consult-project-extra
+  (:load-after consult)
+  (:require)
+  (:with-map project-prefix-map
+    (:bind "f" consult-project-extra-find)))
 
 (leaf projectile
   :init
@@ -70,6 +79,12 @@
   ("C-c p" . projectile-command-map)
   :config
   (setq projectile-compile-use-comint-mode t))
+
+(-setup consult-projectile
+  (:load-after projectile)
+  (:with-map projectile-command-map
+    ;; Buffers, Files, Projects
+    (:bind "/" #'consult-projectile)))
 
 ;;; lsp-mode
 
@@ -919,6 +934,12 @@ If ran with Universal Argument, run `+outline-cycle-buffer' instead."
 (leaf backline
   :after outline outline-indent
   :config (advice-add 'outline-flag-region :after 'backline-update))
+
+;;;; Elide (hide license header)
+
+(setup elide
+  (:with-hook emacs-lisp-mode-hook
+    (:hook #'elide-head-mode)))
 
 ;;; end
 

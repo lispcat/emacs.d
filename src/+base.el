@@ -37,35 +37,34 @@
 
 ;; --
 
-(leaf emacs :elpaca nil
-  :init
-  (global-auto-revert-mode 1)
-  :custom
-  ;; less verbose (don't print "Reverting buffer" in *Messages*)
-  (auto-revert-verbose . nil)
-  ;; work on non-file buffers (i.e. dired)
-  (global-auto-revert-non-file-buffers . t)
-  ;; manual check interval
-  (auto-revert-interval . 10)
-  ;; respond to Filesystem Notifications by the OS (instant updates)
-  (auto-revert-use-notify . t))
+(setup autorevert
+  (:option
+   ;; less verbose (don't print "Reverting buffer" in *Messages*)
+   auto-revert-verbose nil
+   ;; work on non-file buffers (i.e. dired)
+   global-auto-revert-non-file-buffers t
+   ;; manual check interval
+   auto-revert-interval 5)
+  ;; enable
+  (global-auto-revert-mode 1))
 
 ;; --
 
 ;;;; SPC-b binds
 
-(defalias '+last-selected-buffer 'mode-line-other-buffer)
+(setup emacs
+  (defalias '+last-selected-buffer 'mode-line-other-buffer)
 
-(leader-bind
-  "k" '(kill-current-buffer     :wk "kill-current")
+  (leader-bind
+    "k" '(kill-current-buffer     :wk "kill-current")
 
-  "b" '(:ignore t               :wk "Buffer")
-  "bk" '(kill-current-buffer    :wk "kill-current")
-  "bn" '(next-buffer            :wk "next")
-  "bp" '(previous-buffer        :wk "prev")
-  "bo" '(+last-selected-buffer  :wk "last-buffer")
-  "bb" '(switch-to-buffer       :wk "switch-buffer")
-  "bs" '(save-buffer            :wk "save-buffer"))
+    "b" '(:ignore t               :wk "Buffer")
+    "bk" '(kill-current-buffer    :wk "kill-current")
+    "bn" '(next-buffer            :wk "next")
+    "bp" '(previous-buffer        :wk "prev")
+    "bo" '(+last-selected-buffer  :wk "last-buffer")
+    "bb" '(switch-to-buffer       :wk "switch-buffer")
+    "bs" '(save-buffer            :wk "save-buffer")))
 
 ;;; History
 
@@ -76,9 +75,9 @@
 
 ;; --
 
-(leaf emacs :elpaca nil
-  :hook
-  (emacs-startup-hook . recentf-mode))
+(setup emacs
+  (:with-hook emacs-startup-hook
+    (:hook recentf-mode)))
 
 ;; --
 
@@ -90,8 +89,7 @@
 
 ;; --
 
-(leaf emacs :elpaca nil
-  :init
+(setup emacs
   (save-place-mode 1))
 
 ;; --
@@ -102,8 +100,7 @@
 
 ;; --
 
-(leaf emacs :elpaca nil
-  :init
+(setup emacs
   (savehist-mode 1))
 
 ;; --
@@ -118,15 +115,11 @@
 
 ;; --
 
-(leaf ace-window
-  :custom
-  (aw-keys . '(?a ?o ?e ?u ?h ?t ?n ?s))
-  (aw-scope . 'frame)
-  (aw-background . nil)
-  ;; (aw-dispatch-always . t)
-  :bind
-  ("M-o" . ace-window)
-  :init
+(setup ace-window
+  (:option aw-keys '(?a ?o ?e ?u ?h ?t ?n ?s)
+           aw-scope 'frame
+           aw-background nil)
+  (:global "M-o" #'ace-window)
   (leader-bind
     "w" '(:ignore t :wk "window")
     "wd" 'delete-window
@@ -211,16 +204,17 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 ;;; Files
 
-(defun +open-emacs-config-file ()
-  "Open emacs config file."
-  (interactive)
-  (find-file +emacs-config-file))
+(setup emacs
+  (defun +open-emacs-config-file ()
+    "Open emacs config file."
+    (interactive)
+    (find-file +emacs-config-file))
 
-(defun +open-agenda-file ()
-  "Open agenda file."
-  (interactive)
-  (when-let* ((f (car org-agenda-files)))
-    (find-file f)))
+  (defun +open-agenda-file ()
+    "Open agenda file."
+    (interactive)
+    (when-let* ((f (car org-agenda-files)))
+      (find-file f))))
 
 ;;; Dired
 
@@ -228,15 +222,13 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 ;; --
 
-(leaf dired :elpaca nil
-  :custom
-  (dired-listing-switches . "-Ahl --group-directories-first -X")
-  (dired-auto-revert-buffer . t)        ; auto update file changes
-  :bind (dired-mode-map
-         ("h" . dired-up-directory)
-         ("s" . dired-find-file)
-         ("r" . dired-sort-toggle-or-edit))
-  :init
+(setup dired
+  (:option dired-listing-switches "-Ahl --group-directories-first -X"
+           dired-auto-revert-buffer t)  ; auto update file changes
+  ;; in dired-mode-map
+  (:bind "h" #'dired-up-directory
+         "s" #'dired-find-file
+         "r" #'dired-sort-toggle-or-edit)
   (leader-bind
     "d" '(:ignore t :wk "dired")
     "dd" 'find-file
@@ -245,9 +237,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
     "ff" 'find-file
     "fp" '+open-emacs-config-file
     "fa" '+open-agenda-file)
-  :config
   ;; hide details by default
-  (add-hook 'dired-mode-hook 'dired-hide-details-mode)
+  (:with-hook dired-mode-hook
+    (:hook dired-hide-details-mode))
   ;; use trash if trash executable is found
   (when (executable-find "trash")
     (setq delete-by-moving-to-trash t)))
@@ -262,16 +254,14 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 ;; --
 
-(leaf dired-launch
-  :after dired
-  :config
-  (dired-launch-enable)
-  :custom
-  (dired-launch-extensions-map
-   . '(("pptx" ("libreoffice"))
-       ("docx" ("libreoffice"))
-       ("odt"  ("libreoffice"))
-       ("html" ("librewolf")))))
+(-setup dired-launch
+  (:load-after dired)
+  (:option dired-launch-extensions-map
+           '(("pptx" ("libreoffice"))
+             ("docx" ("libreoffice"))
+             ("odt"  ("libreoffice"))
+             ("html" ("librewolf"))))
+  (dired-launch-enable))
 
 ;; --
 
@@ -285,22 +275,21 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 ;; --
 
-(leaf helpful
-  :commands helpful--bookmark-jump
-  :setq
-  (counsel-describe-function-function . #'helpful-callable)
-  (counsel-describe-variable-function . #'helpful-variable)
-  :bind
-  ([remap describe-function] . helpful-callable)
-  ([remap describe-symbol] . helpful-symbol)
-  ([remap describe-variable] . helpful-variable)
-  ([remap describe-command] . helpful-command)
-  ;; ([remap describe-key] . helpful-key)
-  ("C-h k" . helpful-key)
-  ("C-h h" . helpful-at-point)
-  ("C-h H" . view-hello-file)           ; command originally at "C-h h"
-  ("C-h M" . which-key-show-major-mode)
-  ("C-h E" . describe-keymap))
+(-setup helpful
+  (:autoload helpful--bookmark-jump)
+  ;; (:option
+  ;;  (counsel-describe-function-function . #'helpful-callable)
+  ;;  (counsel-describe-variable-function . #'helpful-variable))
+  (:global [remap describe-function] #'helpful-callable
+           [remap describe-symbol]   #'helpful-symbol
+           [remap describe-variable] #'helpful-variable
+           [remap describe-command]  #'helpful-command
+           [remap describe-key] helpful-key
+           "C-h k" helpful-key
+           "C-h h" helpful-at-point
+           "C-h H" view-hello-file   ;; command originally at "C-h h"
+           "C-h M" which-key-show-major-mode
+           "C-h E" describe-keymap))
 
 ;; --
 
@@ -310,28 +299,29 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 ;; --
 
-(leaf auto-sudoedit
-  :commands auto-sudoedit-sudoedit)
+(-setup auto-sudoedit
+  (:autoload auto-sudoedit-sudoedit))
 
 ;; --
 
 ;;;; profiling
 
-(defun +profiler-report ()
-  "Profiler stop and report."
-  (interactive)
-  (profiler-stop)
-  (profiler-report))
-
-(leader-bind
-  "D" '(:ignore t :wk "debug")
-  "Ds" 'profiler-start
-  "Dr" '+profiler-report)
+(setup emacs
+  (defun +profiler-report ()
+    "Profiler stop and report."
+    (interactive)
+    (profiler-stop)
+    (profiler-report))
+  
+  (leader-bind
+    "D" '(:ignore t :wk "debug")
+    "Ds" 'profiler-start
+    "Dr" '+profiler-report))
 
 ;;;; user info
 
-(setq user-full-name "lispcat")
-(setq user-mail-address "187922791+lispcat@users.noreply.github.com")
+(setc user-full-name "lispcat"
+      user-mail-address "187922791+lispcat@users.noreply.github.com")
 
 ;;; end
 

@@ -20,7 +20,9 @@
 
 ;;; Commentary:
 
-;; This file contains configuration to Emacs' completion.
+;; This file contains configuration for Emacs' completion.
+
+;; It uses the Vertico completion framework.
 
 ;;; Code:
 
@@ -41,130 +43,234 @@
 
 ;;; Vertico
 
-(leaf vertico
-  :init
-  (vertico-mode 1)
-  ;; :setq
-  ;; (vertico-scroll-margin . 0) ; Different scroll margin
-  ;; (vertico-count . 20) ; Show more candidates
-  ;; (vertico-resize . t) ; Grow and shrink the Vertico minibuffer
-  ;; (vertico-cycle . t) ; Enable cycling for `vertico-next/previous'
-  )
+(-setup vertico
+  (:option vertico-scroll-margin 3     ; Different scroll margin (def 2)
+           vertico-count 10            ; Show more candidates (def 10)
+           vertico-resize 'grow-only   ; Grow/shrink minibuffer (def 'grow-only)
+           vertico-cycle nil)      ; cycle for `vertico-next/previous' (def nil)
+  (:option
+   ;; adds a menu in the minibuffer to switch display modes
+   context-menu-mode t
 
-;; A few more useful configurations...
-(leaf emacs :elpaca nil
-  :init
-  ;; Support opening new minibuffers from inside existing minibuffers.
-  (setq enable-recursive-minibuffers t)
-  ;;
-  ;; Emacs 28 and newer: hide commands in M-x that do not work in the current mode.
-  ;; (setq read-extended-command-predicate #'command-completion-default-include-p)
-  ;;
-  ;; Add prompt indicator to `completing-read-multiple'.
-  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
-  (defun crm-indicator (args)
-    (cons (format "[CRM%s] %s"
-                  (replace-regexp-in-string
-                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                   crm-separator)
-                  (car args))
-          (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-  ;;
-  ;; Do not allow the cursor in the minibuffer prompt
-  (setq minibuffer-prompt-properties
-        '(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
+   ;; Support opening new minibuffers from inside existing minibuffers.
+   enable-recursive-minibuffers t
+
+   ;; hide commands in M-x that do not work in the current mode.
+   read-extended-command-predicate #'command-completion-default-include-p
+
+   ;; do not allow the cursor in the minibuffer prompt
+   minibuffer-prompt-properties '(read-only t cursor-intangible t
+                                            face minibuffer-prompt))
+
+  ;; enable
+  (vertico-mode 1)
+
+  (:global "C-M-c" #'completion-at-point)
+
+  ;; prefix TAB completion
+  (keymap-set vertico-map "<backtab>" #'minibuffer-complete)
+
+  ;; Prompt indicator for `completing-read-multiple'.
+  (when (< emacs-major-version 31)
+    (advice-add #'completing-read-multiple :filter-args
+                (lambda (args)
+                  (cons (format "[CRM%s] %s"
+                                (string-replace "[ \t]*" "" crm-separator)
+                                (car args))
+                        (cdr args)))))
+
+;;;; vertico - multiform mode
+
+  ;; enable multiform
+  (vertico-multiform-mode)
+
+  ;; per command; form: ((cmd config..) ..)
+  (setq vertico-multiform-commands
+        `((consult-imenu buffer)
+          (consult-outline buffer)))
+
+  ;; per completion category
+  (setq vertico-multiform-categories
+        `((reverse (vertico-resize . 'grow-only)))))
+
+;;; Orderless
+
+(-setup orderless
+  (:option completion-styles '(orderless basic)
+           completion-category-defaults nil
+           completion-category-overrides '((file (styles partial-completion)))
+           ;; TODO: Configure a custom style dispatcher (see the Consult wiki)
+           ;; orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
+           ;; orderless-component-separator #'orderless-escapable-split-on-space
+           ))
+
+;;; Marginalia
+
+(-setup marginalia
+  (marginalia-mode 1)
+  (:with-map minibuffer-local-map
+    (:bind "M-A" marginalia-cycle))
+  (:with-map completion-list-mode-map
+    (:bind "M-A" marginalia-cycle)))
 
 ;;; Consult
 
-(leaf consult
-  :bind (;; generic binds
-         ("C-s" . consult-line)
+;; Search and navigation commands
 
-         ;; C-c bindings in `mode-specific-map'
-         ("C-c M-x" . consult-mode-command)
-         ;; ("C-c )" . consult-kmacro)
+;; ---
 
-         ;; C-x bindings in `ctl-x-map'
-         ("C-x M-:" . consult-complex-command)     ;; repeat-complex-command
-         ("C-x b" . consult-buffer)                ;; switch-to-buffer
-         ("C-x 4 b" . consult-buffer-other-window) ;; switch-to-buffer-other-window
-         ("C-x 5 b" . consult-buffer-other-frame) ;; switch-to-buffer-other-frame
-         ("C-x t b" . consult-buffer-other-tab)   ;; switch-to-buffer-other-tab
-         ("C-x r b" . consult-bookmark)           ;; bookmark-jump
-         ("C-x p b" . consult-project-buffer)     ;; project-switch-to-buffer
-         ("C-x p C-b" . consult-project-buffer)   ;; project-switch-to-buffer
+(-setup consult
+  (:require)
 
-         ;; Custom M-# bindings for fast register access
-         ("M-#" . consult-register-store)
-         ;; ("C-M-#" . consult-register)
-         ("C-M-#" . consult-register-load)
+  ;; Keybinds:
 
-         ;; Other custom bindings
-         ("M-y" . consult-yank-pop) ;; yank-pop
-         ([remap Info-search] . consult-info)
+  (:global
+   ;; recent files
+   "C-c f r" consult-recent-file ; recent file
 
-         ;; M-g bindings in `goto-map'
-         ("M-g e" . consult-compile-error)
-         ("M-g f" . consult-flymake)     ;; Alternative: consult-flycheck
-         ("M-g g" . consult-goto-line)   ;; goto-line
-         ("M-g M-g" . consult-goto-line) ;; goto-line
-         ("M-g o" . consult-outline)     ;; Alternative: consult-org-heading
-         ("M-g m" . consult-mark)
-         ("M-g k" . consult-global-mark)
-         ("M-g i" . consult-imenu)
-         ("M-g I" . consult-imenu-multi)
-         ("M-g O" . consult-org-heading)
+   ;; buffers
+   "C-c b b" consult-buffer     ; switch-to-buffer
+   "C-x 4 b" consult-buffer-other-window
+   "C-x 5 b" consult-buffer-other-frame
 
-         ;; M-s bindings in `search-map'
-         ("M-s d" . consult-find) ;; Alternative: consult-fd
-         ("M-s c" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ("M-s k" . consult-keep-lines)
-         ("M-s u" . consult-focus-lines)
-         ("M-s M" . consult-man)        ; T for terminal
-         ("M-s I" . consult-info)
+   ;; editing
+   "M-y" consult-yank-pop       ; fallback to after yank
+   "M-S-y" consult-yank-from-kill-ring
+   "<f5>" consult-kmacro
 
-         ;; Isearch integration
-         ("M-s e" . consult-isearch-history)
-         (isearch-mode-map
-          ("M-e" . consult-isearch-history)   ;; isearch-edit-string
-          ("M-s e" . consult-isearch-history) ;; isearch-edit-string
-          ("M-s l" . consult-line) ;; Needed by: consult-line to detect isearch
-          ("M-s L" . consult-line-multi)) ;; Needed by: consult-line to detect isearch
+   ;; register (C-u for window layout!)
+   "M-#" consult-register-store  ; store
+   "C-M-#" consult-register-load ; load
 
-         ;; Minibuffer history
-         (minibuffer-local-map
-          ("M-s" . consult-history)  ;; next-matching-history-element
-          ("M-r" . consult-history)) ;; previous-matching-history-element
-         )
-  :init
+   ;; navigation
+   "C-c ; l" consult-outline     ; outline heading
+   "C-c o l" consult-org-heading ; org heading
+   "C-c s a" consult-org-agenda  ; agenda heading
+
+   "C-c s l" consult-imenu      ; list var/func
+   "C-c s L" consult-imenu-multi
+
+   ;; search
+   "C-s" consult-line
+   "C-S-s" consult-line-multi
+   "C-c s k" consult-keep-lines  ;; keep
+   "C-c s K" consult-focus-lines ;; focus (reset: C-u) (! invert)
+
+   ;; grep (in files)
+   "C-c s r" consult-ripgrep
+
+   ;; find (filename)
+   "C-c s f" consult-fd
+   "C-c s F" consult-locate
+
+   ;; programming
+   "C-c l e" consult-compile-error
+
+   ;; histories
+   "C-c s x" consult-complex-command ; past keychord
+
+   ;; themes
+   "C-c T t" consult-theme
+
+   ;; list minor modes
+   "C-c s m" consult-minor-mode-menu
+   "C-c s M-x" consult-mode-command ; M-x only for current mode
+   "C-c M-x" consult-mode-command
+
+   ;; Info
+   "C-c s I" consult-info
+   [remap Info-search] consult-info
+
+   ;; Man pages
+   "C-c s M" consult-man)
+
+  ;; project.el integration
+  (:with-map project-prefix-map
+    (:bind "b" consult-project-buffer
+           "C-b" consult-project-buffer))
+
+  ;; isearch integration
+  (:with-map isearch-mode-map
+    (:bind "M-r" consult-isearch-history))
+
+
+  ;; minibuffer history
+  (:with-map minibuffer-local-map
+    (:bind "M-r" consult-history))
+
+  ;; Settings:
+
+  ;; improve register preview
+  (advice-add #'register-preview :override #'consult-register-window)
+  (setq register-preview-delay 0.5)
+
+  ;; xref previews
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+
+  ;; info search groups
+  (consult-info-define 'elisp "emacs" "elisp" "dash" "cl")
+  (consult-info-define 'org "org" "org-ql" "org-super-agenda")
+  (consult-info-define "magit")
+
+  ;; delay previews
+  (setq consult-preview-key
+        '(:debounce 0.05 any)
+        ;; 'any
+        )
+
+  ;; delay previews - custom length
+  (consult-customize
+   consult-ripgrep
+   consult-git-grep
+   consult-grep
+   ;; consult-man
+   ;; consult-bookmark
+   consult-xref
+   consult-recent-file
+   ;; consult--source-bookmark
+   consult--source-recent-file
+   consult--source-project-recent-file
+   ;; :preview-key 'any
+   :preview-key '(:debounce 0.1 any) ;; Delay preview 0.4 sec
+   )
+
+  ;; allow these modes in previews
+  (add-to-list 'consult-preview-allowed-hooks 'hl-todo-mode)
+  (add-to-list 'consult-preview-allowed-hooks 'global-hl-todo-mode)
+  (add-to-list 'consult-preview-allowed-hooks 'elide-head-mode)
+  (add-to-list 'consult-preview-allowed-hooks 'global-org-modern-mode)
+
+  ;; async search separator (for two-level filtering)
+  (setq consult-async-split-style
+        ;; 'perl
+        'semicolon
+        )
+
+  ;; tweak consult-buffer
+  (setq consult-buffer-sources
+        (->> consult-buffer-sources
+             (delete 'consult--source-bookmark)
+             ;; (delete 'consult--source-recent-file)
+             ;; (delete 'consult--source-project-recent-file-hidden)
+             ))
+
+  ;; prolly not needed:
+  ;; projectile.el (projectile-project-root)
+  ;; (autoload 'projectile-project-root "projectile")
+  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+
+  ;; bind
   (leader-bind
-    "s" search-map
-    "Tt" 'consult-theme
-    "bb" 'consult-buffer
-    "fr" 'consult-recent-file
-    "fm" 'consult-bookmark))
+    "s" '(:ignore t :which-key "search")))
 
 ;;;; consult-dir
 
 ;; used to go to a file in a bookmarked dir n stuff (one ex)
-(leaf consult-dir
-  :init
+(-setup consult-dir
   (leader-bind
-    "fd" 'consult-dir)
-  :bind (("C-x C-d" . consult-dir)      ; default?
-         (vertico-map
-          ("C-x C-d" . consult-dir)
-          ("C-x C-j" . consult-dir-jump-file)))
-  ;; :custom
-  ;; (consult-dir-project-list-function nil)
-  )
+    "dd" 'consult-dir
+    "fd" 'consult-dir))
 
 ;; TODO: do i even need to do this here?
 ;; - oh wait i do since the other module might overwrite...
@@ -189,13 +295,15 @@
 
 ;;; Embark
 
-(leaf embark
-  :bind
-  (("C-." . embark-act)
-   ("C-;" . embark-dwim)
-   ;; ("C-h B" . embark-bindings)
-   )
-  :init
+;; Invoke relavent commands on the thing at point.
+;; https://github.com/oantolin/embark
+
+;; ---
+
+(-setup embark
+  ;; TODO: bind dwim and act (very useful) to more convenient keys.
+  (:global "C-." +embark-act-or-dwim
+           "C-," embark-dwim)
   ;; use embark for showing command prefix help
   (setq prefix-help-command #'embark-prefix-help-command)
 
@@ -207,7 +315,14 @@
 
   ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
   ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
-  :config
+
+  ;; custom wrapper around embark-act to support dwim
+  (defun +embark-act-or-dwim (arg)
+    (interactive "P")
+    (if current-prefix-arg
+        (embark-dwim)
+      (embark-act)))
+
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
@@ -216,35 +331,22 @@
 
 ;;;; embark - consult integration
 
-(leaf embark-consult
-  :after embark consult
-  :hook (embark-collect-mode-hook . consult-preview-at-point-mode))
+;; Adds consult-specific embark actions and the Occur buffer export.
 
-;;; Orderless
+;; `embark-export' ("E") is extremely useful. Given a set of candidates, you can
+;; export them to a specialized buffer, unlocking more advanced and efficient
+;; editing workflows.
 
-(leaf orderless
-  :require t
-  :setq
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (orderless-style-dispatchers . '(+orderless-consult-dispatch orderless-affix-dispatch))
-  ;; (orderless-component-separator . #'orderless-escapable-split-on-space)
-  (completion-styles . '(orderless basic))
-  (completion-category-defaults . nil)
-  (completion-category-overrides . '((file (styles partial-completion)))))
+;; --
 
-;;; Marginalia
-
-(leaf marginalia
-  :init
-  (marginalia-mode 1)
-  :bind ((minibuffer-local-map
-          ("M-A" . marginalia-cycle))
-         (completion-list-mode-map
-          ("M-A" . marginalia-cycle))))
+(-setup embark-consult
+  (:load-after embark consult)
+  (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
 
 ;;; Company
 
-;; TODO: disable most backends by default add a bunch per mode (org should only have a few
+;; TODO: disable most backends by default add a bunch per mode (org should only
+;; have a few
 (leaf company
   ;; :disabled t
   :require t
