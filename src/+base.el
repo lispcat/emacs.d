@@ -241,8 +241,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (:with-hook dired-mode-hook
     (:hook dired-hide-details-mode))
   ;; use trash if trash executable is found
-  (when (executable-find "trash")
-    (setq delete-by-moving-to-trash t)))
+  (:when-loaded
+    (when (executable-find "trash")
+      (setq delete-by-moving-to-trash t))))
 
 ;; --
 
@@ -261,7 +262,8 @@ _SPC_ cancel	_o_nly this   	_d_elete
              ("docx" ("libreoffice"))
              ("odt"  ("libreoffice"))
              ("html" ("librewolf"))))
-  (dired-launch-enable))
+  (:when-loaded
+    (dired-launch-enable)))
 
 ;; --
 
@@ -276,6 +278,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;; --
 
 (-setup helpful
+  ;; TODO: is this needed?
   (:autoload helpful--bookmark-jump)
   ;; (:option
   ;;  (counsel-describe-function-function . #'helpful-callable)
@@ -287,7 +290,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
            [remap describe-key] helpful-key
            "C-h k" helpful-key
            "C-h h" helpful-at-point
-           "C-h H" view-hello-file   ;; command originally at "C-h h"
+           "C-h H" view-hello-file ;; command originally at "C-h h"
            "C-h M" which-key-show-major-mode
            "C-h E" describe-keymap))
 
@@ -312,7 +315,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
     (interactive)
     (profiler-stop)
     (profiler-report))
-  
+
   (leader-bind
     "D" '(:ignore t :wk "debug")
     "Ds" 'profiler-start

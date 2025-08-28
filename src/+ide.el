@@ -51,7 +51,12 @@
 
 ;;; project.el
 
+;; (-setup ripgrep
+;;   (:require-self))
+
 ;; FIXME: workaround to get completing-read regexp search?
+
+;; NOTE: consult-ripgrep is project aware... so this already works....................................
 (leaf project :elpaca nil
   :bind-keymap ("C-c P" . project-prefix-map)
   :init
@@ -68,7 +73,7 @@
 
 (-setup consult-project-extra
   (:load-after consult)
-  (:require)
+  (:require-self)
   (:with-map project-prefix-map
     (:bind "f" consult-project-extra-find)))
 
@@ -94,6 +99,11 @@
   :hook (lsp-mode-hook . lsp-enable-which-key-integration)
 
   :bind-keymap ("C-c l" . lsp-command-map)
+
+  :custom
+  ;; disable auto adding capf, manually do from cape
+  (lsp-completion-provider . :none)
+  (lsp-completion-enable . nil)
 
   :config
   (setq lsp-inlay-hint-enable t
@@ -243,7 +253,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;;;; tweak flycheck for elisp
 
 (with-eval-after-load 'flycheck
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc emacs-lisp)))
 
 ;;;;; Scheme
 
@@ -274,65 +284,66 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (setq rust-mode-treesitter-derive t)
   (setq rust-rustfmt-switches '("--edition" "2021")))
 
-(leaf rustic
-  :require t
-  :after rust-mode
-  :config
-  (setq rustic-cargo-use-last-stored-arguments t)
-  (setq rustic-format-on-save t)
-  (setq rustic-rustfmt-args "--edition 2021")
+(progn
+  (leaf rustic
+    :require t
+    :after rust-mode
+    :config
+    (setq rustic-cargo-use-last-stored-arguments t)
+    (setq rustic-format-on-save t)
+    (setq rustic-rustfmt-args "--edition 2021")
 
-  ;; lsp-mode settings
-  (with-eval-after-load 'lsp-mode
-    (setq lsp-rust-analyzer-cargo-watch-command "clippy"
-          lsp-rust-analyzer-display-closure-return-type-hints t ; def: nil
-          lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
-          lsp-rust-analyzer-display-parameter-hints t ; def: nil (input param name)
+    ;; lsp-mode settings
+    (with-eval-after-load 'lsp-mode
+      (setq lsp-rust-analyzer-cargo-watch-command "clippy"
+            lsp-rust-analyzer-display-closure-return-type-hints t ; def: nil
+            lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
+            lsp-rust-analyzer-display-parameter-hints t ; def: nil (input param name)
 
-          ;; maybe
-          ;; lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
-          lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t ; def: nil (?)
+            ;; maybe
+            ;; lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
+            lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t ; def: nil (?)
 
-          ;; experimenting
-          lsp-signature-auto-activate t ; def: '(:on-trigger-char :on-server-request)
-          ))
+            ;; experimenting
+            lsp-signature-auto-activate t ; def: '(:on-trigger-char :on-server-request)
+            ))
 
-  ;; use tree-sitter for rustic-mode
-  ;; (define-derived-mode rustic-mode rust-ts-mode "Rustic"
-  ;;     "Major mode for Rust code.
+    ;; use tree-sitter for rustic-mode
+    ;; (define-derived-mode rustic-mode rust-ts-mode "Rustic"
+    ;;     "Major mode for Rust code.
 
-  ;; \\{rustic-mode-map}"
-  ;;     :group 'rustic
-  ;;     (when (bound-and-true-p rustic-cargo-auto-add-missing-dependencies)
-  ;;       (add-hook 'lsp-after-diagnostics-hook 'rustic-cargo-add-missing-dependencies-hook nil t)))
+    ;; \\{rustic-mode-map}"
+    ;;     :group 'rustic
+    ;;     (when (bound-and-true-p rustic-cargo-auto-add-missing-dependencies)
+    ;;       (add-hook 'lsp-after-diagnostics-hook 'rustic-cargo-add-missing-dependencies-hook nil t)))
 
-  :bind
-  (rustic-mode-map
-   ("C-c C-c M-r" . rustic-cargo-comint-run)
-   ("C-c C-c l" . flycheck-list-errors)
-   ("C-c C-c A" . rustic-cargo-add)
-   ("C-c C-c R" . rustic-cargo-rm)
-   ("C-c C-c a" . lsp-execute-code-action)
-   ("C-c C-c r" . lsp-rename)
-   ("C-c C-c q" . lsp-workspace-restart)
-   ("C-c C-c Q" . lsp-workspace-shutdown)
-   ("C-c C-c s" . lsp-rust-analyzer-status)
-   ("C-c C-c h" . lsp-describe-thing-at-point))
+    :bind
+    (rustic-mode-map
+     ("C-c C-c M-r" . rustic-cargo-comint-run)
+     ("C-c C-c l" . flycheck-list-errors)
+     ("C-c C-c A" . rustic-cargo-add)
+     ("C-c C-c R" . rustic-cargo-rm)
+     ("C-c C-c a" . lsp-execute-code-action)
+     ("C-c C-c r" . lsp-rename)
+     ("C-c C-c q" . lsp-workspace-restart)
+     ("C-c C-c Q" . lsp-workspace-shutdown)
+     ("C-c C-c s" . lsp-rust-analyzer-status)
+     ("C-c C-c h" . lsp-describe-thing-at-point))
 
-  :hook
-  (rust-ts-mode-hook . (lambda ()
-                         ;; company settings
-                         (with-eval-after-load 'company
-                           (setq-local company-idle-delay 0.3
-                                       company-minimum-prefix-length 2))
-                         ;; lsp settings
-                         (with-eval-after-load 'lsp-mode
-                           (setq-local lsp-idle-delay 0.5
-                                       lsp-ui-sideline-delay 0.3
-                                       lsp-eldoc-render-all nil ; def: nil (minibuffer doc popup)
-                                       lsp-ui-doc-enable t ; def: t (ui-popup docs)
-                                       lsp-ui-doc-max-height 14 ; def: 13
-                                       )))))
+    :hook
+    (rust-ts-mode-hook . (lambda ()
+                           ;; company settings
+                           (with-eval-after-load 'company
+                             (setq-local company-idle-delay 0.3
+                                         company-minimum-prefix-length 2))
+                           ;; lsp settings
+                           (with-eval-after-load 'lsp-mode
+                             (setq-local lsp-idle-delay 0.5
+                                         lsp-ui-sideline-delay 0.3
+                                         lsp-eldoc-render-all nil ; def: nil (minibuffer doc popup)
+                                         lsp-ui-doc-enable t ; def: t (ui-popup docs)
+                                         lsp-ui-doc-max-height 14 ; def: 13
+                                         ))))))
 
 
 ;; (leaf rustic :elpaca nil
@@ -395,6 +406,10 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;   (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
 
 ;;;; Java
+
+;; Java LSP support
+
+;; https://github.com/emacs-lsp/lsp-java
 
 (leaf lsp-java
   :mode "\\.java\\'"

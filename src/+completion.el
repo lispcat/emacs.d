@@ -26,20 +26,7 @@
 
 ;;; Code:
 
-;; TODO: set C-M-c to completion-at-point (orig C-M-i).
-
-;; TODO: try corfu + cape (follow system crafters vid)
-;; - https://www.youtube.com/watch?v=f0FMo_XxujU
-;; + tempel (replace org-tempo)
-
-;; TODO: start adding some setup.el in my config, little by little.
-
-;; ? : corfu, kind-icon, wgrep?, consult-dir, cape
-;; ^ more at ~/code/cloned/daviwil-dots/.emacs.d/modules/dw-interface.el
-;; TODO: vim keybinds for vertico completion shit (work on later) (also daviwil)
-;;
-;; a framework for minibuffer completion
-;; (https://github.com/minad/vertico)
+;; TODO: wgrep ?
 
 ;;; Vertico
 
@@ -120,7 +107,6 @@
 ;; ---
 
 (-setup consult
-  (:require)
 
   ;; Keybinds:
 
@@ -182,7 +168,8 @@
    [remap Info-search] consult-info
 
    ;; Man pages
-   "C-c s M" consult-man)
+   "C-c s M" consult-man
+   )
 
   ;; project.el integration
   (:with-map project-prefix-map
@@ -200,77 +187,83 @@
 
   ;; Settings:
 
-  ;; improve register preview
-  (advice-add #'register-preview :override #'consult-register-window)
-  (setq register-preview-delay 0.5)
+  (:when-loaded
+    ;; improve register preview
+    (advice-add #'register-preview :override #'consult-register-window)
+    (setq register-preview-delay 0.5)
 
-  ;; xref previews
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
+    ;; xref previews
+    (setq xref-show-xrefs-function #'consult-xref
+          xref-show-definitions-function #'consult-xref)
 
-  ;; info search groups
-  (consult-info-define 'elisp "emacs" "elisp" "dash" "cl")
-  (consult-info-define 'org "org" "org-ql" "org-super-agenda")
-  (consult-info-define "magit")
+    ;; info search groups
+    (consult-info-define 'elisp "emacs" "elisp" "dash" "cl")
+    (consult-info-define 'org "org" "org-ql" "org-super-agenda")
+    (consult-info-define "magit")
 
-  ;; delay previews
-  (setq consult-preview-key
-        '(:debounce 0.05 any)
-        ;; 'any
-        )
+    ;; delay previews
+    (setq consult-preview-key
+          '(:debounce 0.05 any))
 
-  ;; delay previews - custom length
-  (consult-customize
-   consult-ripgrep
-   consult-git-grep
-   consult-grep
-   ;; consult-man
-   ;; consult-bookmark
-   consult-xref
-   consult-recent-file
-   ;; consult--source-bookmark
-   consult--source-recent-file
-   consult--source-project-recent-file
-   ;; :preview-key 'any
-   :preview-key '(:debounce 0.1 any) ;; Delay preview 0.4 sec
-   )
+    ;; delay previews - custom length
+    (consult-customize
+     consult-man
+     consult-bookmark
+     consult-xref
+     :preview-key '(:debounce 0.1 any))
 
-  ;; allow these modes in previews
-  (add-to-list 'consult-preview-allowed-hooks 'hl-todo-mode)
-  (add-to-list 'consult-preview-allowed-hooks 'global-hl-todo-mode)
-  (add-to-list 'consult-preview-allowed-hooks 'elide-head-mode)
-  (add-to-list 'consult-preview-allowed-hooks 'global-org-modern-mode)
+    (consult-customize
+     consult-recent-file
+     consult--source-recent-file
+     consult--source-project-recent-file
+     :preview-key '(:debounce 0.3 any))
 
-  ;; async search separator (for two-level filtering)
-  (setq consult-async-split-style
-        ;; 'perl
-        'semicolon
-        )
+    (consult-customize
+     consult-ripgrep
+     consult-git-grep
+     consult-grep
+     :preview-key '(:debounce 0.5 any))
 
-  ;; tweak consult-buffer
-  (setq consult-buffer-sources
-        (->> consult-buffer-sources
-             (delete 'consult--source-bookmark)
-             ;; (delete 'consult--source-recent-file)
-             ;; (delete 'consult--source-project-recent-file-hidden)
-             ))
+    ;; allow these modes in previews
+    (add-to-list 'consult-preview-allowed-hooks 'hl-todo-mode)
+    (add-to-list 'consult-preview-allowed-hooks 'global-hl-todo-mode)
+    (add-to-list 'consult-preview-allowed-hooks 'elide-head-mode)
+    (add-to-list 'consult-preview-allowed-hooks 'global-org-modern-mode)
 
-  ;; prolly not needed:
-  ;; projectile.el (projectile-project-root)
-  ;; (autoload 'projectile-project-root "projectile")
-  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+    ;; async search separator (for two-level filtering)
+    (setq consult-async-split-style
+          ;; 'perl
+          'semicolon
+          )
 
-  ;; bind
-  (leader-bind
-    "s" '(:ignore t :which-key "search")))
+    ;; tweak consult-buffer
+    (setq consult-buffer-sources
+          (->> consult-buffer-sources
+               (delete 'consult--source-bookmark)
+               ;; (delete 'consult--source-recent-file)
+               ;; (delete 'consult--source-project-recent-file-hidden)
+               ))
+
+    ;; prolly not needed:
+    ;; projectile.el (projectile-project-root)
+    ;; (autoload 'projectile-project-root "projectile")
+    ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+
+    ;; bind
+    ;; TODO: create dedicated function for simply creating a which-key named prefix
+    (leader-bind
+      "s" '(:ignore t :which-key "search"))))
 
 ;;;; consult-dir
 
 ;; used to go to a file in a bookmarked dir n stuff (one ex)
 (-setup consult-dir
-  (leader-bind
-    "dd" 'consult-dir
-    "fd" 'consult-dir))
+  (:global "C-c d d" #'consult-dir
+           "C-c f d" #'consult-dir)
+  ;; (leader-bind
+  ;;   "dd" 'consult-dir
+  ;;   "fd" 'consult-dir)
+  )
 
 ;; TODO: do i even need to do this here?
 ;; - oh wait i do since the other module might overwrite...
@@ -304,6 +297,7 @@
   ;; TODO: bind dwim and act (very useful) to more convenient keys.
   (:global "C-." +embark-act-or-dwim
            "C-," embark-dwim)
+
   ;; use embark for showing command prefix help
   (setq prefix-help-command #'embark-prefix-help-command)
 
@@ -341,274 +335,393 @@
 
 (-setup embark-consult
   (:load-after embark consult)
-  (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))
+  (:when-loaded
+    (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)))
 
 ;;; Company
 
 ;; TODO: disable most backends by default add a bunch per mode (org should only
 ;; have a few
-(leaf company
-  ;; :disabled t
-  :require t
-  :bind
-  (company-active-map
-   ("<return>" . nil)
-   ("C-n" . nil)
-   ("C-p" . nil)
-   ("C-s" . company-filter-candidates))
+(progn
+  ;; (-setup company
 
-  :config
-  (company-tng-configure-default)
-  (global-company-mode 1)
+  ;;   ;; keybinds
 
-  (defun +company-return-default-or-complete ()
-    (interactive)
-    ;; number if selected, nil if not
-    (if company-selection
-        (company-complete-selection)
-      (company-abort)
-      (execute-kbd-macro (kbd "<return>"))))
-  (define-key company-tng-map (kbd "<return>") #'+company-return-default-or-complete)
+  ;;   (:with-map company-active-map
+  ;;     (:bind "<return>" nil
+  ;;            "C-n" nil
+  ;;            "C-p" nil
+  ;;            "C-s" company-filter-candidates))
 
-  (setq company-backends
-        '(company-dabbrev company-files)) ; the default, overrides below
-  (setq company-transformers nil)
-  (setq lsp-completion-provider :none)
-  (setq company-idle-delay 0.1)
-  (setq company-selection-wrap-around t)
-  (setq company-minimum-prefix-length 1)
-  (setq company-dabbrev-downcase nil)
-  (setq company-search-regexp-function 'company-search-words-in-any-order-regexp)
+  ;;   ;; config
 
-  ;; org-mode-specific backends
+  ;;   (:when-loaded
 
-  (add-hook 'prog-mode-hook
-            (lambda ()
-              (setq-local company-backends
-                          '((company-yasnippet :with company-capf)
-                            company-dabbrev-code
-                            company-files))
-              (setq-local company-transformers '(company-sort-by-backend-importance))))
+  ;;     (company-tng-configure-default)
+  ;;     (global-company-mode 1)
 
-  (eval-after-load 'org
-    '(add-hook 'org-mode-hook
-               (lambda ()
-                 (setq-local company-backends
-                             '((company-dabbrev :with company-files))))))
-  (eval-after-load 'latex
-    '(add-hook 'LaTeX-mode-hook
-               (lambda ()
-                 (setq-local company-backends'nil))))
+  ;;     (defun +company-return-default-or-complete ()
+  ;;       (interactive)
+  ;;       ;; number if selected, nil if not
+  ;;       (if company-selection
+  ;;           (company-complete-selection)
+  ;;         (company-abort)
+  ;;         (execute-kbd-macro (kbd "<return>"))))
+  ;;     (define-key company-tng-map (kbd "<return>") #'+company-return-default-or-complete)
 
-  ;; separator for orderless completion:
+  ;;     (setq company-backends
+  ;;           '(company-dabbrev company-files)) ; the default, overrides below
+  ;;     (setq company-transformers nil)
+  ;;     (setq lsp-completion-provider :none)
+  ;;     (setq company-idle-delay 0.1)
+  ;;     (setq company-selection-wrap-around t)
+  ;;     (setq company-minimum-prefix-length 1)
+  ;;     (setq company-dabbrev-downcase nil)
+  ;;     (setq company-search-regexp-function 'company-search-words-in-any-order-regexp)
 
-  (defvar +company-separator "&")
+  ;;     ;; org-mode-specific backends
 
-  (defun +company-insert-separator ()
-    "Insert `+company-separator' during company completion."
-    (interactive)
-    (when (company-manual-begin)
-      (insert +company-separator)))
+  ;;     (add-hook 'prog-mode-hook
+  ;;               (lambda ()
+  ;;                 (setq-local company-backends
+  ;;                             '((company-yasnippet :with company-capf)
+  ;;                               company-dabbrev-code
+  ;;                               company-files))
+  ;;                 (setq-local company-transformers '(company-sort-by-backend-importance))))
 
-  (define-key company-active-map (kbd "M-SPC") #'+company-insert-separator)
+  ;;     (eval-after-load 'org
+  ;;       '(add-hook 'org-mode-hook
+  ;;                  (lambda ()
+  ;;                    (setq-local company-backends
+  ;;                                '((company-dabbrev :with company-files))))))
+  ;;     (eval-after-load 'latex
+  ;;       '(add-hook 'LaTeX-mode-hook
+  ;;                  (lambda ()
+  ;;                    (setq-local company-backends'nil))))
 
-  (setq orderless-component-separator "[ &]")
+  ;;     ;; separator for orderless completion:
+
+  ;;     (defvar +company-separator "&")
+
+  ;;     (defun +company-insert-separator ()
+  ;;       "Insert `+company-separator' during company completion."
+  ;;       (interactive)
+  ;;       (when (company-manual-begin)
+  ;;         (insert +company-separator)))
+
+  ;;     (define-key company-active-map (kbd "M-SPC") #'+company-insert-separator)
+
+  ;;     (setq orderless-component-separator "[ &]")
+  ;;     ))
   )
 
-(leaf company-quickhelp
-  :after company
-  :bind ("C-c l h c" . company-quickhelp-mode)
-  :setq
-  (company-quickhelp-delay . 1)
-  :config
-  (company-quickhelp-mode 1))
+;; (-setup company-quickhelp
+;;   (:load-after company)
+;;   (:global "C-c l h c" company-quickhelp-mode)
+;;   (:option company-quickhelp-delay 1)
+;;   (:when-loaded
+;;     (company-quickhelp-mode 1)))
 
 
 ;;; Yasnippet
 
 ;; https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for-yasnippets-when-using-eglot
 
-(leaf yasnippet :elpaca yasnippet-snippets
-  :commands yas-reload-all
-  :hook (prog-mode-hook . yas-minor-mode)
-  :bind
-  (yas-keymap
-   ("RET" . yas-next-field-or-maybe-expand))
-  :config
-  (add-to-list 'yas-snippet-dirs
-               (expand-file-name "no-search/snippets"
-                                 +emacs-src-dir))
-  (yas-reload-all))
+(-setup yasnippet-snippets)
 
-(global-set-key [remap dabbrev-expand] 'hippie-expand)
-(add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand t)
+(-setup yasnippet
+  (add-hook 'prog-mode-hook #'yas-minor-mode)
 
-(leaf isearch :elpaca nil
-  :bind
-  ("C-M-s" . isearch-forward)
-  ("C-M-r" . isearch-backward))
+  (:require-self)
+
+  (:when-loaded
+
+    ;; binds
+    (:with-map yas-keymap
+      (:bind "RET" yas-next-field-or-maybe-expand))
+
+    ;; load snippets
+    (:also-load yasnippet-snippets)
+
+    ;; set custom snippets dirs
+    (add-to-list 'yas-snippet-dirs
+                 (expand-file-name "no-search/snippets"
+                                   +emacs-src-dir))
+
+    ;; reload snippets
+    (with-eval-after-load 'yasnippet-snippets
+      (yas-reload-all))))
+
+(setup hippie-exp
+  ;; replace dabbrev-expand with hippie-expand
+  (global-set-key [remap dabbrev-expand] 'hippie-expand)
+
+  ;; add yas-hippie-try-expand after yasnippet loads
+  (:with-feature yasnippet
+    (:when-loaded
+      (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand t))))
+
+(setup isearch
+  (:when-loaded
+    (:global "C-M-s" isearch-forward
+             "C-M-r" isearch-backward)))
 
 ;;; Corfu
 
-;; (leaf corfu
-;;   :require t
-;;   :setq
-;;   (corfu-cycle . t)        ;; Enable cycling through candidates
-;;   (corfu-auto . t)         ;; Enable auto completion
-;;   (corfu-auto-prefix . 1)  ;; Complete after typing 2 characters
-;;   (corfu-auto-delay . 0.1) ;; Wait time before showing completions
-;;   (corfu-preview-current . 'insert) ;; Preview first candidate
-;;   (corfu-preselect . 'prompt)       ;; Preselect the prompt
-;;   (corfu-on-exact-match . nil) ;; Don't auto-complete exact matches
+(-setup corfu
+  (:option corfu-cycle t                ; cycle
+           corfu-on-exact-match nil     ; on exact match, do nothing
+           corfu-auto t                 ; auto popup
+           corfu-preselect 'prompt      ; always insert candidate into buffer
+           corfu-auto-delay 0.15)
 
-;;   ;; Hide commands in M-x which do not apply to the current mode.  Corfu
-;;   ;; commands are hidden, since they are not used via M-x. This setting is
-;;   ;; useful beyond Corfu.
-;;   (read-extended-command-predicate . #'command-completion-default-include-p)
+  (:with-map corfu-map
+    (:bind "TAB" #'corfu-next
+           [tab] #'corfu-next
+           "S-TAB" #'corfu-previous
+           [backtab] #'corfu-previous
 
-;;   :bind (corfu-map
-;;          ("TAB" . corfu-next)
-;;          ([tab] . corfu-next)
-;;          ("S-TAB" . corfu-previous)
-;;          ([backtab] . corfu-previous)
-;;          ("RET" . nil)
-;;          ("C-n" . nil)
-;;          ("C-p" . nil)
-;;          ("C-RET" . corfu-insert))
-;;   :init
-;;   (global-corfu-mode))
+           ;; avy-style select
+           "M-;" #'corfu-quick-complete
 
-;;; Cape
+           ;; prevent M-TAB from opening another completion
+           ;; "M-TAB" nil
 
-;; (leaf cape
-;;   ;; :disabled t
-;;   :require t
-;;   ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
-;;   ;; Press C-c p ? to for help.
-;;   :bind ("M-+" . cape-prefix-map) ;; Alternative keys: M-p, M-+, ...
-;;   ;; Alternatively bind Cape commands individually.
-;;   ;; :bind (("C-c p d" . cape-dabbrev)
-;;   ;;        ("C-c p h" . cape-history)
-;;   ;;        ("C-c p f" . cape-file)
-;;   ;;        ...)
-;;   :init
-;;   ;; Add to the global default value of `completion-at-point-functions' which is
-;;   ;; used by `completion-at-point'.  The order of the functions matters, the
-;;   ;; first function returning a result wins.  Note that the list of buffer-local
-;;   ;; completion functions takes precedence over the global list.
+           ;; make S-RET newline
+           "S-RET" #'corfu-send))
 
-;;   (add-hook 'completion-at-point-functions #'cape-dabbrev) ; current buffers
-;;   (add-hook 'completion-at-point-functions #'cape-file)    ; file name
-;;   ;; (add-hook 'completion-at-point-functions (cape-company-to-capf 'company-yasnippet))    ; file name
-;;   ;; (add-hook 'completion-at-point-functions #'cape-elisp-block) ; code block (THE CULPRIT!!!!!)
+  ;; enable
+  (global-corfu-mode)
 
-;;   )
+  ;; optional modes
+  (corfu-history-mode)                  ; sort by recent and freq
+  (corfu-popupinfo-mode)                ; show docs to the right
 
-;; (leaf yasnippet-capf
-;;   :after cape
-;;   :config
-;;   (defun +capfs-add-yasnippet ()
-;;     "Add yasnippet-capf to the front of completion-at-point-functions."
-;;     ;; (add-to-list 'completion-at-point-functions #'yasnippet-capf)
-;;     (setq-local completion-at-point-functions
-;;                 (cons #'yasnippet-capf
-;;                       completion-at-point-functions))
-;;     )
-;;   :hook (prog-mode-hook . +capfs-add-yasnippet))
+  ;; avy-style completion
+  (:with-map corfu-map
+    (:bind "M-;" #'corfu-quick-complete))
+  (:with-feature corfu-quick
+    (:option corfu-quick1 "aoeuidhtns"
+             corfu-quick2 "aoeuidhtns"))
 
-;;; Tempel
+  (:option
+   ;; cycle only if few candidates
+   ;; FIX: disabled since tempel wont show previews
+   ;; completion-cycle-threshold 10
+   completion-cycle-threshold nil
 
-;; Configure Tempel
-;; (use-package tempel
-;;   ;; Require trigger prefix before template name when completing.
-;;   ;; :custom
-;;   ;; (tempel-trigger-prefix "<")
+   ;; make TAB indent or complete
+   tab-always-indent 'complete
 
-;;   :bind (("M-+" . tempel-complete) ;; Alternative tempel-expand
-;;          ("M-*" . tempel-insert))
+   ;; disable ispell completion function (`cape-dict' better)
+   text-mode-ispell-word-completion nil))
 
-;;   :init
+;;;; icons on candidates
 
-;;   ;; Setup completion at point
-;;   (defun tempel-setup-capf ()
-;;     ;; Add the Tempel Capf to `completion-at-point-functions'.
-;;     ;; `tempel-expand' only triggers on exact matches. Alternatively use
-;;     ;; `tempel-complete' if you want to see all matches, but then you
-;;     ;; should also configure `tempel-trigger-prefix', such that Tempel
-;;     ;; does not trigger too often when you don't expect it. NOTE: We add
-;;     ;; `tempel-expand' *before* the main programming mode Capf, such
-;;     ;; that it will be tried first.
-;;     (setq-local completion-at-point-functions
-;;                 (cons #'tempel-insert
-;;                       completion-at-point-functions)))
+(-setup nerd-icons-corfu
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
-;;   (add-hook 'conf-mode-hook 'tempel-setup-capf)
-;;   (add-hook 'prog-mode-hook 'tempel-setup-capf)
-;;   (add-hook 'text-mode-hook 'tempel-setup-capf)
+;;;; yasnippet integration
 
-;;   ;; Optionally make the Tempel templates available to Abbrev,
-;;   ;; either locally or globally. `expand-abbrev' is bound to C-x '.
-;;   ;; (add-hook 'prog-mode-hook #'tempel-abbrev-mode)
-;;   ;; (global-tempel-abbrev-mode)
-;;   )
+;; Cause of freezing on lsp-mode?
 
-;; Optional: Add tempel-collection.
-;; The package is young and doesn't have comprehensive coverage.
-;; (use-package tempel-collection)
+;; Use cape to combine lsp-capf and yasnippet-capf
 
-;; (leaf abbrev :elpaca nil
-;;   :bind (("C-c c a" . add-global-abbrev)
-;;          ("C-c c -" . inverse-add-global-abbrev)
-;;          ("C-c c e" . edit-abbrevs)))
+(-setup yasnippet-capf
+  (:load-after yasnippet))
 
-;;; Use-package - lax completion for :custom
+;;; Cape + Tempel
 
-(leaf emacs :elpaca nil
-  :config
-  (defun my/elisp-custom-keyword-lax-capf ()
-    "Provide lax completion when in s-expr with preceding :custom keyword."
-    (when (and (derived-mode-p 'emacs-lisp-mode)
-               (my/elisp-custom-keyword-lax-capf--pred))
-      ;; get elisp-capf result
-      (when-let ((result (elisp-completion-at-point)))
-        ;; capf new
-        (append (take 3 result)
-                (list :annotation-function
-                      (lambda (cand)
-                        (let ((sym (intern-soft cand)))
-                          (cond
-                           ((and sym (boundp sym)) " <var>")
-                           ((and sym (fboundp sym)) " <func>")
-                           ((keywordp sym) " <key>")
-                           (t "")))))))))
+;; Notes: structure:
+;; - defaults/fallbacks
+;; - generic modes (prog, conf, text) - adds on top of defaults/fallbacks
+;; - lsp - overwrites all above
 
-  (defun my/elisp-custom-keyword-lax-capf--pred ()
-    "Predicate for `my/elisp-custom-keyword-lax-capf'.
-
-Checks if the point is under `use-package' or `leaf',
-and that the last keyword was :custom."
-    (when-let*
-        ((limit
-          (save-excursion
-            (condition-case nil
-                ;; go up till find use-package or leaf
-                (progn
-                  (while (not (looking-at-p "(\\(use-package\\|leaf\\)\\b"))
-                    (backward-up-list))
-                  (point))
-              ;; no matches
-              (error nil)))))
-      ;; search backwards, find last keyword, if ":custom" ret t
-      (save-excursion
-        (when (re-search-backward " \\(:\\w+\\)" limit t)
-          (string= (match-string 1) ":custom")))))
-
-  (add-hook 'emacs-lisp-mode-hook
-            (lambda ()
-              (add-hook 'completion-at-point-functions
-                        #'my/elisp-custom-keyword-lax-capf nil t))))
+;; TODO:
+;; https://github.com/minad/corfu/wiki#same-key-used-for-both-the-separator-and-the-insertion
+;; TODO: https://github.com/minad/corfu/wiki#tab-and-go-completion
 
 
+;; ---
+
+(-setup tempel
+  (:global "M-*" #'tempel-insert))
+
+(-setup tempel-collection
+  (:load-after tempel))
+
+(-setup cape
+  (:require-self)
+  (:also-load tempel tempel-collection)
+
+  ;; (:option tempel-trigger-prefix "_")
+
+  ;; bind
+  (:global "M-+" cape-prefix-map)
+
+  ;; fixes
+
+  (with-eval-after-load 'lsp-mode
+    ;; FINALLY, the fix for lsp hanging????!!!!
+    ;; https://github.com/emacs-lsp/lsp-mode/issues/3555#issuecomment-2830321073
+    (advice-add #'lsp-completion-at-point :around #'cape-wrap-noninterruptible))
+
+  ;; helper var
+
+  ;; helper functions
+  (defun +capf-prepend-local (capfs)
+    "Prepend buffer-local capfs with CAPFS."
+    (setq-local completion-at-point-functions
+                (append capfs completion-at-point-functions)))
+
+  (defun +capf-override-local (capfs)
+    "Override buffer-local capfs with CAPFS."
+    (setq-local completion-at-point-functions
+                (append capfs '(t))))
+
+  (defvar +capf-local-default nil
+    "The buffer-local original value of the capf variable.")
+
+  (cl-defmacro +capf-create-mode-setup
+      (&key hook
+            (func #'+capf-override-local)
+            capfs
+            after-load)
+    (cl-check-type hook symbol)
+    (cl-check-type func symbol)
+    (cl-check-type capfs list)
+    (let ((body
+           `(progn
+              ,(let ((new-defun-name
+                      (intern
+                       (format "+capf-%s-setup"
+                               (symbol-name hook)))))
+                 `(add-hook ',hook
+                            (defun ,new-defun-name ()
+                              (,func ,capfs)))))))
+      (if after-load
+          `(with-eval-after-load ',after-load
+             ,body)
+        body)))
+
+  ;; tweaks
+
+  (defun +capf-prefix-length-2-advice (orig-fun &rest args)
+    (cape-wrap-prefix-length orig-fun 2))
+
+  (advice-add 'tempel-complete :around #'+capf-prefix-length-2-advice)
+  (advice-add 'cape-keyword :around #'+capf-prefix-length-2-advice)
+
+  ;; defining ---
+
+  ;; global defaults (fallback always)
+  (setq-default completion-at-point-functions
+                (list #'cape-file
+                      #'cape-dabbrev
+                      #'cape-history))
+
+  ;; derived-modes default (specific major-modes usually override)
+
+  (dolist (hook '(prog-mode-hook conf-mode-hook text-mode-hook))
+    (add-hook hook
+              (lambda ()
+                (when (local-variable-p 'completion-at-point-functions)
+                  (setq-local +capf-local-default
+                              (remove 't completion-at-point-functions))
+                  (message "LOG: capf-local-default: %s" +capf-local-default))
+                (+capf-prepend-local
+                 (list (cape-capf-super #'tempel-complete #'yasnippet-capf
+                                        #'cape-keyword))))))
+
+  ;; specific major-modes
+
+  ;; elisp
+  (+capf-create-mode-setup
+   :hook emacs-lisp-mode-hook
+   :capfs
+   (list (cape-capf-super #'tempel-complete #'yasnippet-capf
+                          #'cape-keyword
+                          #'elisp-completion-at-point)))
+
+  ;; eshell
+  (+capf-create-mode-setup
+   :hook eshell-mode-hook
+   :capfs
+   (list (cape-capf-super #'tempel-complete #'yasnippet-capf
+                          #'cape-keyword
+                          #'pcomplete-completions-at-point)))
+
+  ;; lsp-mode
+  (+capf-create-mode-setup
+   :hook lsp-managed-mode-hook
+   :after-load lsp-mode
+   :capfs
+   (list (cape-capf-super #'tempel-complete #'yasnippet-capf
+                          (cape-capf-buster
+                           #'lsp-completion-at-point))))
+
+  ;; org
+  (+capf-create-mode-setup
+   :hook org-mode-hook
+   :after-load org
+   :capfs
+   (list (cape-capf-super #'tempel-complete #'yasnippet-capf
+                          #'cape-elisp-block
+                          #'pcomplete-completions-at-point)
+         #'cape-tex
+         #'cape-rfc1345
+         #'cape-emoji))
+  )
+
+;;; Use-package - lax completion for :custom (disabled)
+
+(progn
+  ;; (setup emacs
+  ;;     (defun my/elisp-custom-keyword-lax-capf ()
+  ;;       "Provide lax completion when in s-expr with preceding :custom keyword."
+  ;;       (when (and (derived-mode-p 'emacs-lisp-mode)
+  ;;                  (my/elisp-custom-keyword-lax-capf--pred))
+  ;;         ;; get elisp-capf result
+  ;;         (when-let ((result (elisp-completion-at-point)))
+  ;;           ;; capf new
+  ;;           (append (take 3 result)
+  ;;                   (list :annotation-function
+  ;;                         (lambda (cand)
+  ;;                           (let ((sym (intern-soft cand)))
+  ;;                             (cond
+  ;;                              ((and sym (boundp sym)) " <var>")
+  ;;                              ((and sym (fboundp sym)) " <func>")
+  ;;                              ((keywordp sym) " <key>")
+  ;;                              (t "")))))))))
+
+  ;;     (defun my/elisp-custom-keyword-lax-capf--pred ()
+  ;;       "Predicate for `my/elisp-custom-keyword-lax-capf'.
+
+  ;; Checks if the point is under `use-package' or `leaf',
+  ;; and that the last keyword was :custom."
+  ;;       (when-let*
+  ;;           ((limit
+  ;;             (save-excursion
+  ;;               (condition-case nil
+  ;;                   ;; go up till find use-package or leaf
+  ;;                   (progn
+  ;;                     (while (not (looking-at-p "(\\(use-package\\|leaf\\)\\b"))
+  ;;                       (backward-up-list))
+  ;;                     (point))
+  ;;                 ;; no matches
+  ;;                 (error nil)))))
+  ;;         ;; search backwards, find last keyword, if ":custom" ret t
+  ;;         (save-excursion
+  ;;           (when (re-search-backward " \\(:\\w+\\)" limit t)
+  ;;             (string= (match-string 1) ":custom")))))
+
+  ;;     (add-hook 'emacs-lisp-mode-hook
+  ;;               (lambda ()
+  ;;                 (add-hook 'completion-at-point-functions
+  ;;                           #'my/elisp-custom-keyword-lax-capf nil t))))
+  )
+
+;;; end
 
 (provide '+completion)
 ;;; +completion.el ends here

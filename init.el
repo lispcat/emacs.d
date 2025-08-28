@@ -431,7 +431,17 @@ The expansion is a string indicating the package has been disabled."
 
   (setq setup-macros (assq-delete-all ':require setup-macros))
 
-  (setup-define :require
+  ;; (setup-define :require
+;;     (lambda (&optional feature)
+;;       (let ((pkg-feature (or feature
+;;                              (setup-get 'feature)
+;;                              (error "No feature specified and no context available"))))
+;;         `(unless (require ',pkg-feature nil t)
+;;            ,(setup-quit))))
+;;     :documentation "Try to require FEATURE, or stop evaluating body.
+;; If FEATURE is The first FEATURE can be used to deduce the feature context.")
+
+  (setup-define :require-self
     (lambda (&optional feature)
       (let ((pkg-feature (or feature
                              (setup-get 'feature)
@@ -463,9 +473,10 @@ If FEATURE is The first FEATURE can be used to deduce the feature context.")
 
 ;;; necessary packages
 
-;; fix issues with 
+;; fix issues with missing programs from shell
 (-setup exec-path-from-shell
-  (when (or (memq window-system '(pgtk x ns mac))
+  (setq exec-path-from-shell-debug t)
+  (when (or (memq window-system '(pgkt x))
             (daemonp))
     (exec-path-from-shell-initialize)))
 
@@ -475,7 +486,7 @@ If FEATURE is The first FEATURE can be used to deduce the feature context.")
 
 ;; hide modes from the modeline
 (-setup diminish
-  (:require))
+  (:require-self))
 
 ;; display keystroke options
 (-setup which-key
@@ -485,6 +496,7 @@ If FEATURE is The first FEATURE can be used to deduce the feature context.")
 ;; lingering key menus for repeated keypresses
 (-setup hydra
   (defmacro +defhydra-repeat (fn keys)
+    "Create a repeatable function FN from a list of KEYS."
     (let* ((fn-hydra (intern (concat (symbol-name fn) "-hydra"))))
       `(defhydra ,fn-hydra ()
          ,@(mapcar (lambda (k)
@@ -494,7 +506,7 @@ If FEATURE is The first FEATURE can be used to deduce the feature context.")
 ;; functional programming library
 ;; https://github.com/magnars/dash.el
 (-setup dash
-  (:require)
+  (:require-self)
   ;; (require 'dash)
 
   ;; FIXME
@@ -744,9 +756,9 @@ This function returns a list of paths that were added to (or already exist in)
 
 ;; --
 
-;;; import
+;;; import _src.el
 
-;; The rest of the configuration is loaded from `./src/src.el`.
+;; The rest of the configuration is loaded from `./src/_src.el`.
 
 ;; --
 
@@ -755,7 +767,7 @@ This function returns a list of paths that were added to (or already exist in)
 
 ;; --
 
-;;;; end
+;;; end
 
 (provide 'init)
 ;;; init.el ends here

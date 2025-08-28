@@ -41,6 +41,7 @@
   :require t
   :hook ((LaTeX-mode-hook . preview-larger-previews))
   :config
+  ;; comment this out if using in-line latex
   (with-eval-after-load 'ox-latex
     (setq org-latex-compiler "lualatex")
     (setq org-latex-pdf-process '("%latex -interaction nonstopmode -output-directory %o %f")))

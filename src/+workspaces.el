@@ -209,33 +209,36 @@ After evaluating, it suspends all non-current activities."
   ;; helper function
   (defun +activities--exclude-other-frames ()
     "Return loadable activities, excluding already active in other frames."
-    (let (;; activities loadable from file
-          (activities-loadable (-map #'car-safe activities-activities))
-          ;; activities active in any frame except current
-          (activities-active-in-other
-           (->>
-            (frame-list)
-            (--remove (equal it (selected-frame)))
-            (-mapcat
-             (lambda (frame)
-               (with-selected-frame frame
-                 (let ((active-names
-                        (->>
-                         activities-activities
-                         (-filter (-compose #'activities-activity-active-p
-                                            #'cdr))
-                         (-map #'car-safe))))
-                   (prog1 active-names
-                     (message "LOG: active-names: %S" active-names)
-                     (unless (or (<= 1 (length active-names))
-                                 (not active-names))
-                       (warn "Expected no more than 1 activity in frame %s: %s"
-                             frame active-names)))))))
-            (-non-nil)
-            (-uniq))))
+    (let* ((log nil)
+           ;; activities loadable from file
+           (activities-loadable (-map #'car-safe activities-activities))
+           ;; activities active in any frame except current
+           (activities-active-in-other
+            (->>
+             (frame-list)
+             (--remove (equal it (selected-frame)))
+             (-mapcat
+              (lambda (frame)
+                (with-selected-frame frame
+                  (let ((active-names
+                         (->>
+                          activities-activities
+                          (-filter (-compose #'activities-activity-active-p
+                                             #'cdr))
+                          (-map #'car-safe))))
+                    (prog1 active-names
+                      (when log
+                        (message "LOG: active-names: %S" active-names))
+                      (unless (or (<= 1 (length active-names))
+                                  (not active-names))
+                        (warn "Expected no more than 1 activity in frame %s: %s"
+                              frame active-names)))))))
+             (-non-nil)
+             (-uniq))))
       ;; from loadable, remove active-in-other
-      (message "LOG: activities-loadable: %S" activities-loadable)
-      (message "LOG: activities-active-in-other: %S" activities-active-in-other)
+      (when log
+        (message "LOG: activities-loadable: %S" activities-loadable)
+        (message "LOG: activities-active-in-other: %S" activities-active-in-other))
       (->> activities-loadable
            (--remove (-contains? activities-active-in-other
                                  it))
