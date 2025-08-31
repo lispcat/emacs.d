@@ -275,7 +275,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;;
 ;; repo: https://github.com/Wilfred/helpful
 
-;; --
+;; ---
 
 (-setup helpful
   ;; TODO: is this needed?
@@ -294,7 +294,16 @@ _SPC_ cancel	_o_nly this   	_d_elete
            "C-h M" which-key-show-major-mode
            "C-h E" describe-keymap))
 
-;; --
+;;;; tldr client
+
+;; A tldr client for Emacs.
+
+;; Better man pages.
+
+;; ---
+
+(-setup tldr
+  (:global "C-c s M" tldr))
 
 ;;;; auto-sudoedit
 

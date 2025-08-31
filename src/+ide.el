@@ -111,8 +111,10 @@
         lsp-idle-delay 0.5
         ;; bind "C-c l" to lsp-command-map
         lsp-keymap-prefix "C-c l"
-        ;; problematic: https://github.com/emacs-lsp/lsp-mode/issues/4113
-        lsp-update-inlay-hints-on-scroll nil))
+        ;; problematic, lag: https://github.com/emacs-lsp/lsp-mode/issues/4113
+        ;; lsp-update-inlay-hints-on-scroll nil
+        )
+  )
 
 ;;;; lsp-ui
 
@@ -141,6 +143,7 @@
     (define-key lsp-command-map (kbd "v i") #'lsp-ui-imenu)))
 
 ;;;; lsp-booster
+
 ;; use lsp-doctor for testing
 ;; Steps:
 ;; - install emacs-lsp-booster
@@ -195,6 +198,20 @@
   (add-hook 'org-mode-hook #'+disable-<-pair-expansion)
   ;; global
   (electric-pair-mode 1))
+
+;;; Eglot
+
+;;;; eglot-booster
+
+;; (setup (:pkg eglot-booster :host github :repo "jdtsmith/eglot-booster")
+;;   (:load-after elgot)
+;;   (:when-loaded
+;;     (eglot-booster-mode)))
+
+(-setup (eglot-booster :host github :repo "jdtsmith/eglot-booster")
+  (:load-after elgot)
+  (:when-loaded
+    (eglot-booster-mode)))
 
 ;;; Langs
 
@@ -411,21 +428,26 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 
 ;; https://github.com/emacs-lsp/lsp-java
 
-(leaf lsp-java
-  :mode "\\.java\\'"
-  :config
-  (add-hook 'java-mode-hook #'lsp))
+(-setup lsp-java
+  ;; (add-hook 'java-mode-hook #'lsp)
+  (add-hook 'java-mode-hook #'eglot-ensure)
+  (add-hook 'java-ts-mode-hook #'eglot-ensure)
+  ;; (:when-loaded
+  ;;   (defun lsp-java--ls-command ()
+  ;;     (list "jdt-language-server"
+  ;;           "-configuration" "../config-linux"
+  ;;           "-data" "../java-workspace")))
+  )
 
-;; (leaf eglot-java
-;;   :hook java-mode-hook
-;;   :bind
-;;   (eglot-java-mode-map
-;;    ("C-c l n" . eglot-java-file-new)
-;;    ("C-c l x" . eglot-java-run-main)
-;;    ("C-c l t" . eglot-java-run-test)
-;;    ("C-c l N" . eglot-java-project-new)
-;;    ("C-c l T" . eglot-java-project-build-task)
-;;    ("C-c l R" . eglot-java-project-build-refresh)))
+;; (-setup eglot-java
+;;   (:hook-into java-mode-hook)
+;;   (:with-map 'eglot-java-mode-map
+;;     (:bind "C-c l n" eglot-java-file-new
+;;            "C-c l x" eglot-java-run-main
+;;            "C-c l t" eglot-java-run-test
+;;            "C-c l N" eglot-java-project-new
+;;            "C-c l T" eglot-java-project-build-task
+;;            "C-c l R" eglot-java-project-build-refresh)))
 
 ;;;; Markdown
 

@@ -749,12 +749,24 @@ This function returns a list of paths that were added to (or already exist in)
             (setq gc-cons-threshold (* 10000 10000))))
 
 ;; load saved customizations file
+;; TODO: load this sooner? prevent freezing due to dir-locals by org-agenda
 (add-hook 'elpaca-after-init-hook
           (lambda ()
             (when (file-exists-p custom-file)
               (load custom-file))))
 
 ;; --
+
+;;; Quality of Life
+
+(setup emacs
+  ;; A hook that runs after enabling a theme
+  (defvar +after-enable-theme-hook nil)
+
+  (defun +run-after-enable-theme-hook (&rest _args)
+    (run-hooks '+after-enable-theme-hook))
+
+  (advice-add 'enable-theme :after #'+run-after-enable-theme-hook))
 
 ;;; import _src.el
 

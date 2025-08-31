@@ -112,28 +112,28 @@
 
   (:global
    ;; recent files
-   "C-c f r" consult-recent-file ; recent file
+   "C-c f r" consult-recent-file        ; recent file
 
    ;; buffers
-   "C-c b b" consult-buffer     ; switch-to-buffer
+   "C-c b b" consult-buffer             ; switch-to-buffer
    "C-x 4 b" consult-buffer-other-window
    "C-x 5 b" consult-buffer-other-frame
 
    ;; editing
-   "M-y" consult-yank-pop       ; fallback to after yank
+   "M-y" consult-yank-pop               ; fallback to after yank
    "M-S-y" consult-yank-from-kill-ring
    "<f5>" consult-kmacro
 
    ;; register (C-u for window layout!)
-   "M-#" consult-register-store  ; store
-   "C-M-#" consult-register-load ; load
+   "M-#" consult-register-store         ; store
+   "C-M-#" consult-register-load        ; load
 
    ;; navigation
-   "C-c ; l" consult-outline     ; outline heading
-   "C-c o l" consult-org-heading ; org heading
-   "C-c s a" consult-org-agenda  ; agenda heading
+   "C-c ; l" consult-outline            ; outline heading
+   "C-c o l" consult-org-heading        ; org heading
+   "C-c s a" consult-org-agenda         ; agenda heading
 
-   "C-c s l" consult-imenu      ; list var/func
+   "C-c s l" consult-imenu              ; list var/func
    "C-c s L" consult-imenu-multi
 
    ;; search
@@ -153,14 +153,14 @@
    "C-c l e" consult-compile-error
 
    ;; histories
-   "C-c s x" consult-complex-command ; past keychord
+   "C-c s x" consult-complex-command    ; past keychord
 
    ;; themes
    "C-c T t" consult-theme
 
    ;; list minor modes
    "C-c s m" consult-minor-mode-menu
-   "C-c s M-x" consult-mode-command ; M-x only for current mode
+   "C-c s M-x" consult-mode-command     ; M-x only for current mode
    "C-c M-x" consult-mode-command
 
    ;; Info
@@ -168,7 +168,7 @@
    [remap Info-search] consult-info
 
    ;; Man pages
-   "C-c s M" consult-man
+   ;; "C-c s M" consult-man ; replaced with tldr
    )
 
   ;; project.el integration
@@ -469,6 +469,7 @@
 ;;; Corfu
 
 (-setup corfu
+  (:require-self)
   (:option corfu-cycle t                ; cycle
            corfu-on-exact-match nil     ; on exact match, do nothing
            corfu-auto t                 ; auto popup
@@ -480,6 +481,12 @@
            [tab] #'corfu-next
            "S-TAB" #'corfu-previous
            [backtab] #'corfu-previous
+
+           ;; unbind C-n and C-p
+           "C-n" nil
+           "C-p" nil
+           [remap previous-line] nil
+           [remap next-line] nil
 
            ;; avy-style select
            "M-;" #'corfu-quick-complete
@@ -507,19 +514,32 @@
   (:option
    ;; cycle only if few candidates
    ;; FIX: disabled since tempel wont show previews
-   ;; completion-cycle-threshold 10
-   completion-cycle-threshold nil
+   completion-cycle-threshold 10
+   ;; completion-cycle-threshold nil
 
    ;; make TAB indent or complete
    tab-always-indent 'complete
 
    ;; disable ispell completion function (`cape-dict' better)
-   text-mode-ispell-word-completion nil))
+   text-mode-ispell-word-completion nil
 
-;;;; icons on candidates
+   ;; decrease time for corfu popupinfo
+   corfu-popupinfo-delay '(1.5 . 0.5)))
 
-(-setup nerd-icons-corfu
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+;;;; candidate icons
+
+;; (-setup nerd-icons-corfu
+;;   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+(-setup kind-icon
+  (:load-after corfu)
+  (:when-loaded
+    (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
+    ;; blend background
+    (:option kind-icon-blend-background t
+             kind-icon-default-face 'corfu-default)
+    ;; update background after theme change
+    (add-hook '+after-enable-theme-hook #'kind-icon-reset-cache)))
 
 ;;;; yasnippet integration
 
@@ -554,19 +574,36 @@
   (:require-self)
   (:also-load tempel tempel-collection)
 
-  ;; (:option tempel-trigger-prefix "_")
+  ;; test with #' prefix
+  (:global "M-+" #'cape-prefix-map)
 
-  ;; bind
-  (:global "M-+" cape-prefix-map)
-
-  ;; fixes
+  ;; fixes ---
 
   (with-eval-after-load 'lsp-mode
     ;; FINALLY, the fix for lsp hanging????!!!!
     ;; https://github.com/emacs-lsp/lsp-mode/issues/3555#issuecomment-2830321073
     (advice-add #'lsp-completion-at-point :around #'cape-wrap-noninterruptible))
 
-  ;; helper var
+  ;; manual template expansion ---
+
+  (defun +template-expand ()
+    (interactive)
+    (cond
+     ((not (null (tempel-expand)))
+      (progn
+        (message "Tempel snippet...")
+        (call-interactively #'tempel-expand)))
+     ((not (null (yas--templates-for-key-at-point)))
+      (progn
+        (message "Yasnippet snippet...")
+        (call-interactively #'yas-expand)))
+     (t
+      (message "No snippets here"))))
+
+  (:global "M-/" #'+template-expand
+           "C-M-/" #'hippie-expand)
+
+  ;; helper var ---
 
   ;; helper functions
   (defun +capf-prepend-local (capfs)
@@ -604,13 +641,18 @@
              ,body)
         body)))
 
-  ;; tweaks
+  ;; tweaks ---
 
   (defun +capf-prefix-length-2-advice (orig-fun &rest args)
     (cape-wrap-prefix-length orig-fun 2))
 
+  (defun +capf-prefix-length-5-advice (orig-fun &rest args)
+    (cape-wrap-prefix-length orig-fun 5))
+
   (advice-add 'tempel-complete :around #'+capf-prefix-length-2-advice)
-  (advice-add 'cape-keyword :around #'+capf-prefix-length-2-advice)
+  (advice-add 'cape-keyword    :around #'+capf-prefix-length-2-advice)
+
+  (advice-add 'cape-dabbrev    :around #'+capf-prefix-length-5-advice)
 
   ;; defining ---
 
