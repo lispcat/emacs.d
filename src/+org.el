@@ -36,95 +36,152 @@
 
 ;; --
 
-(leaf org :elpaca nil
-  :custom
-  ;; default org directory
-  (org-directory . "~/Notes/org")
+(setup org
+  (:option
+   ;; default org directory
+   org-directory "~/Notes/org"
 
-  ;; column where tags are indented to
-  (org-tags-column . -55)
+   ;; column where tags are indented to
+   org-tags-column -55
 
-  ;; default folding mode
-  (org-startup-folded . 'nofold)
+   ;; default folding mode
+   org-startup-folded 'showall
+   ;; org-startup-folded 'showeverything
 
-  ;; indent headings and its body
-  (org-startup-indented . t)
+   ;; hide drawers
+   org-cycle-hide-drawer-startup t
+   ;; org-cycle-hide-drawer-startup nil
 
-  ;; more ergonomic C-a/C-e
-  (org-special-ctrl-a/e . t)
+   ;; indent headings and its body
+   org-startup-indented t
 
-  ;; edit src blocks in the same window
-  (org-src-window-setup . 'current-window)
+   ;; more ergonomic C-a/C-e
+   org-special-ctrl-a/e t
 
-  ;; RET can open links
-  (org-return-follows-link . t)
+   ;; edit src blocks in the same window
+   org-src-window-setup 'current-window
 
-  ;; hide formatting chars (* / ~ = etc)
-  (org-hide-emphasis-markers . t)
+   ;; RET can open links
+   org-return-follows-link t
 
-  ;; remove annoying leading whitespace in code blocks
-  (org-src-preserve-indentation . t)
+   ;; hide formatting chars (* / ~ = etc)
+   org-hide-emphasis-markers t
 
-  ;; TODO: not sure what this does
-  ;; (org-fontify-whole-heading-line . t)
+   ;; remove annoying leading whitespace in code blocks
+   org-src-preserve-indentation t
 
-  ;; custom ellipses when folded
-  ;; (org-ellipsis . " ‣")
-  (org-ellipsis . " ›")
-  ;; (org-ellipsis . " …")
-  ;; (org-ellipsis . " ⤵")
-  ;; (org-ellipsis . " ▾")
+   ;; TODO: not sure what this does
+   ;; org-fontify-whole-heading-line t
 
-  :init
+   ;; custom ellipses when folded
+   org-ellipsis " ‣"
+   ;; org-ellipsis " ›"
+   ;; org-ellipsis " …"
+   ;; org-ellipsis " ⤵"
+   ;; org-ellipsis " ▾"
+   )
+
   (leader-bind
     "o" '(:ignore t :wk "org"))
 
-  :config
+  (:when-loaded
 
-  ;; set org font sizes
-  (dolist
-      ;; (pair '((org-document-title :height 1.9 :weight bold)
-      ;;         (org-level-1 :height 1.7 :weight bold)
-      ;;         (org-level-2 :height 1.4 :weight bold)
-      ;;         (org-level-2 :height 1.1)
-      ;;         (org-level-3 :height 1.1)))
-      (pair '((org-document-title :height 1.9)))
-    (apply #'set-face-attribute (car pair) nil (cdr pair)))
+    ;; set org fonts
 
-  ;; fix syntax <> matching with paren
-  (add-hook 'org-mode-hook (lambda ()
-                             (modify-syntax-entry ?< ".")
-                             (modify-syntax-entry ?> ".")))
+    ;; (custom-set-faces
+    ;;  '(org-document-title
+    ;;    ((t (:height 1.9 :weight bold))))
+    ;;  '(org-level-1
+    ;;    ((t (:inherit outline-1 :height 1.4))))
+    ;;  '(org-level-2
+    ;;    ((t (:inherit outline-2 :height 1.3))))
+    ;;  '(org-level-3
+    ;;    ((t (:inherit outline-3 :height 1.15)))))
 
+    (defvar +org-fonts-alist
+      '((org-document-title :height 1.9 :weight bold)
+        (org-level-1 :height 1.7)
+        (org-level-2 :height 1.4)
+        (org-level-3 :height 1.15)
+        (org-level-4 :height 1.1)))
 
-  ;; keywords override
+    (with-eval-after-load 'ef-themes
+      (setq ef-themes-headings +org-fonts-alist))
 
-  (defun +org-todo-color-override (&rest _)
-    "Set org-todo-keyword-faces only if not already set by the theme."
-    (setq org-todo-keyword-faces
-          `(("NEXT" :foreground ,(or (ignore-error
-                                         (face-attribute 'highlight :foreground nil 'default))
-                                     "yellow")))))
+    (with-eval-after-load 'modus-themes
+      (setq modus-themes-headings +org-fonts-alist))
 
-  ;; Advise the load-theme function to run our color override
-  (advice-add 'load-theme :after #'+org-todo-color-override)
+    (with-eval-after-load 'kaolin-themes
+      (setq kaolin-themes-org-scale-headings nil))
 
-  ;; Run once immediately to set colors if no theme is loaded
-  (+org-todo-color-override)
+    ;; for each FACE, if not yet set to target, set.
+    (defun +org-fonts-setup (&rest _args)
+      (interactive)
+      (when (eq major-mode 'org-mode)
+        (dolist (lst-face +org-fonts-alist)
+          (-let* (((t-face . t-args) lst-face)
+                  ;; form: '((t-attr (c-val t-val)) ...)
+                  (t-attr-c-t-val-alist
+                   (->> t-args
+                        (-partition 2)
+                        (-map (lambda (pair)
+                                (-let* (((t-attr t-val) pair)
+                                        (c-val (face-attribute t-face t-attr)))
+                                  (list t-attr (list c-val t-val)))))))
+                  ;; form: '(bool ...)
+                  (eq-c-t-lst
+                   (->> t-attr-c-t-val-alist
+                        (-map (lambda (pair)
+                                (-let (((t-attr (c-val t-val)) pair))
+                                  (equal c-val t-val))))))
+                  ;; form: '(bool ...)
+                  (eq-c-t-every?
+                   (-all? #'identity eq-c-t-lst)))
+            ;; if all cur eq target, then ok
+            (if eq-c-t-every?
+                (when debug-on-error
+                  (message "Log: ok: %S, %S" t-face t-attr-c-t-val-alist))
+              ;; else, set to target
+              (message "Log: setting: %S, %S" t-face t-attr-c-t-val-alist)
+              (apply #'set-face-attribute t-face nil t-args))))))
 
-  ;; Shortcut for M-RET M-<right>
-  ;; In org-mode, this usually translates to either:
-  ;; - new subheading
-  ;; - new sublist
-  (defun +org-meta-ret-meta-right ()
-    "Shortcut for M-RET M-<right>."
-    (interactive)
-    (org-meta-return)
-    (org-metaright))
+    (advice-add 'load-theme :after #'+org-fonts-setup)
+    (add-hook 'org-mode-hook #'+org-fonts-setup)
 
-  :bind
-  (org-mode-map
-   ("C-M-<return>" . +org-meta-ret-meta-right)))
+    ;; fix syntax <> matching with paren
+
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (modify-syntax-entry ?< ".")
+                (modify-syntax-entry ?> ".")))
+
+    ;; keywords override
+
+    (defun +org-todo-color-override (&rest _)
+      "Set org-todo-keyword-faces only if not already set by the theme."
+      (setq org-todo-keyword-faces
+            `(("NEXT" :foreground ,(or (ignore-error
+                                           (face-attribute 'highlight :foreground nil 'default))
+                                       "yellow")))))
+
+    ;; Advise the load-theme function to run our color override
+    (advice-add 'load-theme :after #'+org-todo-color-override)
+
+    ;; Run once immediately to set colors if no theme is loaded
+    (+org-todo-color-override)
+
+    ;; Shortcut for M-RET M-<right>
+    ;; In org-mode, this usually translates to either:
+    ;; - new subheading
+    ;; - new sublist
+    (defun +org-meta-ret-meta-right ()
+      "Shortcut for M-RET M-<right>."
+      (interactive)
+      (org-meta-return)
+      (org-metaright))
+
+    (:with-map org-mode-map
+      (:bind "C-M-<return>" +org-meta-ret-meta-right))))
 
 ;; --
 
@@ -147,217 +204,213 @@
 
 ;; --
 
-(leaf org-tempo :elpaca nil
-  :after org
-  :config
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("py" . "src python"))
-  (add-to-list 'org-structure-template-alist '("gcc" . "src c"))
-  (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
-  (add-to-list 'org-structure-template-alist '("conf" . "src conf"))
-  (add-to-list 'org-structure-template-alist '("java" . "src java"))
-  (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
-  (add-to-list 'org-structure-template-alist '("clang" . "src c")))
+(setup org-tempo
+  (:load-after org)
+  (:when-loaded
+    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("py" . "src python"))
+    (add-to-list 'org-structure-template-alist '("gcc" . "src c"))
+    (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
+    (add-to-list 'org-structure-template-alist '("conf" . "src conf"))
+    (add-to-list 'org-structure-template-alist '("java" . "src java"))
+    (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
+    (add-to-list 'org-structure-template-alist '("clang" . "src c"))))
 
 ;; --
 
 ;;;; org-download
 
-(leaf org-download
-  :after org
-  :config
-  (org-download-enable)
-  :setq-default
-  (org-download-image-dir . "_images"))
+(-setup org-download
+  (:option org-download-image-dir "_images")
+  (:load-after org)
+  (:when-loaded
+    (org-download-enable)))
 
 ;;;; org-bullets
 
 ;; TODO: replace with org-superstar
-(leaf org-bullets
-  :hook org-mode-hook
-  :setq
-  (org-bullets-bullet-list
-   . '("◉"
-       "●"
-       "○"
-       "■"
-       "□"
-       "✦"
-       "✧"
-       "✿")))
+(-setup org-bullets
+  (:hook-into org-mode-hook)
+  (:option org-bullets-bullet-list
+           '("◉"
+             "●"
+             "○"
+             "■"
+             "□"
+             "✦"
+             "✧"
+             "✿")))
 
 ;;;; toc-org
 
-(leaf toc-org
-  :hook org-mode-hook)
+(-setup toc-org
+  (:hook-into org-mode-hook))
 
 ;;;; anki-editor
 
-(leaf anki-editor
-  :commands (anki-editor-push-note-at-point
+(-setup anki-editor
+  (:autoload anki-editor-push-note-at-point
              anki-editor-push-notes
              anki-editor-push-new-notes)
-  :setq
-  (anki-editor-latex-style . 'mathjax)
-  :defer-config
-  (defun +ensure-anki-editor-mode (note)
-    "Ensure `anki-editor-mode' is enabled before pushing notes."
-    (unless anki-editor-mode
-      (anki-editor-mode 1)))
-  (advice-add #'anki-editor--push-note :before #'+ensure-anki-editor-mode))
+  (:option anki-editor-latex-style 'mathjax)
+  (:when-loaded
+    (defun +ensure-anki-editor-mode (note)
+      "Ensure `anki-editor-mode' is enabled before pushing notes."
+      (unless anki-editor-mode
+        (anki-editor-mode 1)))
+    (advice-add #'anki-editor--push-note :before #'+ensure-anki-editor-mode)))
 
 ;;;; image-slicing
 
-(leaf image-slicing :ensure nil
-  :hook org-mode-hook
-  :setq
-  (image-slicing-newline-trailing-text . nil))
+(setup image-slicing
+  (:autoload image-slicing-mode)
+  (:hook-into org-mode-hook)
+  (:option image-slicing-newline-trailing-text nil))
 
 ;;;; org-auto-tangle
 
-(leaf org-auto-tangle
-  :hook org-mode-hook)
+(-setup org-auto-tangle
+  (:hook-into org-mode-hook))
 
 ;;;; org-agenda
 
-(leaf org-agenda :elpaca nil
-  :after org
-  :init
+;; TODO: script to generate subtasks for each day for an assignment
+
+(setup org-agenda
+  (:load-after org)
+
   (leader-bind
     "oa" 'org-agenda
     "a" 'org-agenda-list)
 
-  :bind (org-agenda-mode-map
-         (")" . '(lambda () (interactive)
-                   (org-agenda-todo 'done))))
+  (:with-map org-agenda-mode-map
+    (:bind ")" '(lambda () (interactive)
+                  (org-agenda-todo 'done))))
+  
 
-  :config
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)"
-                    "|"
-                    "DONE(d/!)")))
-  (setq org-agenda-files
-        (list ;; "~/Notes/org/Inbox.org"
-         ;; "~/Notes/org/agenda.org"
-         "~/Notes/denote/20250728T235116--todo__todo.org"))
-  (defun +open-org-agenda-file ()
-    (interactive)
-    (find-file (car org-agenda-files)))
+  (:option
+   org-enforce-todo-dependencies t
+   org-todo-keywords '((sequence
+                        "TODO(t)" "NEXT(n)"
+                        "|"
+                        "DONE(d/!)"))
+   org-agenda-files (list ;; "~/Notes/org/Inbox.org"
+                     ;; "~/Notes/org/agenda.org"
+                     "~/Notes/denote/20250728T235116--todo__todo.org")
+   org-tag-alist '(;; Places
+                   ("@home"   . ?H)
+                   ("@school" . ?S)
+                   ;; ("@work" . ?W)
+                   ;; Activities
+                   ("@task" . ?t)
+                   ("@studying" . ?s)
+                   ("@errands"  . ?e)
+                   ("@tidy" . ?y)
+                   ("@creative" . ?c)
+                   ("@art" . ?a)
+                   ("@programming" . ?p)
+                   ("@today" . ?T)
+                   ;; ("@calls" . ?l)
+                   ;; Devices
+                   ("@phone" . ?P)
+                   ("@computer" . ?C))
+   org-agenda-prefix-format `((agenda
+                               . ,(concat " %i "
+                                          "%?-12t"
+                                          "[%3(+org-get-prop-effort)]    "
+                                          ;; "%3(+org-get-prop-effort)  "
+                                          "% s"))
+                              (todo   . " %i ")
+                              (tags   . " %i %-12:c")
+                              ;; (search . " %i %-12:c")
+                              (search . " %c")))
 
-  (leader-bind
-    "oo" '+open-org-agenda-file)
-
-  (setq org-tag-alist
-        '(;; Places
-          ("@home"   . ?H)
-          ("@school" . ?S)
-          ;; ("@work" . ?W)
-          ;; Activities
-          ("@task" . ?t)
-          ("@studying" . ?s)
-          ("@errands"  . ?e)
-          ("@tidy" . ?y)
-          ("@creative" . ?c)
-          ("@art" . ?a)
-          ("@programming" . ?p)
-          ("@today" . ?T)
-          ;; ("@calls" . ?l)
-          ;; Devices
-          ("@phone" . ?P)
-          ("@computer" . ?C)))
-  (setq org-agenda-prefix-format
-        `((agenda
-           . ,(concat " %i "
-                      "%?-12t"
-                      "[%3(+org-get-prop-effort)]    "
-                      ;; "%3(+org-get-prop-effort)  "
-                      "% s"))
-          (todo   . " %i ")
-          (tags   . " %i %-12:c")
-          ;; (search . " %i %-12:c")
-          (search . " %c")
-          ))
-
+  ;; helper, used in var `org-agenda-prefix-format' above
   (defun +org-get-prop-effort ()
     (if (not (eq major-mode 'org-mode)) ""
       (let ((val (org-entry-get nil "EFFORT")))
         (if (not val) ""
           (format "%s" (string-trim val))))))
 
-  (require 'org-habit)
-  (add-to-list 'org-modules 'org-habit t))
+  (:when-loaded
+    (leader-bind
+      "oo" (defun +open-org-agenda-file ()
+             (interactive)
+             (find-file (car org-agenda-files))))
+
+    ;; also lead org-habit
+    (:with-feature org-habit
+      (:require-self)
+      (:when-loaded
+        (add-to-list 'org-modules 'org-habit t)))))
 
 ;;;; org-super-agenda
 
-(leaf org-super-agenda
-  :after org-agenda
-  :require t
-  :config
-  (org-super-agenda-mode 1)
-  :setq
-  (org-agenda-custom-commands
-   . `(
-       ("a" "main agenda"
-        ((agenda ""
-                 ((org-agenda-show-future-repeats nil)
-                  (org-agenda-start-on-weekday nil)
-                  (org-agenda-span 'week)
-                  (org-habit-show-habits nil)
-                  (org-agenda-skip-deadline-if-done t)
-                  (org-agenda-skip-scheduled-if-done t)))
-         (todo "NEXT")
-         (agenda ""
-                 ((org-agenda-span 1)
-                  (org-agenda-use-time-grid nil)
-                  (org-super-agenda-groups
-                   '((:name none
-                            :habit t)
-                     (:discard (:anything t)))))))))))
+(-setup org-super-agenda
+  (:load-after org-agenda)
+  (:when-loaded
+    (org-super-agenda-mode 1))
+  (:option
+   org-agenda-custom-commands
+   `(("a" "main agenda"
+      ((agenda ""
+               ((org-agenda-show-future-repeats nil)
+                (org-agenda-start-on-weekday nil)
+                (org-agenda-span 'week)
+                (org-habit-show-habits nil)
+                (org-agenda-skip-deadline-if-done t)
+                (org-agenda-skip-scheduled-if-done t)))
+       (todo "NEXT")
+       (agenda ""
+               ((org-agenda-span 1)
+                (org-agenda-use-time-grid nil)
+                (org-super-agenda-groups
+                 '((:name none
+                          :habit t)
+                   (:discard (:anything t)))))))))))
 
 ;;;; -- org-ql ----------------------------------------------------------------
 
-(leaf org-ql
-  :after org)
+(-setup org-ql
+  (:load-after org))
 
 ;;;; org-pomodoro
 
-(leaf org-pomodoro
-  :after org)
+(-setup org-pomodoro
+  (:load-after org))
 
 ;;;; org-noter
 
-(leaf org-noter
-  :after org
-  :bind (("C-c o n" . org-noter)
-         ("C-c d n" . org-noter-start-from-dired)
-         ("C-c o p" . +org-noter-set-prop-current-page))
-  :setq
-  (org-noter-doc-split-fraction . '(0.7 . 0.6))
-  :config
-  (defun +org-noter-set-prop-current-page (arg)
-    "Set the property `NOTER_PAGE' of the current org heading to the current noter page.
+(-setup org-noter
+  (:load-after org)
+  (:global "C-c o n" #'org-noter
+           "C-c d n" #'org-noter-start-from-dired
+           "C-c o p" #'+org-noter-set-prop-current-page)
+  (:option org-noter-doc-split-fraction '(0.6 . 0.6))
+  (:when-loaded
+    (defun +org-noter-set-prop-current-page (arg)
+      "Set the property `NOTER_PAGE' of the current org heading to the current noter page.
 The property will be removed if ran with a \\[universal-argument]."
-    (interactive "P")
-    (org-noter--with-selected-notes-window
-     (if (equal arg '(4))
-         (org-delete-property "NOTER_PAGE")
-       (when-let ((vec (org-noter--get-current-view))
-                  (num (and (vectorp vec)
-                            (> (length vec) 1)
-                            (format "%s" (aref vec 1)))))
-         (message "meow: %s" num)
-         (org-entry-put (point) "NOTER_PAGE" num))))))
+      (interactive "P")
+      (org-noter--with-selected-notes-window
+       (if (equal arg '(4))
+           (org-delete-property "NOTER_PAGE")
+         (when-let ((vec (org-noter--get-current-view))
+                    (num (and (vectorp vec)
+                              (> (length vec) 1)
+                              (format "%s" (aref vec 1)))))
+           (message "meow: %s" num)
+           (org-entry-put (point) "NOTER_PAGE" num)))))))
 
 ;;;; org-capture
 
-(leaf org-capture :elpaca nil
-  :after org
-  :init
+(setup org-capture
+  (:load-after org)
   (leader-bind
     "oc" 'org-capture)
 
-  :config
+  ;; helper for `org-capture-templates', below
   (defun +get-org-agenda-denote-file (name)
     (let ((regex (format "^.*--%s__.*\\.org$" name)))
       (car (seq-filter
@@ -365,23 +418,23 @@ The property will be removed if ran with a \\[universal-argument]."
               (string-match regex (file-name-nondirectory path)))
             org-agenda-files))))
 
-  (setq org-capture-templates
-        `(("t" "Tasks")
+  (:option org-capture-templates
+           `(("t" "Tasks")
 
-          ("td" "Todo with deadline" entry
-           (file ,(+get-org-agenda-denote-file "agenda"))
-           "* TODO %^{Task}\nDEADLINE: %^{Deadline}t\n%?\n"
-           :empty-lines 1
-           :immediate-finish nil)
+             ("td" "Todo with deadline" entry
+              (file ,(+get-org-agenda-denote-file "agenda"))
+              "* TODO %^{Task}\nDEADLINE: %^{Deadline}t\n%?\n"
+              :empty-lines 1
+              :immediate-finish nil)
 
-          ("tp" "Task" entry
-           (file ,(+get-org-agenda-denote-file "agenda"))
-           "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
+             ("tp" "Task" entry
+              (file ,(+get-org-agenda-denote-file "agenda"))
+              "* TODO %?\n  %U\n  %a\n  %i" :empty-lines 1)
 
-          ("n" "New note (with Denote)" plain
-           (file denote-last-path)
-           #'denote-org-capture :no-save t :immediate-finish nil
-           :kill-buffer t :jump-to-captured t))))
+             ("n" "New note (with Denote)" plain
+              (file denote-last-path)
+              #'denote-org-capture :no-save t :immediate-finish nil
+              :kill-buffer t :jump-to-captured t))))
 
 ;;;; more org-anki stuff
 
@@ -458,19 +511,19 @@ The property will be removed if ran with a \\[universal-argument]."
 
 ;;;; visual fill column
 
-(leaf visual-fill-column
-  :require t
-  :hook ((org-mode-hook . +org-visual-fill))
-  :init
+(-setup visual-fill-column
   (defun +org-visual-fill ()
     (setq visual-fill-column-width 100
           visual-fill-column-center-text t)
-    (visual-fill-column-mode 1)))
+    (visual-fill-column-mode 1))
+  
+  (with-eval-after-load 'org
+    (add-hook 'org-mode-hook #'+org-visual-fill)))
 
 ;;; Org-modern
 
-(leaf org-modern
-  :init
+(-setup org-modern :disabled
+  (:option org-modern-star nil)
   (global-org-modern-mode 1))
 
 ;;; end

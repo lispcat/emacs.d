@@ -50,7 +50,8 @@ were not loaded, they're identified and logged using this function."
                              #'file-directory-p))))
 
          ;; debug
-         (_ (funcall (-debug "Log: +emacs-src-dir: dirs found") matching-dirs))
+         (_ (when debug-on-error
+              (funcall (-debug "Log: +emacs-src-dir: dirs found") matching-dirs)))
 
          (elisp-files
           (-some->> matching-dirs
@@ -75,9 +76,10 @@ were not loaded, they're identified and logged using this function."
                   nil t))))))
 
          ;; debug
-         (_ (funcall (-debug "Log: +emacs-src-dir: invalid elisp files")
-                     (-map #'file-name-nondirectory
-                           (-difference elisp-files valid-elisp-files))))
+         (_ (when debug-on-error
+              (funcall (-debug "Log: +emacs-src-dir: invalid elisp files")
+                       (-map #'file-name-nondirectory
+                             (-difference elisp-files valid-elisp-files)))))
 
          (remove-existing
           ;; remove files already require'd

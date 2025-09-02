@@ -1,64 +1,108 @@
 
+;;; Fontconfig
+
 ;; https://devfonts.gafi.dev/
 
-(defvar +font-alist
-  `((hack . "Hack")
-    (tamzenPL-16
-     . "-Misc-TamzenForPowerline-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1")
-    (ttyp0-17   .   "-UW  -Ttyp0-regular-normal-normal-*-17-*-*-*-m-*-iso8859-1")
-    (ttyp0-17-b .        "-UW-Ttyp0-bold-normal-normal-*-17-*-*-*-c-90-iso8859-1")
-    (ttyp0-16   .   "-UW  -Ttyp0-regular-normal-normal-*-16-*-*-*-m-*-iso8859-1")
-    (ttyp0-16-i .   "-UW  -Ttyp0-regular-italic-normal-*-16-*-*-*-m-*-iso10646-1")
-    (gb-16 . "-AW-Greybeard 16px-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1")
-    (fira-code . "Fira Code")
-    (maple-mono . "Maple Mono")
-    (jb-mono . "Jetbrains Mono")))
-
-(defun +get-font (font)
-  (alist-get font +font-alist))
-
-;; default
 (defun +fontconfig ()
-  (let ((font
-         ;; 'fira-code
-         ;; 'hack
-         ;; 'maple-mono
-         ;; 'ttyp0-16
-         ;; 'gb-16
-         ;; 'tamzenPL-16
-         'fira-code
-         ))
-    (set-face-attribute 'default nil :font (+get-font font)))
-  ;; variable
-  ;; (set-face-attribute 'variable-pitch nil
-  ;;                     :font
-  ;;                     ;; "Liberation Sans"
-  ;;                     ;; "Recursive"
-  ;;                     ;; "Vollkorn"
-  ;;                     ;; "XITS"
-  ;;                     ;; "XITS Math"
-
-  ;;                     ;; :family "Fira Code"
-  ;;                     ;; :height 120
-  ;;                     ;; :weight 'normal
-  ;;                     )
-  )
+  (set-face-attribute
+   'default nil :font
+   ;; "Hack"
+   ;; "-Misc-TamzenForPowerline-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1"
+   ;; "-UW  -Ttyp0-regular-normal-normal-*-17-*-*-*-m-*-iso8859-1"
+   ;; "-UW-Ttyp0-bold-normal-normal-*-17-*-*-*-c-90-iso8859-1"
+   ;; "-UW  -Ttyp0-regular-normal-normal-*-16-*-*-*-m-*-iso8859-1"
+   ;; "-UW  -Ttyp0-regular-italic-normal-*-16-*-*-*-m-*-iso10646-1"
+   ;; "-AW-Greybeard 16px-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1"
+   ;; "Fira Code"
+   ;; "Maple Mono"
+   ;; "Jetbrains Mono"
+   ;; "Iosevka"
+   ;; "Iosevka-11"
+   ;; "Iosevka-11"
+   ;; "Iosevka Custom"
+   "Iosevka Custom-11"
+   ;; "Iosevka NFM-11"
+   ;; "Iosevka NFP-11"
+   ;; "Iosevka Extended"
+   ;; "Aporetic Sans Mono"
+   ;; "Aporetic Sans Mono-11"
+   ;; "Aporetic Serif Mono"
+   ;; "Aporetic Serif Mono-11"
+   ;; "Rec Mono Casual"
+   ;; "Rec Mono Duotone"
+   ;; "Rec Mono Linear"
+   ;; "Rec Mono Semicasual"
+   ;; "Recursive"
+   ;; "Recursive Mn Csl St"
+   ;; "Recursive Mn Lnr St"
+   )
+  (set-face-attribute
+   'variable-pitch nil :font
+   ;; "Aporetic Sans-11"
+   ;; "Aporetic Serif-11"
+   ;; "Iosevka-11"
+   ;; "Iosevka NFP-13"
+   ;; "Iosevka Custom"
+   "Iosevka Custom-11"
+   ;; "Recursive Sn Csl St"
+   ;; "Recursive Sn Lnr St"
+   ))
 
 (+fontconfig)
 
-;; HACK: fix bitmap fonts on emacsclient frames
+;; Hack: fix bitmap fonts on emacsclient frames
 (add-hook 'server-after-make-frame-hook #'+fontconfig)
 
+;; enable variable-pitch-mode by default in org-mode
+(with-eval-after-load 'org
+  (add-hook 'org-mode-hook #'variable-pitch-mode))
+
+;;; All the icons
+
 ;; all the icons
-(leaf all-the-icons
-  :config
-  ;; Use 'prepend for the NS and Mac ports or Emacs will crash.
-  (set-fontset-font t 'unicode (font-spec :family "all-the-icons") nil 'append)
-  (set-fontset-font t 'unicode (font-spec :family "file-icons") nil 'append)
-  (set-fontset-font t 'unicode (font-spec :family "Material Icons") nil 'append)
-  (set-fontset-font t 'unicode (font-spec :family "github-octicons") nil 'append)
-  (set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'append)
-  (set-fontset-font t 'unicode (font-spec :family "Weather Icons") nil 'append))
+(-setup all-the-icons
+  (:when-loaded
+    ;; Use 'prepend for the NS and Mac ports or Emacs will crash.
+    (set-fontset-font t 'unicode (font-spec :family "all-the-icons") nil 'append)
+    (set-fontset-font t 'unicode (font-spec :family "file-icons") nil 'append)
+    (set-fontset-font t 'unicode (font-spec :family "Material Icons") nil 'append)
+    (set-fontset-font t 'unicode (font-spec :family "github-octicons") nil 'append)
+    (set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'append)
+    (set-fontset-font t 'unicode (font-spec :family "Weather Icons") nil 'append)))
+
+;;; Ligatures
+
+(-setup ligature
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (let ((all-ligatures
+         '(;; line arrows
+           "-<<" "-<" "-<-" "<--" "<---" "<<-" "<-" "->" "->>" "-->" "--->"
+           "->-" ">-" ">>-"
+           ;; double arrows
+           "=<<" "=<" "=<=" "<==" "<===" "<<=" "<=" "=>" "=>>" "==>" "===>"
+           "=>=" ">=" ">>="
+           ;; two-way arrows
+           "<->" "<-->" "<--->" "<---->" "<=>" "<==>" "<===>" "<====>" "::"
+           ":::" "__"
+           ;; slashes
+           "<~~" "</" "</>" "/>" "~~>" "==" "!=" "/=" "~=" "<>" "===" "!=="
+           "!===" "=/=" "=!="
+           ;; carrots
+           "<:" ":=" "*=" "*+" "<*" "<*>" "*>" "<|" "<|>" "|>" "<." "<.>" ".>"
+           "+*" "=*" "=:" ":>"
+           ;; wrap
+           "(*" "*)" "/*" "*/" "[|" "|]" "{|" "|}" "++" "+++" "\\/" "/\\" "|-"
+           "-|" "<!--" "<!---")))
+    (ligature-set-ligatures 'prog-mode all-ligatures)
+    (ligature-set-ligatures 'org-mode all-ligatures))
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))
 
 ;;; Function: `load-theme' but fixed theme-bleeding issue.
 
@@ -171,18 +215,22 @@
 (diminish 'visual-line-mode) ; hide "Wrap" in mode-line
 
 (leaf whitespace :elpaca nil
-  :hook ((prog-mode-hook . +prog-mode-whitespace)
-         (org-mode-hook  . +org-mode-whitespace)
-         (text-mode-hook . +org-mode-whitespace))
+  :hook
+  ((prog-mode-hook . +prog-mode-whitespace)
+   (org-mode-hook  . +org-mode-whitespace)
+   (text-mode-hook . +org-mode-whitespace))
+
   :init
   (defvar +base-whitespace-style '(face trailing tabs missing-newline-at-eof))
   (defun +prog-mode-whitespace ()
     (setq whitespace-style (append +base-whitespace-style
                                    '(tab-mark)))
     (whitespace-mode 1))
+
   (defun +org-mode-whitespace ()
     (setq whitespace-style (append +base-whitespace-style '()))
     (whitespace-mode 1))
+
   :config
   (setq whitespace-trailing 'whitespace-hspace))
 

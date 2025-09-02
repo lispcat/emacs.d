@@ -666,11 +666,13 @@
 
   (dolist (hook '(prog-mode-hook conf-mode-hook text-mode-hook))
     (add-hook hook
-              (lambda ()
+              (defun +capf-derived-mode-setup ()
+                (interactive)
                 (when (local-variable-p 'completion-at-point-functions)
                   (setq-local +capf-local-default
                               (remove 't completion-at-point-functions))
-                  (message "LOG: capf-local-default: %s" +capf-local-default))
+                  (when debug-on-error
+                    (message "LOG: capf-local-default: %s" +capf-local-default)))
                 (+capf-prepend-local
                  (list (cape-capf-super #'tempel-complete #'yasnippet-capf
                                         #'cape-keyword))))))

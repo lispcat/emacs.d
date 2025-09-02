@@ -77,13 +77,13 @@
   (:with-map project-prefix-map
     (:bind "f" consult-project-extra-find)))
 
-(leaf projectile
-  :init
+(-setup projectile
   (projectile-mode 1)
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :config
-  (setq projectile-compile-use-comint-mode t))
+  (:global "C-c p" projectile-command-map)
+  (:option projectile-compile-use-comint-mode t)
+  (:with-map projectile-command-map
+    (with-eval-after-load 'consult
+      (:bind "s r" #'consult-ripgrep))))
 
 (-setup consult-projectile
   (:load-after projectile)

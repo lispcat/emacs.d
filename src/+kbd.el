@@ -216,12 +216,27 @@
                            (string-to-char c))
                          (split-string "a o e u h t n s k b"))))
 
+;; TODO: for jinx x org-noter x persp-mode error, handle errors in jinx--check-pending?
+
 ;; spellchecking
 (leaf jinx :elpaca nil
   :hook org-mode-hook markdown-mode-hook text-mode-hook
   :bind
   (("M-$" . jinx-correct)
-   ("C-M-$" . jinx-languages)))
+   ("C-M-$" . jinx-languages))
+  ;; :config
+  ;; (defun jinx--timer-handler ()
+  ;;   "Global timer handler, checking the pending regions in all windows."
+  ;;   (timer-set-function jinx--timer nil)
+  ;;   (dolist (frame (frame-list))
+  ;;     (dolist (win (window-list frame 'no-miniwindow))
+  ;;       (when-let ((buffer (window-buffer win))
+  ;;                  ((buffer-local-value 'jinx-mode buffer)))
+  ;;         (with-current-buffer buffer
+  ;;           (message "DEBUG: jinx: timer-handler: %s %s"
+  ;;                    (window-start win) (window-end win))
+  ;;           (jinx--check-pending (window-start win) (window-end win)))))))
+  )
 
 (leaf fontawesome
   :commands vertico-fontawesome fontawesome--construct-candidates

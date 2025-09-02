@@ -475,7 +475,7 @@ If FEATURE is The first FEATURE can be used to deduce the feature context.")
 
 ;; fix issues with missing programs from shell
 (-setup exec-path-from-shell
-  (setq exec-path-from-shell-debug t)
+  ;; (setq exec-path-from-shell-debug t)
   (when (or (memq window-system '(pgkt x))
             (daemonp))
     (exec-path-from-shell-initialize)))

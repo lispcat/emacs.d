@@ -6,6 +6,394 @@
 ;; delete each from file.
 
 
+;;; Persp-mode
+
+;; TODO: share my hack to the discussions of persp-mode github?
+
+(-setup persp-mode
+  ;; keys
+  (:global "C-c ." persp-key-map)
+
+  (:with-map persp-key-map
+    (:bind "." #'my-persp-load-name-from-latest
+           "d" #'my-persp-delete-name-from-latest))
+
+  ;; vars
+  (:option persp-keymap-prefix nil
+           wg-morph-on nil              ; animation
+           persp-auto-resume-time -1    ; dont autoresume at startup
+           persp-auto-save-opt 2)       ; save on shutdown
+
+  ;; hooks
+  (add-hook 'elpaca-after-init-hook #'(lambda () (persp-mode 1)))
+
+  ;; disable completion menu (clashes with which-key)
+  ;; manually disable the #'define-prefix-command
+  (:when-loaded
+    (dolist (it persp-key-map)
+      (when (consp it)
+        (when (and (consp (cdr it))
+                   (stringp (cadr it)))
+          (let ((cmd (cddr it)))
+            (setcdr it cmd)))))
+    (setq persp-key-map (cl-delete-if #'stringp persp-key-map)))
+
+  ;; dont save persp-nil to file
+  (:when-loaded
+    (set-persp-parameter 'dont-save-to-file t nil))
+
+;;;; consult integration
+
+  (defvar persp-consult-source
+    (list :name     "Persp"
+          :narrow   ?.
+          :category 'buffer
+          :state    #'consult--buffer-state
+          :history  'buffer-name-history
+          :default  t
+          :items
+          (lambda ()
+            (let ((current-persp (get-current-persp)))
+              (consult--buffer-query
+               :sort 'visibility
+               :predicate (lambda (buf)
+                            (and current-persp
+                                 (persp-contain-buffer-p buf)))
+               :as 'buffer-name)))))
+
+  (defvar persp-rest-consult-source
+    (list :name     "Other"
+          :narrow   ?s
+          :category 'buffer
+          :state    #'consult--buffer-state
+          :history  'buffer-name-history
+          :default  t
+          :items
+          (lambda ()
+            (let ((current-persp (get-current-persp)))
+              (consult--buffer-query
+               :sort 'visibility
+               :predicate (lambda (buf)
+                            (if current-persp
+                                (not (persp-contain-buffer-p buf))
+                              t))
+               :as 'buffer-name)))))
+
+  (with-eval-after-load 'consult
+    (consult-customize consult--source-buffer :hidden t :default nil)
+    (add-to-list 'consult-buffer-sources persp-rest-consult-source)
+    (add-to-list 'consult-buffer-sources persp-consult-source))
+
+;;;; fix treemacs compatibility bug
+
+  ;; https://github.com/Alexander-Miller/treemacs/issues/1165
+  ;; https://github.com/doomemacs/doomemacs/issues/8455
+
+  (advice-add 'treemacs--remove-treemacs-window-in-new-frames :around
+              (defun +persp-treemacs-bug-advice (orig-fun &rest args)
+                (funcall orig-fun (car-safe args))))
+
+;;;; load and switch to persp by name
+
+  ;; helper
+  (defun my-persp--get-non-loaded-names (&optional fname savelist)
+    (let* ((available (persp-list-persp-names-in-file
+                       fname savelist))
+           (loaded (persp-names-current-frame-fast-ordered))
+           (non-loaded (seq-remove
+                        (lambda (p)
+                          (member p loaded))
+                        available)))
+      non-loaded))
+
+  ;; load name from savefile
+  (cl-defun my-persp-load-name-from-latest
+      (&optional (fname persp-auto-save-fname)
+                 (phash *persp-hash*)
+                 (savelist (persp-savelist-from-savefile fname))
+                 name)
+    "Load and switch to a persp with NAME from latest savefile."
+    (interactive)
+    ;; debug
+    (when nil
+      (message "DEBUG: savelist value: %S" savelist))
+    ;; with latest file savelist
+    (if (not savelist)
+        (user-error "no savelist at %s" fname)
+      ;; get all non-loaded names from savelist
+      (let ((non-loaded (my-persp--get-non-loaded-names fname savelist)))
+        (if (not non-loaded)
+            (message "no non-loaded persps in %s" fname)
+          ;; prompt for name
+          (when-let* ((name (or name
+                                (persp-read-persp
+                                 "to load" nil nil t t nil non-loaded t 'push))))
+            ;; load only that persp from the file
+            (persp-load-state-from-file fname phash
+                                        (regexp-opt (list name))
+                                        t savelist)
+            ;; switch to persp
+            (persp-frame-switch name))))))
+
+;;;; merge persps when saving to file
+
+  ;; don't overwrite backup file with current; merge.
+  (advice-add 'persp-save-state-to-file :around
+              (cl-defun +persp-save-state-to-file-around-advice
+                  (orig-fun
+                   &optional
+                   (fname persp-auto-save-fname)
+                   (phash *persp-hash*)
+                   (respect-persp-file-parameter persp-auto-save-persps-to-their-file)
+                   keep-others-in-non-parametric-file)
+                ;; We need to modify the fourth optional parameter
+                (let ((keep-others-in-non-parametric-file 'yes))
+                  ;; Call the original function with modified arguments
+                  (funcall orig-fun
+                           fname phash respect-persp-file-parameter
+                           keep-others-in-non-parametric-file))))
+
+;;;; delete persp from savefile
+
+  ;; delete persp from file
+  (cl-defun my-persp-delete-name-from-latest
+      (&optional (fname persp-auto-save-fname)
+                 (savelist (persp-savelist-from-savefile fname))
+                 (available-names (persp-list-persp-names-in-file fname savelist))
+                 names)
+    (interactive)
+    (let* ((names (or names
+                      (persp-read-persp
+                       "to delete" 'reverse nil t nil nil available-names t 'push)))
+           (filtered-savelist (cl-remove-if
+                               (lambda (expr)
+                                 (and (listp expr)
+                                      (eq (car expr) 'def-persp)
+                                      (seq-contains-p names (cadr expr))))
+                               savelist)))
+      (if (y-or-n-p (format "Delete %s?" names))
+          (persp-savelist-to-file filtered-savelist fname))))
+
+;;;; old remains....
+
+  ;; (:when-loaded
+  ;;   (when nil
+  ;;     ;; helper functions
+  ;;     (defun my/persp--get-names-from-savelist (&optional fname savelist)
+  ;;       (let* ((available (persp-list-persp-names-in-file fname savelist))
+  ;;              (loaded (persp-names-current-frame-fast-ordered))
+  ;;              (unloaded (seq-remove (lambda (p) (member p loaded)) available)))
+  ;;         (list available loaded unloaded)))
+
+  ;;     (defun my/persp--prompt-for-persp-name (lst)
+  ;;       (when lst
+  ;;         (persp-read-persp
+  ;;          "to load" nil nil t t nil lst t 'push)))
+
+  ;;     ;; TODO: relocate
+  ;;     (defmacro +message-if-debug (format-string &rest args)
+  ;;       (when debug-on-error
+  ;;         `(message ,format-string ,@args)))
+
+  ;;     ;; load from file
+  ;;     (cl-defun my-persp-load-name-from-latest
+  ;;         (&optional (fname persp-auto-save-fname)
+  ;;                    (phash *persp-hash*)
+  ;;                    (savelist (persp-savelist-from-savefile fname))
+  ;;                    name)
+  ;;       "Load and switch to a perspective via name from the latest backup file."
+  ;;       (interactive)
+  ;;       ;; prompt for name from available
+  ;;       (when savelist
+  ;;         (cl-destructuring-bind (available loaded unloaded)
+  ;;             (my/persp--get-names-from-savelist fname savelist)
+  ;;           (when unloaded
+  ;;             (unless name
+  ;;               (setq name (my/persp--prompt-for-persp-name unloaded)))
+  ;;             (+message-if-debug "DEBUG: > %s\n> %s\n> %s\n> %s"
+  ;;                                fname
+  ;;                                phash
+  ;;                                (regexp-opt (list name))
+  ;;                                savelist)
+  ;;             (persp-load-state-from-file fname phash
+  ;;                                         (regexp-opt (list name))
+  ;;                                         t savelist)
+  ;;             ;; (persp-frame-switch name)
+  ;;             )))
+
+  ;;       ;; (when name
+  ;;       ;;   (let ((names-regexp (regexp-opt (list name))))
+  ;;       ;;     (persp-load-state-from-file fname phash names-regexp t savelist))
+  ;;       ;;   ;; switch to new loaded persp
+  ;;       ;;   (persp-frame-switch name))
+  ;;       )
+
+  ;;     ;; don't overwrite backup file with current; merge.
+  ;;     (advice-add 'persp-save-state-to-file :around
+  ;;                 (defun +persp-save-state-to-file-around-advice
+  ;;                     (orig-fun &optional fname phash
+  ;;                               respect-persp-file-parameter
+  ;;                               keep-others-in-non-parametric-file)
+  ;;                   ;; We need to modify the fourth optional parameter
+  ;;                   (let ((keep-others-in-non-parametric-file 'yes))
+  ;;                     ;; Call the original function with modified arguments
+  ;;                     (funcall orig-fun
+  ;;                              fname phash respect-persp-file-parameter
+  ;;                              keep-others-in-non-parametric-file))))
+
+
+  ;;     ;; delete persp from file
+  ;;     (defun my-persp-delete-name-from-latest ()
+  ;;       (interactive)
+  ;;       (let* ((fname persp-auto-save-fname)
+  ;;              (savelist (persp-savelist-from-savefile fname))
+  ;;              (available-names (persp-list-persp-names-in-file fname savelist))
+  ;;              (names (persp-read-persp
+  ;;                      "to delete" 'reverse nil t nil nil available-names t 'push))
+  ;;              (filtered-savelist (cl-remove-if
+  ;;                                  (lambda (expr)
+  ;;                                    (and (listp expr)
+  ;;                                         (eq (car expr) 'def-persp)
+  ;;                                         (seq-contains-p names (cadr expr))))
+  ;;                                  savelist)))
+  ;;         (if (y-or-n-p (format "Delete %s?" names))
+  ;;             (persp-savelist-to-file filtered-savelist fname))))
+  ;;     ))
+  )
+
+;;;; wip bridging and auto functionality
+
+;; enable persp-mode-project-bridge mode
+
+;; (when nil
+;;   (with-eval-after-load "persp-mode"
+;;     (defvar persp-mode-projectile-bridge-before-switch-selected-window-buffer nil)
+
+;;     ;; (setq persp-add-buffer-on-find-file 'if-not-autopersp)
+
+;;     (persp-def-auto-persp
+;;      "projectile"
+;;      :parameters '((dont-save-to-file . t)
+;;                    (persp-mode-projectile-bridge . t))
+;;      :hooks '(projectile-before-switch-project-hook
+;;               projectile-after-switch-project-hook
+;;               projectile-find-file-hook
+;;               find-file-hook)
+;;      :dyn-env '((after-switch-to-buffer-adv-suspend t))
+;;      :switch 'frame
+;;      :predicate
+;;      #'(lambda (buffer &optional state)
+;;          (if (eq 'projectile-before-switch-project-hook
+;;                  (alist-get 'hook state))
+;;              state
+;;            (and
+;;             projectile-mode
+;;             (buffer-live-p buffer)
+;;             (buffer-file-name buffer)
+;;             ;; (not git-commit-mode)
+;;             (projectile-project-p)
+;;             (or state t))))
+;;      :get-name
+;;      #'(lambda (state)
+;;          (if (eq 'projectile-before-switch-project-hook
+;;                  (alist-get 'hook state))
+;;              state
+;;            (push (cons 'persp-name
+;;                        (concat "[p] "
+;;                                (with-current-buffer (alist-get 'buffer state)
+;;                                  (projectile-project-name))))
+;;                  state)
+;;            state))
+;;      :on-match
+;;      #'(lambda (state)
+;;          (let ((hook (alist-get 'hook state))
+;;                (persp (alist-get 'persp state))
+;;                (buffer (alist-get 'buffer state)))
+;;            (pcase hook
+;;              (projectile-before-switch-project-hook
+;;               (let ((win (if (minibuffer-window-active-p (selected-window))
+;;                              (minibuffer-selected-window)
+;;                            (selected-window))))
+;;                 (when (window-live-p win)
+;;                   (setq persp-mode-projectile-bridge-before-switch-selected-window-buffer
+;;                         (window-buffer win)))))
+
+;;              (projectile-after-switch-project-hook
+;;               (when (buffer-live-p
+;;                      persp-mode-projectile-bridge-before-switch-selected-window-buffer)
+;;                 (let ((win (selected-window)))
+;;                   (unless (eq (window-buffer win)
+;;                               persp-mode-projectile-bridge-before-switch-selected-window-buffer)
+;;                     (set-window-buffer
+;;                      win persp-mode-projectile-bridge-before-switch-selected-window-buffer)))))
+
+;;              (find-file-hook
+;;               (setcdr (assq :switch state) nil)))
+;;            (if (pcase hook
+;;                  (projectile-before-switch-project-hook nil)
+;;                  (t t))
+;;                (persp--auto-persp-default-on-match state)
+;;              (setcdr (assq :after-match state) nil)))
+;;          state)
+;;      :after-match
+;;      #'(lambda (state)
+;;          (when (eq 'find-file-hook (alist-get 'hook state))
+;;            (run-at-time 0.5 nil
+;;                         #'(lambda (buf persp)
+;;                             (when (and (eq persp (get-current-persp))
+;;                                        (not (eq buf (window-buffer (selected-window)))))
+;;                               ;; (switch-to-buffer buf)
+;;                               (persp-add-buffer buf persp t nil)))
+;;                         (alist-get 'buffer state)
+;;                         (get-current-persp)))
+;;          (persp--auto-persp-default-after-match state)))
+
+;;     ;; (add-hook 'persp-after-load-state-functions
+;;     ;;           #'(lambda (&rest args) (persp-auto-persps-pickup-buffers)) t)
+;;     ))
+
+;; Shows groups for all perspectives. But can't show same buffer in multiple groups.
+
+;; (with-eval-after-load "ibuffer"
+
+;;   (require 'ibuf-ext)
+
+;;   (define-ibuffer-filter persp
+;;       "Toggle current view to buffers of current perspective."
+;;     (:description "persp-mode"
+;;                   :reader (persp-prompt nil nil (safe-persp-name (get-frame-persp)) t))
+;;     (find buf (safe-persp-buffers (persp-get-by-name qualifier))))
+
+;;   (defun persp-add-ibuffer-group ()
+;;     (let ((perspslist (mapcar #'(lambda (pn)
+;;                                   (list pn (cons 'persp pn)))
+;;                               (nconc
+;;                                (cl-delete persp-nil-name
+;;                                           (persp-names-current-frame-fast-ordered)
+;;                                           :test 'string=)
+;;                                (list persp-nil-name)))))
+;;       (setq ibuffer-saved-filter-groups
+;;             (cl-delete "persp-mode" ibuffer-saved-filter-groups
+;;                        :test 'string= :key 'car))
+;;       (push
+;;        (cons "persp-mode" perspslist)
+;;        ibuffer-saved-filter-groups)))
+
+;;   (defun persp-ibuffer-visit-buffer ()
+;;     (interactive)
+;;     (let ((buf (ibuffer-current-buffer t))
+;;           (persp-name (get-text-property
+;;                        (line-beginning-position) 'ibuffer-filter-group)))
+;;       (persp-switch persp-name)
+;;       (switch-to-buffer buf)))
+
+;;   (define-key ibuffer-mode-map (kbd "RET") 'persp-ibuffer-visit-buffer)
+
+;;   (add-hook 'ibuffer-mode-hook
+;;             #'(lambda ()
+;;                 (persp-add-ibuffer-group)
+;;                 (ibuffer-switch-to-saved-filter-groups "persp-mode"))))
+
 ;;; Activities
 
 (-setup activities :disabled
@@ -275,392 +663,6 @@ After evaluating, it suspends all non-current activities."
 ;;;;; misc
 
   )
-
-;;; Persp-mode
-
-(-setup persp-mode
-  ;; keys
-  (:global "C-c ." persp-key-map)
-
-  (:with-map persp-key-map
-    (:bind "." #'my-persp-load-name-from-latest
-           "d" #'my-persp-delete-name-from-latest))
-
-  ;; vars
-  (:option persp-keymap-prefix nil
-           wg-morph-on nil              ; animation
-           persp-auto-resume-time -1    ; dont autoresume at startup
-           persp-auto-save-opt 2)       ; save on shutdown
-
-  ;; hooks
-  (add-hook 'elpaca-after-init-hook #'(lambda () (persp-mode 1)))
-
-  ;; disable completion menu (clashes with which-key)
-  ;; manually disable the #'define-prefix-command
-  (:when-loaded
-    (dolist (it persp-key-map)
-      (when (consp it)
-        (when (and (consp (cdr it))
-                   (stringp (cadr it)))
-          (let ((cmd (cddr it)))
-            (setcdr it cmd)))))
-    (setq persp-key-map (cl-delete-if #'stringp persp-key-map)))
-
-  ;; dont save persp-nil to file
-  (:when-loaded
-    (set-persp-parameter 'dont-save-to-file t nil))
-
-;;;; consult integration
-
-  (defvar persp-consult-source
-    (list :name     "Persp"
-          :narrow   ?.
-          :category 'buffer
-          :state    #'consult--buffer-state
-          :history  'buffer-name-history
-          :default  t
-          :items
-          (lambda ()
-            (let ((current-persp (get-current-persp)))
-              (consult--buffer-query
-               :sort 'visibility
-               :predicate (lambda (buf)
-                            (and current-persp
-                                 (persp-contain-buffer-p buf)))
-               :as 'buffer-name)))))
-
-  (defvar persp-rest-consult-source
-    (list :name     "Other"
-          :narrow   ?s
-          :category 'buffer
-          :state    #'consult--buffer-state
-          :history  'buffer-name-history
-          :default  t
-          :items
-          (lambda ()
-            (let ((current-persp (get-current-persp)))
-              (consult--buffer-query
-               :sort 'visibility
-               :predicate (lambda (buf)
-                            (if current-persp
-                                (not (persp-contain-buffer-p buf))
-                              t))
-               :as 'buffer-name)))))
-
-  (with-eval-after-load 'consult
-    (consult-customize consult--source-buffer :hidden t :default nil)
-    (add-to-list 'consult-buffer-sources persp-rest-consult-source)
-    (add-to-list 'consult-buffer-sources persp-consult-source))
-
-;;;; fix treemacs compatibility bug
-
-  ;; https://github.com/Alexander-Miller/treemacs/issues/1165
-  ;; https://github.com/doomemacs/doomemacs/issues/8455
-
-  (advice-add 'treemacs--remove-treemacs-window-in-new-frames :around
-              (defun +persp-treemacs-bug-advice (orig-fun &rest args)
-                (funcall orig-fun (car-safe args))))
-
-;;;; load and switch to persp by name
-
-  ;; helper
-  (defun my-persp--get-non-loaded-names (&optional fname savelist)
-    (let* ((available (persp-list-persp-names-in-file
-                       fname savelist))
-           (loaded (persp-names-current-frame-fast-ordered))
-           (non-loaded (seq-remove
-                        (lambda (p)
-                          (member p loaded))
-                        available)))
-      non-loaded))
-
-  ;; load name from savefile
-  (cl-defun my-persp-load-name-from-latest
-      (&optional (fname persp-auto-save-fname)
-                 (phash *persp-hash*)
-                 (savelist (persp-savelist-from-savefile fname))
-                 name)
-    "Load and switch to a persp with NAME from latest savefile."
-    (interactive)
-    ;; debug
-    (when 'debug
-      (message "DEBUG: savelist value: %S" savelist))
-    ;; with latest file savelist
-    (if (not savelist)
-        (user-error "no savelist at %s" fname)
-      ;; get all non-loaded names from savelist
-      (let ((non-loaded (my-persp--get-non-loaded-names fname savelist)))
-        (if (not non-loaded)
-            (message "no non-loaded persps in %s" fname)
-          ;; prompt for name
-          (when-let* ((name (or name
-                                (persp-read-persp
-                                 "to load" nil nil t t nil non-loaded t 'push))))
-            ;; load only that persp from the file
-            (persp-load-state-from-file fname phash
-                                        (regexp-opt (list name))
-                                        t savelist)
-            ;; switch to persp
-            (persp-frame-switch "emacs"))))))
-
-;;;; merge persps when saving to file
-
-  ;; don't overwrite backup file with current; merge.
-  (advice-add 'persp-save-state-to-file :around
-              (cl-defun +persp-save-state-to-file-around-advice
-                  (orig-fun
-                   &optional
-                   (fname persp-auto-save-fname)
-                   (phash *persp-hash*)
-                   (respect-persp-file-parameter persp-auto-save-persps-to-their-file)
-                   keep-others-in-non-parametric-file)
-                ;; We need to modify the fourth optional parameter
-                (let ((keep-others-in-non-parametric-file 'yes))
-                  ;; Call the original function with modified arguments
-                  (funcall orig-fun
-                           fname phash respect-persp-file-parameter
-                           keep-others-in-non-parametric-file))))
-
-;;;; delete persp from savefile
-
-  ;; delete persp from file
-  (cl-defun my-persp-delete-name-from-latest
-      (&optional (fname persp-auto-save-fname)
-                 (savelist (persp-savelist-from-savefile fname))
-                 (available-names (persp-list-persp-names-in-file fname savelist))
-                 names)
-    (interactive)
-    (let* ((names (or names
-                      (persp-read-persp
-                       "to delete" 'reverse nil t nil nil available-names t 'push)))
-           (filtered-savelist (cl-remove-if
-                               (lambda (expr)
-                                 (and (listp expr)
-                                      (eq (car expr) 'def-persp)
-                                      (seq-contains-p names (cadr expr))))
-                               savelist)))
-      (if (y-or-n-p (format "Delete %s?" names))
-          (persp-savelist-to-file filtered-savelist fname))))
-
-;;;; old remains....
-
-  ;; (:when-loaded
-  ;;   (when nil
-  ;;     ;; helper functions
-  ;;     (defun my/persp--get-names-from-savelist (&optional fname savelist)
-  ;;       (let* ((available (persp-list-persp-names-in-file fname savelist))
-  ;;              (loaded (persp-names-current-frame-fast-ordered))
-  ;;              (unloaded (seq-remove (lambda (p) (member p loaded)) available)))
-  ;;         (list available loaded unloaded)))
-
-  ;;     (defun my/persp--prompt-for-persp-name (lst)
-  ;;       (when lst
-  ;;         (persp-read-persp
-  ;;          "to load" nil nil t t nil lst t 'push)))
-
-  ;;     ;; TODO: relocate
-  ;;     (defmacro +message-if-debug (format-string &rest args)
-  ;;       (when debug-on-error
-  ;;         `(message ,format-string ,@args)))
-
-  ;;     ;; load from file
-  ;;     (cl-defun my-persp-load-name-from-latest
-  ;;         (&optional (fname persp-auto-save-fname)
-  ;;                    (phash *persp-hash*)
-  ;;                    (savelist (persp-savelist-from-savefile fname))
-  ;;                    name)
-  ;;       "Load and switch to a perspective via name from the latest backup file."
-  ;;       (interactive)
-  ;;       ;; prompt for name from available
-  ;;       (when savelist
-  ;;         (cl-destructuring-bind (available loaded unloaded)
-  ;;             (my/persp--get-names-from-savelist fname savelist)
-  ;;           (when unloaded
-  ;;             (unless name
-  ;;               (setq name (my/persp--prompt-for-persp-name unloaded)))
-  ;;             (+message-if-debug "DEBUG: > %s\n> %s\n> %s\n> %s"
-  ;;                                fname
-  ;;                                phash
-  ;;                                (regexp-opt (list name))
-  ;;                                savelist)
-  ;;             (persp-load-state-from-file fname phash
-  ;;                                         (regexp-opt (list name))
-  ;;                                         t savelist)
-  ;;             ;; (persp-frame-switch name)
-  ;;             )))
-
-  ;;       ;; (when name
-  ;;       ;;   (let ((names-regexp (regexp-opt (list name))))
-  ;;       ;;     (persp-load-state-from-file fname phash names-regexp t savelist))
-  ;;       ;;   ;; switch to new loaded persp
-  ;;       ;;   (persp-frame-switch name))
-  ;;       )
-
-  ;;     ;; don't overwrite backup file with current; merge.
-  ;;     (advice-add 'persp-save-state-to-file :around
-  ;;                 (defun +persp-save-state-to-file-around-advice
-  ;;                     (orig-fun &optional fname phash
-  ;;                               respect-persp-file-parameter
-  ;;                               keep-others-in-non-parametric-file)
-  ;;                   ;; We need to modify the fourth optional parameter
-  ;;                   (let ((keep-others-in-non-parametric-file 'yes))
-  ;;                     ;; Call the original function with modified arguments
-  ;;                     (funcall orig-fun
-  ;;                              fname phash respect-persp-file-parameter
-  ;;                              keep-others-in-non-parametric-file))))
-
-
-  ;;     ;; delete persp from file
-  ;;     (defun my-persp-delete-name-from-latest ()
-  ;;       (interactive)
-  ;;       (let* ((fname persp-auto-save-fname)
-  ;;              (savelist (persp-savelist-from-savefile fname))
-  ;;              (available-names (persp-list-persp-names-in-file fname savelist))
-  ;;              (names (persp-read-persp
-  ;;                      "to delete" 'reverse nil t nil nil available-names t 'push))
-  ;;              (filtered-savelist (cl-remove-if
-  ;;                                  (lambda (expr)
-  ;;                                    (and (listp expr)
-  ;;                                         (eq (car expr) 'def-persp)
-  ;;                                         (seq-contains-p names (cadr expr))))
-  ;;                                  savelist)))
-  ;;         (if (y-or-n-p (format "Delete %s?" names))
-  ;;             (persp-savelist-to-file filtered-savelist fname))))
-  ;;     ))
-  )
-
-;;;; wip bridging and auto functionality
-
-;; enable persp-mode-project-bridge mode
-
-;; (when nil
-;;   (with-eval-after-load "persp-mode"
-;;     (defvar persp-mode-projectile-bridge-before-switch-selected-window-buffer nil)
-
-;;     ;; (setq persp-add-buffer-on-find-file 'if-not-autopersp)
-
-;;     (persp-def-auto-persp
-;;      "projectile"
-;;      :parameters '((dont-save-to-file . t)
-;;                    (persp-mode-projectile-bridge . t))
-;;      :hooks '(projectile-before-switch-project-hook
-;;               projectile-after-switch-project-hook
-;;               projectile-find-file-hook
-;;               find-file-hook)
-;;      :dyn-env '((after-switch-to-buffer-adv-suspend t))
-;;      :switch 'frame
-;;      :predicate
-;;      #'(lambda (buffer &optional state)
-;;          (if (eq 'projectile-before-switch-project-hook
-;;                  (alist-get 'hook state))
-;;              state
-;;            (and
-;;             projectile-mode
-;;             (buffer-live-p buffer)
-;;             (buffer-file-name buffer)
-;;             ;; (not git-commit-mode)
-;;             (projectile-project-p)
-;;             (or state t))))
-;;      :get-name
-;;      #'(lambda (state)
-;;          (if (eq 'projectile-before-switch-project-hook
-;;                  (alist-get 'hook state))
-;;              state
-;;            (push (cons 'persp-name
-;;                        (concat "[p] "
-;;                                (with-current-buffer (alist-get 'buffer state)
-;;                                  (projectile-project-name))))
-;;                  state)
-;;            state))
-;;      :on-match
-;;      #'(lambda (state)
-;;          (let ((hook (alist-get 'hook state))
-;;                (persp (alist-get 'persp state))
-;;                (buffer (alist-get 'buffer state)))
-;;            (pcase hook
-;;              (projectile-before-switch-project-hook
-;;               (let ((win (if (minibuffer-window-active-p (selected-window))
-;;                              (minibuffer-selected-window)
-;;                            (selected-window))))
-;;                 (when (window-live-p win)
-;;                   (setq persp-mode-projectile-bridge-before-switch-selected-window-buffer
-;;                         (window-buffer win)))))
-
-;;              (projectile-after-switch-project-hook
-;;               (when (buffer-live-p
-;;                      persp-mode-projectile-bridge-before-switch-selected-window-buffer)
-;;                 (let ((win (selected-window)))
-;;                   (unless (eq (window-buffer win)
-;;                               persp-mode-projectile-bridge-before-switch-selected-window-buffer)
-;;                     (set-window-buffer
-;;                      win persp-mode-projectile-bridge-before-switch-selected-window-buffer)))))
-
-;;              (find-file-hook
-;;               (setcdr (assq :switch state) nil)))
-;;            (if (pcase hook
-;;                  (projectile-before-switch-project-hook nil)
-;;                  (t t))
-;;                (persp--auto-persp-default-on-match state)
-;;              (setcdr (assq :after-match state) nil)))
-;;          state)
-;;      :after-match
-;;      #'(lambda (state)
-;;          (when (eq 'find-file-hook (alist-get 'hook state))
-;;            (run-at-time 0.5 nil
-;;                         #'(lambda (buf persp)
-;;                             (when (and (eq persp (get-current-persp))
-;;                                        (not (eq buf (window-buffer (selected-window)))))
-;;                               ;; (switch-to-buffer buf)
-;;                               (persp-add-buffer buf persp t nil)))
-;;                         (alist-get 'buffer state)
-;;                         (get-current-persp)))
-;;          (persp--auto-persp-default-after-match state)))
-
-;;     ;; (add-hook 'persp-after-load-state-functions
-;;     ;;           #'(lambda (&rest args) (persp-auto-persps-pickup-buffers)) t)
-;;     ))
-
-;; Shows groups for all perspectives. But can't show same buffer in multiple groups.
-
-;; (with-eval-after-load "ibuffer"
-
-;;   (require 'ibuf-ext)
-
-;;   (define-ibuffer-filter persp
-;;       "Toggle current view to buffers of current perspective."
-;;     (:description "persp-mode"
-;;                   :reader (persp-prompt nil nil (safe-persp-name (get-frame-persp)) t))
-;;     (find buf (safe-persp-buffers (persp-get-by-name qualifier))))
-
-;;   (defun persp-add-ibuffer-group ()
-;;     (let ((perspslist (mapcar #'(lambda (pn)
-;;                                   (list pn (cons 'persp pn)))
-;;                               (nconc
-;;                                (cl-delete persp-nil-name
-;;                                           (persp-names-current-frame-fast-ordered)
-;;                                           :test 'string=)
-;;                                (list persp-nil-name)))))
-;;       (setq ibuffer-saved-filter-groups
-;;             (cl-delete "persp-mode" ibuffer-saved-filter-groups
-;;                        :test 'string= :key 'car))
-;;       (push
-;;        (cons "persp-mode" perspslist)
-;;        ibuffer-saved-filter-groups)))
-
-;;   (defun persp-ibuffer-visit-buffer ()
-;;     (interactive)
-;;     (let ((buf (ibuffer-current-buffer t))
-;;           (persp-name (get-text-property
-;;                        (line-beginning-position) 'ibuffer-filter-group)))
-;;       (persp-switch persp-name)
-;;       (switch-to-buffer buf)))
-
-;;   (define-key ibuffer-mode-map (kbd "RET") 'persp-ibuffer-visit-buffer)
-
-;;   (add-hook 'ibuffer-mode-hook
-;;             #'(lambda ()
-;;                 (persp-add-ibuffer-group)
-;;                 (ibuffer-switch-to-saved-filter-groups "persp-mode"))))
 
 ;;; Perspective
 
