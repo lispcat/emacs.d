@@ -12,10 +12,10 @@
 
 (-setup persp-mode
   ;; keys
-  (:global "C-c ." persp-key-map)
+  (:global "C-c y" persp-key-map)
 
   (:with-map persp-key-map
-    (:bind "." #'my-persp-load-name-from-latest
+    (:bind "y" #'my-persp-load-name-from-latest
            "d" #'my-persp-delete-name-from-latest))
 
   ;; vars

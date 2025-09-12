@@ -81,9 +81,18 @@
   (projectile-mode 1)
   (:global "C-c p" projectile-command-map)
   (:option projectile-compile-use-comint-mode t)
+
+  ;; configure projectile-command-map
   (:with-map projectile-command-map
     (with-eval-after-load 'consult
-      (:bind "s r" #'consult-ripgrep))))
+      (:bind "s r" #'consult-ripgrep))
+
+    (defun +lorri-init ()
+      "Run `lorri init` in the current directory and show the output."
+      (interactive)
+      (when (y-or-n-p "Run `lorri init`? ")
+        (shell-command "lorri init")))
+    (:bind "c L" #'lorri-init)))
 
 (-setup consult-projectile
   (:load-after projectile)
@@ -98,10 +107,11 @@
 
   :hook (lsp-mode-hook . lsp-enable-which-key-integration)
 
-  :bind-keymap ("C-c l" . lsp-command-map)
+  ;; :bind-keymap ("C-c l" . lsp-command-map)
 
   :custom
   ;; disable auto adding capf, manually do from cape
+  (lsp-keymap-prefix . "C-c l")
   (lsp-completion-provider . :none)
   (lsp-completion-enable . nil)
 
@@ -110,7 +120,7 @@
         ;; freq of refreshing highlights, lenses, links, etc
         lsp-idle-delay 0.5
         ;; bind "C-c l" to lsp-command-map
-        lsp-keymap-prefix "C-c l"
+        ;; lsp-keymap-prefix "C-c l"
         ;; problematic, lag: https://github.com/emacs-lsp/lsp-mode/issues/4113
         ;; lsp-update-inlay-hints-on-scroll nil
         )
@@ -203,11 +213,11 @@
 
 ;;;; eglot-booster
 
-;; (setup (:pkg eglot-booster :host github :repo "jdtsmith/eglot-booster")
-;;   (:load-after elgot)
-;;   (:when-loaded
-;;     (eglot-booster-mode)))
-
+;; Vastly improve the performance of eglot.
+;; Homepage: [https://github.com/jdtsmith/eglot-booster].
+;;
+;; Note: try experimenting performance difference by running
+;; M-x eglot-booster.
 (-setup (eglot-booster :host github :repo "jdtsmith/eglot-booster")
   (:load-after elgot)
   (:when-loaded
@@ -400,7 +410,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;;; C
 
 (leaf cc-mode :elpaca nil
-  :hook ((c-mode-hook . lsp)
+  :hook ((c-mode-hook . lsp-deferred)
          (c-mode-hook . (lambda ()
                           (setq-local lsp-idle-delay 0.1
                                       lsp-enable-indentation nil
@@ -428,26 +438,86 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 
 ;; https://github.com/emacs-lsp/lsp-java
 
-(-setup lsp-java
-  ;; (add-hook 'java-mode-hook #'lsp)
-  (add-hook 'java-mode-hook #'eglot-ensure)
-  (add-hook 'java-ts-mode-hook #'eglot-ensure)
-  ;; (:when-loaded
-  ;;   (defun lsp-java--ls-command ()
-  ;;     (list "jdt-language-server"
-  ;;           "-configuration" "../config-linux"
-  ;;           "-data" "../java-workspace")))
-  )
+;; (-setup lsp-java :disabled
+;;   (:option lsp-java-format-settings-url
+;;            (expand-file-name "no-search/java/eclipse-java-google-style.xml"
+;;                              +emacs-src-dir)
 
-;; (-setup eglot-java
-;;   (:hook-into java-mode-hook)
-;;   (:with-map 'eglot-java-mode-map
-;;     (:bind "C-c l n" eglot-java-file-new
-;;            "C-c l x" eglot-java-run-main
-;;            "C-c l t" eglot-java-run-test
-;;            "C-c l N" eglot-java-project-new
-;;            "C-c l T" eglot-java-project-build-task
-;;            "C-c l R" eglot-java-project-build-refresh)))
+;;            lsp-java-format-settings-profile "GoogleStyle")
+
+;;   (:with-feature java-mode
+;;     (:when-loaded
+;;       ;; lsp
+;;       (:hook lsp-deferred)
+;;       ;; (:hook eglot-ensure)
+
+;;       ;; auto-fill
+;;       (:local-set fill-column 100)
+;;       (:hook auto-fill-mode)
+
+;;       ;; binds
+;;       (:bind "<f9>" #'projectile-compile-project)))
+
+;;   (:with-feature java-ts-mode
+;;     (:when-loaded
+;;       ;; lsp
+;;       (:hook lsp-deferred)
+;;       ;; (:hook eglot-ensure)
+
+;;       ;; auto-fill
+;;       (:hook auto-fill-mode)
+;;       (:local-set fill-column 100)
+
+;;       ; binds
+;;       (:bind "<f9>" #'projectile-compile-project))))
+
+(-setup eglot-java
+  (:hook-into java-mode-hook
+              java-ts-mode-hook)
+  (:with-map eglot-java-mode-map
+    (:bind "C-c l n" eglot-java-file-new
+           "C-c l x" eglot-java-run-main
+           "C-c l t" eglot-java-run-test
+           "C-c l N" eglot-java-project-new
+           "C-c l T" eglot-java-project-build-task
+           "C-c l R" eglot-java-project-build-refresh))
+  (:when-loaded
+    (setq eglot-java-user-init-opts-fn 'custom-eglot-java-init-opts)
+    (defun custom-eglot-java-init-opts (server eglot-java-eclipse-jdt)
+      "Custom options that will be merged with any default settings."
+      `(:settings
+        (:java
+         (:format
+          (:settings
+           (:url ,(expand-file-name "no-search/java/eclipse-java-google-style.xml"
+                                    +emacs-src-dir))
+           :enabled t))))))
+
+  (:with-feature java-mode
+    (:when-loaded
+      ;; lsp
+      ;; (:hook lsp-deferred)
+      (:hook eglot-ensure)
+
+      ;; auto-fill
+      (:local-set fill-column 100)
+      (:hook auto-fill-mode)
+
+      ;; binds
+      (:bind "<f9>" #'projectile-compile-project)))
+
+  (:with-feature java-ts-mode
+    (:when-loaded
+      ;; lsp
+      ;; (:hook lsp-deferred)
+      (:hook eglot-ensure)
+
+      ;; auto-fill
+      (:hook auto-fill-mode)
+      (:local-set fill-column 100)
+
+                                        ; binds
+      (:bind "<f9>" #'projectile-compile-project))))
 
 ;;;; Markdown
 
@@ -483,14 +553,20 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 
 ;;;; Haskell
 
-(leaf haskell-mode
-  :mode "\\.hs\\'")
+(-setup haskell-mode
+  (:file-match ".hs")
+  (:with-feature haskell-cabal
+    (:file-match ".cabal")))
+
+(-setup lsp-haskell
+  (add-hook 'haskell-mode-hook #'lsp-deferred)
+  (add-hook 'haskell-literate-mode-hook #'lsp-deferred))
 
 ;;;; Nix
 
 (leaf nix-mode
   :mode "\\.nix\\'"
-  :hook ((nix-mode-hook . lsp)))
+  :hook ((nix-mode-hook . lsp-deferred)))
 
 ;;;; Yaml
 
@@ -669,13 +745,27 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 
 ;;;; Typst
 
-(use-package typst-ts-mode
-  :ensure (:type git :host codeberg :repo "meow_king/typst-ts-mode")
-  :demand t
-  :custom
-  (typst-ts-mode-grammar-location (expand-file-name
-                                   "tree-sitter/libtree-sitter-typst.so"
-                                   user-emacs-directory)))
+(-setup (typst-ts-mode :type git :host codeberg :repo "meow_king/typst-ts-mode")
+  (:option typst-ts-mode-grammar-location
+           (expand-file-name
+            "tree-sitter/libtree-sitter-typst.so"
+            user-emacs-directory))
+
+  ;; open output pdf in other window
+  (defun +typst-ts-mode-open-pdf ()
+    (interactive)
+    (let* ((orig-win (selected-window))
+           (target-extension "pdf")
+           (current-path (buffer-file-name))
+           (target-path (file-name-with-extension current-path
+                                                  target-extension)))
+      (find-file-other-window target-path)
+      (select-window orig-win)))
+  (add-hook 'typst-ts-mode-hook #'+typst-ts-mode-open-pdf)
+  (:option typst-ts-preview-function #'+typst-ts-mode-open-pdf)
+
+  ;; auto compile
+  (add-hook 'typst-ts-mode-hook #'typst-ts-watch-mode))
 
 ;;; Tooling
 

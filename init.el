@@ -326,7 +326,7 @@ If PATH does not exist, abort the evaluation."
 
   (setup-define :file-match
     (lambda (glob)
-      `(add-to-list 'auto-mode-alist (cons ,(wildcard-to-regexp pat) ',(setup-get 'mode))))
+      `(add-to-list 'auto-mode-alist (cons ,(wildcard-to-regexp glob) ',(setup-get 'mode))))
     :documentation "Associate the current mode with files that match GLOB."
     :debug '(form)
     :repeatable t)

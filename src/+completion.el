@@ -149,9 +149,6 @@
    "C-c s f" consult-fd
    "C-c s F" consult-locate
 
-   ;; programming
-   "C-c l e" consult-compile-error
-
    ;; histories
    "C-c s x" consult-complex-command    ; past keychord
 
@@ -180,6 +177,10 @@
   (:with-map isearch-mode-map
     (:bind "M-r" consult-isearch-history))
 
+  ;; lsp-mode
+  (:with-feature lsp-mode
+    (:with-map lsp-mode-map
+      (:bind "C-c l e" consult-compile-error)))
 
   ;; minibuffer history
   (:with-map minibuffer-local-map
@@ -459,7 +460,13 @@
   ;; add yas-hippie-try-expand after yasnippet loads
   (:with-feature yasnippet
     (:when-loaded
-      (add-to-list 'hippie-expand-try-functions-list #'yas-hippie-try-expand t))))
+      (add-to-list 'hippie-expand-try-functions-list
+                   #'yas-hippie-try-expand t)))
+
+  (:with-feature tempel
+    (:when-loaded
+      (add-to-list 'hippie-expand-try-functions-list
+                   #'tempel-expand t))))
 
 (setup isearch
   (:when-loaded
@@ -494,8 +501,18 @@
            ;; prevent M-TAB from opening another completion
            ;; "M-TAB" nil
 
-           ;; make S-RET newline
-           "S-RET" #'corfu-send))
+           ;; ;; make S-RET insert
+           ;; "S-RET" #'corfu-insert
+
+           ;; make RET do nothing
+           "RET" nil
+
+           ;; easier complete and expand appropriate
+           "C-<return>" #'corfu-complete
+           ))
+
+  ;; (:when-loaded
+  ;;   (add-hook 'corfu-mode-hook))
 
   ;; enable
   (global-corfu-mode)
@@ -565,7 +582,10 @@
 ;; ---
 
 (-setup tempel
-  (:global "M-*" #'tempel-insert))
+  (:global "M-*" #'tempel-insert)
+  (:with-map tempel-map
+    (:bind "C-M-RET" #'tempel-next
+           "C-o"   #'tempel-next)))
 
 (-setup tempel-collection
   (:load-after tempel))

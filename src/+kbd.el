@@ -159,6 +159,7 @@
   :require t
   :setq
   (meow-use-cursor-position-hack . t)
+  (meow-keypad-leader-dispatch . "C-c") ; keypad support local temp maps
   (meow-replace-state-name-list
    . '((normal . "<N>")
        (motion . "<M>")

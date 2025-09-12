@@ -115,10 +115,11 @@
 
 ;; --
 
-(setup ace-window
+(-setup ace-window
   (:option aw-keys '(?a ?o ?e ?u ?h ?t ?n ?s)
            aw-scope 'frame
            aw-background nil)
+  (:autoload #'ace-window)
   (:global "M-o" #'ace-window)
   (leader-bind
     "w" '(:ignore t :wk "window")

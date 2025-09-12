@@ -30,7 +30,7 @@
 ;; NOTE: ensure that the newest version of org is installed right after elpaca
 ;; setup
 
-;;; org
+;;; org-mode
 
 ;; General config options for org-mode.
 
@@ -38,6 +38,7 @@
 
 (setup org
   (:option
+
    ;; default org directory
    org-directory "~/Notes/org"
 
@@ -81,23 +82,27 @@
    ;; org-ellipsis " ▾"
    )
 
+;;;; keybinds
+
+  ;; keybinds
+
   (leader-bind
     "o" '(:ignore t :wk "org"))
 
+  (defun +org-meta-ret-meta-right ()
+    "Shortcut for M-RET M-<right>."
+    (interactive)
+    (org-meta-return)
+    (org-metaright))
+
+  (:with-map org-mode-map
+    (:bind "C-M-<return>" +org-meta-ret-meta-right))
+
+;;;; fonts
+
+  ;; org fonts
+
   (:when-loaded
-
-    ;; set org fonts
-
-    ;; (custom-set-faces
-    ;;  '(org-document-title
-    ;;    ((t (:height 1.9 :weight bold))))
-    ;;  '(org-level-1
-    ;;    ((t (:inherit outline-1 :height 1.4))))
-    ;;  '(org-level-2
-    ;;    ((t (:inherit outline-2 :height 1.3))))
-    ;;  '(org-level-3
-    ;;    ((t (:inherit outline-3 :height 1.15)))))
-
     (defvar +org-fonts-alist
       '((org-document-title :height 1.9 :weight bold)
         (org-level-1 :height 1.7)
@@ -146,17 +151,11 @@
               (apply #'set-face-attribute t-face nil t-args))))))
 
     (advice-add 'load-theme :after #'+org-fonts-setup)
-    (add-hook 'org-mode-hook #'+org-fonts-setup)
+    (add-hook 'org-mode-hook #'+org-fonts-setup))
 
-    ;; fix syntax <> matching with paren
+  ;; colorize "NEXT" todo face
 
-    (add-hook 'org-mode-hook
-              (lambda ()
-                (modify-syntax-entry ?< ".")
-                (modify-syntax-entry ?> ".")))
-
-    ;; keywords override
-
+  (:when-loaded
     (defun +org-todo-color-override (&rest _)
       "Set org-todo-keyword-faces only if not already set by the theme."
       (setq org-todo-keyword-faces
@@ -164,26 +163,89 @@
                                            (face-attribute 'highlight :foreground nil 'default))
                                        "yellow")))))
 
-    ;; Advise the load-theme function to run our color override
-    (advice-add 'load-theme :after #'+org-todo-color-override)
-
-    ;; Run once immediately to set colors if no theme is loaded
     (+org-todo-color-override)
+    (advice-add 'load-theme :after #'+org-todo-color-override))
 
-    ;; Shortcut for M-RET M-<right>
-    ;; In org-mode, this usually translates to either:
-    ;; - new subheading
-    ;; - new sublist
-    (defun +org-meta-ret-meta-right ()
-      "Shortcut for M-RET M-<right>."
-      (interactive)
-      (org-meta-return)
-      (org-metaright))
+  ;; fix syntax "<" ">" matching with paren
 
-    (:with-map org-mode-map
-      (:bind "C-M-<return>" +org-meta-ret-meta-right))))
+  (:when-loaded
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (modify-syntax-entry ?< ".")
+                (modify-syntax-entry ?> "."))))
+
+;;;; export
+
+  ;; org export options
+
+  (:option org-latex-src-block-backend 'minted
+           org-latex-minted-langs
+           '((python "python") (emacs-lisp "common-lisp") (cc "c++")
+             (shell-script "bash")))
+
+  )
 
 ;; --
+
+;;; org: functionality
+
+;;;; toc-org
+
+(-setup toc-org
+  (:hook-into org-mode-hook))
+
+;;; org: integration
+;;;; anki-editor
+
+(-setup anki-editor
+  (:autoload anki-editor-push-note-at-point
+             anki-editor-push-notes
+             anki-editor-push-new-notes)
+  (:option anki-editor-latex-style 'mathjax)
+  (:when-loaded
+    (defun +ensure-anki-editor-mode (note)
+      "Ensure `anki-editor-mode' is enabled before pushing notes."
+      (unless anki-editor-mode
+        (anki-editor-mode 1)))
+    (advice-add #'anki-editor--push-note :before #'+ensure-anki-editor-mode)))
+
+;;;;; functions for anki-editor
+
+(defun +org-priority-to-anki ()
+  (interactive)
+  ;; check connection with anki
+  (unless (or (boundp 'anki-editor-mode) anki-editor-mode)
+    (anki-editor-mode 1))
+  (anki-editor-api-check)
+  ;; delete anki_note_type and/or anki_note_id for each w/o a priority
+  (save-excursion
+    (let ((points-no-priority
+           (org-ql-query
+             :select #'point-marker
+             :from (current-buffer)
+             :where
+             '(and (not (priority))
+                   (or (property "ANKI_NOTE_ID")
+                       (property "ANKI_NOTE_TYPE"))))))
+      (dolist (p (reverse points-no-priority))
+        (goto-char p)
+        (when (org-find-property "ANKI_NOTE_ID")
+          (anki-editor-delete-note-at-point))
+        (when (org-find-property "ANKI_NOTE_TYPE")
+          (org-delete-property "ANKI_NOTE_TYPE")))))
+  ;; ensure all priority headings have anki_note_type set
+  (save-excursion
+    (let ((points-yes-priority
+           (org-ql-query
+             :select #'point-marker
+             :from (current-buffer)
+             :where '(priority))))
+      (dolist (p (reverse points-yes-priority))
+        (goto-char p)
+        (unless (org-entry-get nil "ANKI_NOTE_TYPE")
+          (anki-editor-set-note-type nil "Basic"))))))
+
+;;; org: quality of life
 
 ;;;; org-tempo
 
@@ -219,47 +281,10 @@
 
 ;; --
 
-;;;; org-download
+;;;; org-auto-tangle
 
-(-setup org-download
-  (:option org-download-image-dir "_images")
-  (:load-after org)
-  (:when-loaded
-    (org-download-enable)))
-
-;;;; org-bullets
-
-;; TODO: replace with org-superstar
-(-setup org-bullets
-  (:hook-into org-mode-hook)
-  (:option org-bullets-bullet-list
-           '("◉"
-             "●"
-             "○"
-             "■"
-             "□"
-             "✦"
-             "✧"
-             "✿")))
-
-;;;; toc-org
-
-(-setup toc-org
+(-setup org-auto-tangle
   (:hook-into org-mode-hook))
-
-;;;; anki-editor
-
-(-setup anki-editor
-  (:autoload anki-editor-push-note-at-point
-             anki-editor-push-notes
-             anki-editor-push-new-notes)
-  (:option anki-editor-latex-style 'mathjax)
-  (:when-loaded
-    (defun +ensure-anki-editor-mode (note)
-      "Ensure `anki-editor-mode' is enabled before pushing notes."
-      (unless anki-editor-mode
-        (anki-editor-mode 1)))
-    (advice-add #'anki-editor--push-note :before #'+ensure-anki-editor-mode)))
 
 ;;;; image-slicing
 
@@ -268,12 +293,7 @@
   (:hook-into org-mode-hook)
   (:option image-slicing-newline-trailing-text nil))
 
-;;;; org-auto-tangle
-
-(-setup org-auto-tangle
-  (:hook-into org-mode-hook))
-
-;;;; org-agenda
+;;; org: agenda
 
 ;; TODO: script to generate subtasks for each day for an assignment
 
@@ -287,7 +307,6 @@
   (:with-map org-agenda-mode-map
     (:bind ")" '(lambda () (interactive)
                   (org-agenda-todo 'done))))
-  
 
   (:option
    org-enforce-todo-dependencies t
@@ -335,7 +354,7 @@
 
   (:when-loaded
     (leader-bind
-      "oo" (defun +open-org-agenda-file ()
+      "oA" (defun +open-org-agenda-file ()
              (interactive)
              (find-file (car org-agenda-files))))
 
@@ -370,15 +389,144 @@
                           :habit t)
                    (:discard (:anything t)))))))))))
 
-;;;; -- org-ql ----------------------------------------------------------------
+;;;; org-ql
 
 (-setup org-ql
   (:load-after org))
 
-;;;; org-pomodoro
+;;;; functions for org-agenda
 
-(-setup org-pomodoro
-  (:load-after org))
+(defun +org-clone-with-fraction (days time effort)
+  "Clone subtree with time shifts, prefixing each subheading with fraction prefix."
+  (interactive
+   (list
+    (read-number "How many days to complete it over?: ")
+    (read-number "How many minutes do you expect this task to take?: ")
+    (read-number "On a scale of 1-10, how much effort will this take?: ")))
+  (setq days (1- days))
+  ;; create clones
+  (org-clone-subtree-with-time-shift days "-1d")
+  (org-set-property "TIME" (format "%s" time))
+  (org-set-property "EFFORT" (format "%s" effort))
+  ;; adjust appropriately
+  (save-excursion
+    (org-next-visible-heading 1)
+    ;; first, sort
+    (cl-loop for depth from (1- days) downto 1 do
+             (save-excursion
+               ;; shift
+               (dotimes (_ depth)
+                 (org-metadown))))
+    ;; add todo and demote
+    (save-excursion
+      (cl-loop repeat (1- days) do
+               (org-next-visible-heading 1))
+      (cl-loop for depth from (1- days) downto 0 do
+               (let ((frac (format "%d/%d" (1+ depth) days))
+                     (time-daily (/ time days)))
+                 (org-demote)
+                 (let ((org-special-ctrl-a/e t))
+                   (org-beginning-of-line))
+                 (insert (concat frac " "))
+                 (org-set-property "FRACTION" frac)
+                 (org-set-property "TIME" (format "%s" time-daily))
+                 (org-set-property "EFFORT" (format "%s" effort))
+                 (org-next-visible-heading -1))))))
+
+(defun +org-clone-subtasks (effort max-times)
+  (interactive
+   (list
+    (read-number "Effort, on a scale of 1-10: ")
+    (read-number "Max times (0 or less for unbound): ")))
+  (save-excursion
+    ;; get deadline and days till for the heading at point
+    (org-back-to-heading)
+    (when-let* ((deadline-ts
+                 (or (org-entry-get nil "DEADLINE")
+                     (user-error "No deadline-ts at point")))
+                (days-till-deadline
+                 (let ((days
+                        (or (org-timestamp-to-now deadline-ts)
+                            (user-error "Days till deadline = nil"))))
+                   (if (<= max-times 0)
+                       ;; unbounded
+                       days
+                     ;; boundud by max
+                     (if (> days max-times)
+                         (1+ max-times)
+                       days)))))
+      ;; set TODO if nil
+      (unless (org-entry-get nil "TODO")
+        (org-entry-put nil "TODO" "TODO"))
+
+      ;; temporarily set top heading deadline to today
+      ;; (org-entry-put nil "DEADLINE"
+      ;;                (format-time-string (org-time-stamp-format)))
+
+      ;; delete counting fraction if exists (avoid cloning to below)
+      (save-excursion
+        (org-end-of-line)
+        (let ((org-special-ctrl-a/e t))
+          (org-beginning-of-line))
+        (when (looking-at "\\[[0-9]*/[0-9]*\\] ")
+          (delete-region (point) (match-end 0))))
+
+      ;; extra properties before cloning...
+      (org-set-property "EFFORT" (format "%s" effort))
+
+      ;; create subtree clones
+      (org-do-demote)
+      (org-clone-subtree-with-time-shift (1- days-till-deadline) "-1d")
+      ;; note: promote top heading up at the end
+
+      ;; sort deadline of all below
+      (save-excursion
+        (org-forward-heading-same-level 1)
+        (set-mark (line-beginning-position))
+        (let ((last-point (point))
+              (times 0))
+          (while (and (org-forward-heading-same-level 1)
+                      (> (point) last-point)
+                      (setq last-point (point))
+                      (setq times (1+ times))))
+          (setq mark-active t)
+          (org-sort-entries nil ?d)))
+
+      ;; insert counting fraction at top heading
+      (save-excursion
+        (org-end-of-line)
+        (let ((org-special-ctrl-a/e t))
+          (org-beginning-of-line))
+        (unless (looking-at "\\[[0-9]*/[0-9]*\\] ")
+          (insert "[/] ")))
+
+      ;; ;; revert top heading deadline to deadline-ts
+      ;; (org-entry-put nil "DEADLINE" deadline-ts)
+
+      ;; insert fraction in each subheading
+      (save-excursion
+        (let ((last-point (point))
+              (times 0))
+          (while (and (org-forward-heading-same-level 1)
+                      (> (point) last-point)
+                      (setq last-point (point))
+                      (setq times (1+ times)))
+            (org-end-of-line)
+            (let ((org-special-ctrl-a/e t))
+              (org-beginning-of-line))
+            (insert (format "%s/%s " times (1- days-till-deadline))))))
+
+      ;; promote top heading at top heading
+      (org-do-promote)
+
+      ;; visibility folded
+      (org-set-property "VISIBILITY" "folded")
+
+      ;; update counting fraction
+      (call-interactively #'org-update-statistics-cookies)
+      )))
+
+;;; org: workflow
 
 ;;;; org-noter
 
@@ -436,78 +584,17 @@ The property will be removed if ran with a \\[universal-argument]."
               #'denote-org-capture :no-save t :immediate-finish nil
               :kill-buffer t :jump-to-captured t))))
 
-;;;; more org-anki stuff
+;;;; org-download
 
-(defun +org-priority-to-anki ()
-  (interactive)
-  ;; check connection with anki
-  (unless (or (boundp 'anki-editor-mode) anki-editor-mode)
-    (anki-editor-mode 1))
-  (anki-editor-api-check)
-  ;; delete anki_note_type and/or anki_note_id for each w/o a priority
-  (save-excursion
-    (let ((points-no-priority
-           (org-ql-query
-             :select #'point-marker
-             :from (current-buffer)
-             :where
-             '(and (not (priority))
-                   (or (property "ANKI_NOTE_ID")
-                       (property "ANKI_NOTE_TYPE"))))))
-      (dolist (p (reverse points-no-priority))
-        (goto-char p)
-        (when (org-find-property "ANKI_NOTE_ID")
-          (anki-editor-delete-note-at-point))
-        (when (org-find-property "ANKI_NOTE_TYPE")
-          (org-delete-property "ANKI_NOTE_TYPE")))))
-  ;; ensure all priority headings have anki_note_type set
-  (save-excursion
-    (let ((points-yes-priority
-           (org-ql-query
-             :select #'point-marker
-             :from (current-buffer)
-             :where '(priority))))
-      (dolist (p (reverse points-yes-priority))
-        (goto-char p)
-        (unless (org-entry-get nil "ANKI_NOTE_TYPE")
-          (anki-editor-set-note-type nil "Basic"))))))
+(-setup org-download
+  (:option org-download-image-dir "_images")
+  (:load-after org)
+  (:when-loaded
+    (org-download-enable)))
 
-(defun +org-clone-with-fraction (days time effort)
-  "Clone subtree with time shifts, prefixing each subheading with fraction prefix."
-  (interactive
-   (list
-    (read-number "How many days to complete it over?: ")
-    (read-number "How many minutes do you expect this task to take?: ")
-    (read-number "On a scale of 1-10, how much effort will this take?: ")))
-  (setq days (1- days))
-  ;; create clones
-  (org-clone-subtree-with-time-shift days "-1d")
-  (org-set-property "TIME" (format "%s" time))
-  (org-set-property "EFFORT" (format "%s" effort))
-  ;; adjust appropriately
-  (save-excursion
-    (org-next-visible-heading 1)
-    ;; first, sort
-    (cl-loop for depth from (1- days) downto 1 do
-             (save-excursion
-               ;; shift
-               (dotimes (_ depth)
-                 (org-metadown))))
-    ;; add todo and demote
-    (save-excursion
-      (cl-loop repeat (1- days) do
-               (org-next-visible-heading 1))
-      (cl-loop for depth from (1- days) downto 0 do
-               (let ((frac (format "%d/%d" (1+ depth) days))
-                     (time-daily (/ time days)))
-                 (org-demote)
-                 (let ((org-special-ctrl-a/e t))
-                   (org-beginning-of-line))
-                 (insert (concat frac " "))
-                 (org-set-property "FRACTION" frac)
-                 (org-set-property "TIME" (format "%s" time-daily))
-                 (org-set-property "EFFORT" (format "%s" effort))
-                 (org-next-visible-heading -1))))))
+;;; org: prettify
+
+;; stuff to make org prettier.
 
 ;;;; visual fill column
 
@@ -516,15 +603,36 @@ The property will be removed if ran with a \\[universal-argument]."
     (setq visual-fill-column-width 100
           visual-fill-column-center-text t)
     (visual-fill-column-mode 1))
-  
+
   (with-eval-after-load 'org
     (add-hook 'org-mode-hook #'+org-visual-fill)))
 
-;;; Org-modern
+;;;; org-bullets
+
+;; TODO: replace with org-superstar
+(-setup org-bullets
+  (:hook-into org-mode-hook)
+  (:option org-bullets-bullet-list
+           '("◉"
+             "●"
+             "○"
+             "■"
+             "□"
+             "✦"
+             "✧"
+             "✿")))
+
+;;;; org-modern
 
 (-setup org-modern :disabled
   (:option org-modern-star nil)
   (global-org-modern-mode 1))
+
+;;; org: misc
+;;;; pomodoro
+
+(-setup org-pomodoro
+  (:load-after org))
 
 ;;; end
 (provide '+org)
