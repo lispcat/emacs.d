@@ -126,7 +126,8 @@
 ;;   )
 
 
-;;; Function: sets a random theme.
+;;; Themes
+;;;; Function: sets a random theme.
 
 (defun +set-random-theme ()
   "Set a random theme."
@@ -214,25 +215,21 @@
 (global-visual-line-mode 1)
 (diminish 'visual-line-mode) ; hide "Wrap" in mode-line
 
-(leaf whitespace :elpaca nil
-  :hook
-  ((prog-mode-hook . +prog-mode-whitespace)
-   (org-mode-hook  . +org-mode-whitespace)
-   (text-mode-hook . +org-mode-whitespace))
+(setup whitespace
+  (:diminish whitespace-mode)
+  (:option whitespace-trailing 'whitespace-hspace)
 
-  :init
   (defvar +base-whitespace-style '(face trailing tabs missing-newline-at-eof))
   (defun +prog-mode-whitespace ()
-    (setq whitespace-style (append +base-whitespace-style
-                                   '(tab-mark)))
+    (setq whitespace-style (append +base-whitespace-style '(tab-mark)))
     (whitespace-mode 1))
-
   (defun +org-mode-whitespace ()
     (setq whitespace-style (append +base-whitespace-style '()))
     (whitespace-mode 1))
 
-  :config
-  (setq whitespace-trailing 'whitespace-hspace))
+  (add-hook 'prog-mode-hook #'+prog-mode-whitespace)
+  (add-hook 'org-mode-hook #'+org-mode-whitespace)
+  (add-hook 'text-mode-hook #'+org-mode-whitespace))
 
 ;; (leaf solaire-mode
 ;;   :config
@@ -246,20 +243,130 @@
 ;; show column # on modeline
 (column-number-mode 1)
 
-(leaf doom-modeline
-  :config
+(-setup doom-modeline :disabled
+  (:option doom-modeline-height 40
+           doom-modeline-icon t)
   (doom-modeline-mode 1)
+  (setq-default header-line-format '("%e" (:eval (doom-modeline-format--main))))
+  (setq-default mode-line-format nil)
+  (add-hook 'doom-modeline-mode-hook
+            (lambda ()
+              (setq-default mode-line-format nil)
+              (dolist (buf (buffer-list))
+                (with-current-buffer buf
+                  (when mode-line-format
+                    (setq mode-line-format nil))))))
+
+  ;; (add-hook '+after-enable-theme-hook
+  ;;           (lambda ()
+  ;;             (unless mode-line-format
+  ;;               (setq-default mode-line-format nil))))
+
   ;; :config
   ;; (setq doom-modeline-modal-icon nil)
+  ;; (dolist (pair '((doom-modeline-vcs-default . "purple")
+  ;;                 (doom-modeline-vcs . "purple")
+  ;;                 (doom-modeline-meow-normal-state . "DarkOrchid4")))
+  ;;   (let ((face (car pair))
+  ;;         (color (cdr pair)))
+  ;;     (set-face-attribute face nil :foreground color)))
   )
+
+(-setup doom-modeline :disabled
+  (:require-self))
+
+(-setup mood-line :disabled
+  (mood-line-mode 1)
+  (:option mood-line-glyph-alist mood-line-glyphs-fira-code
+           ;; normal - doom-modeline-info
+           ;; insert - font-lock-keyword-face
+           ;; emacs - font-lock-builtin-face
+           ;; motion - font-lock-doc-face (:slant normal)
+           ;; beacon - mode-line, doom-modeline-warning, doom-modeline-urgent, doom-modeline-warning
+           mood-line-segment-modal-meow-state-alist
+           '((normal "<N>" .
+                     font-lock-variable-name-face
+                     ;; success
+                     )
+             (insert "<I>" .
+                     font-lock-string-face
+                     ;; font-lock-keyword-face
+                     )
+             (keypad "<K>" . font-lock-keyword-face)
+             (beacon "<B>" .
+                     font-lock-type-face
+                     )
+             (motion "<M>" . font-lock-constant-face))
+           mood-line--settings-alist
+           '((anzu-cons-mode-line-p
+              . nil)
+             (header-line-format
+              . (:eval (mood-line--process-format mood-line-format)))
+             (mode-line-format
+              . nil))))
+
+;; nano theme and modeline
+
+(-setup (nano-theme :host github :repo "rougier/nano-theme"))
+;; (-setup (nano-modeline :host github :repo "rougier/nano-modeline")
+;;   (:require-self)
+;;   ;; (:load-after nano-theme)
+;;   (setq-default mode-line-format nil)
+;;   (defun +nano-modeline-setup-faces ()
+;;     (face-spec-set
+;;      'nano-modeline-active
+;;      `((t (:foreground ,(face-foreground 'default)
+;;                        :background ,(face-background 'mode-line nil t)
+;;                        :box (:line-width 1 :color ,(face-background
+;;                                                     'default))))))
+;;     (face-spec-set
+;;      'nano-modeline-inactive
+;;      `((t (:foreground ,(face-foreground 'default)
+;;                        :background ,(face-background 'mode-line-inactive nil t)
+;;                        :box (:line-width 1 :color ,(face-background
+;;                                                     'default)))))))
+;;   (+nano-modeline-setup-faces)
+;;   (add-hook '+after-enable-theme-hook #'+nano-modeline-setup-faces)
+
+;;   ;;   ;; (setq nano-modeline-position )
+;;   ;;   (add-hook 'prog-mode-hook            #'nano-modeline-prog-mode)
+;;   ;;   (add-hook 'text-mode-hook            #'nano-modeline-text-mode)
+;;   ;;   (add-hook 'org-mode-hook             #'nano-modeline-org-mode)
+;;   ;;   (add-hook 'pdf-view-mode-hook        #'nano-modeline-pdf-mode)
+;;   ;;   (add-hook 'mu4e-headers-mode-hook    #'nano-modeline-mu4e-headers-mode)
+;;   ;;   (add-hook 'mu4e-view-mode-hook       #'nano-modeline-mu4e-message-mode)
+;;   ;;   (add-hook 'elfeed-show-mode-hook     #'nano-modeline-elfeed-entry-mode)
+;;   ;;   (add-hook 'elfeed-search-mode-hook   #'nano-modeline-elfeed-search-mode)
+;;   ;;   (add-hook 'term-mode-hook            #'nano-modeline-term-mode)
+;;   ;;   (add-hook 'xwidget-webkit-mode-hook  #'nano-modeline-xwidget-mode)
+;;   ;;   (add-hook 'messages-buffer-mode-hook #'nano-modeline-message-mode)
+;;   ;;   (add-hook 'org-capture-mode-hook     #'nano-modeline-org-capture-mode)
+;;   ;; (add-hook 'org-agenda-mode-hook      #'nano-modeline-org-agenda-mode)
+;;   )
+
+;; (-setup (feline :host github :repo "chee/feline-mode")
+;;   (feline-mode 0)
+;;   (:option feline-line-prefix "L"
+;;            feline-column-prefix "C"
+;;            feline-mode-symbols
+;;            '(emacs-lisp-mode "λ"
+;;                              python-mode "py"
+;;                              typescript-mode "ts"
+;;                              rustic-mode "🦀"
+;;                              rust-mode "🦀"
+;;                              zig-mode "🦎"
+;;                              scheme-mode "🐔")))
+
+;; (-setup spacious-padding
+;;   (spacious-padding-mode 0))
 
 ;; Improve scroll
 (leaf emacs :elpaca nil
   :setq
   ;; (auto-window-vscroll nil) ; TODO: what does this do?
   (scroll-preserve-screen-position . t) ; keep point in same position while scrolling
-  (scroll-conservatively . 101) ; dont move cursor to center while scrolling
-  (scroll-margin . 2)           ; scroll margin of one line
+  (scroll-conservatively . 101)     ; dont move cursor to center while scrolling
+  (scroll-margin . 2)               ; scroll margin of one line
   (mouse-wheel-scroll-amount
    . '(2                                      ; faster vscroll speed
        ((shift) . hscroll)                    ; S-<scroll> for hscroll

@@ -1,3 +1,4 @@
+;; latex symbols
 (leaf quail :elpaca nil
   :config
   (eval-after-load "quail/latin-ltx"

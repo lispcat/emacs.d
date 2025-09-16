@@ -4362,6 +4362,7 @@ check out https://github.com/mwfogleman/.emacs.d/blob/master/michael.org
 #+begin_src emacs-lisp :tangle src/my-to-sort.el
 
 (leaf omni-quotes
+  :diminish t
   :init (omni-quotes-mode 1)
   :bind (("M-s q m" . omni-quotes-mode)
          ("M-s q p" . omni-quotes-prev-set)

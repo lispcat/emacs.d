@@ -65,6 +65,10 @@
   (file-name-as-directory ;; add trailing slash
    (expand-file-name user-emacs-directory)))
 
+(defvar +emacs-init-dir
+  (file-name-as-directory
+   (expand-file-name "init" +emacs-root-dir)))
+
 (defvar +emacs-src-dir
   (file-name-as-directory
    (expand-file-name "src" +emacs-root-dir)))

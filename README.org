@@ -32,4 +32,6 @@ In depth documentation can be found here:
 * Notes
 
 - TODO: add old notes from old-README.org
+- TODO: read this for inspiration:
+  https://blog.sumtypeofway.com/posts/emacs-config.html
 

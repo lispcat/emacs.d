@@ -1,4 +1,5 @@
 (leaf omni-quotes
+  :diminish t
   :init (omni-quotes-mode 1)
   :bind (("M-s q m" . omni-quotes-mode)
          ("M-s q p" . omni-quotes-prev-set)
@@ -66,46 +67,58 @@
 
 ;; eglot?
 
-(defhydra hydra-org (:color red :columns 3)
+(defhydra hydra-outline (:color red :columns 3)
   "Org Mode Movements"
   ("n" (lambda ()
          (interactive)
-         (mapc #'call-interactively '(org-fold-hide-entry
-                                      outline-next-visible-heading
-                                      org-fold-show-entry
-                                      ))
-         (recenter-top-bottom)
-         (recenter-top-bottom))
+         (mapc #'call-interactively
+               '(outline-hide-body
+                 outline-next-visible-heading
+                 outline-show-entry))
+         (recenter-top-bottom 1))
    "next heading")
   ("p" (lambda ()
          (interactive)
-         (mapc #'call-interactively '(org-fold-hide-entry
-                                      outline-previous-visible-heading
-                                      org-fold-show-entry
-                                      ))
-         (recenter-top-bottom)
-         (recenter-top-bottom)
-         (recenter-top-bottom))
+         (mapc #'call-interactively
+               '(outline-hide-body
+                 outline-previous-visible-heading
+                 outline-show-entry))
+         (recenter-top-bottom -1))
    "prev heading")
   ("N" (lambda ()
          (interactive)
-         (mapc #'call-interactively '(org-fold-hide-entry
-                                      org-forward-heading-same-level
-                                      org-fold-show-entry))
-         (recenter-top-bottom)
-         (recenter-top-bottom))
+         (mapc #'call-interactively
+               '(outline-hide-body
+                 outline-forward-same-level
+                 outline-show-entry))
+         (recenter-top-bottom 1))
    "next heading at same level")
   ("P" (lambda ()
          (interactive)
-         (mapc #'call-interactively '(org-fold-hide-entry
-                                      org-backward-heading-same-level
-                                      org-fold-show-entry))
-         (recenter-top-bottom)
-         (recenter-top-bottom)
-         (recenter-top-bottom))
+         (mapc #'call-interactively
+               '(outline-hide-body
+                 outline-backward-same-level
+                 outline-show-entry))
+         (recenter-top-bottom -1))
    "prev heading at same level")
   ("u" outline-up-heading "up heading")
+  ("TAB" (lambda ()
+           (interactive)
+           (if (outline-invisible-p (pos-eol))
+               (mapc #'call-interactively
+                     '(outline-hide-body
+                       +outline-toggle))
+             (mapc #'call-interactively
+                   '(outline-hide-body))))
+   "toggle heading")
+  ("C-p" outline-previous-visible-heading "next")
+  ("C-n" outline-next-visible-heading "prev")
+  ("C-b" outline-backward-same-level "next samelvl")
+  ("C-f" outline-forward-same-level "prev samelvl")
   ("g" org-goto "goto" :exit t))
+
+(leader-bind
+  "oH" #'hydra-outline/body)
 
 ;; https://www.reddit.com/r/emacs/comments/ioenk2/ical_import_in_emacs_calendar/
 

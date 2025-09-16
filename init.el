@@ -25,7 +25,7 @@
 
 ;;; Code:
 
-;;; Vars
+;;; set variables
 
 ;; Set various vars for sane defaults.
 
@@ -70,406 +70,60 @@
             ("\\`/dev/shm\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
             ("." ,auto-save-dir t)))))
 
-;;; elpaca
+;;; Load path (TODO)
 
-;; elpaca 0.11
-(progn
-  (defvar elpaca-installer-version 0.11)
-  (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-  (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-  (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-  (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                                :ref nil :depth 1 :inherit ignore
-                                :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                                :build (:not elpaca--activate-package)))
-  (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-         (build (expand-file-name "elpaca/" elpaca-builds-directory))
-         (order (cdr elpaca-order))
-         (default-directory repo))
-    (add-to-list 'load-path (if (file-exists-p build) build repo))
-    (unless (file-exists-p repo)
-      (make-directory repo t)
-      (when (<= emacs-major-version 28) (require 'subr-x))
-      (condition-case-unless-debug err
-          (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                    ,@(when-let* ((depth (plist-get order :depth)))
-                                                        (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                    ,(plist-get order :repo) ,repo))))
-                    ((zerop (call-process "git" nil buffer t "checkout"
-                                          (or (plist-get order :ref) "--"))))
-                    (emacs (concat invocation-directory invocation-name))
-                    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                          "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                    ((require 'elpaca))
-                    ((elpaca-generate-autoloads "elpaca" repo)))
-              (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-            (error "%s" (with-current-buffer buffer (buffer-string))))
-        ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-    (unless (require 'elpaca-autoloads nil t)
-      (require 'elpaca)
-      (elpaca-generate-autoloads "elpaca" repo)
-      (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
-  (add-hook 'after-init-hook #'elpaca-process-queues)
-  (elpaca `(,@elpaca-order)))
+(add-to-list 'load-path +emacs-init-dir)
 
+;;; Package manager
 
-;; install use-package
-(elpaca elpaca-use-package
-  (elpaca-use-package-mode)
-  (setq use-package-always-ensure t)
-  (setq use-package-always-defer t))
+(defcustom +package-manager 'elpaca
+  "The package manager to use."
+  :options '(elpaca straight))
 
-;; hack: exclude all externally installed packages from elpaca.
-(progn
-  (require 'elpaca)
-  (require 'cl-lib)
-  (eval-when-compile (require 'subr-x)) ;; is this ok?
+(defmacro +pkg-install (&rest body)
+  (pcase +package-manager
+    ('elpaca `(elpaca ,@body))
+    ('straight `(straight-use-package ,@body))
+    (_ (user-error "+pkg-install: invalid value: %S" +pkg-install))))
 
-  (defun +elpaca-get-external-pkgs ()
-    "Based on `package-load-all-descriptors'."
-    (let ((pkg-dir-lst nil)
-          (res nil))
-      (dolist (dir (cons package-user-dir package-directory-list))
-        (when (file-directory-p dir)
-          (dolist (pkg-dir (directory-files dir t "\\`[^.]"))
-            (when (file-directory-p pkg-dir)
-              (push pkg-dir pkg-dir-lst)))))
-      (dolist (pkg-dir pkg-dir-lst)
-        (let ((pkg-file (expand-file-name (package--description-file pkg-dir)
-                                          pkg-dir))
-              (signed-file (concat pkg-dir ".signed")))
-          (when (file-exists-p pkg-file)
-            (with-temp-buffer
-              (insert-file-contents pkg-file)
-              (goto-char (point-min))
-              (let ((pkg-text (read (current-buffer))))
-                (if (not (eq 'define-package (car-safe pkg-text)))
-                    (error "Package %s doesn't have \"define-package\"" pkg-file)
-                  (let ((name (cadr pkg-text)))
-                    (when name
-                      (cl-pushnew (intern name) res)))))))))
-      res))
+;;;; elpaca
 
-  (dolist (pkg (+elpaca-get-external-pkgs))
-    (push pkg elpaca-ignored-dependencies)))
+(when (eq +package-manager 'elpaca)
+  (require '+elpaca))
 
-;;; leaf
+;;;; straight.el
 
-(elpaca leaf
-  ;; add my own keywords
-  (eval-after-load 'leaf
-    (lambda nil
-      (setq leaf-keywords
-            (append
-             leaf-keywords
-             `(:elpaca-wait `(,@leaf--body :wait))))))
-  :wait)
+(when (eq +package-manager 'straight)
+  (require '+straight))
 
-(elpaca leaf-keywords
-  ;; custom keywords
-  (leaf-keywords-init)
-  (setq leaf-alias-keyword-alist '((:ensure . :elpaca)))
-  (setq leaf-defaults (append '(:elpaca t) leaf-system-defaults))
-  :wait)
+;;; leaf (TODO: remove all)
+
+(+pkg-install leaf)
+(when (eq +package-manager 'elpaca) (elpaca-wait))
+
+(+pkg-install leaf-keywords)
+(when (eq +package-manager 'elpaca) (elpaca-wait))
+;; custom keywords
+(leaf-keywords-init)
+(setq leaf-alias-keyword-alist '((:ensure . :elpaca)))
+(setq leaf-defaults (append '(:elpaca t) leaf-system-defaults))
+(when (eq +package-manager 'elpaca) (elpaca-wait))
 
 ;; hack: fix org version mismatch
 ;; (elpaca org)
 
 ;; finish all queues now to prevent async issues later
-(elpaca-wait)
+;; (when (eq +package-manager 'elpaca) (elpaca-wait))
 
 ;;; setup.el
 
-(elpaca setup
-  (require 'setup)
-  (elpaca-wait)
+(+pkg-install setup)
+(when (eq +package-manager 'elpaca) (elpaca-wait))
+(require 'setup)
+(when (eq +package-manager 'elpaca) (elpaca-wait))
+(require '+setup)
 
-;;;; easier macro defining
-
-  (defmacro defsetup (name signature &rest body)
-    "Shorthand for `setup-define'.
-NAME is the name of the local macro.  SIGNATURE is used as the
-argument list for FN.  If BODY starts with a string, use this as
-the value for :documentation.  Any following keywords are passed
-as OPTS to `setup-define'."
-    (declare (debug defun))
-    (let (opts)
-      (when (stringp (car body))
-        (setq opts (nconc (list :documentation (pop body))
-                          opts)))
-      (while (keywordp (car body))
-        (let* ((prop (pop body))
-               (val `',(pop body)))
-          (setq opts (nconc (list prop val) opts))))
-      `(setup-define ,name
-         (cl-function (lambda ,signature ,@body))
-         ,@opts)))
-
-;;;; macro for only setting user options
-
-  (defmacro setc (&rest args)
-    "Customize user options using ARGS like `setq'."
-    (declare (debug setq))
-    `(setup (:option ,@args)))
-
-;;;; :autoload
-  (setup-define :autoload
-    (lambda (func)
-      (let ((fn (if (memq (car-safe func) '(quote function))
-                    (cadr func)
-                  func)))
-        `(unless (fboundp (quote ,fn))
-           (autoload (function ,fn) ,(symbol-name (setup-get 'feature)) nil t))))
-    :documentation "Autoload COMMAND if not already bound."
-    :repeatable t
-    :signature '(FUNC ...))
-
-;;;; :quit
-
-  (setup-define :quit
-    #'setup-quit
-    :documentation "Unconditionally abort the evaluation of the current body.")
-
-;;;; :with-local-quit
-
-  (setup-define :with-local-quit
-    (lambda (&rest body)
-      `(catch ',(setup-get 'quit)
-         ,@body))
-    :documentation "Prevent any reason to abort from leaving beyond BODY."
-    :debug '(setup))
-
-;;;; :load-after
-
-  (setup-define :load-after
-    (lambda (&rest features)
-      (let ((body `(require ',(setup-get 'feature))))
-        (dolist (feature (nreverse features))
-          (setq body `(with-eval-after-load ',feature ,body)))
-        body))
-    :documentation "Load the current feature after FEATURES.")
-
-;;;; :unhook
-
-  (setup-define :unhook
-    (lambda (func)
-      `(remove-hook (quote ,(setup-get 'hook)) ,func))
-    :documentation "Remove FUNC from the current hook."
-    :repeatable t
-    :ensure '(func)
-    :signature '(FUNC ...))
-
-;;;; :local-unhook
-
-  (setup-define :local-unhook
-    (lambda (hook &rest functions)
-      `(add-hook
-        (quote ,(setup-get 'hook))
-        (lambda ()
-          ,@(mapcar
-             (lambda (arg)
-               (let ((fn (cond ((eq (car-safe arg) 'function) arg)
-                               ((eq (car-safe arg) 'quote)    `(function ,(cadr arg)))
-                               ((symbolp arg)                 `(function ,arg))
-                               (t                             arg))))
-                 `(remove-hook (quote ,hook) ,fn t)))
-             functions))))
-    :documentation "Remove FUNCTION from HOOK only in the current hook."
-    :debug '(&rest sexp)
-    :repeatable nil)
-
-;;;; :advice
-
-  (setup-define :advice
-    (lambda (symbol where function)
-      `(advice-add ',symbol ,where ,function))
-    :documentation "Add a piece of advice on a function.
-See `advice-add' for more details."
-    :after-loaded t
-    :debug '(sexp sexp function-form)
-    :ensure '(nil nil func)
-    :repeatable t)
-
-;;;; :advice-def
-
-  (setup-define :advice-def
-    (lambda (symbol where arglist &rest body)
-      (let ((name (gensym "setup-advice-")))
-        `(progn
-           (defun ,name ,arglist ,@body)
-           (advice-add ',symbol ,where #',name))))
-    :documentation "Add a piece of advice on a function.
-See `advice-add' for more details."
-    :after-loaded t
-    :debug '(sexp sexp function-form)
-    :indent 3)
-
-;;;; :load-from
-
-  (setup-define :load-from
-    (lambda (path)
-      `(let ((path* (expand-file-name ,path)))
-         (if (file-exists-p path*)
-             (add-to-list 'load-path path*)
-           ,(setup-quit))))
-    :documentation "Add PATH to load path.
-This macro can be used as NAME, and it will replace itself with
-the nondirectory part of PATH.
-If PATH does not exist, abort the evaluation."
-    :shorthand (lambda (args)
-                 (intern
-                  (file-name-nondirectory
-                   (directory-file-name (cadr args))))))
-
-;;;; :file-match (auto-mode-alist)
-
-  (setup-define :file-match
-    (lambda (glob)
-      `(add-to-list 'auto-mode-alist (cons ,(wildcard-to-regexp glob) ',(setup-get 'mode))))
-    :documentation "Associate the current mode with files that match GLOB."
-    :debug '(form)
-    :repeatable t)
-
-;;;; :option* (shorthand)
-
-  (setup-define :option*
-    (lambda (name val)
-      `(customize-set-variable
-        ',(intern (format "%s-%s" (setup-get 'feature) name))
-        ,val
-        ,(format "Set for %s's setup block" (setup-get 'feature))))
-    :documentation "Set the option NAME to VAL.
-NAME is not the name of the option itself, but of the option with
-the feature prefix."
-    :debug '(sexp form)
-    :repeatable t)
-
-;;;; :doc
-
-  (defvar setup--doc-alist nil "AList of docs for setup blocks.")
-
-  (setup-define :doc
-    (lambda (string)
-      `(add-to-list 'setup--doc-alist '(,(setup-get 'feature) . ,string)))
-    :documentation "Allow documentation using STRING.
-This will be ignored at expansion."
-    :signature '(STRING ...)
-    :repeatable nil)
-
-;;;; :pkg (elpaca)
-
-  (defun setup-wrap-to-install-package (body _name)
-    "Wrap BODY in an `elpaca' block if necessary.
-The body is wrapped in an `elpaca' block if `setup-attributes'
-contains an alist with the key `elpaca'."
-    (if (assq 'elpaca setup-attributes)
-        `(elpaca ,(cdr (assq 'elpaca setup-attributes)) ,@(macroexp-unprogn body))
-      body))
-  ;; Add the wrapper function
-  (add-to-list 'setup-modifier-list #'setup-wrap-to-install-package)
-  (setup-define :pkg
-    (lambda (order &rest recipe)
-      (push (cond
-             ((eq order t) `(elpaca . ,(setup-get 'feature)))
-             ((eq order nil) '(elpaca . nil))
-             (`(elpaca . (,order ,@recipe))))
-            setup-attributes)
-      ;; If the macro wouldn't return nil, it would try to insert the result of
-      ;; `push' which is the new value of the modified list. As this value usually
-      ;; cannot be evaluated, it is better to return nil which the byte compiler
-      ;; would optimize away anyway.
-      nil)
-    :documentation "Install ORDER with `elpaca'.
-The ORDER can be used to deduce the feature context."
-    :shorthand #'cadr)
-
-;;;; -setup (elpaca shortcut)
-
-  (defmacro -setup (order &rest body)
-    "Execute BODY in `setup' declaration after ORDER is finished.
-If the :disabled keyword is present in body, the package is completely ignored.
-This happens regardless of the value associated with :disabled.
-The expansion is a string indicating the package has been disabled."
-    (declare (indent 1))
-    (if (memq :disabled body)
-        (format "%S :disabled by -setup" order)
-      (let ((o order))
-        (when-let ((ensure (cl-position :ensure body)))
-          (setq o (if (null (nth (1+ ensure) body)) nil order)
-                body (append (cl-subseq body 0 ensure)
-                             (cl-subseq body (+ ensure 2)))))
-        `(elpaca ,o (setup
-                        ,(if-let (((memq (car-safe order) '(quote \`)))
-                                  (feature (flatten-tree order)))
-                             (cadr feature)
-                           (elpaca--first order))
-                      ,@body)))))
-
-;;;; catch errors, throw warnings
-
-  ;; method 1
-  ;; (setq setup-modifier-list '(setup-wrap-to-demote-errors))
-
-  ;; method 2
-  (progn
-    (defun my-protect-setup (expansion)
-      "Wrap `setup' output with `condition-case'."
-      (let ((err (gensym "setup-err")))
-        `(condition-case ,err
-             ,expansion
-           (error
-            (display-warning 'setup (concat "Problem in config: "
-                                            (error-message-string ,err)
-                                            ": \n"
-                                            (with-output-to-string
-                                              (pp (quote ,expansion))))
-                             :error)))))
-    (advice-add 'setup :filter-return #'my-protect-setup))
-
-;;;; custom require macro
-
-  (setq setup-macros (assq-delete-all ':require setup-macros))
-
-  ;; (setup-define :require
-;;     (lambda (&optional feature)
-;;       (let ((pkg-feature (or feature
-;;                              (setup-get 'feature)
-;;                              (error "No feature specified and no context available"))))
-;;         `(unless (require ',pkg-feature nil t)
-;;            ,(setup-quit))))
-;;     :documentation "Try to require FEATURE, or stop evaluating body.
-;; If FEATURE is The first FEATURE can be used to deduce the feature context.")
-
-  (setup-define :require-self
-    (lambda (&optional feature)
-      (let ((pkg-feature (or feature
-                             (setup-get 'feature)
-                             (error "No feature specified and no context available"))))
-        `(unless (require ',pkg-feature nil t)
-           ,(setup-quit))))
-    :documentation "Try to require FEATURE, or stop evaluating body.
-If FEATURE is The first FEATURE can be used to deduce the feature context.")
-
-;;;; custom option macro
-
-  ;; (setup-define :option-l
-;;     (lambda (lst)
-;;       `(progn
-;;          ,@(mapcar
-;;             (lambda (e)
-;;               (custom-load-symbol ',name)
-;;               (funcall (or (get ',name 'custom-set) #'set-default)
-;;                        ',name ,val)))))
-;;     :documentation "Try to require FEATURE, or stop evaluating body.
-;; If FEATURE is The first FEATURE can be used to deduce the feature context.")
-
-
-;;;; end of setup macros
-
-  )
-
-(elpaca-wait)
+(when (eq +package-manager 'elpaca) (elpaca-wait))
 
 ;;; necessary packages
 
@@ -490,6 +144,7 @@ If FEATURE is The first FEATURE can be used to deduce the feature context.")
 
 ;; display keystroke options
 (-setup which-key
+  (:diminish)
   (:option* idle-delay 0.3)
   (which-key-mode 1))
 
@@ -589,7 +244,7 @@ This is the non-anaphoric version - VALUE is passed as an argument to FORM."
 (-setup s)
 
 ;; finish all queues now to prevent async issues later
-(elpaca-wait)
+(when (eq +package-manager 'elpaca) (elpaca-wait))
 
 ;;;; adding to the load-path
 
@@ -709,7 +364,7 @@ This function returns a list of paths that were added to (or already exist in)
 
 (defmacro +require-or-load (feature)
   "If FEATURE is loaded, run `+load', Else, run `+require'."
-  `(progn
+  `(+benchmark-progn ,feature
      (unless (symbolp ,feature)
        (error "Expected symbol, got: %S" ,feature))
      (if (featurep ,feature)
@@ -757,7 +412,7 @@ This function returns a list of paths that were added to (or already exist in)
 
 ;; --
 
-;;; Quality of Life
+;;; quality of life
 
 (setup emacs
   ;; A hook that runs after enabling a theme
@@ -768,7 +423,7 @@ This function returns a list of paths that were added to (or already exist in)
 
   (advice-add 'enable-theme :after #'+run-after-enable-theme-hook))
 
-;;; import _src.el
+;;; load _src.el
 
 ;; The rest of the configuration is loaded from `./src/_src.el`.
 

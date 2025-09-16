@@ -23,33 +23,64 @@
 ;; Configure Emacs for IDE functionality.
 
 ;;; Code:
-
-;;; templates for new files
+;;;; auto-insert-mode (newfile templates)
 
 (auto-insert-mode)  ;;; Adds hook to find-files-hook
 
-;;; sane indentation defaults
+;;;; auto-fill-mode (break long lines)
+
+(setup simple
+  (diminish 'auto-fill-function ""))
+
+;;;; sane defaults for indentation
 
 (setq-default indent-tabs-mode nil)
 (setq tab-always-indent t)
 
-;;; tweak compilation buffer
+;;;; compilation buffer
 
-(leaf compile :elpaca nil
-  :config
-  (setq compilation-scroll-output t))
+(setup compile
+  (:option compilation-scroll-output t))
 
-;;; enable syntax checker
+;;;; flymake (built-in syntax checker)
 
-(leaf flycheck
-  :hook prog-mode-hook)
+(setup flymake
+  (:option flymake-no-changes-timeout 0.3
+           flymake-show-diagnostics-at-end-of-line t)
+  (:with-map flymake-mode-map
+    (:bind "C-c ! n" flymake-goto-next-error
+           "C-c ! p" flymake-goto-prev-error
+           "C-c ! l" flymake-show-diagnostics-buffer)))
 
-;;; URLs buttonize
+;;;; flycheck (another syntax checker)
 
-(leaf emacs :elpaca nil
-  :hook goto-address-mode)
+;; Emacs comes with a built-in syntax checker Flymake, but has limitations.
+;; Flycheck is an "improved" version with more language support.
 
-;;; project.el
+;; ----
+
+(-setup flycheck
+  (:diminish)
+  (:option flycheck-display-errors-delay 0.8
+           flycheck-idle-change-delay 0.4)
+  (:with-hook elpaca-after-init-hook
+    (:hook global-flycheck-mode)))
+
+(-setup flycheck-inline
+  (:load-after flycheck)
+  (:with-hook flycheck-mode-hook
+    (:hook #'flycheck-inline-mode)))
+
+;;;; buttonize URLs
+
+(setup emacs
+  (:with-hook elpaca-after-init-hook
+    (:hook global-goto-address-mode)))
+
+;;;; project.el (project management)
+
+(setup project
+  (:require-self))
 
 ;; (-setup ripgrep
 ;;   (:require-self))
@@ -57,29 +88,32 @@
 ;; FIXME: workaround to get completing-read regexp search?
 
 ;; NOTE: consult-ripgrep is project aware... so this already works....................................
-(leaf project :elpaca nil
-  :bind-keymap ("C-c P" . project-prefix-map)
-  :init
+(setup project
+  ;; options
+  (:option xref-search-program 'ripgrep)
+  ;; global
+  (global-set-key (kbd "C-c p") project-prefix-map)
+  ;; project compile with comint
   (defun project-compile-interactive ()
     (declare (interactive-only compile))
     (interactive)
     (let ((current-prefix-arg '(4)))
       (call-interactively #'project-compile)))
-  :config
-  (setq xref-search-program 'ripgrep)
-  :bind
-  (project-prefix-map
-   ("C" . project-compile-interactive)))
-
-(-setup consult-project-extra
-  (:load-after consult)
-  (:require-self)
   (:with-map project-prefix-map
-    (:bind "f" consult-project-extra-find)))
+    (:bind "C" project-compile-interactive)))
 
-(-setup projectile
+;; Note: obsolete, consult-project-buffer is the same?
+;; (-setup consult-project-extra
+;;   (:load-after consult)
+;;   (:require-self)
+;;   (:with-map project-prefix-map
+;;     (:bind "F" consult-project-extra-find)))
+
+;;;; projectile (alternative to project.el)
+
+(-setup projectile :disabled
   (projectile-mode 1)
-  (:global "C-c p" projectile-command-map)
+  (:global "C-c P" projectile-command-map)
   (:option projectile-compile-use-comint-mode t)
 
   ;; configure projectile-command-map
@@ -100,20 +134,42 @@
     ;; Buffers, Files, Projects
     (:bind "/" #'consult-projectile)))
 
-;;; lsp-mode
+;;;; Automatic parenthesis pair matching
+
+;; for non-programming too
+(leaf elec-pair :elpaca nil
+  :require t
+  :config
+  ;; disable "<" pair expansion
+  (defun +disable-<-pair-expansion ()
+    (setq-local electric-pair-inhibit-predicate
+                `(lambda (c)
+                   (if (char-equal c ?<)
+                       t
+                     (,electric-pair-inhibit-predicate c)))))
+  (add-hook 'org-mode-hook #'+disable-<-pair-expansion)
+  ;; global
+  (electric-pair-mode 1))
+
+;;;; Toggle lsp-mode vs eglot
+
+(defvar +use-lsp-mode? nil)
+(defvar +use-eglot? t)
+
+;;;; lsp-mode
 
 (leaf lsp-mode
+  :if +use-lsp-mode?
   :commands (lsp lsp-deferred)
 
   :hook (lsp-mode-hook . lsp-enable-which-key-integration)
 
-  ;; :bind-keymap ("C-c l" . lsp-command-map)
-
   :custom
-  ;; disable auto adding capf, manually do from cape
   (lsp-keymap-prefix . "C-c l")
-  (lsp-completion-provider . :none)
   (lsp-completion-enable . nil)
+
+  ;; disable auto adding capf, manually do from cape
+  (lsp-completion-provider . :none)
 
   :config
   (setq lsp-inlay-hint-enable t
@@ -126,9 +182,11 @@
         )
   )
 
-;;;; lsp-ui
+;;;;; lsp-ui
 
 (leaf lsp-ui
+  :if +use-lsp-mode?
+  :after lsp-mode
   :bind
   (lsp-ui-mode-map
    ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
@@ -152,13 +210,14 @@
   (with-eval-after-load 'lsp-mode
     (define-key lsp-command-map (kbd "v i") #'lsp-ui-imenu)))
 
-;;;; lsp-booster
+;;;;; lsp-booster
 
 ;; use lsp-doctor for testing
 ;; Steps:
 ;; - install emacs-lsp-booster
 ;; - use plist for deserialization (FOLLOW GUIDE)
 (leaf emacs :elpaca nil
+  :if +use-lsp-mode?
   :config
   (setq read-process-output-max (* 1024 1024)) ;; 1mb
   (defun lsp-booster--advice-json-parse (old-fn &rest args)
@@ -192,26 +251,135 @@
   (advice-add 'lsp-resolve-final-command :around
               #'lsp-booster--advice-final-command))
 
-;;;; Automatic parenthesis pair matching
+;;;; Eglot
 
-;; for non-programming too
-(leaf elec-pair :elpaca nil
-  :require t
-  :config
-  ;; disable "<" pair expansion
-  (defun +disable-<-pair-expansion ()
-    (setq-local electric-pair-inhibit-predicate
-                `(lambda (c)
-                   (if (char-equal c ?<)
-                       t
-                     (,electric-pair-inhibit-predicate c)))))
-  (add-hook 'org-mode-hook #'+disable-<-pair-expansion)
-  ;; global
-  (electric-pair-mode 1))
+;; The Emacs LSP client.
+;;
+;; It's a more minimal alternative to Lsp-mode, and I find its performance to be
+;; much better.
 
-;;; Eglot
+;; ----
 
-;;;; eglot-booster
+(setup eglot
+  (:only-if +use-eglot?)
+  (:with-map eglot-mode-map
+    (:bind "C-c l a" eglot-code-actions
+           "C-c l A" eglot-code-action-quickfix ;; what's this do?
+           "C-c l r" eglot-rename
+           "C-c l h" eldoc
+           "C-c l f" eglot-format
+           "C-c l F" eglot-format-buffer
+           "C-c l R" eglot-reconnect
+           "C-c l n" flycheck-next-error
+           "C-c l p" flycheck-previous-error
+           )))
+
+;;;;; Eglot extensions
+
+;; Eglot does not support extensions to the LSP protocol.
+;; This package adds them.
+;; https://github.com/nemethf/eglot-x
+
+;; Useful looking functions:
+;; - ! eglot-x-expand-macro
+;; - ! eglot-x-reload-workspace
+;; - ! eglot-x-analyzer-status
+;; - ? eglot-x-ask-related-tests
+;; - eglot-x-rebuild-proc-macros
+;; - eglot-x-run-flycheck
+;; - eglot-x-view-recursive-memory-layout
+
+;; ----
+
+(-setup (eglot-x :host github :repo "nemethf/eglot-x")
+  (:load-after eglot)
+  (:when-loaded
+    (eglot-x-setup)
+    (:with-map eglot-mode-map
+      (:bind "C-c l q s" eglot-x-analyzer-status
+             "C-c l q R" eglot-x-reload-workspace
+             "C-c l q e" eglot-x-expand-macro
+             "C-c l q p" eglot-x-rebuild-proc-macros))))
+
+;;;;; consult integration
+
+;; An all-in-one consult command to view everything.
+
+;; ((c . "Class") (f . "Function") (e . "Enum") (i . "Interface")
+;;  (m . "Module") (n . "Namespace") (p . "Package")
+;;  (s . "Struct") (t . "Type Parameter") (v . "Variable")
+;;  (A . "Array") (B . "Boolean") (C . "Constant")
+;;  (E . "Enum Member") (F . "Field") (M . "Method") (N . "Number")
+;;  (O . "Object") (P . "Property") (S . "String") (o . "Other"))
+
+(-setup consult-eglot
+  (:only-if +use-eglot?)
+  (:load-after consult eglot)
+  (:when-loaded
+    (:with-map eglot-mode-map
+      (:bind "C-c l s" consult-eglot-symbols))))
+
+;;;;; eldoc (documentation at point))
+
+;; Pop-up documentation frame for thing at point.
+
+;; https://github.com/casouri/eldoc-box
+
+;; ----
+
+(setup eldoc
+  (:diminish)
+  (:option eldoc-echo-area-prefer-doc-buffer t)
+  (with-eval-after-load 'eglot
+    (:with-map eglot-mode-map
+      (:bind "C-c l ?" xref-find-references
+             "C-c l ]" xref-go-forward
+             "C-c l [" xref-go-back))))
+
+(-setup eldoc-box
+  (:only-if +use-eglot?)
+  (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
+
+;;;;; flymake vs flycheck integration
+
+;; Eglot only supports Flymake, the built-in syntax checker. Flycheck is a
+;; better alternative, but needs some tweaking to be used with eglot.
+
+;; Eglot uses Flymake by default. To use flycheck with Eglot, you'll need to
+;; use the flycheck-eglot package.
+
+;; -----
+
+(-setup flycheck-eglot
+  (:only-if +use-eglot?)
+  (:load-after eglot flycheck)
+  ;; TODO: experiment with this (does nil worsen performance?)
+  ;; Is this necessary to nil for rustowl?
+  (:option flycheck-eglot-exclusive nil))
+
+(setup eglot
+  (:only-if +use-eglot?)
+  (:load-after flycheck-eglot)
+
+  (defcustom +eglot-syntax-checker 'flycheck
+    "The syntax checker eglot should use."
+    :options '(flycheck flymake))
+
+  (defcustom +eglot-override-syntax-checker nil
+    "Specific syntax checker for a major-mode")
+
+  (:when-loaded
+    (add-hook 'eglot-managed-mode-hook
+              (defun +eglot-setup-flycheck-or-flymake ()
+                (pcase (or (alist-get major-mode +eglot-override-syntax-checker)
+                           +eglot-syntax-checker)
+                  ('flycheck
+                   (flycheck-eglot-mode 1))
+                  ('flymake
+                   (when flycheck-mode
+                     (flycheck-mode 0))))))))
+
+;;;;; eglot-booster
 
 ;; Vastly improve the performance of eglot.
 ;; Homepage: [https://github.com/jdtsmith/eglot-booster].
@@ -219,159 +387,175 @@
 ;; Note: try experimenting performance difference by running
 ;; M-x eglot-booster.
 (-setup (eglot-booster :host github :repo "jdtsmith/eglot-booster")
+  (:only-if +use-eglot?)
   (:load-after elgot)
   (:when-loaded
     (eglot-booster-mode)))
 
-;;; Langs
+;;;; Langs
 
-;;;; Lisp
+;;;;; Lisp
 
-(setq +lisp-mode-hooks
-      '(emacs-lisp-mode-hook
-        lisp-data-mode-hook
-        scheme-mode-hook))
+(defvar +lisp-mode-hooks
+  '(emacs-lisp-mode-hook
+    lisp-data-mode-hook
+    scheme-mode-hook))
 
-;;;;; rainbow parens
+(defmacro +add-hooks (hooks-lst func)
+  (declare (debug (form symbolp)))
+  `(progn
+     (unless (listp ,hooks-lst)
+       (error "listp: %S" ,hooks-lst))
+     (unless (symbolp ,func)
+       (error "symbolp: %S" ,func))
+     (dolist (hook ,hooks-lst)
+       (add-hook hook ,func))))
+
+;;;;;; rainbow parens
 
 ;; Highlight nested parens according to their depth.
 ;; ---
 
-(leaf rainbow-delimiters
-  :hook `,@+lisp-mode-hooks)
+(-setup rainbow-delimiters
+  (:hook-into-all +lisp-mode-hooks))
 
-;;;;; paredit
+;; (leaf rainbow-delimiters
+;;   :hook `,@+lisp-mode-hooks)
 
-(leaf paredit
-  :hook `,@+lisp-mode-hooks)
+;;;;;; paredit
 
-;;;;; emacs-lisp
+(-setup paredit
+  (:diminish)
+  (:hook-into-all +lisp-mode-hooks))
 
-(leaf emacs :elpaca nil
-  :hook ((emacs-lisp-mode-hook . (lambda ()
-                                   (auto-fill-mode)
-                                   (setq-local fill-column 80)))))
+;;;;;; emacs-lisp
 
-;;;;; org-style links in elisp
+;; not a real feature
+(setup emacs-lisp-mode
+  (:hook (lambda ()
+           (auto-fill-mode)
+           (setq-local fill-column 80))))
 
-(leaf orglink
-  :hook emacs-lisp-mode-hook)
+;;;;;; org-style links in elisp (disabled)
 
-;;;;; elisp misc
+(-setup orglink :disabled
+  (:hook-into emacs-lisp-mode-hook))
 
-(defun create-banner-comment (text &optional width)
-  "Create a banner comment with TEXT centered between semicolons.
-Optional WIDTH parameter determines total width (defaults to 70)."
-  (interactive "sText: ")
-  (let* ((width (or width 70))
-         (text-len (length text))
-         (semi-len (/ (- width text-len 2) 2)) ; -2 for spaces
-         (left-semis (make-string semi-len ?\;))
-         (right-semis (make-string
-                       (if (cl-oddp (- width text-len))
-                           (1+ semi-len)
-                         semi-len)
-                       ?\;)))
-    (insert (format "%s %s %s\n"
-                    left-semis
-                    text
-                    right-semis))))
+;;;;;; elisp misc
 
-;;;;; tweak flycheck for elisp
+;; (defun create-banner-comment (text &optional width)
+;;   "Create a banner comment with TEXT centered between semicolons.
+;; Optional WIDTH parameter determines total width (defaults to 70)."
+;;   (interactive "sText: ")
+;;   (let* ((width (or width 70))
+;;          (text-len (length text))
+;;          (semi-len (/ (- width text-len 2) 2)) ; -2 for spaces
+;;          (left-semis (make-string semi-len ?\;))
+;;          (right-semis (make-string
+;;                        (if (cl-oddp (- width text-len))
+;;                            (1+ semi-len)
+;;                          semi-len)
+;;                        ?\;)))
+;;     (insert (format "%s %s %s\n"
+;;                     left-semis
+;;                     text
+;;                     right-semis))))
+
+;;;;;; tweak flycheck for elisp
 
 (with-eval-after-load 'flycheck
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc emacs-lisp)))
 
-;;;;; Scheme
+;;;;;; Scheme (disabled)
 
-(leaf scheme-mode :elpaca nil
-  :disabled t
-  :mode "\\.sld\\'" "\\.scm\\'")
+;; Scheme is a family of Lisp languages, which includes Guile Scheme, a Lisp
+;; used for configuring GNU Guix.
 
-(leaf geiser
-  :disabled t
-  :mode "\\.scm\\'"
-  :setq
-  (geiser-default-implementation . 'guile)
-  (geiser-active-implementations . '(guile))
-  (geiser-implementations-alist  . '(((regexp "\\.scm$") guile))))
+;; -----
 
-(leaf geiser-guile
-  :disabled t
-  :after geiser)
+;; (setup scheme-mode)
 
-;;;;; Clojure
+;; improved scheme editing
+(-setup geiser :disabled
+        (:file-match "\\.scm\\'")
+        (:option geiser-default-implementation 'guile
+                 geiser-active-implementations '(guile)
+                 geiser-implementations-alist  '(((regexp "\\.scm$") guile))))
 
-(leaf clojure-mode
-  :disabled t) ;;;; Rust
+;; improved guile (dialect of scheme) editing
+(-setup geiser-guile :disabled
+  (:load-after geiser))
 
-(leaf rust-mode
-  :require t
-  :init
-  (setq rust-mode-treesitter-derive t)
-  (setq rust-rustfmt-switches '("--edition" "2021")))
+;;;;;; Clojure
 
-(progn
-  (leaf rustic
-    :require t
-    :after rust-mode
-    :config
-    (setq rustic-cargo-use-last-stored-arguments t)
-    (setq rustic-format-on-save t)
-    (setq rustic-rustfmt-args "--edition 2021")
+(-setup clojure-mode :disabled)
 
-    ;; lsp-mode settings
-    (with-eval-after-load 'lsp-mode
-      (setq lsp-rust-analyzer-cargo-watch-command "clippy"
-            lsp-rust-analyzer-display-closure-return-type-hints t ; def: nil
-            lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
-            lsp-rust-analyzer-display-parameter-hints t ; def: nil (input param name)
+;;;;; Rust
 
-            ;; maybe
-            ;; lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
-            lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t ; def: nil (?)
+(-setup rust-mode
+  (:option rust-mode-treesitter-derive t
+           rust-rustfmt-switches '("--edition" "2021")))
 
-            ;; experimenting
-            lsp-signature-auto-activate t ; def: '(:on-trigger-char :on-server-request)
-            ))
+(-setup rustic
+  (:load-after rust-mode)
+  (:option rustic-cargo-use-last-stored-arguments t
+           rustic-format-on-save t
+           rustic-rustfmt-args "--edition 2021")
 
-    ;; use tree-sitter for rustic-mode
-    ;; (define-derived-mode rustic-mode rust-ts-mode "Rustic"
-    ;;     "Major mode for Rust code.
+  (:with-map rustic-mode-map
+    (:bind "C-c C-c M-r" rustic-cargo-comint-run
+           "C-c C-c l" flycheck-list-errors
+           "C-c C-c A" rustic-cargo-add
+           "C-c C-c R" rustic-cargo-rm
+           "C-c C-c a" lsp-execute-code-action
+           "C-c C-c r" lsp-rename
+           "C-c C-c q" lsp-workspace-restart
+           "C-c C-c Q" lsp-workspace-shutdown
+           "C-c C-c s" lsp-rust-analyzer-status
+           "C-c C-c h" lsp-describe-thing-at-point))
 
-    ;; \\{rustic-mode-map}"
-    ;;     :group 'rustic
-    ;;     (when (bound-and-true-p rustic-cargo-auto-add-missing-dependencies)
-    ;;       (add-hook 'lsp-after-diagnostics-hook 'rustic-cargo-add-missing-dependencies-hook nil t)))
+  ;; company integration
+  (with-eval-after-load 'company
+    (add-hook 'rust-ts-mode-hook
+              (lambda ()
+                (setq-local company-idle-delay 0.3
+                            company-minimum-prefix-length 2)))))
 
-    :bind
-    (rustic-mode-map
-     ("C-c C-c M-r" . rustic-cargo-comint-run)
-     ("C-c C-c l" . flycheck-list-errors)
-     ("C-c C-c A" . rustic-cargo-add)
-     ("C-c C-c R" . rustic-cargo-rm)
-     ("C-c C-c a" . lsp-execute-code-action)
-     ("C-c C-c r" . lsp-rename)
-     ("C-c C-c q" . lsp-workspace-restart)
-     ("C-c C-c Q" . lsp-workspace-shutdown)
-     ("C-c C-c s" . lsp-rust-analyzer-status)
-     ("C-c C-c h" . lsp-describe-thing-at-point))
+;;;;;; lsp-mode version
 
-    :hook
-    (rust-ts-mode-hook . (lambda ()
-                           ;; company settings
-                           (with-eval-after-load 'company
-                             (setq-local company-idle-delay 0.3
-                                         company-minimum-prefix-length 2))
-                           ;; lsp settings
-                           (with-eval-after-load 'lsp-mode
-                             (setq-local lsp-idle-delay 0.5
-                                         lsp-ui-sideline-delay 0.3
-                                         lsp-eldoc-render-all nil ; def: nil (minibuffer doc popup)
-                                         lsp-ui-doc-enable t ; def: t (ui-popup docs)
-                                         lsp-ui-doc-max-height 14 ; def: 13
-                                         ))))))
+(setup rustic
+  (:only-if +use-lsp-mode?)
+  (:load-after rustic lsp-mode)
+  (:when-loaded
+    (:option lsp-rust-analyzer-cargo-watch-command "clippy"
+             lsp-rust-analyzer-display-closure-return-type-hints t ; def: lsp
+             nil-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial"
+             lsp-rust-analyzer-display-parameter-hints t ; def: nil (input param name)
 
+             ;; maybe
+             ;; lsp-rust-analyzer-display-reborrow-hints "mutable" ; def: never (&*(&*jargon))
+             lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t ; def: nil (?)
+
+             ;; experimenting
+             lsp-signature-auto-activate t ; def: '(:on-trigger-char :on-server-request)
+             )
+
+    (add-hook 'lsp-mode-hook
+              (lambda ()
+                (setq-local lsp-idle-delay 0.5
+                            lsp-ui-sideline-delay 0.3
+                            lsp-eldoc-render-all nil ; def: nil (minibuffer doc popup)
+                            lsp-ui-doc-enable t      ; def: t (ui-popup docs)
+                            lsp-ui-doc-max-height 14 ; def: 13
+                            )))))
+
+;;;;;; eglot version
+
+(setup rustic
+  (:only-if +use-eglot?)
+  (:load-after rustic eglot)
+  (:when-loaded
+    (:option rustic-lsp-client 'eglot)))
 
 ;; (leaf rustic :elpaca nil
 ;;   ;; :disabled t
@@ -399,26 +583,38 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 
 ;;   )
 
+;;;;;; rustowl (disabled)
 
-;; rustowl
-;; (straight-use-package
-;;  `(rustowlsp
-;;    :host github
-;;    :repo "cordx56/rustowl"
-;;    :files (:defaults "emacs/*")))
+;; Note: not compatible with Eglot
+;; - requires a second LSP server (eglot only supports one)
 
-;;;; C
+;; ----
 
-(leaf cc-mode :elpaca nil
-  :hook ((c-mode-hook . lsp-deferred)
-         (c-mode-hook . (lambda ()
-                          (setq-local lsp-idle-delay 0.1
-                                      lsp-enable-indentation nil
-                                      lsp-enable-on-type-formatting nil)
-                          (c-set-offset 'case-label '+))))
-  :config
-  (add-to-list 'c-default-style '(c-mode . "cc-mode"))
-  (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
+;; will require tinkering with source code for eglot integration
+;; https://github.com/cordx56/rustowl/issues/16
+;; (-setup (rustowl :host github :repo "lispcat/rustowl-fork")
+;;   (:load-after eglot rust-mode)
+;;   (:when-loaded
+;;     ;; (add-to-list 'eglot-server-programs
+;;     ;;              '((rust-mode rust-ts-mode rustic-mode) . ("rustowl")))
+;;     ))
+
+;;;;; C
+
+(setup cc-mode
+  (:when-loaded
+    (add-to-list 'c-default-style '(c-mode . "cc-mode"))
+    (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
+  (:with-hook c-mode-hook
+    (when +use-lsp-mode?
+      (:hook lsp-deferred)
+      (:hook (lambda ()
+               (setq-local lsp-idle-delay 0.1
+                           lsp-enable-indentation nil
+                           lsp-enable-on-type-formatting nil)
+               (c-set-offset 'case-label '+))))
+    (when +use-eglot?
+      (:hook eglot-ensure))))
 
 ;; (leaf cc-mode :elpaca nil
 ;;   :if use-eglot?
@@ -432,7 +628,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;   (add-to-list 'c-default-style '(c-mode . "cc-mode"))
 ;;   (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
 
-;;;; Java
+;;;;; Java
 
 ;; Java LSP support
 
@@ -472,15 +668,16 @@ Optional WIDTH parameter determines total width (defaults to 70)."
 ;;       (:bind "<f9>" #'projectile-compile-project))))
 
 (-setup eglot-java
+  (:load-after eglot)
   (:hook-into java-mode-hook
               java-ts-mode-hook)
   (:with-map eglot-java-mode-map
-    (:bind "C-c l n" eglot-java-file-new
-           "C-c l x" eglot-java-run-main
-           "C-c l t" eglot-java-run-test
-           "C-c l N" eglot-java-project-new
-           "C-c l T" eglot-java-project-build-task
-           "C-c l R" eglot-java-project-build-refresh))
+    (:bind "C-c l l n" eglot-java-file-new
+           "C-c l l x" eglot-java-run-main
+           "C-c l l t" eglot-java-run-test
+           "C-c l l N" eglot-java-project-new
+           "C-c l l T" eglot-java-project-build-task
+           "C-c l l R" eglot-java-project-build-refresh))
   (:when-loaded
     (setq eglot-java-user-init-opts-fn 'custom-eglot-java-init-opts)
     (defun custom-eglot-java-init-opts (server eglot-java-eclipse-jdt)
@@ -493,65 +690,61 @@ Optional WIDTH parameter determines total width (defaults to 70)."
                                     +emacs-src-dir))
            :enabled t))))))
 
+  (with-eval-after-load 'eglot
+    (add-to-list '+eglot-override-syntax-checker '(java-ts-mode flymake))
+    (add-to-list '+eglot-override-syntax-checker '(java-mode flymake)))
+
+  (defun my/java-mode-setup (mode)
+    ;; lsp
+    (add-hook mode #'eglot-ensure)
+    ;; (add-hook mode #'lsp-deferred)
+
+    ;; auto-fill
+    (setq-local fill-column 100)
+    (add-hook mode #'auto-fill-mode)
+
+    ;; binds
+    (define-key (symbol-value (intern (format "%s-map" mode)))
+                (kbd "<f9>") #'projectile-compile-project))
+
   (:with-feature java-mode
     (:when-loaded
-      ;; lsp
-      ;; (:hook lsp-deferred)
-      (:hook eglot-ensure)
-
-      ;; auto-fill
-      (:local-set fill-column 100)
-      (:hook auto-fill-mode)
-
-      ;; binds
-      (:bind "<f9>" #'projectile-compile-project)))
+      (my/java-mode-setup 'java-mode)))
 
   (:with-feature java-ts-mode
     (:when-loaded
-      ;; lsp
-      ;; (:hook lsp-deferred)
-      (:hook eglot-ensure)
+      (my/java-mode-setup 'java-ts-mode))))
 
-      ;; auto-fill
-      (:hook auto-fill-mode)
-      (:local-set fill-column 100)
+;;;;; Markdown
 
-                                        ; binds
-      (:bind "<f9>" #'projectile-compile-project))))
+(-setup markdown-mode
+  (:file-match "\\.md\\'")
+  (:with-mode gfm-mode
+    (:file-match "README\\.md\\'" ))
+  (:option markdown-fontify-code-blocks-natively t)
+  (:when-loaded
+    (defun +setup-markdown-mode ()
+      ;; (visual-fill-column-mode 1)
+      (display-line-numbers-mode 0))
 
-;;;; Markdown
+    ;; (setq markdown-command "marked")
+    (add-hook 'markdown-mode-hook #'+setup-markdown-mode)))
 
-(leaf markdown-mode
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode))
-  :setq
-  (markdown-fontify-code-blocks-natively . t)
-  :config
-  (defun +setup-markdown-mode ()
-    ;; (visual-fill-column-mode 1)
-    (display-line-numbers-mode 0))
+;;;;; Scala (disabled)
 
-  ;; (setq markdown-command "marked")
-  (add-hook 'markdown-mode-hook #'+setup-markdown-mode))
+(-setup scala-mode :disabled
+  (:hook-into (lambda ()
+                (setq prettify-symbols-alist
+                      scala-prettify-symbols-alist))))
 
-;;;; Scala
+;;;;; Zig (disabled)
 
-(leaf scala-mode
-  :disabled t
-  :interpreter "scala"
-  :hook
-  (lambda () (setq prettify-symbols-alist
-              scala-prettify-symbols-alist)))
-
-;;;; Zig
-
-(leaf zig-mode
-  :disabled t
+(-setup zig-mode :disabled
   ;; :config
   ;; (zig-format-on-save-mode 0)
   )
 
-;;;; Haskell
+;;;;; Haskell
 
 (-setup haskell-mode
   (:file-match ".hs")
@@ -562,25 +755,23 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (add-hook 'haskell-mode-hook #'lsp-deferred)
   (add-hook 'haskell-literate-mode-hook #'lsp-deferred))
 
-;;;; Nix
+;;;;; Nix
 
-(leaf nix-mode
-  :mode "\\.nix\\'"
-  :hook ((nix-mode-hook . lsp-deferred)))
+(-setup nix-mode
+  (:hook eglot-ensure))
 
-;;;; Yaml
+;;;;; Yaml
 
-(leaf yaml-mode
-  :mode "\\.yml\\'")
+(-setup yaml-mode)
 
-;;;; Ron
+;;;;; Ron (disabled)
 
-(leaf ron-mode
-  :require t)
+(-setup ron-mode :disabled)
 
-;;;; Kerolox
+;;;;; Kerolox
 
-(leaf emacs :elpaca nil ;; kerolox!
+(-setup emacs
+  :disabled
 
   ;; Major-mode for .rp1 files
   (define-derived-mode kerolox-mode prog-mode "kerolox"
@@ -597,7 +788,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
       :server-id 'saturn-v-lsp)))
 
 
-;;;;; Kerolox treesit mode and LSP
+;;;;;; Kerolox treesit mode and LSP
 
   (define-derived-mode kerolox-ts-mode kerolox-mode "kerolox[ts]"
     "Tree-sitter based major mode for editing kerolox (.rp1) files."
@@ -683,7 +874,7 @@ Optional WIDTH parameter determines total width (defaults to 70)."
       :server-id 'saturn-v-ts-lsp)))
 
 
-;;;;; kerolox - tree-sitter generic
+;;;;;; kerolox - tree-sitter generic
 
   (with-eval-after-load 'treesit
     ;; Configure the language grammar source and mapping
@@ -706,44 +897,44 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   (add-hook 'kerolox-ts-mode-hook #'lsp-deferred)
 
 
-;;;;; Kerolox misc
+;;;;;; Kerolox misc
 
   ;; Remap regular mode to tree-sitter mode
   (setq major-mode-remap-alist
         '((kerolox-mode . kerolox-ts-mode)))
 
 
-;;;;; Kerolox - Auto-mode-alist
+;;;;;; Kerolox - Auto-mode-alist
 
   ;; Associate file name pattern with major-mode
   (add-to-list 'auto-mode-alist '("\\.rp1\\'" . kerolox-ts-mode)))
 
-;;;; Lua-mode
+;;;;; Lua-mode
 
-(leaf lua-mode
-  :config
-  (with-eval-after-load 'lsp-lua
-    ;; fix issue with externally installed server
-    (setq lsp-clients-lua-language-server-command
-          "lua-language-server")
-    ;; renoise lua api definitions
-    ;; (setq lsp-lua-workspace-library "'Lua.workspace.library': {'/home/sui/Music/prod/scripts/renoise-lua/definitions': true}")
-    (setq lsp-lua-workspace-library (ht ("/home/sui/Music/prod/scripts/renoise-lua/definitions" t)))
-    (setq lsp-lua-runtime-plugin "/home/sui/Music/prod/scripts/renoise-lua/definitions/plugin.lua")
-    )
+(-setup lua-mode
+  (:when-loaded
+    (with-eval-after-load 'lsp-lua
+      ;; fix issue with externally installed server
+      (setq lsp-clients-lua-language-server-command
+            "lua-language-server")
+      ;; renoise lua api definitions
+      ;; (setq lsp-lua-workspace-library "'Lua.workspace.library': {'/home/sui/Music/prod/scripts/renoise-lua/definitions': true}")
+      (setq lsp-lua-workspace-library (ht ("/home/sui/Music/prod/scripts/renoise-lua/definitions" t)))
+      (setq lsp-lua-runtime-plugin "/home/sui/Music/prod/scripts/renoise-lua/definitions/plugin.lua")
+      )
 
-  ;; fix pt.2
-  (defun +lsp-clients-lua-language-server-test ()
-    "(Improved) Test Lua language server binaries and files."
-    (or (and (f-exists? lsp-clients-lua-language-server-main-location)
-             (f-exists? lsp-clients-lua-language-server-bin))
-        (f-exists? (car (split-string lsp-clients-lua-language-server-command)))))
+    ;; fix pt.2
+    (defun +lsp-clients-lua-language-server-test ()
+      "(Improved) Test Lua language server binaries and files."
+      (or (and (f-exists? lsp-clients-lua-language-server-main-location)
+               (f-exists? lsp-clients-lua-language-server-bin))
+          (f-exists? (car (split-string lsp-clients-lua-language-server-command)))))
 
-  (advice-add #'lsp-clients-lua-language-server-test
-              :override
-              #'+lsp-clients-lua-language-server-test))
+    (advice-add #'lsp-clients-lua-language-server-test
+                :override
+                #'+lsp-clients-lua-language-server-test)))
 
-;;;; Typst
+;;;;; Typst
 
 (-setup (typst-ts-mode :type git :host codeberg :repo "meow_king/typst-ts-mode")
   (:option typst-ts-mode-grammar-location
@@ -767,52 +958,52 @@ Optional WIDTH parameter determines total width (defaults to 70)."
   ;; auto compile
   (add-hook 'typst-ts-mode-hook #'typst-ts-watch-mode))
 
-;;; Tooling
+;;;;; Typescript
 
-;;;; direnv
+(-setup typescript-mode)
 
-(leaf direnv
-  :init
+;;;; Tooling
+;;;;; direnv
+
+(-setup direnv
   (direnv-mode 1))
 
-;;;; Rainbow mode
+;;;;; Rainbow mode
 
 ;; Add color to hex codes in buffer.
 ;; --
 
-(leaf rainbow-mode
-  :hook prog-mode-hook)
+(-setup rainbow-mode
+  (:diminish)
+  (:hook-into prog-mode-hook))
 
-;;;; Ansi-color... not sure what this is for
+;;;;; TODO: Ansi-color... not sure what this is for
 
 (with-eval-after-load 'ansi-color
   (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter))
 
-;;;; Auto-install treesitter backends
+;;;;; Auto-install treesitter backends
 
-(leaf treesit-auto
-  :require t
-  :config
-  (setq treesit-auto-install 'prompt)
+(-setup treesit-auto
+  (:option treesit-auto-install 'prompt)
+  (:autoload global-treesit-auto-mode)
   (global-treesit-auto-mode))
 
-;;; Code formatting
+;;;; Code formatting
 
-;;; Code folding
+;;;; Code folding
 
 ;; TODO: look into: https://github.com/tarsius/outline-minor-faces
 ;; is this worth it? alternative of
 
-;;;; Outline
+;;;;; Outline
 
-(leaf outline-indent
-  :doc "Optimal folding: https://github.com/jamescherti/outline-indent.el"
-  :commands outline-indent-minor-mode
-  :after org
-  :custom
-  (outline-indent-ellipsis . " ▼")
-
-  :init
+;; Optimal folding: https://github.com/jamescherti/outline-indent.el
+(-setup outline-indent
+  (:diminish outline-minor-mode)
+  (:diminish outline-indent-minor-mode)
+  (:autoload outline-indent-minor-mode)
+  (:option outline-indent-ellipsis " ‣")
 
   ;; outline-cycle
   (defun +outline-toggle (&optional univ)
@@ -932,143 +1123,125 @@ If ran with Universal Argument, run `+outline-cycle-buffer' instead."
   ;; (advice-add 'projectile-find-file :around #'+hide-outline-on-open)
   ;; (advice-add 'projectile-find-file-dwim :around #'+hide-outline-on-open)
 
-  :bind
+  (:with-map outline-minor-mode-map
+    (:bind "<backtab>" +outline-toggle-meta))
 
-  (outline-minor-mode-map
-   ("<backtab>" . +outline-toggle-meta))
+  (:with-map emacs-lisp-mode-map
+    (:bind "C-c C-n" outline-next-visible-heading
+           "C-c C-p" outline-previous-visible-heading))
 
-  (emacs-lisp-mode-map
-   ("C-c C-n" . outline-forward-same-level)
-   ("C-c C-p" . outline-backward-same-level))
+  (:when-loaded
+    (defun +outline-faces-setup ()
+      (dolist (face-config
+               '((outline-1 1.9 nil)
+                 (outline-2 1.6 nil)
+                 (outline-3 1.3 t)
+                 (outline-4 1.1 t)
+                 (outline-5 1.0 t)
+                 (outline-6 1.0 t)
+                 (outline-7 1.0 t)
+                 (outline-8 1.0 t)))
+        (let ((face (nth 0 face-config))
+              (height (nth 1 face-config))
+              (over (nth 2 face-config)))
+          (set-face-attribute face nil :height height :overline over)))
+      ;; extras
+      (set-face-attribute 'org-ellipsis nil :foreground nil))
+    ;; run now
+    (+outline-faces-setup)
+    ;; run after each theme load
+    (add-hook '+after-enable-theme-hook #'+outline-faces-setup)
+
+    (progn
+
+      (defvar my-outline-map (make-sparse-keymap)
+        "Keymap for outline commands.")
+
+      (dolist (binding
+               '(;; buffer
+                 (";" . +outline-cycle-buffer)
+                 ("s" . outline-show-all)
+                 ("h" . outline-hide-body)
+                 ;; subtree
+                 ("t" . outline-show-subtree)
+                 ("T" . outline-hide-subtree)
+                 ;; other/current
+                 ("O" . outline-hide-other)
+                 ;; children
+                 ("c" . outline-show-children)
+                 ("C" . outline-hide-children)
+                 ;; move
+                 ("<up>" . outline-indent-move-subtree-up)
+                 ("<down>" . outline-indent-move-subtree-down)
+                 ("<right>" . outline-indent-shift-right)
+                 ("<left>" . outline-indent-shift-left)
+                 ;; navigation
+                 ("p" . outline-previous-visible-heading)
+                 ("n" . outline-next-visible-heading)
+                 ("b" . outline-backward-same-level)
+                 ("f" . outline-forward-same-level)))
+        (define-key my-outline-map (kbd (car binding)) (cdr binding)))
+
+      ;; Bind the keymap to C-c ;
+      (global-set-key (kbd "C-c o o") my-outline-map)))
 
   ;; buffer
-  ("C-c ; ;" . +outline-cycle-buffer)
-  ("C-c ; s" . outline-show-all)
-  ("C-c ; h" . outline-hide-body)
+  (:global "C-c o ;" +outline-cycle-buffer
+           "C-c o s" outline-show-all
+           "C-c o h" outline-hide-body)
 
-  ;; subtree
-  ("C-c ; t" . outline-show-subtree)
-  ("C-c ; T" . outline-hide-subtree)
+  (:with-hook emacs-lisp-mode-hook
+    (:hook (lambda ()
+             (outline-indent-minor-mode)
+             ;; (setq-local make-window-start-visible t) ;; TODO: see what commenting out does
+             (let ((header-comment-p "^\\(;;;+\\) .*"))
+               (setq-local outline-regexp header-comment-p)
+               (setq-local outline-level
+                           (lambda ()
+                             (if (looking-at "^\\(;;;+\\) .*")
+                                 (- (match-end 1) (match-beginning 1) 2)
+                               0)))
+               )))))
 
-  ;; other/current
-  ("C-c ; O" . outline-hide-other)
+;;;;; Outline faces
 
-  ;; children
-  ("C-c ; c" . outline-show-children)
-  ("C-c ; C" . outline-hide-children)
-
-  ;; move
-  ("C-c ; <up>" . outline-indent-move-subtree-up)
-  ("C-c ; <down>" . outline-indent-move-subtree-down)
-  ("C-c ; <right>" . outline-indent-shift-right)
-  ("C-c ; <left>" . outline-indent-shift-left)
-
-  ; navigation
-  ("C-c ; p" . outline-previous-visible-heading)
-  ("C-c ; n" . outline-next-visible-heading)
-  ("C-c ; b" . outline-backward-same-level)
-  ("C-c ; f" . outline-forward-same-level)
-
-  ;; navigation
-
-  :hook
-  ((emacs-lisp-mode-hook
-    . (lambda ()
-        (outline-indent-minor-mode)
-        (setq-local make-window-start-visible t)
-        (let ((header-comment-p "^\\(;;;+\\) .*")
-              (cob-p (string-join
-                      '("^;;;;+$"
-                        "^;;+ +\\(.*\\) +;$")
-                      "\\|"))
-              (coh-p (string-join
-                      '("^;;; -- \\(.*\\) -+$")))
-              (def-p (string-join
-                      '("^("))))
-          (setq-local outline-regexp
-                      (string-join
-                       (list
-                        ;; cob-p
-                        ;; coh-p
-                        ;; def-p
-                        header-comment-p)
-                       ;; '(
-                       ;;  ;; "^;;;+ .*"    ; ;;;+ space rest       (regular)
-                       ;;  "^;;+ .*"     ; ;;+ space rest (optimal?)
-                       ;;  "^;;$"        ; ^;;$ (alt)
-                       ;;  "^(...."      ; top-level parens
-                       ;;  ;; "^;;+ .* ;$"  ; ;;+ space rest ;      (cob)
-                       ;;  "^;;;;+$"     ; ;;;;+ (only, all the way) (cob)
-                       ;;  )
-                       "\\|"))
-          (setq-local outline-level
-                      (lambda ()
-                        (cond
-                         ;; ((looking-at cob-p)
-                         ;;  1)
-                         ;; ((looking-at coh-p)
-                         ;;  2)
-                         ((looking-at "^\\(;;;+\\) .*")
-                          (- (match-end 1) (match-beginning 1) 2))
-                         ((looking-at def-p)
-                          1000)
-                         (t 0))))
-
-          ;; (setq-local outline-level
-          ;;             (lambda ()
-          ;;               (cond
-          ;;                ;; ((looking-at cob-p) 1)
-          ;;                ;; ((looking-at coh-p) 2)
-          ;;                ;; ((looking-at cow-p) 3)
-          ;;                ((looking-at def-p)
-          ;;                 (- (match-end 0) (match-beginning 0))))))
-          ;; (setq-local outline-level
-          ;;             (lambda ()
-          ;;               (cond
-          ;;                ((looking-at "^;;;+")
-          ;;                 (- (match-end 0) (match-beginning 0)))
-          ;;                ((looking-at "^(")
-          ;;                 1000)
-          ;;                nil)))
-          )))))
-
-;;;; Outline faces
-
-(leaf outline-minor-faces
-  :after outline outline-indent
-  :hook (outline-minor-mode-hook . outline-minor-faces-mode)
-  :config
-  ;; exclude custom fontlocking for
-  ;; (defun +outline-minor-faces--exclude-defuns (orig-fn arg)
-  ;;   "Remove ^( patterns from the regex argument."
-  ;;   (let ((filtered-regex
-  ;;          (or (let ((regex "\\|^("))   ; Fixed: escaped the backslash properly
-  ;;                (and (string-search regex arg)
-  ;;                     (string-replace regex "" arg))) ; Fixed: "" instead of nil
-  ;;              (let ((regex "^(\\|"))                 ; Fixed: escaped properly
-  ;;                (and (string-search regex arg)
-  ;;                     (replace-regexp-in-string regex "" arg))) ; Fixed: "" instead of nil
-  ;;              (let ((regex "^("))
-  ;;                (and (string-search regex arg)
-  ;;                     (replace-regexp-in-string regex "" arg)))))) ; Fixed: "" instead of nil
-  ;;     (if filtered-regex
-  ;;         (funcall orig-fn filtered-regex)
-  ;;       (funcall orig-fn arg))))
-  ;; (advice-add 'outline-minor-faces--syntactic-matcher :around
-  ;;             #'+outline-minor-faces--exclude-defuns)
+(-setup outline-minor-faces
+  (:load-after outline outline-indent)
+  (:with-hook outline-minor-mode-hook
+    (:hook outline-minor-faces-mode))
+  ;; (progn
+  ;;   ;; exclude custom fontlocking for defuns
+  ;;   (defun +outline-minor-faces--exclude-defuns (orig-fn arg)
+  ;;     "Remove ^( patterns from the regex argument."
+  ;;     (let ((filtered-regex
+  ;;            (or (let ((regex "\\|^("))   ; Fixed: escaped the backslash properly
+  ;;                  (and (string-search regex arg)
+  ;;                       (string-replace regex "" arg))) ; Fixed: "" instead of nil
+  ;;                (let ((regex "^(\\|"))                 ; Fixed: escaped properly
+  ;;                  (and (string-search regex arg)
+  ;;                       (replace-regexp-in-string regex "" arg))) ; Fixed: "" instead of nil
+  ;;                (let ((regex "^("))
+  ;;                  (and (string-search regex arg)
+  ;;                       (replace-regexp-in-string regex "" arg)))))) ; Fixed: "" instead of nil
+  ;;       (if filtered-regex
+  ;;           (funcall orig-fn filtered-regex)
+  ;;         (funcall orig-fn arg))))
+  ;;   (advice-add 'outline-minor-faces--syntactic-matcher :around
+  ;;               #'+outline-minor-faces--exclude-defuns))
   )
 
-(leaf backline
-  :after outline outline-indent
-  :config (advice-add 'outline-flag-region :after 'backline-update))
+(-setup backline
+  (:load-after outline outline-indent)
+  (:when-loaded
+    (advice-add 'outline-flag-region :after 'backline-update)))
 
-;;;; Elide (hide license header)
+;;;;; Elide (hide license header)
 
 (setup elide
   (:with-hook emacs-lisp-mode-hook
     (:hook #'elide-head-mode)))
 
-;;; end
+;;; Provide:
 
 (provide '+ide)
 ;;; +ide.el ends here

@@ -23,14 +23,16 @@
 ;; logging functions
 
 ;;; Code:
+;;;; Post-init:
+;;;;; log state of +emacs-src-dir
 
-;;; post-init
-
-;;;; log src-dir state
-
+;; Sets up `+log-src-dir-state', which runs at `emacs-startup-hook'.
 ;;
+;; This function reads the state of loaded and unloaded files under the
+;;`+emacs-src-dir', and lists files that likely should've been loaded but
+;; didn't, if any.
 
-;; --
+;; ---
 
 (require 'dash)
 
@@ -99,12 +101,9 @@ were not loaded, they're identified and logged using this function."
     (or result
         (message "ERROR: +emacs-src-dir: error in logging func?"))))
 
-
 (add-hook 'emacs-startup-hook #'+log-src-dir-state)
 
-;; --
-
-;;; end
+;;; Provide:
 
 (provide '+log)
 ;;; +log.el ends here

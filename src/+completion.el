@@ -34,7 +34,7 @@
   (:option vertico-scroll-margin 3     ; Different scroll margin (def 2)
            vertico-count 10            ; Show more candidates (def 10)
            vertico-resize 'grow-only   ; Grow/shrink minibuffer (def 'grow-only)
-           vertico-cycle nil)      ; cycle for `vertico-next/previous' (def nil)
+           vertico-cycle t)      ; cycle for `vertico-next/previous' (def nil)
   (:option
    ;; adds a menu in the minibuffer to switch display modes
    context-menu-mode t
@@ -129,8 +129,6 @@
    "C-M-#" consult-register-load        ; load
 
    ;; navigation
-   "C-c ; l" consult-outline            ; outline heading
-   "C-c o l" consult-org-heading        ; org heading
    "C-c s a" consult-org-agenda         ; agenda heading
 
    "C-c s l" consult-imenu              ; list var/func
@@ -168,10 +166,24 @@
    ;; "C-c s M" consult-man ; replaced with tldr
    )
 
+  ;; outline navigation
+
+  (defun +consult-outline-or-org-heading ()
+    (interactive)
+    (if (derived-mode-p 'org-mode)
+        (call-interactively #'consult-org-heading)
+      (call-interactively #'consult-outline)))
+
+  (:global "C-c o g" +consult-outline-or-org-heading)
+  ;; "C-c ; l" consult-outline            ; outline heading
+  ;; "C-c o l" consult-org-heading        ; org heading
+
+
   ;; project.el integration
   (:with-map project-prefix-map
     (:bind "b" consult-project-buffer
-           "C-b" consult-project-buffer))
+           "s" consult-ripgrep
+           "S" project-shell))
 
   ;; isearch integration
   (:with-map isearch-mode-map
@@ -189,6 +201,9 @@
   ;; Settings:
 
   (:when-loaded
+    ;; key for narrowing
+    (setq consult-narrow-key "<")
+
     ;; improve register preview
     (advice-add #'register-preview :override #'consult-register-window)
     (setq register-preview-delay 0.5)
@@ -431,6 +446,7 @@
 (-setup yasnippet-snippets)
 
 (-setup yasnippet
+  (:diminish yas-minor-mode)
   (add-hook 'prog-mode-hook #'yas-minor-mode)
 
   (:require-self)
@@ -505,10 +521,11 @@
            ;; "S-RET" #'corfu-insert
 
            ;; make RET do nothing
-           "RET" nil
+           ;; "RET" nil
+           "C-<return>" nil
 
            ;; easier complete and expand appropriate
-           "C-<return>" #'corfu-complete
+           ;; "C-<return>" #'corfu-complete
            ))
 
   ;; (:when-loaded
@@ -694,7 +711,7 @@
                   (when debug-on-error
                     (message "LOG: capf-local-default: %s" +capf-local-default)))
                 (+capf-prepend-local
-                 (list (cape-capf-super #'tempel-complete #'yasnippet-capf
+                 (list (cape-capf-super #'yasnippet-capf ;; #'tempel-complete
                                         #'cape-keyword))))))
 
   ;; specific major-modes
@@ -735,6 +752,16 @@
          #'cape-tex
          #'cape-rfc1345
          #'cape-emoji))
+
+  ;; eglot-java-mode
+  ;; (+capf-create-mode-setup
+  ;;  :hook eglot-java-mode-hook
+  ;;  :capfs
+  ;;  (list #'eglot-completion-at-point
+  ;;        ;; (cape-capf-super ;; #'tempel-complete #'yasnippet-capf
+  ;;        ;;  ;; #'cape-elisp-block
+  ;;        ;;  #'pcomplete-completions-at-point)
+  ;;        ))
   )
 
 ;;; Use-package - lax completion for :custom (disabled)

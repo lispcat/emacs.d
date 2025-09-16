@@ -30,7 +30,7 @@
 ;; NOTE: ensure that the newest version of org is installed right after elpaca
 ;; setup
 
-;;; org-mode
+;;; Org-mode
 
 ;; General config options for org-mode.
 
@@ -187,14 +187,14 @@
 
 ;; --
 
-;;; org: functionality
+;;; Functionality
 
 ;;;; toc-org
 
 (-setup toc-org
   (:hook-into org-mode-hook))
 
-;;; org: integration
+;;; Integration
 ;;;; anki-editor
 
 (-setup anki-editor
@@ -245,7 +245,7 @@
         (unless (org-entry-get nil "ANKI_NOTE_TYPE")
           (anki-editor-set-note-type nil "Basic"))))))
 
-;;; org: quality of life
+;;; Quality of Life
 
 ;;;; org-tempo
 
@@ -293,7 +293,7 @@
   (:hook-into org-mode-hook)
   (:option image-slicing-newline-trailing-text nil))
 
-;;; org: agenda
+;;; Agenda
 
 ;; TODO: script to generate subtasks for each day for an assignment
 
@@ -526,7 +526,7 @@
       (call-interactively #'org-update-statistics-cookies)
       )))
 
-;;; org: workflow
+;;; Workflow
 
 ;;;; org-noter
 
@@ -592,7 +592,7 @@ The property will be removed if ran with a \\[universal-argument]."
   (:when-loaded
     (org-download-enable)))
 
-;;; org: prettify
+;;; Prettify
 
 ;; stuff to make org prettier.
 
@@ -628,7 +628,7 @@ The property will be removed if ran with a \\[universal-argument]."
   (:option org-modern-star nil)
   (global-org-modern-mode 1))
 
-;;; org: misc
+;;; Misc
 ;;;; pomodoro
 
 (-setup org-pomodoro
