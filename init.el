@@ -76,15 +76,33 @@
 
 ;;; Package manager
 
-(defcustom +package-manager 'elpaca
+(defcustom +package-manager 'straight
   "The package manager to use."
   :options '(elpaca straight))
 
-(defmacro +pkg-install (&rest body)
+(defmacro +pkg-install (pkg &rest body)
+  (declare (indent defun))
   (pcase +package-manager
-    ('elpaca `(elpaca ,@body))
-    ('straight `(straight-use-package ,@body))
+    ('elpaca `(progn
+                (elpaca ,pkg)
+                ,@body))
+    ('straight `(progn
+                  (straight-use-package ',pkg)
+                  ,@body))
     (_ (user-error "+pkg-install: invalid value: %S" +pkg-install))))
+
+(defmacro +elpaca-wait-if-enabled ()
+  `(when (eq +package-manager 'elpaca) (elpaca-wait)))
+
+(defmacro +get-after-init-hook ()
+  (if (eq +package-manager 'elpaca)
+      ''elpaca-after-init-hook
+    ''after-init-hook))
+
+(defmacro +get-emacs-startup-hook ()
+  (if (eq +package-manager 'elpaca)
+      'elpaca-after-init-hook
+    'emacs-startup-hook))
 
 ;;;; elpaca
 
@@ -98,34 +116,26 @@
 
 ;;; leaf (TODO: remove all)
 
-(+pkg-install leaf)
-(when (eq +package-manager 'elpaca) (elpaca-wait))
+(+pkg-install leaf
+  (+elpaca-wait-if-enabled))
 
-(+pkg-install leaf-keywords)
-(when (eq +package-manager 'elpaca) (elpaca-wait))
-;; custom keywords
-(leaf-keywords-init)
-(setq leaf-alias-keyword-alist '((:ensure . :elpaca)))
-(setq leaf-defaults (append '(:elpaca t) leaf-system-defaults))
-(when (eq +package-manager 'elpaca) (elpaca-wait))
-
-;; hack: fix org version mismatch
-;; (elpaca org)
-
-;; finish all queues now to prevent async issues later
-;; (when (eq +package-manager 'elpaca) (elpaca-wait))
+(+pkg-install leaf-keywords
+  (+elpaca-wait-if-enabled)
+  ;; custom keywords
+  (leaf-keywords-init)
+  (setq leaf-alias-keyword-alist
+        `((:ensure . ,(intern (format ":%s" (symbol-name +package-manager))))))
+  (setq leaf-defaults (append '(:ensure t) leaf-system-defaults)))
 
 ;;; setup.el
 
-(+pkg-install setup)
-(when (eq +package-manager 'elpaca) (elpaca-wait))
-(require 'setup)
-(when (eq +package-manager 'elpaca) (elpaca-wait))
-(require '+setup)
+(+pkg-install setup
+  (+elpaca-wait-if-enabled)
+  (require 'setup)
+  ;; personal setup.el macros
+  (require '+setup-macros))
 
-(when (eq +package-manager 'elpaca) (elpaca-wait))
-
-;;; necessary packages
+;;; Necessary Packages
 
 ;; fix issues with missing programs from shell
 (-setup exec-path-from-shell
@@ -244,7 +254,7 @@ This is the non-anaphoric version - VALUE is passed as an argument to FORM."
 (-setup s)
 
 ;; finish all queues now to prevent async issues later
-(when (eq +package-manager 'elpaca) (elpaca-wait))
+(+elpaca-wait-if-enabled)
 
 ;;;; adding to the load-path
 
@@ -399,13 +409,13 @@ This function returns a list of paths that were added to (or already exist in)
                      gcs-done)))
 
 ;; increase gc freq
-(add-hook 'elpaca-after-init-hook
+(add-hook (+get-after-init-hook)
           (lambda ()
             (setq gc-cons-threshold (* 10000 10000))))
 
 ;; load saved customizations file
 ;; TODO: load this sooner? prevent freezing due to dir-locals by org-agenda
-(add-hook 'elpaca-after-init-hook
+(add-hook (+get-after-init-hook)
           (lambda ()
             (when (file-exists-p custom-file)
               (load custom-file))))

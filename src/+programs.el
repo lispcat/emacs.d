@@ -12,20 +12,20 @@
   (eat-semi-char-mode-map
    ("M-o" . ace-window)))
 
-(leaf eshell :elpaca nil
+(leaf eshell :ensure nil
   :bind
   ("C-c i e" . eshell))
 
 (leaf magit
-  :preface (elpaca transient) ; HACK: magit needs newer version
+  ;; :preface (elpaca transient) ; HACK: magit needs newer version
   :setq
   (magit-display-buffer-function . #'magit-display-buffer-same-window-except-diff-v1)
   :bind
   ("C-c v" . magit))
 
-(leaf pdf-tools
-  :config
-  (pdf-loader-install)) ; On demand loading, leads to faster startup time
+(-setup pdf-tools
+  (:when-loaded
+    (pdf-loader-install)))
 
 (leaf elfeed
   :defer-config

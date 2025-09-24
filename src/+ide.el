@@ -63,8 +63,8 @@
   (:diminish)
   (:option flycheck-display-errors-delay 0.8
            flycheck-idle-change-delay 0.4)
-  (:with-hook elpaca-after-init-hook
-    (:hook global-flycheck-mode)))
+  (add-hook (+get-after-init-hook)
+            #'global-flycheck-mode))
 
 (-setup flycheck-inline
   (:load-after flycheck)
@@ -74,13 +74,12 @@
 ;;;; buttonize URLs
 
 (setup emacs
-  (:with-hook elpaca-after-init-hook
-    (:hook global-goto-address-mode)))
+  (add-hook (+get-after-init-hook)
+            #'global-goto-address-mode))
 
 ;;;; project.el (project management)
 
-(setup project
-  (:require-self))
+;; (setup project)
 
 ;; (-setup ripgrep
 ;;   (:require-self))
@@ -100,7 +99,10 @@
     (let ((current-prefix-arg '(4)))
       (call-interactively #'project-compile)))
   (:with-map project-prefix-map
-    (:bind "C" project-compile-interactive)))
+    (:bind "C" project-compile-interactive
+           "s" consult-ripgrep
+           "S" project-shell
+           "b" consult-project-buffer)))
 
 ;; Note: obsolete, consult-project-buffer is the same?
 ;; (-setup consult-project-extra
@@ -112,21 +114,21 @@
 ;;;; projectile (alternative to project.el)
 
 (-setup projectile :disabled
-  (projectile-mode 1)
-  (:global "C-c P" projectile-command-map)
-  (:option projectile-compile-use-comint-mode t)
+        (projectile-mode 1)
+        (:global "C-c P" projectile-command-map)
+        (:option projectile-compile-use-comint-mode t)
 
-  ;; configure projectile-command-map
-  (:with-map projectile-command-map
-    (with-eval-after-load 'consult
-      (:bind "s r" #'consult-ripgrep))
+        ;; configure projectile-command-map
+        (:with-map projectile-command-map
+          (with-eval-after-load 'consult
+            (:bind "s r" #'consult-ripgrep))
 
-    (defun +lorri-init ()
-      "Run `lorri init` in the current directory and show the output."
-      (interactive)
-      (when (y-or-n-p "Run `lorri init`? ")
-        (shell-command "lorri init")))
-    (:bind "c L" #'lorri-init)))
+          (defun +lorri-init ()
+            "Run `lorri init` in the current directory and show the output."
+            (interactive)
+            (when (y-or-n-p "Run `lorri init`? ")
+              (shell-command "lorri init")))
+          (:bind "c L" #'lorri-init)))
 
 (-setup consult-projectile
   (:load-after projectile)
@@ -137,7 +139,7 @@
 ;;;; Automatic parenthesis pair matching
 
 ;; for non-programming too
-(leaf elec-pair :elpaca nil
+(leaf elec-pair :ensure nil
   :require t
   :config
   ;; disable "<" pair expansion
@@ -216,7 +218,7 @@
 ;; Steps:
 ;; - install emacs-lsp-booster
 ;; - use plist for deserialization (FOLLOW GUIDE)
-(leaf emacs :elpaca nil
+(leaf emacs :ensure nil
   :if +use-lsp-mode?
   :config
   (setq read-process-output-max (* 1024 1024)) ;; 1mb
@@ -262,6 +264,7 @@
 
 (setup eglot
   (:only-if +use-eglot?)
+  (:option eglot-report-progress nil)
   (:with-map eglot-mode-map
     (:bind "C-c l a" eglot-code-actions
            "C-c l A" eglot-code-action-quickfix ;; what's this do?
@@ -477,7 +480,7 @@
 
 ;; improved scheme editing
 (-setup geiser :disabled
-        (:file-match "\\.scm\\'")
+        (:match-file "\\.scm\\'")
         (:option geiser-default-implementation 'guile
                  geiser-active-implementations '(guile)
                  geiser-implementations-alist  '(((regexp "\\.scm$") guile))))
@@ -557,7 +560,7 @@
   (:when-loaded
     (:option rustic-lsp-client 'eglot)))
 
-;; (leaf rustic :elpaca nil
+;; (leaf rustic :ensure nil
 ;;   ;; :disabled t
 ;;   :if use-eglot?
 ;;   :init
@@ -616,7 +619,7 @@
     (when +use-eglot?
       (:hook eglot-ensure))))
 
-;; (leaf cc-mode :elpaca nil
+;; (leaf cc-mode :ensure nil
 ;;   :if use-eglot?
 ;;   :hook ((c-mode-hook . eglot-ensure)
 ;;          (c-mode-hook . (lambda ()
@@ -686,8 +689,9 @@
         (:java
          (:format
           (:settings
-           (:url ,(expand-file-name "no-search/java/eclipse-java-google-style.xml"
-                                    +emacs-src-dir))
+           (:url ,(concat "file://"
+                          (expand-file-name "no-search/java/eclipse-java-google-style.xml"
+                                            +emacs-src-dir)))
            :enabled t))))))
 
   (with-eval-after-load 'eglot
@@ -718,9 +722,9 @@
 ;;;;; Markdown
 
 (-setup markdown-mode
-  (:file-match "\\.md\\'")
+  (:match-file "\\.md\\'")
   (:with-mode gfm-mode
-    (:file-match "README\\.md\\'" ))
+    (:match-file "README\\.md\\'" ))
   (:option markdown-fontify-code-blocks-natively t)
   (:when-loaded
     (defun +setup-markdown-mode ()
@@ -747,9 +751,9 @@
 ;;;;; Haskell
 
 (-setup haskell-mode
-  (:file-match ".hs")
+  (:match-file ".hs")
   (:with-feature haskell-cabal
-    (:file-match ".cabal")))
+    (:match-file ".cabal")))
 
 (-setup lsp-haskell
   (add-hook 'haskell-mode-hook #'lsp-deferred)
@@ -1146,7 +1150,8 @@ If ran with Universal Argument, run `+outline-cycle-buffer' instead."
               (over (nth 2 face-config)))
           (set-face-attribute face nil :height height :overline over)))
       ;; extras
-      (set-face-attribute 'org-ellipsis nil :foreground nil))
+      (with-eval-after-load 'org
+        (set-face-attribute 'org-ellipsis nil :foreground 'unspecified)))
     ;; run now
     (+outline-faces-setup)
     ;; run after each theme load

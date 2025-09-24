@@ -1,4 +1,4 @@
-;;; +setup.el --- setup for setup                    -*- lexical-binding: t; -*-
+;;; +setup-macros.el --- setup for setup                    -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  lispcat
 
@@ -53,6 +53,16 @@ as OPTS to `setup-define'."
   "Customize user options using ARGS like `setq'."
   (declare (debug setq))
   `(setup (:option ,@args)))
+
+;;;; :global
+
+(setup-define :global
+  (lambda (key command)
+    `(global-set-key ,key ,command))
+  :documentation "Globally bind KEY to COMMAND."
+  :debug '(form sexp)
+  :ensure '(kbd func)
+  :repeatable t)
 
 ;;;; :autoload
 (setup-define :autoload
@@ -411,5 +421,5 @@ If FEATURE is The first FEATURE can be used to deduce the feature context.")
 
 ;;; end
 
-(provide '+setup)
-;;; +setup.el ends here
+(provide '+setup-macros)
+;;; +setup-macros.el ends here

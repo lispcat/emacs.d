@@ -25,7 +25,7 @@
            persp-auto-save-opt 2)       ; save on shutdown
 
   ;; hooks
-  (add-hook 'elpaca-after-init-hook #'(lambda () (persp-mode 1)))
+  (add-hook (+get-after-init-hook) #'(lambda () (persp-mode 1)))
 
   ;; disable completion menu (clashes with which-key)
   ;; manually disable the #'define-prefix-command

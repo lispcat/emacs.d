@@ -1,4 +1,4 @@
-(leaf server :elpaca nil
+(leaf server :ensure nil
   :doc "Autostarts an Emacs server. Connect to it using emacsclient."
   :require t
   :bind

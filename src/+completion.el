@@ -180,10 +180,12 @@
 
 
   ;; project.el integration
-  (:with-map project-prefix-map
-    (:bind "b" consult-project-buffer
-           "s" consult-ripgrep
-           "S" project-shell))
+  ;; moved to project.el
+  ;; (with-eval-after-load 'project
+  ;;   (:with-map project-prefix-map
+  ;;     (:bind "b" consult-project-buffer
+  ;;            "s" consult-ripgrep
+  ;;            "S" project-shell)))
 
   ;; isearch integration
   (:with-map isearch-mode-map
@@ -697,7 +699,8 @@
   (setq-default completion-at-point-functions
                 (list #'cape-file
                       #'cape-dabbrev
-                      #'cape-history))
+                      ;; #'cape-history ;; annoying minibuffer history?
+                      ))
 
   ;; derived-modes default (specific major-modes usually override)
 

@@ -37,57 +37,33 @@
 ;; --
 
 (setup org
-  (:option
+  (:option org-directory "~/Notes/org"  ; default org directory
 
-   ;; default org directory
-   org-directory "~/Notes/org"
+           ;; Startup:
+           org-startup-folded 'showall ; default folding mode (def: 'showeverything)
+           org-startup-indented t      ; indent with heading depth
 
-   ;; column where tags are indented to
-   org-tags-column -55
+           ;; UI
+           org-src-window-setup 'current-window ; edit src blocks in the same window
+           org-src-preserve-indentation t ; remove leading whitespace in src-blocks
+           org-tags-column -45            ; tag indent column
+           org-cycle-hide-drawer-startup t ; hide drawers
 
-   ;; default folding mode
-   org-startup-folded 'showall
-   ;; org-startup-folded 'showeverything
+           ;; Keyboard:
+           org-special-ctrl-a/e t       ; better C-a/C-e
+           org-return-follows-link t    ; RET can open links
 
-   ;; hide drawers
-   org-cycle-hide-drawer-startup t
-   ;; org-cycle-hide-drawer-startup nil
+           ;; Visual:
+           org-hide-emphasis-markers t  ; hide formatting chars (* / ~ = etc)
+           org-ellipsis                 ; custom ellipses when folded
+           " ‣"
+           ;; " ›"
+           ;; " …"
+           ;; " ⤵"
+           ;; " ▾"
+           )
 
-   ;; indent headings and its body
-   org-startup-indented t
-
-   ;; more ergonomic C-a/C-e
-   org-special-ctrl-a/e t
-
-   ;; edit src blocks in the same window
-   org-src-window-setup 'current-window
-
-   ;; RET can open links
-   org-return-follows-link t
-
-   ;; hide formatting chars (* / ~ = etc)
-   org-hide-emphasis-markers t
-
-   ;; remove annoying leading whitespace in code blocks
-   org-src-preserve-indentation t
-
-   ;; TODO: not sure what this does
-   ;; org-fontify-whole-heading-line t
-
-   ;; custom ellipses when folded
-   org-ellipsis " ‣"
-   ;; org-ellipsis " ›"
-   ;; org-ellipsis " …"
-   ;; org-ellipsis " ⤵"
-   ;; org-ellipsis " ▾"
-   )
-
-;;;; keybinds
-
-  ;; keybinds
-
-  (leader-bind
-    "o" '(:ignore t :wk "org"))
+;;;; keys
 
   (defun +org-meta-ret-meta-right ()
     "Shortcut for M-RET M-<right>."
@@ -100,8 +76,6 @@
 
 ;;;; fonts
 
-  ;; org fonts
-
   (:when-loaded
     (defvar +org-fonts-alist
       '((org-document-title :height 1.9 :weight bold)
@@ -110,8 +84,8 @@
         (org-level-3 :height 1.15)
         (org-level-4 :height 1.1)))
 
-    (with-eval-after-load 'ef-themes
-      (setq ef-themes-headings +org-fonts-alist))
+    ;; (with-eval-after-load 'ef-themes
+    ;;   (setq ef-themes-headings +org-fonts-alist))
 
     (with-eval-after-load 'modus-themes
       (setq modus-themes-headings +org-fonts-alist))
@@ -195,6 +169,7 @@
   (:hook-into org-mode-hook))
 
 ;;; Integration
+
 ;;;; anki-editor
 
 (-setup anki-editor
@@ -247,7 +222,7 @@
 
 ;;; Quality of Life
 
-;;;; org-tempo
+;;;; org-tempo (disabled)
 
 ;; Ease the creation of src blocks (code blocks).
 
@@ -266,18 +241,18 @@
 
 ;; --
 
-(setup org-tempo
-  (:load-after org)
-  (:when-loaded
-    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-    (add-to-list 'org-structure-template-alist '("py" . "src python"))
-    (add-to-list 'org-structure-template-alist '("gcc" . "src c"))
-    (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
-    (add-to-list 'org-structure-template-alist '("conf" . "src conf"))
-    (add-to-list 'org-structure-template-alist '("java" . "src java"))
-    (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
-    (add-to-list 'org-structure-template-alist '("clang" . "src c"))))
+;; (setup org-tempo
+;;   (:load-after org)
+;;   (:when-loaded
+;;     (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+;;     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+;;     (add-to-list 'org-structure-template-alist '("py" . "src python"))
+;;     (add-to-list 'org-structure-template-alist '("gcc" . "src c"))
+;;     (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
+;;     (add-to-list 'org-structure-template-alist '("conf" . "src conf"))
+;;     (add-to-list 'org-structure-template-alist '("java" . "src java"))
+;;     (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
+;;     (add-to-list 'org-structure-template-alist '("clang" . "src c"))))
 
 ;; --
 
@@ -293,76 +268,76 @@
   (:hook-into org-mode-hook)
   (:option image-slicing-newline-trailing-text nil))
 
-;;; Agenda
+;;; Agenda (TODO)
 
 ;; TODO: script to generate subtasks for each day for an assignment
 
 (setup org-agenda
   (:load-after org)
+  (:global "C-c o a" #'org-agenda
+           ;; "C-c a" 'org-agenda-list
+           "C-c o A" #'+open-org-agenda-file)
 
-  (leader-bind
-    "oa" 'org-agenda
-    "a" 'org-agenda-list)
+  ;; used above
+  (defun +open-org-agenda-file ()
+    (interactive)
+    (find-file (car org-agenda-files)))
 
   (:with-map org-agenda-mode-map
     (:bind ")" '(lambda () (interactive)
                   (org-agenda-todo 'done))))
 
-  (:option
-   org-enforce-todo-dependencies t
-   org-todo-keywords '((sequence
-                        "TODO(t)" "NEXT(n)"
-                        "|"
-                        "DONE(d/!)"))
-   org-agenda-files (list ;; "~/Notes/org/Inbox.org"
-                     ;; "~/Notes/org/agenda.org"
-                     "~/Notes/denote/20250728T235116--todo__todo.org")
-   org-tag-alist '(;; Places
-                   ("@home"   . ?H)
-                   ("@school" . ?S)
-                   ;; ("@work" . ?W)
-                   ;; Activities
-                   ("@task" . ?t)
-                   ("@studying" . ?s)
-                   ("@errands"  . ?e)
-                   ("@tidy" . ?y)
-                   ("@creative" . ?c)
-                   ("@art" . ?a)
-                   ("@programming" . ?p)
-                   ("@today" . ?T)
-                   ;; ("@calls" . ?l)
-                   ;; Devices
-                   ("@phone" . ?P)
-                   ("@computer" . ?C))
-   org-agenda-prefix-format `((agenda
-                               . ,(concat " %i "
-                                          "%?-12t"
-                                          "[%3(+org-get-prop-effort)]    "
-                                          ;; "%3(+org-get-prop-effort)  "
-                                          "% s"))
-                              (todo   . " %i ")
-                              (tags   . " %i %-12:c")
-                              ;; (search . " %i %-12:c")
-                              (search . " %c")))
+  ;; settings
+  (:option org-enforce-todo-dependencies t
+           ;; TODO keywords
+           org-todo-keywords
+           `((sequence
+              "TODO(t)" "NEXT(n)" "|" "DONE(d/!)"))
+           ;; Agenda Files
+           org-agenda-files
+           `("~/Notes/denote/20250728T235116--todo__todo.org"
+             ;; "~/Notes/org/Inbox.org"
+             ;; "~/Notes/org/agenda.org"
+             )
+           ;; Org Tags
+           org-tag-alist
+           '(;; Activities:
+             ("@task" . ?t)
+             ("@study" . ?s)
+             ;; Type:
+             ("@ongoing" . ?o)
+             ;; Classes:
+             ("@cs2" . ?S)
+             ("@bio" . ?B)
+             ("@calc2" . ?C)
+             ("@phy" . ?P))
+           ;; Format specification for Agenda View
+           org-agenda-prefix-format
+           `((agenda
+              . ,(concat " %i "
+                         "%?-12t"
+                         "[%3(+org-get-prop-effort)]    "
+                         ;; "%3(+org-get-prop-effort)  "
+                         "% s"))
+             (todo   . " %i ")
+             (tags   . " %i %-12:c")
+             ;; (search . " %i %-12:c")
+             (search . " %c"))
+           )
 
   ;; helper, used in var `org-agenda-prefix-format' above
   (defun +org-get-prop-effort ()
     (if (not (eq major-mode 'org-mode)) ""
       (let ((val (org-entry-get nil "EFFORT")))
         (if (not val) ""
-          (format "%s" (string-trim val))))))
+          (format "%s" (string-trim val)))))))
 
+;;;; org-habit (disabled)
+
+(setup org-habit
+  (:load-after org)
   (:when-loaded
-    (leader-bind
-      "oA" (defun +open-org-agenda-file ()
-             (interactive)
-             (find-file (car org-agenda-files))))
-
-    ;; also lead org-habit
-    (:with-feature org-habit
-      (:require-self)
-      (:when-loaded
-        (add-to-list 'org-modules 'org-habit t)))))
+    (add-to-list 'org-modules 'org-habit t)))
 
 ;;;; org-super-agenda
 
@@ -370,31 +345,108 @@
   (:load-after org-agenda)
   (:when-loaded
     (org-super-agenda-mode 1))
+
+  (setq ;; spacemacs-theme-org-agenda-height nil
+   ;; org-agenda-time-grid '((daily today require-timed) "----------------------" nil)
+   org-agenda-skip-scheduled-if-done t
+   org-agenda-skip-deadline-if-done t
+   org-agenda-include-deadlines t
+   org-agenda-include-diary t
+   org-agenda-block-separator nil
+   ;; org-agenda-compact-blocks t
+   org-agenda-start-with-log-mode t)
+
+  ;; (org-agenda-show-future-repeats nil)
+  ;; (org-agenda-start-on-weekday nil)
+  ;; (org-agenda-span 'week)
+  ;; (org-habit-show-habits nil)
+  ;; (org-agenda-skip-deadline-if-done t)
+  ;; (org-agenda-skip-scheduled-if-done t)
+
   (:option
+   ;; add super agenda to org-agenda dispatcher
    org-agenda-custom-commands
-   `(("a" "main agenda"
+   `(("a" "Super Agenda"
       ((agenda ""
-               ((org-agenda-show-future-repeats nil)
-                (org-agenda-start-on-weekday nil)
-                (org-agenda-span 'week)
-                (org-habit-show-habits nil)
-                (org-agenda-skip-deadline-if-done t)
-                (org-agenda-skip-scheduled-if-done t)))
-       (todo "NEXT")
-       (agenda ""
-               ((org-agenda-span 1)
-                (org-agenda-use-time-grid nil)
+               ((org-agenda-span 'day)
+                (org-agenda-overriding-header "")
                 (org-super-agenda-groups
-                 '((:name none
-                          :habit t)
-                   (:discard (:anything t)))))))))))
+                 '((:name "Overdue:"
+                          :deadline past
+                          :scheduled past)
+                   (:name "Today:"
+                          :deadline today
+                          :scheduled today
+                          :date today
+                          :todo "TODAY"
+                          :tag "today"
+                          :tag "@ongoing"
+                          :tag "ongoing")
+                   (:discard (:anything t))))))
+       (alltodo ""
+                ((org-agenda-overriding-header "")
+                 (org-agenda-span 'week)
+                 (org-super-agenda-groups
+                  '((:name "To Do Now:"
+                           :todo "NEXT"
+                           :order 1)
+                    (:name "Important"
+                           :tag "important"
+                           :priority "A"
+                           :order 2)
+                    (:name "To Do:"
+                           :todo "TODO"
+                           :order 3)
+                    (:name "Due Today"
+                           :deadline today
+                           :order 4)
+                    (:name "Due Soon"
+                           :deadline future
+                           :order 5)
+                    (:name "Overdue"
+                           :deadline past
+                           :order 6)
+                    (:name "Ongoing:"
+                           :tag "@ongoing"
+                           :tag "ongoing"
+                           :order 7)
+                    (:name "Assignments"
+                           :tag "Assignment"
+                           :order 10)
+                    (:name "Issues"
+                           :tag "Issue"
+                           :order 12)
+                    (:name "Projects"
+                           :tag "Project"
+                           :order 14)
+                    (:name "Emacs"
+                           :tag "Emacs"
+                           :order 13)
+                    (:name "Research"
+                           :tag "Research"
+                           :order 15)
+                    (:name "To read"
+                           :tag "Read"
+                           :order 30)
+                    (:name "Waiting"
+                           :todo "WAITING"
+                           :order 20)
+                    (:name "trivial"
+                           :priority<= "C"
+                           :tag ("Trivial" "Unimportant")
+                           :todo ("SOMEDAY" )
+                           :order 90)
 
-;;;; org-ql
+                    (:discard (:anything t))
+                    ))))))
+     )))
 
-(-setup org-ql
+;;;; org-ql (disabled)
+
+(-setup org-ql :disabled
   (:load-after org))
 
-;;;; functions for org-agenda
+;;;; misc functions for org-agenda
 
 (defun +org-clone-with-fraction (days time effort)
   "Clone subtree with time shifts, prefixing each subheading with fraction prefix."
@@ -551,7 +603,7 @@ The property will be removed if ran with a \\[universal-argument]."
            (message "meow: %s" num)
            (org-entry-put (point) "NOTER_PAGE" num)))))))
 
-;;;; org-capture
+;;;; org-capture (TODO)
 
 (setup org-capture
   (:load-after org)
@@ -599,13 +651,12 @@ The property will be removed if ran with a \\[universal-argument]."
 ;;;; visual fill column
 
 (-setup visual-fill-column
-  (defun +org-visual-fill ()
-    (setq visual-fill-column-width 100
-          visual-fill-column-center-text t)
-    (visual-fill-column-mode 1))
-
   (with-eval-after-load 'org
-    (add-hook 'org-mode-hook #'+org-visual-fill)))
+    (add-hook 'org-mode-hook
+              (defun +org-visual-fill ()
+                (setq visual-fill-column-width 100
+                      visual-fill-column-center-text t)
+                (visual-fill-column-mode 1)))))
 
 ;;;; org-bullets
 
@@ -622,13 +673,14 @@ The property will be removed if ran with a \\[universal-argument]."
              "✧"
              "✿")))
 
-;;;; org-modern
+;;;; org-modern (disabled)
 
 (-setup org-modern :disabled
   (:option org-modern-star nil)
   (global-org-modern-mode 1))
 
 ;;; Misc
+
 ;;;; pomodoro
 
 (-setup org-pomodoro

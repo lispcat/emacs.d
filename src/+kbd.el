@@ -220,7 +220,7 @@
 ;; TODO: for jinx x org-noter x persp-mode error, handle errors in jinx--check-pending?
 
 ;; spellchecking
-(leaf jinx :elpaca nil
+(leaf jinx :ensure nil
   :hook org-mode-hook markdown-mode-hook text-mode-hook
   :bind
   (("M-$" . jinx-correct)
