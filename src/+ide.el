@@ -956,11 +956,12 @@
                                                   target-extension)))
       (find-file-other-window target-path)
       (select-window orig-win)))
-  (add-hook 'typst-ts-mode-hook #'+typst-ts-mode-open-pdf)
+  ;; (add-hook 'typst-ts-mode-hook #'+typst-ts-mode-open-pdf)
   (:option typst-ts-preview-function #'+typst-ts-mode-open-pdf)
 
   ;; auto compile
-  (add-hook 'typst-ts-mode-hook #'typst-ts-watch-mode))
+  ;; (add-hook 'typst-ts-mode-hook #'typst-ts-watch-mode)
+  )
 
 ;;;;; Typescript
 

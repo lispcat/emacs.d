@@ -264,10 +264,20 @@
            (plist-put spacious-padding-widths :mode-line-width 0))
   (spacious-padding-mode 1))
 
-;;;; Modeline
+;;;; Mode-line
+
+(add-to-list 'load-path
+             (file-name-concat +emacs-submodules-dir
+                               "cat-line"))
 
 ;; show column # on modeline
 (column-number-mode 1)
+
+;;;;; cat-line (mode-line framework)
+
+(setup cat-line
+  (:require-self)
+  (cat-line-mode 1))
 
 ;;;;; custom segments
 
@@ -489,7 +499,7 @@
 
 (-setup mood-line
   (:require-self)
-  (mood-line-mode 1)
+  ;; (mood-line-mode 1) ;; DISABLED
 
   ;; if broken, run this:
   ;; (mood-line--process-format mood-line-format)
@@ -558,8 +568,8 @@
 
 ;; (-setup (nano-theme :host github :repo "rougier/nano-theme"))
 
-(-setup (nano-modeline :host github :repo "rougier/nano-modeline") :disabled
-        (:require-self))
+(-setup (nano-modeline :host github :repo "rougier/nano-modeline")
+  (:require-self))
 
 (-setup (nano-modeline :host github :repo "rougier/nano-modeline") :disabled
         (:require-self)

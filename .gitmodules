@@ -13,3 +13,6 @@
 [submodule "submodules/el2markdown-fork"]
 	path = submodules/el2markdown-fork
 	url = git@github.com:lispcat/el2markdown-fork.git
+[submodule "submodules/cat-line"]
+	path = submodules/cat-line
+	url = git@github.com:lispcat/cat-line.git

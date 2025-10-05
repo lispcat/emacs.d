@@ -540,7 +540,10 @@ a buffer-local variable `emms-playlistedit-orig-path'."
   ;; prettify
 
   ;; rename buffer/mode-line
-  (setq denote-rename-buffer-format "[D] %t%b  _%k")
+  (setq denote-rename-buffer-format "%t%b %k")
+  ;; (setq denote-rename-buffer-format "%D")
+  (setq denote-rename-buffer-backlinks-indicator " :")
+  (setq denote-buffer-name-prefix "<D> ")
   (denote-rename-buffer-mode 1)
 
   ;; dired fontify
