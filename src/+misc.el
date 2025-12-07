@@ -11,8 +11,9 @@
                 (server-running-p))
       (server-start)
       (message "Emacsclient Server started!")))
-  :hook
-  (emacs-startup-hook . +start-server-if-not-running))
+  ;; :hook
+  ;; (emacs-startup-hook . +start-server-if-not-running)
+  )
 
 (leaf htmlize)
 

@@ -2,11 +2,11 @@
   :setq
   (eat-term-name . "xterm-256color")
   (eat-kill-buffer-on-exit . t)
-  :defer-config
-  (setq eat-shell (concat (or explicit-shell-file-name
-                              (getenv "ESHELL")
-                              shell-file-name)
-                          " -c tmux"))
+  ;; :defer-config
+  ;; (setq eat-shell (concat (or explicit-shell-file-name
+  ;;                             (getenv "ESHELL")
+  ;;                             shell-file-name)
+  ;;                         " -c tmux"))
   :bind
   ("C-c i a" . eat)
   (eat-semi-char-mode-map

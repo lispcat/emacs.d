@@ -86,6 +86,10 @@
   (:option completion-styles '(orderless basic)
            completion-category-defaults nil
            completion-category-overrides '((file (styles partial-completion)))
+           completion-pcm-leading-wildcard t ;; in Emacs 31
+           orderless-matching-styles '(orderless-prefixes orderless-regexp)
+           ;; '(orderless-flex orderless-regexp)
+
            ;; TODO: Configure a custom style dispatcher (see the Consult wiki)
            ;; orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
            ;; orderless-component-separator #'orderless-escapable-split-on-space
@@ -445,11 +449,11 @@
 
 ;; https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for-yasnippets-when-using-eglot
 
-(-setup yasnippet-snippets)
+(-setup yasnippet-snippets :disabled)
 
-(-setup yasnippet
+(-setup yasnippet :disabled
   (:diminish yas-minor-mode)
-  (add-hook 'prog-mode-hook #'yas-minor-mode)
+  ;; (add-hook 'prog-mode-hook #'yas-minor-mode)
 
   (:require-self)
 
@@ -498,37 +502,55 @@
   (:option corfu-cycle t                ; cycle
            corfu-on-exact-match nil     ; on exact match, do nothing
            corfu-auto t                 ; auto popup
-           corfu-preselect 'prompt      ; always insert candidate into buffer
+           ;; corfu-preselect 'prompt
+           corfu-preselect 'first
+           corfu-preview-current 'insert
+           ;; corfu-preview-current 't
            corfu-auto-delay 0.15)
 
   (:with-map corfu-map
-    (:bind "TAB" #'corfu-next
-           [tab] #'corfu-next
-           "S-TAB" #'corfu-previous
-           [backtab] #'corfu-previous
+    (:bind
+     "TAB" #'corfu-next
+     [tab] #'corfu-next
+     "S-TAB" #'corfu-previous
+     [backtab] #'corfu-previous
+     ;; "TAB" #'corfu-expand
+     ;; [tab] #'corfu-expand
+     ;; "TAB" #'corfu-insert
+     ;; [tab] #'corfu-insert
 
-           ;; unbind C-n and C-p
-           "C-n" nil
-           "C-p" nil
-           [remap previous-line] nil
-           [remap next-line] nil
 
-           ;; avy-style select
-           "M-;" #'corfu-quick-complete
+     ;; temp
+     ;; "TAB" #'corfu-complete
+     ;; [tab] #'corfu-complete
+     ;; "M-TAB" #'corfu-insert ; use for tempel next?
+     ;; [M-tab] #'corfu-insert
+     ;; "S-TAB" #'corfu-insert
+     ;; [backtab] #'corfu-insert
+     "S-<return>" #'corfu-insert
 
-           ;; prevent M-TAB from opening another completion
-           ;; "M-TAB" nil
+     ;; unbind C-n and C-p
+     "C-n" nil
+     "C-p" nil
+     [remap previous-line] nil
+     [remap next-line] nil
 
-           ;; ;; make S-RET insert
-           ;; "S-RET" #'corfu-insert
+     ;; avy-style select
+     "M-;" #'corfu-quick-complete
 
-           ;; make RET do nothing
-           ;; "RET" nil
-           "C-<return>" nil
+     ;; prevent M-TAB from opening another completion
+     ;; "M-TAB" nil
 
-           ;; easier complete and expand appropriate
-           ;; "C-<return>" #'corfu-complete
-           ))
+     ;; ;; make S-RET insert
+     ;; "S-RET" #'corfu-insert
+
+     ;; make RET do nothing
+     "RET" nil
+     "C-<return>" nil
+
+     ;; easier complete and expand appropriate
+     ;; "C-<return>" #'corfu-complete
+     ))
 
   ;; (:when-loaded
   ;;   (add-hook 'corfu-mode-hook))
@@ -583,7 +605,7 @@
 
 ;; Use cape to combine lsp-capf and yasnippet-capf
 
-(-setup yasnippet-capf
+(-setup yasnippet-capf :disabled
   (:load-after yasnippet))
 
 ;;; Cape + Tempel
@@ -603,11 +625,14 @@
 (-setup tempel
   (:global "M-*" #'tempel-insert)
   (:with-map tempel-map
-    (:bind "C-M-RET" #'tempel-next
-           "C-o"   #'tempel-next)))
+    (:bind "M-<return>" #'tempel-next
+           "C-o"        #'tempel-next)))
 
 (-setup tempel-collection
   (:load-after tempel))
+
+;; (-setup eglot-tempel
+;;   (eglot-tempel-mode t))
 
 (-setup cape
   (:require-self)
@@ -674,7 +699,12 @@
                                (symbol-name hook)))))
                  `(add-hook ',hook
                             (defun ,new-defun-name ()
-                              (,func ,capfs)))))))
+                              (when debug-on-error
+                                (message "Debug: running: %S" ',new-defun-name)
+                                (message "Debug: capf before: %S" completion-at-point-functions))
+                              (,func ,capfs)
+                              (when debug-on-error
+                                (message "Debug: capf after: %S" completion-at-point-functions))))))))
       (if after-load
           `(with-eval-after-load ',after-load
              ,body)
@@ -705,17 +735,26 @@
   ;; derived-modes default (specific major-modes usually override)
 
   (dolist (hook '(prog-mode-hook conf-mode-hook text-mode-hook))
-    (add-hook hook
-              (defun +capf-derived-mode-setup ()
-                (interactive)
-                (when (local-variable-p 'completion-at-point-functions)
-                  (setq-local +capf-local-default
-                              (remove 't completion-at-point-functions))
-                  (when debug-on-error
-                    (message "LOG: capf-local-default: %s" +capf-local-default)))
-                (+capf-prepend-local
-                 (list (cape-capf-super #'yasnippet-capf ;; #'tempel-complete
-                                        #'cape-keyword))))))
+    (add-hook
+     hook
+     (defun +capf-derived-mode-setup ()
+       (interactive)
+       (if (eq major-mode 'java-ts-mode)
+           (when debug-on-error
+             (message "Debug: major-mode %s excluded from derived mode setup"
+                      major-mode))
+         (when (local-variable-p 'completion-at-point-functions)
+           (setq-local +capf-local-default
+                       (remove 't completion-at-point-functions))
+           (when debug-on-error
+             (message "Debug: capf local default: %S" +capf-local-default)
+             (message "Debug: capf now: %S" completion-at-point-functions)))
+         (+capf-prepend-local
+          (list (cape-capf-super ;; #'yasnippet-capf
+                 #'tempel-expand
+                 #'cape-keyword)))
+         (when debug-on-error
+           (message "Debug: after prepending local: %s" +capf-local-default))))))
 
   ;; specific major-modes
 
@@ -723,7 +762,7 @@
   (+capf-create-mode-setup
    :hook emacs-lisp-mode-hook
    :capfs
-   (list (cape-capf-super #'tempel-complete #'yasnippet-capf
+   (list (cape-capf-super #'tempel-complete ;; #'yasnippet-capf
                           #'cape-keyword
                           #'elisp-completion-at-point)))
 
@@ -731,7 +770,7 @@
   (+capf-create-mode-setup
    :hook eshell-mode-hook
    :capfs
-   (list (cape-capf-super #'tempel-complete #'yasnippet-capf
+   (list (cape-capf-super #'tempel-complete ;; #'yasnippet-capf
                           #'cape-keyword
                           #'pcomplete-completions-at-point)))
 
@@ -740,7 +779,7 @@
    :hook lsp-managed-mode-hook
    :after-load lsp-mode
    :capfs
-   (list (cape-capf-super #'tempel-complete #'yasnippet-capf
+   (list (cape-capf-super #'tempel-complete ;; #'yasnippet-capf
                           (cape-capf-buster
                            #'lsp-completion-at-point))))
 
@@ -749,7 +788,7 @@
    :hook org-mode-hook
    :after-load org
    :capfs
-   (list (cape-capf-super #'tempel-complete #'yasnippet-capf
+   (list (cape-capf-super #'tempel-complete ;; #'yasnippet-capf
                           #'cape-elisp-block
                           #'pcomplete-completions-at-point)
          #'cape-tex
@@ -757,14 +796,13 @@
          #'cape-emoji))
 
   ;; eglot-java-mode
-  ;; (+capf-create-mode-setup
-  ;;  :hook eglot-java-mode-hook
-  ;;  :capfs
-  ;;  (list #'eglot-completion-at-point
-  ;;        ;; (cape-capf-super ;; #'tempel-complete #'yasnippet-capf
-  ;;        ;;  ;; #'cape-elisp-block
-  ;;        ;;  #'pcomplete-completions-at-point)
-  ;;        ))
+  (+capf-create-mode-setup
+   :hook eglot-java-mode-hook
+   :after-load eglot-java
+   :capfs
+   (list (cape-capf-super
+          #'tempel-complete ;; prefix len: 2
+          (cape-capf-prefix-length #'eglot-completion-at-point 2))))
   )
 
 ;;; Use-package - lax completion for :custom (disabled)

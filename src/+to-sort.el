@@ -1,3 +1,8 @@
+(setup cus-edit
+  (:with-map Custom-mode-map
+    (:bind "n" next-line
+           "p" previous-line)))
+
 (leaf omni-quotes
   :diminish t
   :init (omni-quotes-mode 1)

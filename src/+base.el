@@ -225,6 +225,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 (setup dired
   (:option dired-listing-switches "-Ahl --group-directories-first -X"
+           dired-dwim-target t  ; copy file to other window
            dired-auto-revert-buffer t)  ; auto update file changes
   ;; in dired-mode-map
   (:bind "h" #'dired-up-directory
@@ -293,7 +294,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
            "C-h h" helpful-at-point
            "C-h H" view-hello-file ;; command originally at "C-h h"
            "C-h M" which-key-show-major-mode
-           "C-h E" describe-keymap))
+           "C-h E" describe-keymap)
+  (:bind "n" #'next-line
+         "p" #'previous-line))
 
 ;;;; tldr client
 

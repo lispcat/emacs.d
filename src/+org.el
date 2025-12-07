@@ -87,11 +87,11 @@
     ;; (with-eval-after-load 'ef-themes
     ;;   (setq ef-themes-headings +org-fonts-alist))
 
-    (with-eval-after-load 'modus-themes
-      (setq modus-themes-headings +org-fonts-alist))
+    ;; (with-eval-after-load 'modus-themes
+    ;;   (setq modus-themes-headings +org-fonts-alist))
 
-    (with-eval-after-load 'kaolin-themes
-      (setq kaolin-themes-org-scale-headings nil))
+    ;; (with-eval-after-load 'kaolin-themes
+    ;;   (setq kaolin-themes-org-scale-headings nil))
 
     ;; for each FACE, if not yet set to target, set.
     (defun +org-fonts-setup (&rest _args)
@@ -124,8 +124,9 @@
               (message "Log: setting: %S, %S" t-face t-attr-c-t-val-alist)
               (apply #'set-face-attribute t-face nil t-args))))))
 
-    (advice-add 'load-theme :after #'+org-fonts-setup)
-    (add-hook 'org-mode-hook #'+org-fonts-setup))
+    ;; (advice-add 'load-theme :after #'+org-fonts-setup)
+    ;; (add-hook 'org-mode-hook #'+org-fonts-setup)
+    )
 
   ;; colorize "NEXT" todo face
 
@@ -133,9 +134,14 @@
     (defun +org-todo-color-override (&rest _)
       "Set org-todo-keyword-faces only if not already set by the theme."
       (setq org-todo-keyword-faces
-            `(("NEXT" :foreground ,(or (ignore-error
-                                           (face-attribute 'highlight :foreground nil 'default))
-                                       "yellow")))))
+            `(("NEXT" . ( :foreground ,(face-foreground 'font-lock-string-face nil)
+                          :weight bold
+                          :inhert (org-todo)
+                          ))
+              ("PLAN" . ( :foreground ,(face-foreground 'font-lock-function-name-face nil)
+                          :weight bold
+                          :inhert (org-todo)
+                          )))))
 
     (+org-todo-color-override)
     (advice-add 'load-theme :after #'+org-todo-color-override))
@@ -272,67 +278,107 @@
 
 ;; TODO: script to generate subtasks for each day for an assignment
 
+(defun +org-agenda-open-agenda-file ()
+  (interactive)
+  (find-file (car org-agenda-files)))
+
+(defun +org-agenda-mark-as-done ()
+  (interactive)
+  (org-agenda-todo 'done))
+
 (setup org-agenda
   (:load-after org)
-  (:global "C-c o a" #'org-agenda
-           ;; "C-c a" 'org-agenda-list
-           "C-c o A" #'+open-org-agenda-file)
 
-  ;; used above
-  (defun +open-org-agenda-file ()
-    (interactive)
-    (find-file (car org-agenda-files)))
+  ;; binds
 
+  (:global
+   "C-c o a" #'org-agenda
+   "C-c o A" #'+org-agenda-open-agenda-file)
   (:with-map org-agenda-mode-map
-    (:bind ")" '(lambda () (interactive)
-                  (org-agenda-todo 'done))))
+    (:bind ")" #'+org-agenda-mark-as-done))
 
-  ;; settings
-  (:option org-enforce-todo-dependencies t
-           ;; TODO keywords
-           org-todo-keywords
-           `((sequence
-              "TODO(t)" "NEXT(n)" "|" "DONE(d/!)"))
-           ;; Agenda Files
-           org-agenda-files
-           `("~/Notes/denote/20250728T235116--todo__todo.org"
-             ;; "~/Notes/org/Inbox.org"
-             ;; "~/Notes/org/agenda.org"
-             )
-           ;; Org Tags
-           org-tag-alist
-           '(;; Activities:
-             ("@task" . ?t)
-             ("@study" . ?s)
-             ;; Type:
-             ("@ongoing" . ?o)
-             ;; Classes:
-             ("@cs2" . ?S)
-             ("@bio" . ?B)
-             ("@calc2" . ?C)
-             ("@phy" . ?P))
-           ;; Format specification for Agenda View
-           org-agenda-prefix-format
-           `((agenda
-              . ,(concat " %i "
-                         "%?-12t"
-                         "[%3(+org-get-prop-effort)]    "
-                         ;; "%3(+org-get-prop-effort)  "
-                         "% s"))
-             (todo   . " %i ")
-             (tags   . " %i %-12:c")
-             ;; (search . " %i %-12:c")
-             (search . " %c"))
-           )
+  ;; options
+
+  (:option
+   ;; only DONE if TODO subtasks are DONE
+   org-enforce-todo-dependencies t
+
+   ;; todo keywords
+   org-todo-keywords
+   `((sequence
+      "TODO(t)" "NEXT(n)" "PLAN(p)" "|" "DONE(d/!)"))
+
+   ;; agenda files
+   org-agenda-files
+   `("~/Notes/denote/20250728T235116--todo__todo.org")
+
+   ;; org tags
+   org-tag-alist
+   '(;; activities:
+     ("@task" . ?t)
+     ("@study" . ?s)
+     ;; type:
+     ("@ongoing" . ?o)
+     ;; classes:
+     ("@cs2" . ?S)
+     ("@bio" . ?B)
+     ("@calc2" . ?C)
+     ("@phy" . ?P))
+
+   ;; format specification for agenda view
+   org-agenda-prefix-format
+   `((agenda
+      . ,(concat " %i %?-12t "
+                 "%-10(+org-get-prop-default) "
+                 "% s"))
+     (todo . " %i ")
+     ;; (tags . " %i %-12:c")
+     (tags . " %i ")
+     (search . " %c")))
 
   ;; helper, used in var `org-agenda-prefix-format' above
-  (defun +org-get-prop-effort ()
-    (if (not (eq major-mode 'org-mode)) ""
-      (let ((val (org-entry-get nil "EFFORT")))
-        (if (not val) ""
+  (defun +org-get-prop-default ()
+    (apply #'format "[%s] %-2s"
+           (let* ((parts-done (+org-get-prop "PARTS_DONE"))
+                  (parts-total (+org-get-prop "PARTS_TOTAL"))
+                  (fraction (concat (or parts-done "_")
+                                    "/"
+                                    (or parts-total "_"))))
+             (if-let* ((parts-done-num (if (stringp parts-done)
+                                           (string-to-number parts-done)
+                                         0))
+                       (parts-total-num (when (stringp parts-total)
+                                          (string-to-number parts-total)))
+                       (days-left-num (+org-get-days-left-till-deadline))
+                       (parts-left-num (- parts-total-num parts-done-num))
+                       (days-behind (- parts-left-num days-left-num))
+                       (days-behind-result
+                        (cond ((> days-behind 0)
+                               (format "-%s" days-behind))
+                              (t
+                               (format "+%s" (abs days-behind))))))
+                 (list days-behind-result fraction)
+               (list "  " fraction)))))
+
+  (defun +org-get-days-left-till-deadline ()
+    (when-let* ((deadline-abs-day
+                 (-some->> (+org-get-prop "DEADLINE")
+                   (org-time-string-to-time)
+                   (time-to-days)))
+                (today-abs-day
+                 (-some->> org-agenda-current-date ;; in gregorian
+                   (calendar-absolute-from-gregorian)))
+                (days-left
+                 (- deadline-abs-day today-abs-day)))
+      days-left))
+
+  (defun +org-get-prop (prop)
+    (when (eq major-mode 'org-mode)
+      (let ((val (org-entry-get nil prop)))
+        (if (not val) nil
           (format "%s" (string-trim val)))))))
 
-;;;; org-habit (disabled)
+;;;; org-habit
 
 (setup org-habit
   (:load-after org)
@@ -363,83 +409,145 @@
   ;; (org-agenda-skip-deadline-if-done t)
   ;; (org-agenda-skip-scheduled-if-done t)
 
+  ;; (defun ri/pred-test (item)
+  ;;   t)
+
+  ;; TODO: fix this so that it works even if goto next day in agenda view!!!
+  ;; (defun ri/org-parts-total-deadline-predicate (item)
+  ;;   "Return t if PARTS-TOTAL is < days remaining till DEADLINE."
+  ;;   (let ((marker (or (get-text-property 0 'org-marker item)
+  ;;                     (get-text-property 0 'org-hd-marker item))))
+  ;;     (when marker
+  ;;       (let* ((parts-total (org-entry-get marker "PARTS_TOTAL"))
+  ;;              (parts-total-num (when (and parts-total (stringp parts-total))
+  ;;                                (string-to-number parts-total)))
+  ;;              (deadline (org-entry-get marker "DEADLINE"))
+  ;;              (deadline-time-left
+  ;;               (when deadline
+  ;;                 (org-time-string-to-time deadline)))
+  ;;              (deadline-days
+  ;;               (when deadline-time-left
+  ;;                 (time-to-days deadline-time-left)))
+  ;;              (curr-agenda-day (or (and (bound-and-true-p org-agenda-current-date)
+  ;;                                        (time-to-days
+  ;;                                         (org-time-from-absolute
+  ;;                                          org-agenda-current-date)))
+  ;;                                   (org-today)))
+  ;;              (days-to-deadline
+  ;;               (when deadline-days
+  ;;                 (- deadline-days curr-agenda-day))))
+
+  ;;         (cond ((and parts-total-num days-to-deadline)
+  ;;                (> parts-total-num (- days-to-deadline 1))))))))
+
+  ;; (defvar ri/org-parts-- )
+
+  (defun ri/org-parts--marker-validate (marker)
+    (when (and (markerp marker)
+               (buffer-live-p (marker-buffer marker)))
+      (with-current-buffer (marker-buffer marker)
+        (when (derived-mode-p 'org-mode)
+          t))))
+
+  (defun ri/org-parts--marker-get-deadline-time (marker)
+    "Return days left till deadline."
+    (when (ri/org-parts--marker-validate marker)
+      (-some->> (org-entry-get marker "DEADLINE")
+        (org-time-string-to-time))))
+
+  (defun ri/org-parts--marker-get-parts-total (marker)
+    "Return float if PARTS-TOTAL exists."
+    (when (ri/org-parts--marker-validate marker)
+      (-some->> (org-entry-get marker "PARTS_TOTAL")
+        (string-to-number))))
+
+  (defun ri/org-parts--days-and-parts-state (item)
+    (let ((marker (or (get-text-property 0 'org-marker item)
+                      (get-text-property 0 'org-hd-marker item))))
+      (when-let*
+          ((parts (ri/org-parts--marker-get-parts-total marker))
+           (deadline (ri/org-parts--marker-get-deadline-time marker)) ;; in abs time
+           (deadline-days (time-to-days deadline))
+           (today org-agenda-current-date) ;; in gregorian
+           (today-days (calendar-absolute-from-gregorian today))
+           (days-left (- deadline-days today-days)))
+        (let* ((days-lt-parts-p (>= parts (- days-left 1)))
+               (days-n-lt-parts-p (not days-lt-parts-p)))
+          (list days-lt-parts-p days-n-lt-parts-p)))))
+
+  (defun ri/org-parts--days-lt-parts-predicate (item)
+    (nth 0 (ri/org-parts--days-and-parts-state item)))
+
+  (defun ri/org-parts--days-not-lt-parts-predicate (item)
+    (nth 1 (ri/org-parts--days-and-parts-state item)))
+
+  (defun ri/org-parts--yes-deadline-no-parts-predicate (item)
+    (let ((marker (or (get-text-property 0 'org-marker item)
+                      (get-text-property 0 'org-hd-marker item))))
+      (and (ri/org-parts--marker-get-deadline-time marker)
+           (not (ri/org-parts--marker-get-parts-total marker)))))
+
   (:option
    ;; add super agenda to org-agenda dispatcher
+   ;; TODO: have a thing at the top that shows how many parts i'm behind with in total.
    org-agenda-custom-commands
    `(("a" "Super Agenda"
       ((agenda ""
                ((org-agenda-span 'day)
                 (org-agenda-overriding-header "")
-                (org-super-agenda-groups
-                 '((:name "Overdue:"
-                          :deadline past
-                          :scheduled past)
-                   (:name "Today:"
-                          :deadline today
-                          :scheduled today
-                          :date today
-                          :todo "TODAY"
-                          :tag "today"
-                          :tag "@ongoing"
-                          :tag "ongoing")
-                   (:discard (:anything t))))))
-       (alltodo ""
-                ((org-agenda-overriding-header "")
-                 (org-agenda-span 'week)
-                 (org-super-agenda-groups
-                  '((:name "To Do Now:"
-                           :todo "NEXT"
-                           :order 1)
-                    (:name "Important"
-                           :tag "important"
-                           :priority "A"
-                           :order 2)
-                    (:name "To Do:"
-                           :todo "TODO"
-                           :order 3)
-                    (:name "Due Today"
-                           :deadline today
-                           :order 4)
-                    (:name "Due Soon"
-                           :deadline future
-                           :order 5)
-                    (:name "Overdue"
-                           :deadline past
-                           :order 6)
-                    (:name "Ongoing:"
-                           :tag "@ongoing"
-                           :tag "ongoing"
-                           :order 7)
-                    (:name "Assignments"
-                           :tag "Assignment"
-                           :order 10)
-                    (:name "Issues"
-                           :tag "Issue"
-                           :order 12)
-                    (:name "Projects"
-                           :tag "Project"
-                           :order 14)
-                    (:name "Emacs"
-                           :tag "Emacs"
-                           :order 13)
-                    (:name "Research"
-                           :tag "Research"
-                           :order 15)
-                    (:name "To read"
-                           :tag "Read"
-                           :order 30)
-                    (:name "Waiting"
-                           :todo "WAITING"
-                           :order 20)
-                    (:name "trivial"
-                           :priority<= "C"
-                           :tag ("Trivial" "Unimportant")
-                           :todo ("SOMEDAY" )
-                           :order 90)
+                (org-habit-show-habits-only-for-today nil)
 
-                    (:discard (:anything t))
-                    ))))))
-     )))
+                ;; Visible Structure:
+                ;; [primary]
+                ;; - Overdue [any <- deadline or schedule]
+                ;; - Important [any <- priority]
+                ;; - DUE TODAY [any <- deadline or schedule]
+                ;; [secondary]
+                ;; - Today's work [deadline & parts_total]
+                ;; - invalid properites [deadline & != parts_total]
+                ;; [rest]
+                ;;
+                (org-super-agenda-groups
+                 '(;; Primary
+                   (:name "Habit"
+                          :order 100
+                          :habit t)
+                   (:name "Plan"
+                          :order 1
+                          :todo "PLAN")
+                   (:name "Overdue"
+                          :order 2
+                          :deadline past :scheduled past)
+                   (:name "DUE TODAY"
+                          :order 3
+                          :deadline today :scheduled today)
+                   (:name "NEXT"
+                          :order 4
+                          :todo "NEXT")
+                   (:name "Important"
+                          :order 5
+                          :priority>= "A")
+                   ;; Secondary
+                   (:name "TODAY'S WORK"
+                          :order 6
+                          :pred ri/org-parts--days-lt-parts-predicate)
+                   (:name "future work"
+                          :order 99
+                          :discard (:pred ri/org-parts--days-not-lt-parts-predicate))
+                   (:name "Unformatted (deadline, no parts)"
+                          :order 10
+                          :pred ri/org-parts--yes-deadline-no-parts-predicate)
+                   (:name "DEBUG: rest"
+                          :order 50
+                          :anything t)
+                   (:discard (:anything t))))))
+       (tags "@ongoing"
+             ((org-agenda-overriding-header "")
+              (org-super-agenda-groups
+               '((:name "Ongoing"
+                        :anything t)))))))))
+
+  )
 
 ;;;; org-ql (disabled)
 

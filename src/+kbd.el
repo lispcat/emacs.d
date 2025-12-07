@@ -12,6 +12,14 @@
 (global-set-key (kbd "M-p") (kbd "M-- 1 C-v"))
 (global-set-key (kbd "M-n") (kbd "M-- 1 M-v"))
 
+(defun ri/scroll-down-half-page ()
+  (interactive)
+  (scroll-up-command (/ (window-body-height) 2)))
+
+(defun ri/scroll-up-half-page ()
+  (interactive)
+  (scroll-down-command (/ (window-body-height) 2)))
+
 (defun +meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-dvp)
   (meow-motion-overwrite-define-key
@@ -207,10 +215,8 @@
 (leaf avy
   :init
   (leader-bind
-    "j" '(:ignore t :wk "avy")
-    "jj" 'avy-goto-char-timer
-    "jc" 'avy-goto-char-2
-    "jl" 'avy-goto-line)
+    "j" 'avy-goto-char-timer
+    "J" 'avy-goto-line)
   :config
   (setq avy-timeout-seconds 0.3)
   (setq avy-keys (mapcar (lambda (c)

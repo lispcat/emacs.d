@@ -46,7 +46,13 @@
 
 (setup flymake
   (:option flymake-no-changes-timeout 0.3
-           flymake-show-diagnostics-at-end-of-line t)
+           flymake-wrap-around nil
+           ;; flymake-show-diagnostics-at-end-of-line t
+           ;; flymake-show-diagnostics-at-end-of-line 'fancy
+           ;; flymake-show-diagnostics-at-end-of-line 'short
+           flymake-show-diagnostics-at-end-of-line nil
+           )
+  ;; TODO: create hydra for jumping next/prev/diagnostics
   (:with-map flymake-mode-map
     (:bind "C-c ! n" flymake-goto-next-error
            "C-c ! p" flymake-goto-prev-error
@@ -341,6 +347,7 @@
 
 (-setup eldoc-box
   (:only-if +use-eglot?)
+  (:option eldoc-box-offset '(16 16 48))
   (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
 
 ;;;;; flymake vs flycheck integration
@@ -368,8 +375,11 @@
     "The syntax checker eglot should use."
     :options '(flycheck flymake))
 
-  (defcustom +eglot-override-syntax-checker nil
-    "Specific syntax checker for a major-mode")
+  (defvar +eglot-override-syntax-checker
+    '(
+      ;; (java-ts-mode . flycheck)
+      (java-ts-mode . flymake)
+      ))
 
   (:when-loaded
     (add-hook 'eglot-managed-mode-hook
@@ -429,7 +439,9 @@
 
 (-setup paredit
   (:diminish)
-  (:hook-into-all +lisp-mode-hooks))
+  (:hook-into-all +lisp-mode-hooks)
+  (:when-loaded
+    (define-key paredit-mode-map (kbd "M-r") nil)))
 
 ;;;;;; emacs-lisp
 
@@ -692,7 +704,14 @@
            (:url ,(concat "file://"
                           (expand-file-name "no-search/java/eclipse-java-google-style.xml"
                                             +emacs-src-dir)))
-           :enabled t))))))
+           :enabled t)))))
+    (add-hook 'eglot-managed-mode-hook
+              (defun eglot-connect-hook-cape-capf-fix ()
+                (when debug-on-error
+                  (message "Debug: running eglot-connect-hook-cape-capf-fix"))
+                (when (eq (nth 0 completion-at-point-functions)
+                          'eglot-completion-at-point)
+                  (pop completion-at-point-functions)))))
 
   (with-eval-after-load 'eglot
     (add-to-list '+eglot-override-syntax-checker '(java-ts-mode flymake))
@@ -736,17 +755,18 @@
 
 ;;;;; Scala (disabled)
 
-(-setup scala-mode :disabled
-  (:hook-into (lambda ()
-                (setq prettify-symbols-alist
-                      scala-prettify-symbols-alist))))
+(-setup scala-mode)
+;; (-setup scala-mode
+;;   (:hook-into (lambda ()
+;;                 (setq prettify-symbols-alist
+;;                       scala-prettify-symbols-alist))))
 
 ;;;;; Zig (disabled)
 
 (-setup zig-mode :disabled
-  ;; :config
-  ;; (zig-format-on-save-mode 0)
-  )
+        ;; :config
+        ;; (zig-format-on-save-mode 0)
+        )
 
 ;;;;; Haskell
 
@@ -755,9 +775,9 @@
   (:with-feature haskell-cabal
     (:match-file ".cabal")))
 
-(-setup lsp-haskell
-  (add-hook 'haskell-mode-hook #'lsp-deferred)
-  (add-hook 'haskell-literate-mode-hook #'lsp-deferred))
+;; (-setup lsp-haskell
+;;   (add-hook 'haskell-mode-hook #'lsp-deferred)
+;;   (add-hook 'haskell-literate-mode-hook #'lsp-deferred))
 
 ;;;;; Nix
 
@@ -966,6 +986,13 @@
 ;;;;; Typescript
 
 (-setup typescript-mode)
+
+;;;;; HTML
+
+(setup sgml-mode
+  (:when-loaded
+    (:with-map html-mode-map
+      (:bind "M-o" nil))))
 
 ;;;; Tooling
 ;;;;; direnv

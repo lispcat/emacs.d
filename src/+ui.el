@@ -152,6 +152,10 @@
 
 ;; Install themes
 
+;; fav themes:
+;; - ef-owl
+;; - ef-dream
+
 (leaf emacs :ensure nil
   :preface
   (leaf kaolin-themes
@@ -568,8 +572,8 @@
 
 ;; (-setup (nano-theme :host github :repo "rougier/nano-theme"))
 
-(-setup (nano-modeline :host github :repo "rougier/nano-modeline")
-  (:require-self))
+(-setup (nano-modeline :host github :repo "rougier/nano-modeline") :disabled
+        (:require-self))
 
 (-setup (nano-modeline :host github :repo "rougier/nano-modeline") :disabled
         (:require-self)
@@ -759,9 +763,16 @@
 
 ;; Improve scroll
 (setup emacs
+  (global-so-long-mode 1)
   (:option scroll-preserve-screen-position t ; keep point in same position while scrolling
-           scroll-conservatively 101 ; dont move cursor to center while scrolling
-           scroll-margin 2           ; scroll margin of one line
+           scroll-conservatively 101 ; dont move cursor when point leaves the screen
+           ;; scroll-conservatively 0      ; move cursor when point leaves the screen
+           scroll-margin 3           ; scroll when 3 from end
+           ;; scroll-margin 0           ; scroll when touch end
+           scroll-step 1 ; smooth, step-by-step scrolling
+           ;; scroll-step 0    ; no smoothing
+           auto-window-vscroll nil        ; faster for long lines
+           fast-but-imprecise-scrolling t ; faster for image and overlays
            mouse-wheel-scroll-amount
            '(2                                     ; faster vscroll speed
              ((shift) . hscroll)                   ; S-<scroll> for hscroll
@@ -793,6 +804,10 @@
 
 (setup prog-mode
   (global-prettify-symbols-mode 1))
+
+;;;; fireplace
+
+(-setup fireplace)
 
 ;;; end:
 
