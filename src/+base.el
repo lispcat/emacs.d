@@ -281,7 +281,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 (-setup helpful
   ;; TODO: is this needed?
-  (:autoload helpful--bookmark-jump)
+  ;; (:autoload helpful--bookmark-jump)
   ;; (:option
   ;;  (counsel-describe-function-function . #'helpful-callable)
   ;;  (counsel-describe-variable-function . #'helpful-variable))

@@ -30,6 +30,11 @@
 ;; NOTE: ensure that the newest version of org is installed right after elpaca
 ;; setup
 
+;;; TODO
+
+(leader-bind
+  "ol" '(consult-org-heading :wk "org-imenu"))
+
 ;;; Org-mode
 
 ;; General config options for org-mode.
