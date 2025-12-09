@@ -1,110 +1,11 @@
-#+TITLE: Emacs Configuration
-#+STARTUP: content
-#+PROPERTY: header-args :tangle config.el :comments link
-#+auto_tangle: t
-
-* TODO to add
-
-- command to check if init.el is valid (linter? run in new emacs for errors?)
-- create an org-src-elisp-mode-hook to hook paredit, raindow-paren, and etc.
-
-* early-init.el
-
-#+begin_src elisp :tangle early-init.el
-
-(eval-when-compile
-  (require 'cl-lib))
-
-;; settings
-
-(setq gc-cons-threshold (* 50 1000 1000)) ; gc freq
-(setq package-enable-at-startup nil)      ; dont load package.el
-
-;; dir vars
-
-(defvar my/emacs-root-dir user-emacs-directory)
-
-(cl-macrolet
-    ((defdir (name sub)
-       `(defvar ,name
-          (file-name-as-directory
-           (expand-file-name ,sub my/emacs-root-dir)))))
-  (defdir my/emacs-init-dir "init")
-  (defdir my/emacs-src-dir "src")
-  (defdir my/emacs-local-dir "local")
-  (defdir my/emacs-submodules-dir "submodules")
-  (defdir my/emacs-config-file "init.el"))
-
-(setq user-emacs-directory my/emacs-local-dir) ; main dir
-
-(setq custom-file ;; set custom-file location
-      (expand-file-name "custom-vars.el" my/emacs-local-dir))
-
-;; change eln-cache dir
-
-(when (and (fboundp 'startup-redirect-eln-cache)
-           (fboundp 'native-comp-available-p)
-           (native-comp-available-p))
-  (startup-redirect-eln-cache
-   (convert-standard-filename
-    (expand-file-name  "var/eln-cache/" my/emacs-local-dir))))
-
-;; ui
-
-(advice-add 'tool-bar-setup :override #'ignore) ; disable tool bar
-
-(setq tool-bar-mode nil                 ; disable tool bar
-      menu-bar-mode nil                 ; disable menu bar
-      scroll-bar-mode nil)              ; disable vertical scroll bar
-
-(setq default-frame-alist
-      '((tool-bar-lines . 0)            ; disable tool bar
-        (menu-bar-lines . 0)            ; disable menu bar
-        (vertical-scroll-bars)          ; disable vertical scroll bar
-        (drag-internal-border . t)
-        ;; (internal-border-width . 13) ; box border around buffer+modeline (creates gap)
-        (fullscreen . maximized)        ; TODO: ???
-        (left-fringe)                   ; set left fringe
-        (right-fringe)                  ; set right fringe
-        ))
-
-;; transparency
-
-(let ((value 95))
-  (unless (assoc 'alpha-background default-frame-alist)
-    (add-to-list 'default-frame-alist
-                 `(alpha-background . ,value))))
-
-;; misc tweaks
-
-(setenv "LSP_USE_PLISTS" "true")        ; lsp-mode
-(setq lsp-use-plists t)                 ; lsp-mode
-
-#+end_src
-
-* init.el
-
-#+begin_src elisp :tangle init.el
-
-(load (expand-file-name "config.el" my/emacs-root-dir))
-
-#+end_src
-
-* Sane Defs
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Sane Defs][Sane Defs:1]]
 ;; sane defs
 
 (setq load-prefer-newer t)              ; run .el instead of .elc if newer
 (setq native-comp-async-report-warnings-errors nil) ; less warnings
+;; Sane Defs:1 ends here
 
-#+end_src
-
-* Package Manager
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Package Manager][Package Manager:1]]
 ;; package manager
 
 (defvar bootstrap-version)
@@ -122,38 +23,23 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+;; Package Manager:1 ends here
 
-#+end_src
-
-* setup.el
-:PROPERTIES:
-:VISIBILITY: folded
-:END:
-
-#+begin_src elisp
-
+;; [[file:Config.org::*setup.el][setup.el:1]]
 ;; setup.el
 
 (straight-use-package 'setup)
 (require 'setup)
+;; setup.el:1 ends here
 
-#+end_src
-
-** setc
-
-#+begin_src elisp
-
+;; [[file:Config.org::*setc][setc:1]]
 (defmacro setc (&rest args)
   "Customize user options using ARGS like `setq'."
   (declare (debug setq))
   `(setup (:option ,@args)))
+;; setc:1 ends here
 
-#+end_src
-
-** :global
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:global][:global:1]]
 (setup-define :global
   (lambda (key command)
     `(global-set-key ,key ,command))
@@ -161,13 +47,9 @@
   :debug '(form sexp)
   :ensure '(kbd func)
   :repeatable t)
+;; :global:1 ends here
 
-#+end_src
-
-** :autoload
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:autoload][:autoload:1]]
 (setup-define :autoload
   (lambda (func)
     (let ((fn (if (memq (car-safe func) '(quote function))
@@ -178,36 +60,24 @@
   :documentation "Autoload COMMAND if not already bound."
   :repeatable t
   :signature '(FUNC ...))
+;; :autoload:1 ends here
 
-#+end_src
-
-** :quit
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:quit][:quit:1]]
 (setup-define :quit
   #'setup-quit
   :documentation "Unconditionally abort the evaluation of the current body.")
+;; :quit:1 ends here
 
-#+end_src
-
-** :with-local-quit
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:with-local-quit][:with-local-quit:1]]
 (setup-define :with-local-quit
   (lambda (&rest body)
     `(catch ',(setup-get 'quit)
        ,@body))
   :documentation "Prevent any reason to abort from leaving beyond BODY."
   :debug '(setup))
+;; :with-local-quit:1 ends here
 
-#+end_src
-
-** :load-after
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:load-after][:load-after:1]]
 (setup-define :load-after
   (lambda (&rest features)
     (let ((body `(require ',(setup-get 'feature))))
@@ -215,13 +85,9 @@
         (setq body `(with-eval-after-load ',feature ,body)))
       body))
   :documentation "Load the current feature after FEATURES.")
+;; :load-after:1 ends here
 
-#+end_src
-
-** :unhook
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:unhook][:unhook:1]]
 (setup-define :unhook
   (lambda (func)
     `(remove-hook (quote ,(setup-get 'hook)) ,func))
@@ -229,13 +95,9 @@
   :repeatable t
   :ensure '(func)
   :signature '(FUNC ...))
+;; :unhook:1 ends here
 
-#+end_src
-
-** :local-unhook
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:local-unhook][:local-unhook:1]]
 (setup-define :local-unhook
   (lambda (hook &rest functions)
     `(add-hook
@@ -252,13 +114,9 @@
   :documentation "Remove FUNCTION from HOOK only in the current hook."
   :debug '(&rest sexp)
   :repeatable nil)
+;; :local-unhook:1 ends here
 
-#+end_src
-
-** :advice
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:advice][:advice:1]]
 (setup-define :advice
   (lambda (symbol where function)
     `(advice-add ',symbol ,where ,function))
@@ -268,13 +126,9 @@ See `advice-add' for more details."
   :debug '(sexp sexp function-form)
   :ensure '(nil nil func)
   :repeatable t)
+;; :advice:1 ends here
 
-#+end_src
-
-** :advice-def
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:advice-def][:advice-def:1]]
 (setup-define :advice-def
   (lambda (symbol where arglist &rest body)
     (let ((name (gensym "setup-advice-")))
@@ -286,13 +140,9 @@ See `advice-add' for more details."
   :after-loaded t
   :debug '(sexp sexp function-form)
   :indent 3)
+;; :advice-def:1 ends here
 
-#+end_src
-
-** :load-from
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:load-from][:load-from:1]]
 (setup-define :load-from
   (lambda (path)
     `(let ((path* (expand-file-name ,path)))
@@ -307,13 +157,9 @@ If PATH does not exist, abort the evaluation."
                (intern
                 (file-name-nondirectory
                  (directory-file-name (cadr args))))))
+;; :load-from:1 ends here
 
-#+end_src
-
-** :diminish
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:diminish][:diminish:1]]
 (setup-define :diminish
   (lambda (&optional mode &rest rest)
     (let* ((mode (or mode (setup-get 'mode)))
@@ -325,13 +171,9 @@ If PATH does not exist, abort the evaluation."
 Alternatively, MODE can be specified manually, and override the
 current mode."
   :after-loaded t)
+;; :diminish:1 ends here
 
-#+end_src
-
-** :option* (shorthand)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:option* (shorthand)][:option* (shorthand):1]]
 (setup-define :option*
   (lambda (name val)
     `(customize-set-variable
@@ -343,13 +185,9 @@ NAME is not the name of the option itself, but of the option with
 the feature prefix."
   :debug '(sexp form)
   :repeatable t)
+;; :option* (shorthand):1 ends here
 
-#+end_src
-
-** :doc
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:doc][:doc:1]]
 (defvar setup--doc-alist nil "AList of docs for setup blocks.")
 
 (setup-define :doc
@@ -359,13 +197,9 @@ the feature prefix."
 This will be ignored at expansion."
   :signature '(STRING ...)
   :repeatable nil)
+;; :doc:1 ends here
 
-#+end_src
-
-** :pkg
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:pkg][:pkg:1]]
 (setup-define :pkg
   (lambda (recipe)
     `(unless (straight-use-package ',recipe)
@@ -387,13 +221,9 @@ first RECIPE's package."
       (format "%S :disabled by -setup" recipe)
     `(setup (:pkg ,recipe)
        ,@body)))
+;; :pkg:1 ends here
 
-#+end_src
-
-** catch errors, throw warnings
-
-#+begin_src elisp
-
+;; [[file:Config.org::*catch errors, throw warnings][catch errors, throw warnings:1]]
 ;; method 1
 ;; (setq setup-modifier-list '(setup-wrap-to-demote-errors))
 
@@ -412,13 +242,9 @@ first RECIPE's package."
                                             (pp (quote ,expansion))))
                            :error)))))
   (advice-add 'setup :filter-return #'my-protect-setup))
+;; catch errors, throw warnings:1 ends here
 
-#+end_src
-
-** benchmark all
-
-#+begin_src elisp
-
+;; [[file:Config.org::*benchmark all][benchmark all:1]]
 (defun my/benchmark-log (fmt &rest args)
   "Log a message into the *My Log* buffer."
   (with-current-buffer (get-buffer-create "*Benchmark Log*")
@@ -451,13 +277,9 @@ first RECIPE's package."
                       (apply orig-fun args)))
 
 (advice-add 'setup :around #'my/setup-benchmark-wrap)
+;; benchmark all:1 ends here
 
-#+end_src
-
-** :require-self
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:require-self][:require-self:1]]
 (setq setup-macros (assq-delete-all ':require setup-macros))
 
 (setup-define :require-self
@@ -469,28 +291,18 @@ first RECIPE's package."
          ,(setup-quit))))
   :documentation "Try to require FEATURE, or stop evaluating body.
 If FEATURE is The first FEATURE can be used to deduce the feature context.")
+;; :require-self:1 ends here
 
-#+end_src
-
-** :hook-into-all
-
-#+begin_src elisp
-
+;; [[file:Config.org::*:hook-into-all][:hook-into-all:1]]
 (setup-define :hook-into-all
   (lambda (mode-lst)
     `(dolist (hook ,mode-lst)
        (add-hook hook #',(setup-get 'func))))
   :documentation "For each mode hook in MODE-LST, add current function."
   :repeatable nil)
+;; :hook-into-all:1 ends here
 
-#+end_src
-
-* Necessary Packages
-
-** No Littering
-
-#+begin_src elisp
-
+;; [[file:Config.org::*No Littering][No Littering:1]]
 (-setup no-littering
   (:option auto-save-default nil        ; don't autosave all file buffers
            backup-by-copying t)         ; safer backups
@@ -512,63 +324,33 @@ If FEATURE is The first FEATURE can be used to deduce the feature context.")
                ("\\`/tmp\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
                ("\\`/dev/shm\\([^/]*/\\)*\\(.*\\)\\'" "\\2")
                ("." ,auto-save-dir t)))))
+;; No Littering:1 ends here
 
-#+end_src
-
-** Exec-path-from-shell
-
-Fix issues with missing programs from shell.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Exec-path-from-shell][Exec-path-from-shell:1]]
 (-setup exec-path-from-shell
   (when (or (memq window-system '(pgkt x))
             (daemonp))
     (exec-path-from-shell-initialize)))
+;; Exec-path-from-shell:1 ends here
 
-#+end_src
-
-** General
-
-Quickly set up keybinds.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*General][General:1]]
 (-setup general
   (general-create-definer leader-bind :prefix "C-c"))
+;; General:1 ends here
 
-#+end_src
-
-** Diminish
-
-Hide modes from the modeline.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Diminish][Diminish:1]]
 (-setup diminish
   (:require-self))
+;; Diminish:1 ends here
 
-#+end_src
-
-** Which-key
-
-Display keystroke options.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Which-key][Which-key:1]]
 (-setup which-key
   (:diminish)
   (:option* idle-delay 0.3)
   (which-key-mode 1))
+;; Which-key:1 ends here
 
-#+end_src
-
-** Hydra
-
-Lingering key menus for repeated key-presses.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Hydra][Hydra:1]]
 (-setup hydra
   (defmacro my/defhydra-repeat (fn keys)
     "Create a repeatable function FN from a list of KEYS."
@@ -577,13 +359,9 @@ Lingering key menus for repeated key-presses.
          ,@(mapcar (lambda (k)
                      (list k fn))
                    keys)))))
+;; Hydra:1 ends here
 
-#+end_src
-
-** Dash
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Dash][Dash:1]]
 (-setup dash
   (:require-self)
   
@@ -621,35 +399,17 @@ This is the non-anaphoric version - VALUE is passed as an argument to FORM."
            (ignore it)
            ,@body)
          ,val))))
+;; Dash:1 ends here
 
-#+end_src
-
-** f
-
-File/Directory API library.
-https://github.com/rejeep/f.el
-
-#+begin_src elisp
-
+;; [[file:Config.org::*f][f:1]]
 (-setup f)
+;; f:1 ends here
 
-#+end_src
-
-** s
-
-String manipulation library.
-https://github.com/magnars/s.el
-
-#+begin_src elisp
-
+;; [[file:Config.org::*s][s:1]]
 (-setup s)
+;; s:1 ends here
 
-#+end_src
-
-** Vertico
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Vertico][Vertico:1]]
 (-setup vertico
   (:option vertico-cycle t             ; cycle for `vertico-next/previous'
            vertico-count 10            ; Show more candidates (def 10)
@@ -699,15 +459,9 @@ https://github.com/magnars/s.el
   ;; per completion category
   (setq vertico-multiform-categories
         `((reverse (vertico-resize . 'grow-only)))))
+;; Vertico:1 ends here
 
-#+end_src
-
-** Consult
-
-Search and navigation commands.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Consult][Consult:1]]
 (-setup consult
   (:global "C-c M-x" consult-mode-command
            ;; Search
@@ -814,27 +568,13 @@ Search and navigation commands.
                        consult-git-grep
                        consult-grep
                        :preview-key '(:debounce 0.5 any))))
+;; Consult:1 ends here
 
-#+end_src
-
-*** Consult-dir
-
-Entrypoints for find-file.
-
-Binds in [[leader-f]] heading.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Consult-dir][Consult-dir:1]]
 (-setup consult-dir)
+;; Consult-dir:1 ends here
 
-#+end_src
-
-*** leader-s
-
-- TODO: move all these leader binds to the very bottom of the config?
-
-#+begin_src elisp
-
+;; [[file:Config.org::*leader-s][leader-s:1]]
 (defun my/consult-heading ()
   "Dwim between `consult-outline' or `consult-org-heading'."
   (interactive)
@@ -867,13 +607,9 @@ Binds in [[leader-f]] heading.
   "s" '(:ignore t :wk "MISC")
   ;; list minor modes
   "ssm" '(consult-minor-mode-menu :wk "all-minor-modes"))
+;; leader-s:1 ends here
 
-#+end_src
-
-* startup hooks
-
-#+begin_src elisp
-
+;; [[file:Config.org::*startup hooks][startup hooks:1]]
 ;; print init time
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -892,13 +628,9 @@ Binds in [[leader-f]] heading.
           (lambda ()
             (when (file-exists-p custom-file)
               (load custom-file))))
+;; startup hooks:1 ends here
 
-#+end_src
-
-* TODO log
-
-#+begin_src elisp
-
+;; [[file:Config.org::*log][log:1]]
 (defun my/benchmark-lambdas (f1 f2 &optional n)
   (let* ((n (or n 10000))
          (time1 (car (benchmark-run n (funcall f1))))
@@ -914,38 +646,22 @@ Binds in [[leader-f]] heading.
              time2
              less
              difference)))
+;; log:1 ends here
 
-#+end_src
-
-* Buffers
-
-** autorevert
-
-#+begin_src elisp
-
+;; [[file:Config.org::*autorevert][autorevert:1]]
 (setup autorevert
   (:option auto-revert-verbose nil      ; don't print "Reverting buffer"
            auto-revert-interval 5       ; manual check interval
            global-auto-revert-non-file-buffers t) ; work on non-file buffers
   (global-auto-revert-mode 1))
+;; autorevert:1 ends here
 
-#+end_src
-
-** auto-sudoedit
-
-Auto re-open files with sudoedit when needed.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*auto-sudoedit][auto-sudoedit:1]]
 (-setup auto-sudoedit
   (:autoload auto-sudoedit-sudoedit))
+;; auto-sudoedit:1 ends here
 
-#+end_src
-
-** leader-b
-
-#+begin_src elisp
-
+;; [[file:Config.org::*leader-b][leader-b:1]]
 (setup emacs
   (defalias 'my/last-selected-buffer #'mode-line-other-buffer)
   (leader-bind
@@ -956,27 +672,15 @@ Auto re-open files with sudoedit when needed.
     "bp" '(previous-buffer         :wk "prev")
     "bo" '(my/last-selected-buffer :wk "last")
     "bs" '(save-buffer             :wk "save")))
+;; leader-b:1 ends here
 
-#+end_src
-
-** leader-k
-
-#+begin_src elisp
-
+;; [[file:Config.org::*leader-k][leader-k:1]]
 (setup emacs
   (leader-bind
     "k" '(kill-current-buffer :wk "kill-current")))
+;; leader-k:1 ends here
 
-#+end_src
-
-* History
-
-- recentf :: track recently opened files, search with ~recentf~.
-- saveplace :: save cursor location in file when saving.
-- savehist :: persist minibuffer history over restarts.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*History][History:1]]
 ;; history
 
 (setup emacs
@@ -988,32 +692,18 @@ Auto re-open files with sudoedit when needed.
 
   ;; savehist
   (savehist-mode 1))
+;; History:1 ends here
 
-#+end_src
-
-* Windows
-
-** Ace-window
-
-Efficiently switch between Emacs windows.
-https://github.com/abo-abo/ace-window
-
-#+begin_src elisp
-
-
+;; [[file:Config.org::*Ace-window][Ace-window:1]]
 (-setup ace-window
   (:option aw-scope 'frame                     ; selectable scope
            aw-keys '(?a ?o ?e ?u ?h ?t ?n ?s)) ; possible keys
 
   ;; entrypoint
   (:global "M-o" #'ace-window))
+;; Ace-window:1 ends here
 
-#+end_src
-
-** hydra-window
-
-#+begin_src elisp
-
+;; [[file:Config.org::*hydra-window][hydra-window:1]]
 (defhydra hydra-window ()
   "
 Movement^^        ^Split^         ^Switch^		^Resize^
@@ -1068,13 +758,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
          (setq this-command 'winner-undo)))
   ("Z" winner-redo)
   ("SPC" nil))
+;; hydra-window:1 ends here
 
-#+end_src
-
-** leader-w
-
-#+begin_src elisp
-
+;; [[file:Config.org::*leader-w][leader-w:1]]
 (leader-bind
   "w" '(:ignore t :wk "window")
   "wh" '(hydra-window/body         :wk "Hydra")
@@ -1088,24 +774,16 @@ _SPC_ cancel	_o_nly this   	_d_elete
   "wf" '(windmove-right            :wk "select-right")
   "wb" '(windmove-left             :wk "select-left")
   "wm" '(switch-to-minibuffer      :wk "select-minibuffer"))
+;; leader-w:1 ends here
 
-#+end_src
-
-* Files
-
-** Dired
-
-- dired :: The Emacs file-manager.
-- dired-launch :: open files in external applications.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Dired][Dired:1]]
 ;; dired
 
 (setup dired
   ;; settings
-  (:option dired-dwim-target t          ; copy file to other dired window cwd
-           dired-auto-revert-buffer t   ; auto update file changes
+  (:option dired-dwim-target t           ; copy file to other dired window cwd
+           dired-auto-revert-buffer t    ; auto update file changes
+           dired-switches-in-mode-line 0 ; hide switches in modeline
            dired-listing-switches "-Ahl --group-directories-first -X")
 
   ;; dired-mode-map
@@ -1125,6 +803,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 (-setup dired-launch
   (:load-after dired)
+  (:diminish)
   (:option dired-launch-extensions-map
            '(("pptx" ("libreoffice"))
              ("docx" ("libreoffice"))
@@ -1132,13 +811,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
              ("html" ("librewolf"))))
   (:when-loaded
     (dired-launch-enable)))
+;; Dired:1 ends here
 
-#+end_src
-
-** leader-f
-
-#+begin_src elisp
-
+;; [[file:Config.org::*leader-f/d][leader-f/d:1]]
 (setup emacs
 
   (defvar my/emacs-config-file
@@ -1163,19 +838,21 @@ _SPC_ cancel	_o_nly this   	_d_elete
     "fr" '(consult-recent-file  :wk "recentf")
     "fj" '(dired-jump           :wk "cwd")
     "fp" '(my/open-emacs-config :wk "emacs-config")
-    "fa" '(my/open-agenda-file  :wk "agenda-file")))
+    "fa" '(my/open-agenda-file  :wk "agenda-file"))
 
-#+end_src
+  ;; alias
+  (leader-bind
+    "d" '(:ignore t :wk "Files")
+    "df" '(find-file            :wk "find-file")
+    "dd" '(consult-dir          :wk "entrypoints")
+    "dr" '(consult-recent-file  :wk "recentf")
+    "dj" '(dired-jump           :wk "cwd")
+    "dp" '(my/open-emacs-config :wk "emacs-config")
+    "da" '(my/open-agenda-file  :wk "agenda-file"))
+  )
+;; leader-f/d:1 ends here
 
-* Misc
-
-** Helpful
-
-Improve the Emacs help buffer with more info.
-https://github.com/Wilfred/helpful
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Helpful][Helpful:1]]
 (-setup helpful
   ;; TODO: is this needed?
   ;; (:autoload helpful--bookmark-jump)
@@ -1195,23 +872,13 @@ https://github.com/Wilfred/helpful
   ;; enable scrolling with 'n' and 'p'
   (:bind "n" #'next-line
          "p" #'previous-line))
+;; Helpful:1 ends here
 
-#+end_src
-
-** TLDR
-
-- Bound in [[leader-s]].
-
-#+begin_src elisp
-
+;; [[file:Config.org::*TLDR][TLDR:1]]
 (-setup tldr)
+;; TLDR:1 ends here
 
-#+end_src
-
-** Profiling / leader-D
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Profiling / leader-D][Profiling / leader-D:1]]
 (setup emacs
   (defun my/profiler-report ()
     "Profiler stop and report."
@@ -1223,24 +890,14 @@ https://github.com/Wilfred/helpful
     "D" '(:ignore t :wk "Debug")
     "Ds" 'profiler-start
     "Dr" 'my/profiler-report))
+;; Profiling / leader-D:1 ends here
 
-#+end_src
-
-** user
-
-#+begin_src elisp
-
+;; [[file:Config.org::*user][user:1]]
 (setc user-full-name "lispcat"
       user-mail-address "187922791+lispcat@users.noreply.github.com")
+;; user:1 ends here
 
-#+end_src
-
-* Keyboard
-
-** quality of life
-
-#+begin_src elisp
-
+;; [[file:Config.org::*quality of life][quality of life:1]]
 (setup emacs
   ;; Actuates Meta key by default
   (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -1263,13 +920,9 @@ https://github.com/Wilfred/helpful
   (defun my/scroll-up-half-page ()
     (interactive)
     (scroll-down-command (/ (window-body-height) 2))))
+;; quality of life:1 ends here
 
-#+end_src
-
-** Meow
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Meow][Meow:1]]
 (defun my/meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-dvp)
   (meow-motion-overwrite-define-key
@@ -1455,13 +1108,9 @@ https://github.com/Wilfred/helpful
       gnus-article-mode
       w3m-mode)
     "Disable meow-keypad in these modes."))
+;; Meow:1 ends here
 
-#+end_src
-
-** Avy
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Avy][Avy:1]]
 (-setup avy
   (leader-bind
     "j" 'avy-goto-char-timer
@@ -1469,15 +1118,9 @@ https://github.com/Wilfred/helpful
   (:option avy-timeout-seconds 0.3
            avy-keys (mapcar #'string-to-char
                             (split-string "a o e u h t n s k b"))))
+;; Avy:1 ends here
 
-#+end_src
-
-** Jinx - TODO: move
-
-Spellchecking.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Jinx - TODO: move][Jinx - TODO: move:1]]
 ;; locally installed
 
 (setup jinx
@@ -1485,13 +1128,9 @@ Spellchecking.
   (:hook-into org-mode-hook markdown-mode-hook text-mode-hook)
   (:global "M-$" jinx-correct
            "C-M-$" jinx-languages))
+;; Jinx - TODO: move:1 ends here
 
-#+end_src
-
-** Fontawesome - TODO: move
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Fontawesome - TODO: move][Fontawesome - TODO: move:1]]
 (-setup fontawesome
   ;; vertico variant
   (defun vertico-fontawesome ()
@@ -1503,15 +1142,9 @@ Spellchecking.
        (completing-read "Font awesome: " (fontawesome--construct-candidates))
        (fontawesome--construct-candidates)))))
   (:autoload vertico-fontawesome))
+;; Fontawesome - TODO: move:1 ends here
 
-#+end_src
-
-* Completion
-
-** Orderless
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Orderless][Orderless:1]]
 (-setup orderless
   (:option completion-styles '(orderless basic)
            completion-category-defaults nil
@@ -1524,29 +1157,18 @@ Spellchecking.
            ;; orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
            ;; orderless-component-separator #'orderless-escapable-split-on-space
            ))
+;; Orderless:1 ends here
 
-#+end_src
-
-** Marginalia
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Marginalia][Marginalia:1]]
 (-setup marginalia
   (marginalia-mode 1)
   (:with-map minibuffer-local-map
     (:bind "M-A" marginalia-cycle))
   (:with-map completion-list-mode-map
     (:bind "M-A" marginalia-cycle)))
+;; Marginalia:1 ends here
 
-#+end_src
-
-** Embark
-
-Invoke relevant commands on the thing at point.
-https://github.com/oantolin/embark
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Embark][Embark:1]]
 (-setup embark
   ;; TODO: bind dwim and act (very useful) to more convenient keys.
   (:global "C-." my/embark-act-or-dwim
@@ -1575,28 +1197,16 @@ https://github.com/oantolin/embark
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
+;; Embark:1 ends here
 
-#+end_src
-
-*** consult integration
-
-Adds consult-specific embark actions and the Occur buffer export.
-
-The `embark-export' ("E") is extremely useful. Given a set of candidates, you can export them to a specialized buffer, unlocking more advanced and efficient editing workflows.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*consult integration][consult integration:1]]
 (-setup embark-consult
   (:load-after embark consult)
   (:when-loaded
     (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)))
+;; consult integration:1 ends here
 
-#+end_src
-
-** Company (Disabled)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Company (Disabled)][Company (Disabled):1]]
 ;; TODO: disable most backends by default add a bunch per mode (org should only
 ;; have a few
 (progn
@@ -1671,28 +1281,18 @@ The `embark-export' ("E") is extremely useful. Given a set of candidates, you ca
   ;;     (setq orderless-component-separator "[ &]")
   ;;     ))
   )
+;; Company (Disabled):1 ends here
 
-#+end_src
-
-*** company-quickhelp (Disabled)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*company-quickhelp (Disabled)][company-quickhelp (Disabled):1]]
 ;; (-setup company-quickhelp
 ;;   (:load-after company)
 ;;   (:global "C-c l h c" company-quickhelp-mode)
 ;;   (:option company-quickhelp-delay 1)
 ;;   (:when-loaded
 ;;     (company-quickhelp-mode 1)))
+;; company-quickhelp (Disabled):1 ends here
 
-#+end_src
-
-** Yasnippet (Disabled)
-
-TODO: [[https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for-yasnippets-when-using-eglot][on yasnippet x eglot integration]]
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Yasnippet (Disabled)][Yasnippet (Disabled):1]]
 (-setup yasnippet-snippets
   :disabled
   )
@@ -1727,15 +1327,9 @@ TODO: [[https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for
 ;; (-setup yasnippet-capf
 ;;   :disabled
 ;;   (:load-after yasnippet))
+;; Yasnippet (Disabled):1 ends here
 
-#+end_src
-
-** Hippie-expand
-
-A better dabbrev-expand.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Hippie-expand][Hippie-expand:1]]
 (setup hippie-exp
   ;; replace dabbrev-expand with hippie-expand
   (global-set-key [remap dabbrev-expand] 'hippie-expand)
@@ -1751,29 +1345,16 @@ A better dabbrev-expand.
     (:when-loaded
       (add-to-list 'hippie-expand-try-functions-list
                    #'tempel-expand t))))
+;; Hippie-expand:1 ends here
 
-#+end_src
-
-** Isearch
-
-- TODO: replace with hydra, so can use C-M-r for recursive edit.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Isearch][Isearch:1]]
 (setup isearch
   (:when-loaded
     (:global "C-M-s" isearch-forward
              "C-M-r" isearch-backward)))
+;; Isearch:1 ends here
 
-#+end_src
-
-** Corfu
-
-- TODO: [[https://github.com/minad/corfu/wiki#same-key-used-for-both-the-separator-and-the-insertion][same key for separator + insertion]]
-- TODO: [[https://github.com/minad/corfu/wiki#tab-and-go-completion][tab-n-go completion]]
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Corfu][Corfu:1]]
 (-setup corfu
   (:require-self)
   (:option corfu-cycle t                ; cycle
@@ -1856,13 +1437,9 @@ A better dabbrev-expand.
 
    ;; decrease time for corfu popupinfo
    corfu-popupinfo-delay '(1.5 . 0.5)))
+;; Corfu:1 ends here
 
-#+end_src
-
-** Candidate icons
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Candidate icons][Candidate icons:1]]
 ;; (-setup nerd-icons-corfu
 ;;   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
@@ -1877,13 +1454,9 @@ A better dabbrev-expand.
 
     ;; update background after theme change
     (add-hook '+after-enable-theme-hook #'kind-icon-reset-cache)))
+;; Candidate icons:1 ends here
 
-#+end_src
-
-** Tempel
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Tempel][Tempel:1]]
 (-setup tempel-collection
   (:load-after tempel))
 
@@ -1896,13 +1469,9 @@ A better dabbrev-expand.
 ;; -- eglot integration --
 ;; (-setup eglot-tempel
 ;;   (eglot-tempel-mode t))
+;; Tempel:1 ends here
 
-#+end_src
-
-** Cape
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Cape][Cape:1]]
 (-setup cape
   (:require-self)
   (:also-load tempel tempel-collection)
@@ -2073,15 +1642,9 @@ A better dabbrev-expand.
           #'tempel-complete ;; prefix len: 2
           (cape-capf-prefix-length #'eglot-completion-at-point 2))))
   )
+;; Cape:1 ends here
 
-#+end_src
-
-* Ide
-
-** Sane defaults
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Sane defaults][Sane defaults:1]]
 ;; new file templates
 (auto-insert-mode)                      ; adds a hook to find-files-hook
 
@@ -2097,15 +1660,9 @@ A better dabbrev-expand.
 
 ;; buttonize urls
 (add-hook 'after-init-hook #'global-goto-address-mode)
+;; Sane defaults:1 ends here
 
-#+end_src
-
-** Flymake
-
-Built-in syntax checker.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Flymake][Flymake:1]]
 (setup flymake
   (:option flymake-no-changes-timeout 0.3
            flymake-wrap-around nil
@@ -2119,15 +1676,9 @@ Built-in syntax checker.
     (:bind "C-c ! n" flymake-goto-next-error
            "C-c ! p" flymake-goto-prev-error
            "C-c ! l" flymake-show-diagnostics-buffer)))
+;; Flymake:1 ends here
 
-#+end_src
-
-** Flycheck
-
-Improved syntax checker.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Flycheck][Flycheck:1]]
 (-setup flycheck
   (:diminish)
   (:option flycheck-display-errors-delay 0.8
@@ -2139,13 +1690,9 @@ Improved syntax checker.
   (:load-after flycheck)
   (:with-hook flycheck-mode-hook
     (:hook #'flycheck-inline-mode)))
+;; Flycheck:1 ends here
 
-#+end_src
-
-** project.el
-
-#+begin_src elisp
-
+;; [[file:Config.org::*project.el][project.el:1]]
 (setup project
   ;; options
   (:option xref-search-program 'ripgrep)
@@ -2172,13 +1719,9 @@ Improved syntax checker.
 ;;   (:require-self)
 ;;   (:with-map project-prefix-map
 ;;     (:bind "F" consult-project-extra-find)))
+;; project.el:1 ends here
 
-#+end_src
-
-** Projectile (Disabled)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Projectile (Disabled)][Projectile (Disabled):1]]
 (-setup projectile
   :disabled
   
@@ -2204,13 +1747,9 @@ Improved syntax checker.
   (:with-map projectile-command-map
     ;; Buffers, Files, Projects
     (:bind "/" #'consult-projectile)))
+;; Projectile (Disabled):1 ends here
 
-#+end_src
-
-** Match parenthesis Pairs
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Match parenthesis Pairs][Match parenthesis Pairs:1]]
 ;; for non-programming too
 (setup elec-pair
   (:require-self)
@@ -2226,22 +1765,14 @@ Improved syntax checker.
 
   ;; global
   (electric-pair-mode 1))
+;; Match parenthesis Pairs:1 ends here
 
-#+end_src
-
-** toggle for lsp-mode vs eglot (for performance)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*toggle for lsp-mode vs eglot (for performance)][toggle for lsp-mode vs eglot (for performance):1]]
 (defvar my/use-lsp-mode? nil)
 (defvar my/use-eglot? t)
+;; toggle for lsp-mode vs eglot (for performance):1 ends here
 
-#+end_src
-
-** Lsp-mode
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Lsp-mode][Lsp-mode:1]]
 (-setup lsp-mode
   (:only-if my/use-lsp-mode?)
 
@@ -2262,13 +1793,9 @@ Improved syntax checker.
           ;; problematic, lag: https://github.com/emacs-lsp/lsp-mode/issues/4113
           ;; lsp-update-inlay-hints-on-scroll nil
           )))
+;; Lsp-mode:1 ends here
 
-#+end_src
-
-*** Lsp-ui
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Lsp-ui][Lsp-ui:1]]
 (-setup lsp-ui
   (:only-if my/use-lsp-mode?)
 
@@ -2293,13 +1820,9 @@ Improved syntax checker.
 
   (with-eval-after-load 'lsp-mode
     (define-key lsp-command-map (kbd "v i") #'lsp-ui-imenu)))
+;; Lsp-ui:1 ends here
 
-#+end_src
-
-*** Lsp-booster
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Lsp-booster][Lsp-booster:1]]
 ;; use lsp-doctor for testing
 ;; Steps:
 ;; - install emacs-lsp-booster
@@ -2338,16 +1861,9 @@ Improved syntax checker.
         orig-result)))
   (advice-add 'lsp-resolve-final-command :around
               #'lsp-booster--advice-final-command))
+;; Lsp-booster:1 ends here
 
-#+end_src
-
-** Eglot
-
-The Emacs LSP client.
-It's a more minimal alternative to Lsp-mode, and I find its performance to be much better.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Eglot][Eglot:1]]
 (setup eglot
   (:only-if my/use-eglot?)
   (:option eglot-report-progress nil)
@@ -2365,16 +1881,9 @@ It's a more minimal alternative to Lsp-mode, and I find its performance to be mu
            "C-c l ]" xref-go-forward
            "C-c l [" xref-go-back
            )))
+;; Eglot:1 ends here
 
-#+end_src
-
-*** extensions
-
-Eglot does not support extensions to the LSP protocol. This package adds them.
-https://github.com/nemethf/eglot-x
-
-#+begin_src elisp
-
+;; [[file:Config.org::*extensions][extensions:1]]
 ;; Useful looking functions:
 ;; - ! eglot-x-expand-macro
 ;; - ! eglot-x-reload-workspace
@@ -2394,38 +1903,18 @@ https://github.com/nemethf/eglot-x
              "C-c l q R" eglot-x-reload-workspace
              "C-c l q e" eglot-x-expand-macro
              "C-c l q p" eglot-x-rebuild-proc-macros))))
+;; extensions:1 ends here
 
-#+end_src
-
-*** consult integration
-
-An all-in-one consult command to view everything.
-
-: ((c . "Class") (f . "Function") (e . "Enum") (i . "Interface")
-:  (m . "Module") (n . "Namespace") (p . "Package")
-:  (s . "Struct") (t . "Type Parameter") (v . "Variable")
-:  (A . "Array") (B . "Boolean") (C . "Constant")
-:  (E . "Enum Member") (F . "Field") (M . "Method") (N . "Number")
-:  (O . "Object") (P . "Property") (S . "String") (o . "Other"))
-
-#+begin_src elisp
-
+;; [[file:Config.org::*consult integration][consult integration:1]]
 (-setup consult-eglot
   (:only-if my/use-eglot?)
   (:load-after consult eglot)
   (:when-loaded
     (:with-map eglot-mode-map
       (:bind "C-c l s" consult-eglot-symbols))))
+;; consult integration:1 ends here
 
-#+end_src
-
-*** eldoc (documentation at point)
-
-Pop-up documentation frame for thing at point.
-https://github.com/casouri/eldoc-box
-
-#+begin_src elisp
-
+;; [[file:Config.org::*eldoc (documentation at point)][eldoc (documentation at point):1]]
 (setup eldoc
   (:diminish)
   (:only-if my/use-eglot?)
@@ -2436,17 +1925,9 @@ https://github.com/casouri/eldoc-box
   (:load-after eglot)
   (:option eldoc-box-offset '(16 16 48))
   (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
+;; eldoc (documentation at point):1 ends here
 
-#+end_src
-
-*** flymake/flycheck integration
-
-Eglot only supports Flymake, the built-in syntax checker. Flycheck is a better alternative, but needs some tweaking to be used with eglot.
-
-Eglot uses Flymake by default. To use flycheck with Eglot, you'll need to use the flycheck-eglot package.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*flymake/flycheck integration][flymake/flycheck integration:1]]
 (-setup flycheck-eglot
   (:only-if my/use-eglot?)
   (:load-after eglot flycheck)
@@ -2478,15 +1959,9 @@ Eglot uses Flymake by default. To use flycheck with Eglot, you'll need to use th
                   ('flymake
                    (when flycheck-mode
                      (flycheck-mode 0))))))))
-#+end_src
+;; flymake/flycheck integration:1 ends here
 
-*** Eglot-booster
-
-Vastly improve the performance of eglot.
-https://github.com/jdtsmith/eglot-booster
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Eglot-booster][Eglot-booster:1]]
 ;; Note: try experimenting performance difference by running
 ;; M-x eglot-booster.
 (-setup (eglot-booster :host github :repo "jdtsmith/eglot-booster")
@@ -2494,15 +1969,9 @@ https://github.com/jdtsmith/eglot-booster
   (:load-after elgot)
   (:when-loaded
     (eglot-booster-mode)))
+;; Eglot-booster:1 ends here
 
-#+end_src
-
-** Langs
-
-*** Lisp
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Lisp][Lisp:1]]
 (defvar my/lisp-mode-hooks
   '(emacs-lisp-mode-hook
     lisp-data-mode-hook
@@ -2521,13 +1990,9 @@ https://github.com/jdtsmith/eglot-booster
   ;; (dolist (hook ,hooks-lst)
   ;;   (add-hook hook ,func))
   )
+;; Lisp:1 ends here
 
-#+end_src
-
-*** rainbow parens
-
-#+begin_src elisp
-
+;; [[file:Config.org::*rainbow parens][rainbow parens:1]]
 ;; Highlight nested parens according to their depth.
 ;; ---
 
@@ -2536,46 +2001,30 @@ https://github.com/jdtsmith/eglot-booster
 
 ;; (leaf rainbow-delimiters
 ;;   :hook `,@my/lisp-mode-hooks)
+;; rainbow parens:1 ends here
 
-#+end_src
-
-**** paredit
-
-#+begin_src elisp
-
+;; [[file:Config.org::*paredit][paredit:1]]
 (-setup paredit
   (:diminish)
   (:hook-into-all my/lisp-mode-hooks)
   (:when-loaded
     (define-key paredit-mode-map (kbd "M-r") nil)))
+;; paredit:1 ends here
 
-#+end_src
-
-**** emacs-lisp
-
-#+begin_src elisp
-
+;; [[file:Config.org::*emacs-lisp][emacs-lisp:1]]
 ;; not a real feature
 (setup emacs-lisp-mode
   (:hook (lambda ()
            (auto-fill-mode)
            (setq-local fill-column 80))))
+;; emacs-lisp:1 ends here
 
-#+end_src
-
-**** org-style links in elisp (disabled)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*org-style links in elisp (disabled)][org-style links in elisp (disabled):1]]
 (-setup orglink :disabled
         (:hook-into emacs-lisp-mode-hook))
+;; org-style links in elisp (disabled):1 ends here
 
-#+end_src
-
-**** elisp misc
-
-#+begin_src elisp
-
+;; [[file:Config.org::*elisp misc][elisp misc:1]]
 ;; (defun create-banner-comment (text &optional width)
 ;;   "Create a banner comment with TEXT centered between semicolons.
 ;; Optional WIDTH parameter determines total width (defaults to 70)."
@@ -2593,22 +2042,14 @@ https://github.com/jdtsmith/eglot-booster
 ;;                     left-semis
 ;;                     text
 ;;                     right-semis))))
+;; elisp misc:1 ends here
 
-#+end_src
-
-**** tweak flycheck for elisp
-
-#+begin_src elisp
-
+;; [[file:Config.org::*tweak flycheck for elisp][tweak flycheck for elisp:1]]
 (with-eval-after-load 'flycheck
   (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc emacs-lisp)))
+;; tweak flycheck for elisp:1 ends here
 
-#+end_src
-
-**** Scheme (disabled)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Scheme (disabled)][Scheme (disabled):1]]
 ;; Scheme is a family of Lisp languages, which includes Guile Scheme, a Lisp
 ;; used for configuring GNU Guix.
 
@@ -2626,21 +2067,13 @@ https://github.com/jdtsmith/eglot-booster
 ;; improved guile (dialect of scheme) editing
 (-setup geiser-guile :disabled
         (:load-after geiser))
+;; Scheme (disabled):1 ends here
 
-#+end_src
-
-**** Clojure
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Clojure][Clojure:1]]
 (-setup clojure-mode :disabled)
+;; Clojure:1 ends here
 
-#+end_src
-
-*** Rust
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Rust][Rust:1]]
 (-setup rust-mode
   (:option rust-mode-treesitter-derive t
            rust-rustfmt-switches '("--edition" "2021")))
@@ -2669,13 +2102,9 @@ https://github.com/jdtsmith/eglot-booster
               (lambda ()
                 (setq-local company-idle-delay 0.3
                             company-minimum-prefix-length 2)))))
+;; Rust:1 ends here
 
-#+end_src
-
-**** lsp-mode version
-
-#+begin_src elisp
-
+;; [[file:Config.org::*lsp-mode version][lsp-mode version:1]]
 (setup rustic
   (:only-if my/use-lsp-mode?)
   (:load-after rustic lsp-mode)
@@ -2701,13 +2130,9 @@ https://github.com/jdtsmith/eglot-booster
                             lsp-ui-doc-enable t      ; def: t (ui-popup docs)
                             lsp-ui-doc-max-height 14 ; def: 13
                             )))))
+;; lsp-mode version:1 ends here
 
-#+end_src
-
-**** eglot version
-
-#+begin_src elisp
-
+;; [[file:Config.org::*eglot version][eglot version:1]]
 (setup rustic
   (:only-if my/use-eglot?)
   (:load-after rustic eglot)
@@ -2739,13 +2164,9 @@ https://github.com/jdtsmith/eglot-booster
 ;;   ;; :config
 
 ;;   )
+;; eglot version:1 ends here
 
-#+end_src
-
-**** rustowl (disabled)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*rustowl (disabled)][rustowl (disabled):1]]
 ;; Note: not compatible with Eglot
 ;; - requires a second LSP server (eglot only supports one)
 
@@ -2759,12 +2180,9 @@ https://github.com/jdtsmith/eglot-booster
 ;;     ;; (add-to-list 'eglot-server-programs
 ;;     ;;              '((rust-mode rust-ts-mode rustic-mode) . ("rustowl")))
 ;;     ))
-#+end_src
+;; rustowl (disabled):1 ends here
 
-*** C
-
-#+begin_src elisp
-
+;; [[file:Config.org::*C][C:1]]
 (setup cc-mode
   (:when-loaded
     (add-to-list 'c-default-style '(c-mode . "cc-mode"))
@@ -2791,13 +2209,9 @@ https://github.com/jdtsmith/eglot-booster
 ;;   :config
 ;;   (add-to-list 'c-default-style '(c-mode . "cc-mode"))
 ;;   (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
+;; C:1 ends here
 
-#+end_src
-
-*** Java
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Java][Java:1]]
 ;; Java LSP support
 
 ;; https://github.com/emacs-lsp/lsp-java
@@ -2890,13 +2304,9 @@ https://github.com/jdtsmith/eglot-booster
   (:with-feature java-ts-mode
     (:when-loaded
       (my/java-mode-setup 'java-ts-mode))))
+;; Java:1 ends here
 
-#+end_src
-
-*** Markdown
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Markdown][Markdown:1]]
 (-setup markdown-mode
   (:match-file "\\.md\\'")
   (:with-mode gfm-mode
@@ -2909,36 +2319,24 @@ https://github.com/jdtsmith/eglot-booster
 
     ;; (setq markdown-command "marked")
     (add-hook 'markdown-mode-hook #'my/setup-markdown-mode)))
+;; Markdown:1 ends here
 
-#+end_src
-
-*** Scala (disabled)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Scala (disabled)][Scala (disabled):1]]
 (-setup scala-mode)
 ;; (-setup scala-mode
 ;;   (:hook-into (lambda ()
 ;;                 (setq prettify-symbols-alist
 ;;                       scala-prettify-symbols-alist))))
+;; Scala (disabled):1 ends here
 
-#+end_src
-
-*** Zig (disabled)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Zig (disabled)][Zig (disabled):1]]
 (-setup zig-mode :disabled
         ;; :config
         ;; (zig-format-on-save-mode 0)
         )
+;; Zig (disabled):1 ends here
 
-#+end_src
-
-*** Haskell
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Haskell][Haskell:1]]
 (-setup haskell-mode
   (:match-file ".hs")
   (:with-feature haskell-cabal
@@ -2947,38 +2345,22 @@ https://github.com/jdtsmith/eglot-booster
 ;; (-setup lsp-haskell
 ;;   (add-hook 'haskell-mode-hook #'lsp-deferred)
 ;;   (add-hook 'haskell-literate-mode-hook #'lsp-deferred))
+;; Haskell:1 ends here
 
-#+end_src
-
-*** Nix
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Nix][Nix:1]]
 (-setup nix-mode
   (:hook eglot-ensure))
+;; Nix:1 ends here
 
-#+end_src
-
-*** Yaml
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Yaml][Yaml:1]]
 (-setup yaml-mode)
+;; Yaml:1 ends here
 
-#+end_src
-
-*** Ron (disabled)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Ron (disabled)][Ron (disabled):1]]
 (-setup ron-mode :disabled)
+;; Ron (disabled):1 ends here
 
-#+end_src
-
-*** Kerolox
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Kerolox][Kerolox:1]]
 (-setup emacs
   :disabled
 
@@ -2995,13 +2377,9 @@ https://github.com/jdtsmith/eglot-booster
       :new-connection (lsp-stdio-connection '("/home/sui/Code/cloned/saturn-v/target/release/saturn-v" "lsp"))
       :major-modes '(kerolox-mode)
       :server-id 'saturn-v-lsp)))
+;; Kerolox:1 ends here
 
-#+end_src
-
-**** Kerolox treesit mode and LSP
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Kerolox treesit mode and LSP][Kerolox treesit mode and LSP:1]]
 (define-derived-mode kerolox-ts-mode kerolox-mode "kerolox[ts]"
   "Tree-sitter based major mode for editing kerolox (.rp1) files."
   :group 'kerolox
@@ -3084,13 +2462,9 @@ https://github.com/jdtsmith/eglot-booster
     :new-connection (lsp-stdio-connection '("/home/sui/Code/cloned/saturn-v/target/release/saturn-v" "lsp"))
     :major-modes '(kerolox-ts-mode)
     :server-id 'saturn-v-ts-lsp)))
+;; Kerolox treesit mode and LSP:1 ends here
 
-#+end_src
-
-**** kerolox - tree-sitter generic
-
-#+begin_src elisp
-
+;; [[file:Config.org::*kerolox - tree-sitter generic][kerolox - tree-sitter generic:1]]
 (with-eval-after-load 'treesit
   ;; Configure the language grammar source and mapping
   (when (and (fboundp 'treesit-available-p)
@@ -3110,32 +2484,20 @@ https://github.com/jdtsmith/eglot-booster
 
 ;; Auto-start LSP when opening .rp1 files with tree-sitter mode
 (add-hook 'kerolox-ts-mode-hook #'lsp-deferred)
+;; kerolox - tree-sitter generic:1 ends here
 
-#+end_src
-
-**** Kerolox misc
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Kerolox misc][Kerolox misc:1]]
 ;; Remap regular mode to tree-sitter mode
 (setq major-mode-remap-alist
       '((kerolox-mode . kerolox-ts-mode)))
+;; Kerolox misc:1 ends here
 
-#+end_src
-
-**** Kerolox - Auto-mode-alist
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Kerolox - Auto-mode-alist][Kerolox - Auto-mode-alist:1]]
 ;; Associate file name pattern with major-mode
 (add-to-list 'auto-mode-alist '("\\.rp1\\'" . kerolox-ts-mode)))
+;; Kerolox - Auto-mode-alist:1 ends here
 
-#+end_src
-
-*** Lua-mode
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Lua-mode][Lua-mode:1]]
 (-setup lua-mode
   (:when-loaded
     (with-eval-after-load 'lsp-lua
@@ -3158,13 +2520,9 @@ https://github.com/jdtsmith/eglot-booster
     (advice-add #'lsp-clients-lua-language-server-test
                 :override
                 #'my/lsp-clients-lua-language-server-test)))
+;; Lua-mode:1 ends here
 
-#+end_src
-
-*** Typst
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Typst][Typst:1]]
 (-setup (typst-ts-mode :type git :host codeberg :repo "meow_king/typst-ts-mode")
   (:option typst-ts-mode-grammar-location
            (expand-file-name
@@ -3187,21 +2545,13 @@ https://github.com/jdtsmith/eglot-booster
   ;; auto compile
   ;; (add-hook 'typst-ts-mode-hook #'typst-ts-watch-mode)
   )
+;; Typst:1 ends here
 
-#+end_src
-
-*** Typescript
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Typescript][Typescript:1]]
 (-setup typescript-mode)
+;; Typescript:1 ends here
 
-#+end_src
-
-*** HTML
-
-#+begin_src elisp
-
+;; [[file:Config.org::*HTML][HTML:1]]
 (setup sgml-mode
   (:when-loaded
     (:with-map html-mode-map
@@ -3212,35 +2562,23 @@ https://github.com/jdtsmith/eglot-booster
 
 (-setup direnv
   (direnv-mode 1))
+;; HTML:1 ends here
 
-#+end_src
-
-*** Rainbow mode
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Rainbow mode][Rainbow mode:1]]
 ;; Add color to hex codes in buffer.
 ;; --
 
 (-setup rainbow-mode
   (:diminish)
   (:hook-into prog-mode-hook))
+;; Rainbow mode:1 ends here
 
-#+end_src
-
-*** TODO: Ansi-color... not sure what this is for
-
-#+begin_src elisp
-
+;; [[file:Config.org::*TODO: Ansi-color... not sure what this is for][TODO: Ansi-color... not sure what this is for:1]]
 (with-eval-after-load 'ansi-color
   (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter))
+;; TODO: Ansi-color... not sure what this is for:1 ends here
 
-#+end_src
-
-*** Auto-install treesitter backends
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Auto-install treesitter backends][Auto-install treesitter backends:1]]
 (-setup treesit-auto
   (:option treesit-auto-install 'prompt)
   (:autoload global-treesit-auto-mode)
@@ -3252,13 +2590,9 @@ https://github.com/jdtsmith/eglot-booster
 
 ;; TODO: look into: https://github.com/tarsius/outline-minor-faces
 ;; is this worth it? alternative of
+;; Auto-install treesitter backends:1 ends here
 
-#+end_src
-
-*** Outline
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Outline][Outline:1]]
 ;; Optimal folding: https://github.com/jamescherti/outline-indent.el
 (-setup outline-indent
   (:diminish outline-minor-mode)
@@ -3464,13 +2798,9 @@ If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
                                  (- (match-end 1) (match-beginning 1) 2)
                                0)))
                )))))
+;; Outline:1 ends here
 
-#+end_src
-
-*** Outline faces
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Outline faces][Outline faces:1]]
 (-setup outline-minor-faces
   (:load-after outline outline-indent)
   (:with-hook outline-minor-mode-hook
@@ -3500,22 +2830,15 @@ If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
   (:load-after outline outline-indent)
   (:when-loaded
     (advice-add 'outline-flag-region :after 'backline-update)))
+;; Outline faces:1 ends here
 
-#+end_src
-
-*** Elide (hide license header)
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Elide (hide license header)][Elide (hide license header):1]]
 (setup elide
   (:with-hook emacs-lisp-mode-hook
     (:hook #'elide-head-mode)))
+;; Elide (hide license header):1 ends here
 
-#+end_src
-
-* Org
-
-#+begin_src elisp
+;; [[file:Config.org::*Org][Org:1]]
 ;;; +org.el --- org mode setup                     -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  lispcat
@@ -4316,12 +3639,9 @@ The property will be removed if ran with a \\[universal-argument]."
 
 (-setup org-pomodoro
   (:load-after org))
+;; Org:1 ends here
 
-#+end_src
-
-* Latex
-
-#+begin_src elisp
+;; [[file:Config.org::*Latex][Latex:1]]
 ;;; +latex.el --- latex setup                        -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  lispcat
@@ -4428,12 +3748,9 @@ The property will be removed if ran with a \\[universal-argument]."
 
 (-setup ox-typst
   (:load-after org))
+;; Latex:1 ends here
 
-#+end_src
-
-* Workspaces
-
-#+begin_src elisp
+;; [[file:Config.org::*Workspaces][Workspaces:1]]
 ;; NOTE: modify #'persp-save-state-to-file arg (keep-others-in-non-parametric-file 'yes)
 
 ;; maybe have each persp have its own save file, and when autosaving, save each persp?
@@ -5133,13 +4450,9 @@ After evaluating, it suspends all non-current activities."
                    (persp-save-state)))
     ;; save activities before killing emacs
     (add-hook 'kill-emacs-hook #'persp-save-state)))
+;; Workspaces:1 ends here
 
-#+end_src
-
-* Programs
-
-#+begin_src elisp
-
+;; [[file:Config.org::*Programs][Programs:1]]
 (-setup eat
   (:option eat-term-name "xterm-256color"
            eat-kill-buffer-on-exit t)
@@ -5176,11 +4489,9 @@ After evaluating, it suspends all non-current activities."
                                      directory-files-no-dot-files-regexp))))
     ;; run `+elfeed-feeds-update-var' before running `elfeed-update'
     (advice-add #'elfeed-update :before #'+elfeed-feeds-update-var)))
-#+end_src
+;; Programs:1 ends here
 
-* UI
-
-#+begin_src elisp
+;; [[file:Config.org::*UI][UI:1]]
 ;;; +ui.el --- ui improvements                       -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2025  lispcat
@@ -5986,24 +5297,15 @@ After evaluating, it suspends all non-current activities."
 ;;;; fireplace
 
 (-setup fireplace)
-#+end_src
+;; UI:1 ends here
 
-** leader-T
-
-#+begin_src elisp
-
+;; [[file:Config.org::*leader-T][leader-T:1]]
 (leader-bind
   "T" '(:ignore t :wk "Themes")
   "Tt" '(consult-theme :wk "load-theme"))
+;; leader-T:1 ends here
 
-#+end_src
-
-** load-theme-hook
-
-A hook that runs after enabling a theme.
-
-#+begin_src elisp
-
+;; [[file:Config.org::*load-theme-hook][load-theme-hook:1]]
 (setup emacs
   (defvar my/load-theme-hook nil)
 
@@ -6011,12 +5313,9 @@ A hook that runs after enabling a theme.
     (run-hooks 'my/load-theme-hook))
 
   (advice-add 'enable-theme :after #'my/run-load-theme-hook))
+;; load-theme-hook:1 ends here
 
-#+end_src
-
-* Misc
-
-#+begin_src elisp
+;; [[file:Config.org::*Misc][Misc:1]]
 (setup server
   (:require-self)
   (:global "C-c q" delete-frame
@@ -6036,11 +5335,9 @@ A hook that runs after enabling a theme.
 (-setup simple-httpd)
 
 (-setup impatient-mode)
-#+end_src
+;; Misc:1 ends here
 
-* To-sort
-
-#+begin_src elisp
+;; [[file:Config.org::*To-sort][To-sort:1]]
 (setup cus-edit
   (:with-map Custom-mode-map
     (:bind "n" next-line
@@ -6758,4 +6055,4 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 ;;   "nN" '(:ignore t :wk "Favorites")
 ;;   "nNn" 'denote
 ;;   "")
-#+end_src
+;; To-sort:1 ends here

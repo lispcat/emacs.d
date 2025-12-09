@@ -1,0 +1,117 @@
+#+title: Image Slicing
+#+author: Qiqi Jin
+#+language: en
+
+#+HTML: <a href ="https://github.com/ginqi7/image-slicing/blob/master/README.zh-CN.org"><img src="https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-555555.svg"/></a>
+
+* Overview
+
+In Emacs, displaying an image occupies one line regardless of its height. The movement over the image while navigating by lines can be quite frustrating.
+
+Although [[https://github.com/emacs-mirror/emacs/blob/master/lisp/pixel-scroll.el][pixel-scroll]] and [[https://github.com/emacs-mirror/emacs/blob/master/lisp/pixel-scroll.el][iscroll]] have improved image movement to some extent.
+
+I hope to move images in the same way as moving text, line by line.
+
+So I created this package to horizontally slice the images referenced in the buffer into multiple images. In Emacs, only a portion of the original image is displayed on each line. Finally, the image can be moved line by line.
+
+During the development process, I found [[https://github.com/jcfk/org-sliced-images][org-sliced-images]] which was almost the same as my idea. And thanks to him for letting me know about =insert-sliced-image= in Emacs.
+
+You can find some development history [[file:development-history.org][here]].
+
+
+* Prerequisites
+
+** CLI
+*Curl*: Used to download remote images.
+
+** Require Packages
++ *org-element*: Used to parse the buffer to retrieve all links.
++ *image*: Used to create an image object.
++ *url-util* : A utility for handling URL formats.
+
+** Install
++ clone the project in your own emacs configuration files directory, like:
+  #+BEGIN_SRC sh
+    git clone git@github.com:ginqi7/image-slicing.git ~/.emacs.d/lisp/image-slicing
+  #+END_SRC
+
++ add the path to 'load-path'
+  #+BEGIN_SRC emacs-lisp
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/d/lisp/image-slicing"))
+  #+END_SRC
+
+* Configuration
+Here are a few variables that can be used for configuration:
+#+BEGIN_SRC emacs-lisp
+  (require 'image-slicing)
+#+end_src
+
+** Variables
+| variable                            |                      default value | explain                                               |
+|-------------------------------------+------------------------------------+-------------------------------------------------------|
+| image-slicing-download-concurrency  |                                 20 | the maximum concurrency of images download            |
+| image-slicing-line-height-scale     |                                  2 | how many line height an image slice occupies          |
+| image-slicing-max-width             |                                700 | the maximum width of images display                   |
+| image-slicing-cursor-fringe-bitmaps | '(left-fringe right-arrow warning) | the Fringe Bitmaps indicator for the cursor position.[fn:1] |
+
+
+
+** EWW Config
+1. cancel the eww defualt image render.
+   #+begin_src emacs-lisp
+     (add-to-list 'shr-external-rendering-functions
+                  '(img . image-slicing-tag-img))
+   #+end_src
+2. Add ~image-slicing~ to ~eww-after-render-hook~
+   #+begin_src emacs-lisp
+     (push #'image-slicing-mode eww-after-render-hook)
+   #+end_src
+
+** Elfeed Config
+image-slice can also work with elfeed:
+
+#+begin_src emacs-lisp -r
+  ;; add to shr-external-rendering-functions (skip if alread setup for eww)
+  (add-to-list 'shr-external-rendering-functions
+               '(img . image-slicing-tag-img))
+
+  ;; advice `elfeed-show-entry' to trigger `image-slicing-mode'
+  (advice-add #'elfeed-show-entry :after #'image-slicing-mode)
+#+end_src
+
+* Features
+
+- =image-slicing-mode=: Automatically finds image links in the buffer and renders them as multiline display.
+- =Asynchronous=: Asynchronous download of remote images.
+- =EWW=: Support eww-mode.
+- =Elfeed=: Support elfeed.
+
+
+** Supported Link Format
+- Org Links
+  - =[[url][tag]]=
+  - =[[url]]=
+- Pure Links
+  - =file:./hello.png=
+  - =http://image.png=
+- EWW Html Links
+  - <img src=''>
+  - Support base64 formatted images
+
+* Example
+
+[[file:screencast.gif]]
+
+* Disadvantages
+
+- If there are many remote image links in the buffer, it will generate many temporary image files in the temporary system directory.
+- If the URL link is too short, the number of slices of the original image will be small, and the image line height will be large.
+- Only one buffer can be rendered at a time.
+
+
+* Todo List
+- Adapt nov
+
+* Footnotes
+
+[fn:1] [[https://www.gnu.org/software/emacs/manual/html_node/elisp/Fringe-Bitmaps.html][Emacs Fringe Bitmaps]]

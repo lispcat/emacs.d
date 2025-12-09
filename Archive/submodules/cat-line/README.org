@@ -1,0 +1,46 @@
+* Cat-line
+
+Yet another Emacs mode-line, but with a focus on hackability and simplicity.
+
+Many mode-line packages out there are either too complex or too simple, making extensibility difficult at times, and the alternative of making your own mode-line from scratch is a bit daunting.
+
+This package tries to find a nice middle-ground, providing a starting point in building your own DIY statusbar, without the pains of doing so from scratch.
+
+This package is intended to be used by forking and tweaking the source code to your heart's content, or used to help build your own DIY statusbar using the many provided modules and functions.
+
+Note that this package is intentionally designed with very few user-facing customizability (without modifying the source code), in an attempt to make the codebase as simple as possible.
+
+** Notable Features
+
+- Mode-line can be placed at the top, where the header-line is
+  - (idea taken from [[https://github.com/rougier/nano-modeline][Nano-Modeline]])
+
+- Lazy loading of modules
+  - (high-level implementation taken from [[https://gitlab.com/jessieh/mood-line][mood-line]])
+
+- Customizable bar height
+
+- Comes with several built-in modules:
+  - cursor position
+  - scroll position
+  - persp name
+  - pdf-tools page
+  - buffer-status
+  - buffer-name (with project/projectile integration)
+  - meow-mode
+  - major-mode
+  - WIP: flymake/flycheck status
+  - WIP: version control
+  - active process
+  - misc-info
+  - (more in the making)
+
+* Explanation of package
+
+* Each module in detail
+
+* Feedback
+
+* Contributing
+
+* License
