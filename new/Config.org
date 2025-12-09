@@ -1481,6 +1481,7 @@ Spellchecking.
 ;; locally installed
 
 (setup jinx
+  (:require-self)
   (:hook-into org-mode-hook markdown-mode-hook text-mode-hook)
   (:global "M-$" jinx-correct
            "C-M-$" jinx-languages))
@@ -3791,7 +3792,7 @@ If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
 
 ;;;; image-slicing
 
-(setup image-slicing
+(-setup (image-slicing :host github :repo "ginqi7/image-slicing")
   (:autoload image-slicing-mode)
   (:hook-into org-mode-hook)
   (:option image-slicing-newline-trailing-text nil))
