@@ -19,8 +19,10 @@
   (defdir my/emacs-init-dir "init")
   (defdir my/emacs-src-dir "src")
   (defdir my/emacs-local-dir "local")
-  (defdir my/emacs-submodules-dir "submodules")
-  (defdir my/emacs-config-file "init.el"))
+  (defdir my/emacs-submodules-dir "submodules"))
+
+(defvar my/emacs-config-file
+  (expand-file-name "Config.org" my/emacs-root-dir))
 
 (setq user-emacs-directory my/emacs-local-dir) ; main dir
 

@@ -30,6 +30,12 @@
 
 (straight-use-package 'setup)
 (require 'setup)
+
+(advice-add 'setup :around
+            (defun my/setup-advice (orig-fn recipe &rest body)
+              (if (memq :disabled body)
+                  (format "%S :disabled by setup" recipe)
+                (apply orig-fn recipe body))))
 ;; setup.el:1 ends here
 
 ;; [[file:Config.org::*setc][setc:1]]
@@ -409,58 +415,6 @@ This is the non-anaphoric version - VALUE is passed as an argument to FORM."
 (-setup s)
 ;; s:1 ends here
 
-;; [[file:Config.org::*Vertico][Vertico:1]]
-(-setup vertico
-  (:option vertico-cycle t             ; cycle for `vertico-next/previous'
-           vertico-count 10            ; Show more candidates (def 10)
-           vertico-scroll-margin 3     ; Different scroll margin (def 2)
-           vertico-resize 'grow-only)  ; Grow/shrink minibuffer (def 'grow-only)
-  (:option
-   ;; adds a menu in the minibuffer to switch display modes
-   context-menu-mode t
-
-   ;; Support opening new minibuffers from inside existing minibuffers.
-   enable-recursive-minibuffers t
-
-   ;; hide commands in M-x that do not work in the current mode.
-   read-extended-command-predicate #'command-completion-default-include-p
-
-   ;; do not allow the cursor in the minibuffer prompt
-   minibuffer-prompt-properties '(read-only t cursor-intangible t
-                                            face minibuffer-prompt))
-
-  ;; enable
-  (vertico-mode 1)
-
-  (:global "C-M-c" #'completion-at-point)
-
-  ;; prefix TAB completion
-  (keymap-set vertico-map "<backtab>" #'minibuffer-complete)
-
-  ;; Prompt indicator for `completing-read-multiple'.
-  (when (< emacs-major-version 31)
-    (advice-add #'completing-read-multiple :filter-args
-                (lambda (args)
-                  (cons (format "[CRM%s] %s"
-                                (string-replace "[ \t]*" "" crm-separator)
-                                (car args))
-                        (cdr args)))))
-
-  ;; --- Multiform mode ---
-
-  ;; enable multiform
-  (vertico-multiform-mode)
-
-  ;; per command; form: ((cmd config..) ..)
-  (setq vertico-multiform-commands
-        `((consult-imenu buffer)
-          (consult-outline buffer)))
-
-  ;; per completion category
-  (setq vertico-multiform-categories
-        `((reverse (vertico-resize . 'grow-only)))))
-;; Vertico:1 ends here
-
 ;; [[file:Config.org::*Consult][Consult:1]]
 (-setup consult
   (:global "C-c M-x" consult-mode-command
@@ -661,6 +615,10 @@ This is the non-anaphoric version - VALUE is passed as an argument to FORM."
   (:autoload auto-sudoedit-sudoedit))
 ;; auto-sudoedit:1 ends here
 
+;; [[file:Config.org::*buttonize urls][buttonize urls:1]]
+(add-hook 'after-init-hook #'global-goto-address-mode)
+;; buttonize urls:1 ends here
+
 ;; [[file:Config.org::*leader-b][leader-b:1]]
 (setup emacs
   (defalias 'my/last-selected-buffer #'mode-line-other-buffer)
@@ -816,9 +774,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;; [[file:Config.org::*leader-f/d][leader-f/d:1]]
 (setup emacs
 
-  (defvar my/emacs-config-file
-    (directory-file-name
-     (expand-file-name "Config.org" my/emacs-root-dir)))
+  ;; (defvar my/emacs-config-file
+  ;;   (directory-file-name
+  ;;    (expand-file-name "Config.org" my/emacs-root-dir)))
 
   (defun my/open-emacs-config ()
     "Open emacs config file."
@@ -874,11 +832,11 @@ _SPC_ cancel	_o_nly this   	_d_elete
          "p" #'previous-line))
 ;; Helpful:1 ends here
 
-;; [[file:Config.org::*TLDR][TLDR:1]]
+;; [[file:Config.org::*tldr][tldr:1]]
 (-setup tldr)
-;; TLDR:1 ends here
+;; tldr:1 ends here
 
-;; [[file:Config.org::*Profiling / leader-D][Profiling / leader-D:1]]
+;; [[file:Config.org::*leader-D (profiling)][leader-D (profiling):1]]
 (setup emacs
   (defun my/profiler-report ()
     "Profiler stop and report."
@@ -890,7 +848,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
     "D" '(:ignore t :wk "Debug")
     "Ds" 'profiler-start
     "Dr" 'my/profiler-report))
-;; Profiling / leader-D:1 ends here
+;; leader-D (profiling):1 ends here
 
 ;; [[file:Config.org::*user][user:1]]
 (setc user-full-name "lispcat"
@@ -1144,20 +1102,74 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (:autoload vertico-fontawesome))
 ;; Fontawesome - TODO: move:1 ends here
 
-;; [[file:Config.org::*Orderless][Orderless:1]]
-(-setup orderless
-  (:option completion-styles '(orderless basic)
-           completion-category-defaults nil
-           completion-category-overrides '((file (styles partial-completion)))
-           completion-pcm-leading-wildcard t
-           orderless-matching-styles '(orderless-prefixes orderless-regexp)
-           ;; '(orderless-flex orderless-regexp)
+;; [[file:Config.org::*Vertico][Vertico:1]]
+(-setup vertico
+  (:option vertico-cycle t             ; cycle for `vertico-next/previous'
+           vertico-count 10            ; Show more candidates (def 10)
+           vertico-scroll-margin 3     ; Different scroll margin (def 2)
+           vertico-resize 'grow-only)  ; Grow/shrink minibuffer (def 'grow-only)
+  (:option
+   ;; adds a menu in the minibuffer to switch display modes
+   context-menu-mode t
 
-           ;; TODO: Configure a custom style dispatcher (see the Consult wiki)
-           ;; orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
-           ;; orderless-component-separator #'orderless-escapable-split-on-space
-           ))
-;; Orderless:1 ends here
+   ;; Support opening new minibuffers from inside existing minibuffers.
+   enable-recursive-minibuffers t
+
+   ;; hide commands in M-x that do not work in the current mode.
+   read-extended-command-predicate #'command-completion-default-include-p
+
+   ;; do not allow the cursor in the minibuffer prompt
+   minibuffer-prompt-properties '(read-only t cursor-intangible t
+                                            face minibuffer-prompt))
+
+  ;; enable
+  (vertico-mode 1)
+
+  (:global "C-M-c" #'completion-at-point)
+
+  ;; prefix TAB completion
+  (keymap-set vertico-map "<backtab>" #'minibuffer-complete)
+
+  ;; Prompt indicator for `completing-read-multiple'.
+  (when (< emacs-major-version 31)
+    (advice-add #'completing-read-multiple :filter-args
+                (lambda (args)
+                  (cons (format "[CRM%s] %s"
+                                (string-replace "[ \t]*" "" crm-separator)
+                                (car args))
+                        (cdr args)))))
+
+  ;; --- Multiform mode ---
+
+  ;; enable multiform
+  (vertico-multiform-mode)
+
+  ;; per command; form: ((cmd config..) ..)
+  (setq vertico-multiform-commands
+        `((consult-imenu buffer)
+          (consult-outline buffer)))
+
+  ;; per completion category
+  (setq vertico-multiform-categories
+        `((reverse (vertico-resize . 'grow-only)))))
+;; Vertico:1 ends here
+
+;; [[file:Config.org::*Candidate icons][Candidate icons:1]]
+;; (-setup nerd-icons-corfu
+;;   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+(-setup kind-icon
+  (:load-after corfu)
+  (:when-loaded
+    (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
+
+    ;; blend background
+    (:option kind-icon-blend-background t
+             kind-icon-default-face 'corfu-default)
+
+    ;; update background after theme change
+    (add-hook '+after-enable-theme-hook #'kind-icon-reset-cache)))
+;; Candidate icons:1 ends here
 
 ;; [[file:Config.org::*Marginalia][Marginalia:1]]
 (-setup marginalia
@@ -1168,13 +1180,44 @@ _SPC_ cancel	_o_nly this   	_d_elete
     (:bind "M-A" marginalia-cycle)))
 ;; Marginalia:1 ends here
 
-;; [[file:Config.org::*Embark][Embark:1]]
+;; [[file:Config.org::*Orderless (completion style)][Orderless (completion style):1]]
+(-setup orderless
+  (:option completion-styles '(orderless basic)
+           completion-category-defaults nil
+           completion-category-overrides '((file (styles partial-completion)))
+
+           ;; Make partial-completion work like substring
+           completion-pcm-leading-wildcard t
+
+           ;; Set style
+           orderless-matching-styles '(orderless-prefixes orderless-regexp)
+           ;; orderless-matching-styles '(orderless-flex orderless-regexp)
+
+           ;; Dispatchers:
+           ;; % : ignore diacritics
+           ;; ! : not
+           ;; & : annotation
+           ;; , : initialim (first letter of every word)
+           ;; = : literal
+           ;; ^ : literal prefix
+           ;; ~ : flex
+           orderless-affix-dispatch-alist
+           '((?% . char-fold-to-regexp)
+             (?! . orderless-not)
+             (?& . orderless-annotation)
+             (?, . orderless-initialism)
+             (?= . orderless-literal)
+             (?^ . orderless-literal-prefix)
+             (?~ . orderless-flex))))
+;; Orderless (completion style):1 ends here
+
+;; [[file:Config.org::*Embark (minibuffer actions)][Embark (minibuffer actions):1]]
 (-setup embark
-  ;; TODO: bind dwim and act (very useful) to more convenient keys.
-  (:global "C-." my/embark-act-or-dwim
+  ;; DWIM binds (very useful)
+  (:global "C-." my/embark-act-or-dwim ; univ-arg for dwim
            "C-," embark-dwim)
 
-  ;; use embark for showing command prefix help
+  ;; use completing-read ui for key help
   (setq prefix-help-command #'embark-prefix-help-command)
 
   ;; Show the Embark target at point via Eldoc. You may adjust the
@@ -1197,7 +1240,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none)))))
-;; Embark:1 ends here
+;; Embark (minibuffer actions):1 ends here
 
 ;; [[file:Config.org::*consult integration][consult integration:1]]
 (-setup embark-consult
@@ -1205,154 +1248,6 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (:when-loaded
     (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)))
 ;; consult integration:1 ends here
-
-;; [[file:Config.org::*Company (Disabled)][Company (Disabled):1]]
-;; TODO: disable most backends by default add a bunch per mode (org should only
-;; have a few
-(progn
-  ;; (-setup company
-
-  ;;   ;; keybinds
-
-  ;;   (:with-map company-active-map
-  ;;     (:bind "<return>" nil
-  ;;            "C-n" nil
-  ;;            "C-p" nil
-  ;;            "C-s" company-filter-candidates))
-
-  ;;   ;; config
-
-  ;;   (:when-loaded
-
-  ;;     (company-tng-configure-default)
-  ;;     (global-company-mode 1)
-
-  ;;     (defun +company-return-default-or-complete ()
-  ;;       (interactive)
-  ;;       ;; number if selected, nil if not
-  ;;       (if company-selection
-  ;;           (company-complete-selection)
-  ;;         (company-abort)
-  ;;         (execute-kbd-macro (kbd "<return>"))))
-  ;;     (define-key company-tng-map (kbd "<return>") #'+company-return-default-or-complete)
-
-  ;;     (setq company-backends
-  ;;           '(company-dabbrev company-files)) ; the default, overrides below
-  ;;     (setq company-transformers nil)
-  ;;     (setq lsp-completion-provider :none)
-  ;;     (setq company-idle-delay 0.1)
-  ;;     (setq company-selection-wrap-around t)
-  ;;     (setq company-minimum-prefix-length 1)
-  ;;     (setq company-dabbrev-downcase nil)
-  ;;     (setq company-search-regexp-function 'company-search-words-in-any-order-regexp)
-
-  ;;     ;; org-mode-specific backends
-
-  ;;     (add-hook 'prog-mode-hook
-  ;;               (lambda ()
-  ;;                 (setq-local company-backends
-  ;;                             '((company-yasnippet :with company-capf)
-  ;;                               company-dabbrev-code
-  ;;                               company-files))
-  ;;                 (setq-local company-transformers '(company-sort-by-backend-importance))))
-
-  ;;     (eval-after-load 'org
-  ;;       '(add-hook 'org-mode-hook
-  ;;                  (lambda ()
-  ;;                    (setq-local company-backends
-  ;;                                '((company-dabbrev :with company-files))))))
-  ;;     (eval-after-load 'latex
-  ;;       '(add-hook 'LaTeX-mode-hook
-  ;;                  (lambda ()
-  ;;                    (setq-local company-backends'nil))))
-
-  ;;     ;; separator for orderless completion:
-
-  ;;     (defvar +company-separator "&")
-
-  ;;     (defun +company-insert-separator ()
-  ;;       "Insert `+company-separator' during company completion."
-  ;;       (interactive)
-  ;;       (when (company-manual-begin)
-  ;;         (insert +company-separator)))
-
-  ;;     (define-key company-active-map (kbd "M-SPC") #'+company-insert-separator)
-
-  ;;     (setq orderless-component-separator "[ &]")
-  ;;     ))
-  )
-;; Company (Disabled):1 ends here
-
-;; [[file:Config.org::*company-quickhelp (Disabled)][company-quickhelp (Disabled):1]]
-;; (-setup company-quickhelp
-;;   (:load-after company)
-;;   (:global "C-c l h c" company-quickhelp-mode)
-;;   (:option company-quickhelp-delay 1)
-;;   (:when-loaded
-;;     (company-quickhelp-mode 1)))
-;; company-quickhelp (Disabled):1 ends here
-
-;; [[file:Config.org::*Yasnippet (Disabled)][Yasnippet (Disabled):1]]
-(-setup yasnippet-snippets
-  :disabled
-  )
-
-(-setup yasnippet
-  :disabled
-
-  (:diminish yas-minor-mode)
-  ;; (add-hook 'prog-mode-hook #'yas-minor-mode)
-
-  (:require-self)
-
-  ;; binds
-  (:with-map yas-keymap
-    (:bind "RET" yas-next-field-or-maybe-expand))
-
-  (:when-loaded
-    ;; load snippets
-    (:also-load yasnippet-snippets)
-    ;; add custom snippets dir
-    (add-to-list 'yas-snippet-dirs
-                 (expand-file-name "no-search/snippets"
-                                   my/emacs-src-dir))
-    ;; reload all
-    (with-eval-after-load 'yasnippet-snippets
-      (yas-reload-all))))
-
-;; -- yasnippet integration --
-;; may cause freezing?
-;; using cape, lsp + yasnippet capf
-
-;; (-setup yasnippet-capf
-;;   :disabled
-;;   (:load-after yasnippet))
-;; Yasnippet (Disabled):1 ends here
-
-;; [[file:Config.org::*Hippie-expand][Hippie-expand:1]]
-(setup hippie-exp
-  ;; replace dabbrev-expand with hippie-expand
-  (global-set-key [remap dabbrev-expand] 'hippie-expand)
-
-  ;; yasnippet integration
-  (:with-feature yasnippet
-    (:when-loaded
-      (add-to-list 'hippie-expand-try-functions-list
-                   #'yas-hippie-try-expand t)))
-
-  ;; tempel integration
-  (:with-feature tempel
-    (:when-loaded
-      (add-to-list 'hippie-expand-try-functions-list
-                   #'tempel-expand t))))
-;; Hippie-expand:1 ends here
-
-;; [[file:Config.org::*Isearch][Isearch:1]]
-(setup isearch
-  (:when-loaded
-    (:global "C-M-s" isearch-forward
-             "C-M-r" isearch-backward)))
-;; Isearch:1 ends here
 
 ;; [[file:Config.org::*Corfu][Corfu:1]]
 (-setup corfu
@@ -1439,22 +1334,75 @@ _SPC_ cancel	_o_nly this   	_d_elete
    corfu-popupinfo-delay '(1.5 . 0.5)))
 ;; Corfu:1 ends here
 
-;; [[file:Config.org::*Candidate icons][Candidate icons:1]]
-;; (-setup nerd-icons-corfu
-;;   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+;; [[file:Config.org::*Company (Disabled)][Company (Disabled):1]]
+(-setup company
+  :disabled
 
-(-setup kind-icon
-  (:load-after corfu)
+  (:with-map company-active-map
+    (:bind "<return>" nil
+           "C-n" nil
+           "C-p" nil
+           "C-s" company-filter-candidates))
+  (:option company-backends '(company-dabbrev company-files) ; the default, overrides below
+           company-transformers nil
+           lsp-completion-provider :none
+           company-idle-delay 0.1
+           company-selection-wrap-around t
+           company-minimum-prefix-length 1
+           company-dabbrev-downcase nil
+           company-search-regexp-function
+           'company-search-words-in-any-order-regexp)
   (:when-loaded
-    (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
+    (company-tng-configure-default)
+    (global-company-mode 1)
 
-    ;; blend background
-    (:option kind-icon-blend-background t
-             kind-icon-default-face 'corfu-default)
+    (defun +company-return-default-or-complete ()
+      (interactive)
+      ;; number if selected, nil if not
+      (if company-selection
+          (company-complete-selection)
+        (company-abort)
+        (execute-kbd-macro (kbd "<return>"))))
+    (define-key company-tng-map (kbd "<return>") #'+company-return-default-or-complete)
 
-    ;; update background after theme change
-    (add-hook '+after-enable-theme-hook #'kind-icon-reset-cache)))
-;; Candidate icons:1 ends here
+    ;; -- org-mode-specific backends --
+
+    (add-hook 'prog-mode-hook
+              (lambda ()
+                (setq-local company-backends
+                            '((company-yasnippet :with company-capf)
+                              company-dabbrev-code
+                              company-files))
+                (setq-local company-transformers '(company-sort-by-backend-importance))))
+    (eval-after-load 'org
+      '(add-hook 'org-mode-hook
+                 (lambda ()
+                   (setq-local company-backends
+                               '((company-dabbrev :with company-files))))))
+    (eval-after-load 'latex
+      '(add-hook 'LaTeX-mode-hook
+                 (lambda ()
+                   (setq-local company-backends'nil))))
+
+    ;; - separator for orderless completion --
+
+    (defvar +company-separator "&")
+    (defun +company-insert-separator ()
+      "Insert `+company-separator' during company completion."
+      (interactive)
+      (when (company-manual-begin)
+        (insert +company-separator)))
+    (define-key company-active-map (kbd "M-SPC") #'+company-insert-separator)
+    (setq orderless-component-separator "[ &]")))
+
+;; describe current selection
+(-setup company-quickhelp
+  (:load-after company)
+  (:global "C-c l h c" company-quickhelp-mode)
+  (:option company-quickhelp-delay 1)
+  (:when-loaded
+    (company-quickhelp-mode 1)))
+;; Company (Disabled):1 ends here
 
 ;; [[file:Config.org::*Tempel][Tempel:1]]
 (-setup tempel-collection
@@ -1471,19 +1419,50 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;;   (eglot-tempel-mode t))
 ;; Tempel:1 ends here
 
+;; [[file:Config.org::*Yasnippet (Disabled)][Yasnippet (Disabled):1]]
+(-setup yasnippet-snippets
+  :disabled)
+
+(-setup yasnippet
+  :disabled
+
+  (:require-self)
+  (:diminish yas-minor-mode)
+
+  (:with-map yas-keymap
+    (:bind "RET" yas-next-field-or-maybe-expand))
+
+  (:when-loaded
+    ;; load snippets
+    (:also-load yasnippet-snippets)
+    ;; add custom snippets dir
+    (add-to-list 'yas-snippet-dirs
+                 (expand-file-name "no-search/snippets"
+                                   my/emacs-src-dir))
+    ;; reload all
+    (with-eval-after-load 'yasnippet-snippets
+      (yas-reload-all))))
+
+;; -- yasnippet integration --
+
+;; may cause freezing?
+;; using cape, lsp + yasnippet capf
+
+;; (-setup yasnippet-capf
+;;   :disabled
+;;   (:load-after yasnippet))
+;; Yasnippet (Disabled):1 ends here
+
 ;; [[file:Config.org::*Cape][Cape:1]]
 (-setup cape
   (:require-self)
   (:also-load tempel tempel-collection)
 
-  ;; test with #' prefix
   (:global "M-+" #'cape-prefix-map)
 
-  ;; fixes ---
-
+  ;; prevent lsp-mode from hanging
+  ;; https://github.com/emacs-lsp/lsp-mode/issues/3555#issuecomment-2830321073
   (with-eval-after-load 'lsp-mode
-    ;; FINALLY, the fix for lsp hanging????!!!!
-    ;; https://github.com/emacs-lsp/lsp-mode/issues/3555#issuecomment-2830321073
     (advice-add #'lsp-completion-at-point :around #'cape-wrap-noninterruptible))
 
   ;; manual template expansion ---
@@ -1644,113 +1623,50 @@ _SPC_ cancel	_o_nly this   	_d_elete
   )
 ;; Cape:1 ends here
 
-;; [[file:Config.org::*Sane defaults][Sane defaults:1]]
-;; new file templates
-(auto-insert-mode)                      ; adds a hook to find-files-hook
+;; [[file:Config.org::*Hippie-expand][Hippie-expand:1]]
+(setup hippie-exp
+  ;; replace dabbrev-expand with hippie-expand
+  (global-set-key [remap dabbrev-expand] 'hippie-expand)
+
+  ;; yasnippet integration
+  (:with-feature yasnippet
+    (:when-loaded
+      (add-to-list 'hippie-expand-try-functions-list
+                   #'yas-hippie-try-expand)))
+
+  ;; tempel integration
+  (:with-feature tempel
+    (:when-loaded
+      (add-to-list 'hippie-expand-try-functions-list
+                   #'tempel-expand))))
+;; Hippie-expand:1 ends here
+
+;; [[file:Config.org::*Isearch (TODO: move)][Isearch (TODO: move):1]]
+(setup isearch
+  (:when-loaded
+    (:global "C-M-s" isearch-forward
+             "C-M-r" isearch-backward)))
+;; Isearch (TODO: move):1 ends here
+
+;; [[file:Config.org::*sane defs][sane defs:1]]
+;; newfile templates
+(auto-insert-mode)
 
 ;; diminish auto-fill-mode
-(setup emacs
-  (:diminish auto-fill-mode))
+;; (auto-fill-mode auto-breaks line if too long)
+(diminish 'auto-fill-mode)
 
 ;; spaces > tabs
 (setq-default indent-tabs-mode nil)
 
-;; scroll compilation buffer
+;; auto-scroll compilation buffer
 (setc compilation-scroll-output t)
 
 ;; buttonize urls
 (add-hook 'after-init-hook #'global-goto-address-mode)
-;; Sane defaults:1 ends here
+;; sane defs:1 ends here
 
-;; [[file:Config.org::*Flymake][Flymake:1]]
-(setup flymake
-  (:option flymake-no-changes-timeout 0.3
-           flymake-wrap-around nil
-           ;; flymake-show-diagnostics-at-end-of-line t
-           ;; flymake-show-diagnostics-at-end-of-line 'fancy
-           ;; flymake-show-diagnostics-at-end-of-line 'short
-           flymake-show-diagnostics-at-end-of-line nil
-           )
-  ;; TODO: create hydra for jumping next/prev/diagnostics
-  (:with-map flymake-mode-map
-    (:bind "C-c ! n" flymake-goto-next-error
-           "C-c ! p" flymake-goto-prev-error
-           "C-c ! l" flymake-show-diagnostics-buffer)))
-;; Flymake:1 ends here
-
-;; [[file:Config.org::*Flycheck][Flycheck:1]]
-(-setup flycheck
-  (:diminish)
-  (:option flycheck-display-errors-delay 0.8
-           flycheck-idle-change-delay 0.4)
-  (add-hook 'after-init-hook
-            #'global-flycheck-mode))
-
-(-setup flycheck-inline
-  (:load-after flycheck)
-  (:with-hook flycheck-mode-hook
-    (:hook #'flycheck-inline-mode)))
-;; Flycheck:1 ends here
-
-;; [[file:Config.org::*project.el][project.el:1]]
-(setup project
-  ;; options
-  (:option xref-search-program 'ripgrep)
-
-  ;; global
-  (global-set-key (kbd "C-c p") project-prefix-map)
-
-  ;; project compile with comint
-  (defun project-compile-interactive ()
-    (declare (interactive-only compile))
-    (interactive)
-    (let ((current-prefix-arg '(4)))
-      (call-interactively #'project-compile)))
-
-  (:with-map project-prefix-map
-    (:bind "C" project-compile-interactive
-           "s" consult-ripgrep
-           "S" project-shell
-           "b" consult-project-buffer)))
-
-;; Note: obsolete, consult-project-buffer is the same?
-;; (-setup consult-project-extra
-;;   (:load-after consult)
-;;   (:require-self)
-;;   (:with-map project-prefix-map
-;;     (:bind "F" consult-project-extra-find)))
-;; project.el:1 ends here
-
-;; [[file:Config.org::*Projectile (Disabled)][Projectile (Disabled):1]]
-(-setup projectile
-  :disabled
-  
-  (projectile-mode 1)
-  (:global "C-c P" projectile-command-map)
-  (:option projectile-compile-use-comint-mode t)
-
-  ;; configure projectile-command-map
-  (:with-map projectile-command-map
-    (with-eval-after-load 'consult
-      (:bind "s r" #'consult-ripgrep))
-
-    (defun my/lorri-init ()
-      "Run `lorri init` in the current directory and show the output."
-      (interactive)
-      (when (y-or-n-p "Run `lorri init`? ")
-        (shell-command "lorri init")))
-    (:bind "c L" #'lorri-init)))
-
-;; --- Consult integration ---
-(-setup consult-projectile
-  (:load-after projectile)
-  (:with-map projectile-command-map
-    ;; Buffers, Files, Projects
-    (:bind "/" #'consult-projectile)))
-;; Projectile (Disabled):1 ends here
-
-;; [[file:Config.org::*Match parenthesis Pairs][Match parenthesis Pairs:1]]
-;; for non-programming too
+;; [[file:Config.org::*parenthesis matching][parenthesis matching:1]]
 (setup elec-pair
   (:require-self)
 
@@ -1763,109 +1679,184 @@ _SPC_ cancel	_o_nly this   	_d_elete
                      (,electric-pair-inhibit-predicate c)))))
   (add-hook 'org-mode-hook #'my/disable-<-pair-expansion)
 
-  ;; global
+  ;; enable
   (electric-pair-mode 1))
-;; Match parenthesis Pairs:1 ends here
+;; parenthesis matching:1 ends here
 
-;; [[file:Config.org::*toggle for lsp-mode vs eglot (for performance)][toggle for lsp-mode vs eglot (for performance):1]]
-(defvar my/use-lsp-mode? nil)
-(defvar my/use-eglot? t)
-;; toggle for lsp-mode vs eglot (for performance):1 ends here
+;; [[file:Config.org::*direnv][direnv:1]]
+(-setup direnv
+  (direnv-mode 1))
+;; direnv:1 ends here
+
+;; [[file:Config.org::*projectile][projectile:1]]
+(defun my/lorri-init ()
+  "Run `lorri init` in the current directory and show the output."
+  (interactive)
+  (when (y-or-n-p "Run `lorri init`? ")
+    (shell-command "lorri init")))
+
+(-setup projectile
+  (projectile-mode +1)
+  (:global "C-c p" 'projectile-command-map)
+  (:option projectile-compile-use-comint-mode t)
+  (:with-map projectile-command-map
+    (:bind "c L" #'my/lorri-init)
+    (with-eval-after-load 'consult
+      (:bind "s r" #'consult-ripgrep))))
+
+;; all-in-one buffers, files, projects (depends on consult)
+
+(-setup consult-projectile
+  (:load-after projectile)
+  (:with-map projectile-command-map
+    (:bind "TAB" #'consult-projectile)))
+;; projectile:1 ends here
+
+;; [[file:Config.org::*project (disabled)][project (disabled):1]]
+(setup project
+  :disabled
+
+  (:option xref-search-program 'ripgrep)
+
+  (defun project-compile-interactive ()
+    "Interactively compile with comint."
+    (declare (interactive-only compile))
+    (interactive)
+    (let ((current-prefix-arg '(4)))
+      (call-interactively #'project-compile)))
+
+  (:when-loaded
+    (global-set-key (kbd "C-c p") project-prefix-map))
+  (:with-map project-prefix-map
+    (:bind "C" project-compile-interactive
+           "s" consult-ripgrep
+           "S" project-shell
+           "b" consult-project-buffer)))
+
+;; Note: obsolete, consult-project-buffer is the same?
+;; (-setup consult-project-extra
+;;   (:load-after consult)
+;;   (:require-self)
+;;   (:with-map project-prefix-map
+;;     (:bind "F" consult-project-extra-find)))
+;; project (disabled):1 ends here
+
+;; [[file:Config.org::*Flycheck][Flycheck:1]]
+(-setup flycheck
+  (:option flycheck-idle-change-delay 0.4
+           flycheck-display-errors-delay 0.8)
+  (add-hook 'after-init-hook #'global-flycheck-mode))
+
+(-setup flycheck-inline
+  (:load-after flycheck)
+  (add-hook 'flycheck-mode-hook #'flycheck-inline-mode))
+;; Flycheck:1 ends here
+
+;; [[file:Config.org::*Flymake (disabled)][Flymake (disabled):1]]
+(setup flymake
+  :disabled
+
+  (:option flymake-no-changes-timeout 0.3
+           flymake-wrap-around nil
+           ;; flymake-show-diagnostics-at-end-of-line t
+           ;; flymake-show-diagnostics-at-end-of-line 'fancy
+           ;; flymake-show-diagnostics-at-end-of-line 'short
+           flymake-show-diagnostics-at-end-of-line nil
+           )
+  ;; TODO: create hydra for jumping next/prev/diagnostics
+  (:with-map flymake-mode-map
+    (:bind "C-c ! n" flymake-goto-next-error
+           "C-c ! p" flymake-goto-prev-error
+           "C-c ! l" flymake-show-diagnostics-buffer)))
+;; Flymake (disabled):1 ends here
+
+;; [[file:Config.org::*Lsp-booster][Lsp-booster:1]]
+(defun lsp-booster--advice-json-parse (old-fn &rest args)
+  "Try to parse bytecode instead of json."
+  (or
+   (when (equal (following-char) ?#)
+     (let ((bytecode (read (current-buffer))))
+       (when (byte-code-function-p bytecode)
+         (funcall bytecode))))
+   (apply old-fn args)))
+(advice-add (if (progn (require 'json)
+                       (fboundp 'json-parse-buffer))
+                'json-parse-buffer
+              'json-read)
+            :around
+            #'lsp-booster--advice-json-parse)
+
+(defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
+  "Prepend emacs-lsp-booster command to lsp CMD."
+  (let ((orig-result (funcall old-fn cmd test?)))
+    (if (and (not test?)                             ;; for check lsp-server-present?
+             (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+             lsp-use-plists
+             (not (functionp 'json-rpc-connection))  ;; native json-rpc
+             (executable-find "emacs-lsp-booster"))
+        (progn
+          (when-let ((command-from-exec-path (executable-find (car orig-result))))  ;; resolve command from exec-path (in case not found in $PATH)
+            (setcar orig-result command-from-exec-path))
+          (message "Using emacs-lsp-booster for %s!" orig-result)
+          (cons "emacs-lsp-booster" orig-result))
+      orig-result)))
+(advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
+;; Lsp-booster:1 ends here
+
+;; [[file:Config.org::*eglot-booster (disabled)][eglot-booster (disabled):1]]
+;; Note: try experimenting performance difference by running
+;; M-x eglot-booster.
+(-setup (eglot-booster :host github :repo "jdtsmith/eglot-booster")
+  :disabled
+  
+  (:load-after elgot)
+  (:when-loaded
+    (eglot-booster-mode)))
+;; eglot-booster (disabled):1 ends here
 
 ;; [[file:Config.org::*Lsp-mode][Lsp-mode:1]]
 (-setup lsp-mode
-  (:only-if my/use-lsp-mode?)
+  (:option lsp-keymap-prefix "C-c l"     ; keymap
+           lsp-completion-provider :none ; supply own capf with cape
+           lsp-idle-delay 0.5            ; refresh rate
+           ;; If lag, don't update inlay hints on scroll
+           ;; ([[https://github.com/emacs-lsp/lsp-mode/issues/4113]])
+           ;; lsp-update-inlay-hints-on-scroll nil
+           )
+  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
 
-  (:autoload lsp lsp-deferred)
-
-  (:option lsp-keymap-prefix "C-c l"
-           lsp-completion-enable nil
-           lsp-completion-provider :none) ; manual capf setup
-
-  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
-
-  (:when-loaded
-    (setq lsp-inlay-hint-enable t
-          ;; freq of refreshing highlights, lenses, links, etc
-          lsp-idle-delay 0.5
-          ;; bind "C-c l" to lsp-command-map
-          ;; lsp-keymap-prefix "C-c l"
-          ;; problematic, lag: https://github.com/emacs-lsp/lsp-mode/issues/4113
-          ;; lsp-update-inlay-hints-on-scroll nil
-          )))
-;; Lsp-mode:1 ends here
-
-;; [[file:Config.org::*Lsp-ui][Lsp-ui:1]]
 (-setup lsp-ui
-  (:only-if my/use-lsp-mode?)
-
   (:load-after lsp-mode)
+  ;; -- Sideline --
+  (:option lsp-ui-sideline-delay 0.2              ; sideline delay
+           lsp-ui-sideline-show-hover nil         ; show hover mesgs
+           lsp-ui-sideline-show-code-actions nil) ; show code actions
+  ;; -- Peek --
   (:with-map lsp-ui-mode-map
     (:bind [remap xref-find-definitions] lsp-ui-peek-find-definitions
            [remap xref-find-references] lsp-ui-peek-find-references))
+  ;; -- Doc --
+  (:option lsp-ui-doc-position 'top      ; location of popup
+           lsp-ui-doc-delay 0.5          ; popup delay
+           lsp-ui-doc-alignment 'frame   ; where to align to(?)
+           lsp-ui-doc-show-with-cursor t ; show doc of thing at point
+           lsp-ui-doc-show-with-mouse t) ; show doc of thing at mouse
   (:with-map lsp-ui-doc-frame-mode-map
     (:bind "q" lsp-ui-doc-hide
            "u" lsp-ui-doc-unfocus-frame))
-  (:option lsp-ui-doc-delay 0.5
-           lsp-ui-doc-position 'top
-           ;; lsp-ui-doc-alignment 'window
-           lsp-ui-doc-alignment 'frame
-           ;; lsp-ui-doc-show-with-mouse nil
-           lsp-ui-doc-show-with-mouse t
-           lsp-ui-doc-show-with-cursor t
-
-           lsp-ui-sideline-delay 0.2
-
-           lsp-ui-imenu-auto-refresh-delay 1.0)
-
+  ;; -- imenu --
+  (:option lsp-ui-imenu-kind-position 'top      ; vert. alignment
+           lsp-ui-imenu-auto-refresh-delay 1.0) ; refresh delay
+  ;; misc
   (with-eval-after-load 'lsp-mode
-    (define-key lsp-command-map (kbd "v i") #'lsp-ui-imenu)))
-;; Lsp-ui:1 ends here
+    (:with-map lsp-command-map
+      (:bind "v i" #'lsp-ui-imenu))))
+;; Lsp-mode:1 ends here
 
-;; [[file:Config.org::*Lsp-booster][Lsp-booster:1]]
-;; use lsp-doctor for testing
-;; Steps:
-;; - install emacs-lsp-booster
-;; - use plist for deserialization (FOLLOW GUIDE)
-(setup emacs
-  (:only-if my/use-lsp-mode?)
-
-  (setq read-process-output-max (* 1024 1024)) ;; 1mb
-  (defun lsp-booster--advice-json-parse (old-fn &rest args)
-    "Try to parse bytecode instead of json."
-    (or
-     (when (equal (following-char) ?#)
-       (let ((bytecode (read (current-buffer))))
-         (when (byte-code-function-p bytecode)
-           (funcall bytecode))))
-     (apply old-fn args)))
-  (advice-add (if (progn (require 'json)
-                         (fboundp 'json-parse-buffer))
-                  'json-parse-buffer
-                'json-read)
-              :around
-              #'lsp-booster--advice-json-parse)
-  (defun lsp-booster--advice-final-command (old-fn cmd &optional test?)
-    "Prepend emacs-lsp-booster command to lsp CMD."
-    (let ((orig-result (funcall old-fn cmd test?)))
-      (if (and (not test?) ;; for check lsp-server-present?
-               (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
-               lsp-use-plists
-               (not (functionp 'json-rpc-connection)) ;; native json-rpc
-               (executable-find "emacs-lsp-booster"))
-          (progn
-            (when-let ((command-from-exec-path (executable-find (car orig-result)))) ;; resolve command from exec-path (in case not found in $PATH)
-              (setcar orig-result command-from-exec-path))
-            (message "Using emacs-lsp-booster for %s!" orig-result)
-            (cons "emacs-lsp-booster" orig-result))
-        orig-result)))
-  (advice-add 'lsp-resolve-final-command :around
-              #'lsp-booster--advice-final-command))
-;; Lsp-booster:1 ends here
-
-;; [[file:Config.org::*Eglot][Eglot:1]]
+;; [[file:Config.org::*Eglot (disabled)][Eglot (disabled):1]]
 (setup eglot
-  (:only-if my/use-eglot?)
+  :disabled
+
   (:option eglot-report-progress nil)
   (:with-map eglot-mode-map
     (:bind "C-c l a" eglot-code-actions
@@ -1879,11 +1870,13 @@ _SPC_ cancel	_o_nly this   	_d_elete
            "C-c l p" flycheck-previous-error
            "C-c l ?" xref-find-references
            "C-c l ]" xref-go-forward
-           "C-c l [" xref-go-back
-           )))
-;; Eglot:1 ends here
+           "C-c l [" xref-go-back)))
 
-;; [[file:Config.org::*extensions][extensions:1]]
+;; -- eglot-x --
+
+;; Eglot does not support extensions to the LSP protocol. This package adds them.
+;; https://github.com/nemethf/eglot-x
+;;
 ;; Useful looking functions:
 ;; - ! eglot-x-expand-macro
 ;; - ! eglot-x-reload-workspace
@@ -1894,7 +1887,8 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;; - eglot-x-view-recursive-memory-layout
 
 (-setup (eglot-x :host github :repo "nemethf/eglot-x")
-  (:only-if my/use-eglot?)
+  :disabled
+
   (:load-after eglot)
   (:when-loaded
     (eglot-x-setup)
@@ -1903,175 +1897,109 @@ _SPC_ cancel	_o_nly this   	_d_elete
              "C-c l q R" eglot-x-reload-workspace
              "C-c l q e" eglot-x-expand-macro
              "C-c l q p" eglot-x-rebuild-proc-macros))))
-;; extensions:1 ends here
 
-;; [[file:Config.org::*consult integration][consult integration:1]]
+;; -- consult-eglot --
+
+;; An all-in-one consult command to view everything.
+;; ((c . "Class") (f . "Function") (e . "Enum") (i . "Interface")
+;;  (m . "Module") (n . "Namespace") (p . "Package")
+;;  (s . "Struct") (t . "Type Parameter") (v . "Variable")
+;;  (A . "Array") (B . "Boolean") (C . "Constant")
+;;  (E . "Enum Member") (F . "Field") (M . "Method") (N . "Number")
+;;  (O . "Object") (P . "Property") (S . "String") (o . "Other"))
+
 (-setup consult-eglot
-  (:only-if my/use-eglot?)
+  :disabled
+
   (:load-after consult eglot)
   (:when-loaded
     (:with-map eglot-mode-map
       (:bind "C-c l s" consult-eglot-symbols))))
-;; consult integration:1 ends here
 
-;; [[file:Config.org::*eldoc (documentation at point)][eldoc (documentation at point):1]]
+;; -- eldoc --
+
+;; show documentation at point
 (setup eldoc
+  :disabled
+
   (:diminish)
-  (:only-if my/use-eglot?)
   (:option eldoc-echo-area-prefer-doc-buffer t))
 
+;; Pop-up documentation frame for thing at point.
+;; https://github.com/casouri/eldoc-box
 (-setup eldoc-box
-  (:only-if my/use-eglot?)
+  :disabled
+
   (:load-after eglot)
+  (:diminish eldoc-box-hover-mode)
   (:option eldoc-box-offset '(16 16 48))
   (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-mode t))
-;; eldoc (documentation at point):1 ends here
+;; Eglot (disabled):1 ends here
 
-;; [[file:Config.org::*flymake/flycheck integration][flymake/flycheck integration:1]]
-(-setup flycheck-eglot
-  (:only-if my/use-eglot?)
-  (:load-after eglot flycheck)
-  ;; TODO: experiment with this (does nil worsen performance?)
-  ;; Is this necessary to nil for rustowl?
-  (:option flycheck-eglot-exclusive nil))
-
-(setup eglot
-  (:only-if my/use-eglot?)
-  (:load-after flycheck-eglot)
-
-  (defcustom my/eglot-syntax-checker 'flycheck
-    "The syntax checker eglot should use."
-    :options '(flycheck flymake))
-
-  (defvar my/eglot-override-syntax-checker
-    '(
-      ;; (java-ts-mode . flycheck)
-      (java-ts-mode . flymake)
-      ))
-
-  (:when-loaded
-    (add-hook 'eglot-managed-mode-hook
-              (defun my/eglot-setup-flycheck-or-flymake ()
-                (pcase (or (alist-get major-mode my/eglot-override-syntax-checker)
-                           my/eglot-syntax-checker)
-                  ('flycheck
-                   (flycheck-eglot-mode 1))
-                  ('flymake
-                   (when flycheck-mode
-                     (flycheck-mode 0))))))))
-;; flymake/flycheck integration:1 ends here
-
-;; [[file:Config.org::*Eglot-booster][Eglot-booster:1]]
-;; Note: try experimenting performance difference by running
-;; M-x eglot-booster.
-(-setup (eglot-booster :host github :repo "jdtsmith/eglot-booster")
-  (:only-if my/use-eglot?)
-  (:load-after elgot)
-  (:when-loaded
-    (eglot-booster-mode)))
-;; Eglot-booster:1 ends here
-
-;; [[file:Config.org::*Lisp][Lisp:1]]
+;; [[file:Config.org::*for all][for all:1]]
 (defvar my/lisp-mode-hooks
   '(emacs-lisp-mode-hook
     lisp-data-mode-hook
     scheme-mode-hook))
 
-(defmacro my/add-hooks (hooks-lst func)
-  (declare (debug (form symbolp)))
-  (unless (listp hooks-lst)
-    (error "listp: %S" hooks-lst))
-  (unless (symbolp func)
-    (error "symbolp: %S" func))
-  `(progn
-     ,@(mapcar (lambda (hook)
-                 `(add-hook ',hook #',func))
-               hooks-lst))
-  ;; (dolist (hook ,hooks-lst)
-  ;;   (add-hook hook ,func))
-  )
-;; Lisp:1 ends here
-
-;; [[file:Config.org::*rainbow parens][rainbow parens:1]]
-;; Highlight nested parens according to their depth.
-;; ---
-
+;; Colorize matching parens
 (-setup rainbow-delimiters
   (:hook-into-all my/lisp-mode-hooks))
 
-;; (leaf rainbow-delimiters
-;;   :hook `,@my/lisp-mode-hooks)
-;; rainbow parens:1 ends here
-
-;; [[file:Config.org::*paredit][paredit:1]]
+;; Structural editing (advanced)
 (-setup paredit
   (:diminish)
   (:hook-into-all my/lisp-mode-hooks)
-  (:when-loaded
-    (define-key paredit-mode-map (kbd "M-r") nil)))
-;; paredit:1 ends here
+  (:with-map paredit-mode-map
+    (:bind "M-r" nil)))
+;; for all:1 ends here
 
-;; [[file:Config.org::*emacs-lisp][emacs-lisp:1]]
-;; not a real feature
+;; [[file:Config.org::*Elisp][Elisp:1]]
 (setup emacs-lisp-mode
-  (:hook (lambda ()
-           (auto-fill-mode)
-           (setq-local fill-column 80))))
-;; emacs-lisp:1 ends here
+  (:hook (defun my/emacs-lisp-mode-setup ()
+           (auto-fill-mode 1)
+           (setq-local fill-column 80)))
 
-;; [[file:Config.org::*org-style links in elisp (disabled)][org-style links in elisp (disabled):1]]
-(-setup orglink :disabled
-        (:hook-into emacs-lisp-mode-hook))
-;; org-style links in elisp (disabled):1 ends here
+  ;; flycheck tweak
+  (with-eval-after-load 'flycheck
+    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc emacs-lisp)))
 
-;; [[file:Config.org::*elisp misc][elisp misc:1]]
-;; (defun create-banner-comment (text &optional width)
-;;   "Create a banner comment with TEXT centered between semicolons.
-;; Optional WIDTH parameter determines total width (defaults to 70)."
-;;   (interactive "sText: ")
-;;   (let* ((width (or width 70))
-;;          (text-len (length text))
-;;          (semi-len (/ (- width text-len 2) 2)) ; -2 for spaces
-;;          (left-semis (make-string semi-len ?\;))
-;;          (right-semis (make-string
-;;                        (if (cl-oddp (- width text-len))
-;;                            (1+ semi-len)
-;;                          semi-len)
-;;                        ?\;)))
-;;     (insert (format "%s %s %s\n"
-;;                     left-semis
-;;                     text
-;;                     right-semis))))
-;; elisp misc:1 ends here
+  ;; support org-style links
+  (-setup orglink
+    (:hook-into emacs-lisp-mode-hook))
 
-;; [[file:Config.org::*tweak flycheck for elisp][tweak flycheck for elisp:1]]
-(with-eval-after-load 'flycheck
-  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc emacs-lisp)))
-;; tweak flycheck for elisp:1 ends here
+  ;; hide license header
+  (setup elide
+    (:with-hook emacs-lisp-mode-hook
+      (:hook #'elide-head-mode))))
+;; Elisp:1 ends here
 
 ;; [[file:Config.org::*Scheme (disabled)][Scheme (disabled):1]]
-;; Scheme is a family of Lisp languages, which includes Guile Scheme, a Lisp
-;; used for configuring GNU Guix.
-
-;; -----
-
-;; (setup scheme-mode)
-
 ;; improved scheme editing
-(-setup geiser :disabled
-        (:match-file "\\.scm\\'")
-        (:option geiser-default-implementation 'guile
-                 geiser-active-implementations '(guile)
-                 geiser-implementations-alist  '(((regexp "\\.scm$") guile))))
+(-setup geiser
+  :disabled
+
+  (:match-file "\\.scm\\'")
+  (:option geiser-default-implementation 'guile
+           geiser-active-implementations '(guile)
+           geiser-implementations-alist  '(((regexp "\\.scm$") guile))))
 
 ;; improved guile (dialect of scheme) editing
-(-setup geiser-guile :disabled
-        (:load-after geiser))
+(-setup geiser-guile
+  :disabled
+
+  (:load-after geiser))
 ;; Scheme (disabled):1 ends here
 
-;; [[file:Config.org::*Clojure][Clojure:1]]
-(-setup clojure-mode :disabled)
-;; Clojure:1 ends here
+;; [[file:Config.org::*Clojure (disabled)][Clojure (disabled):1]]
+(-setup clojure-mode
+  :disabled)
+;; Clojure (disabled):1 ends here
+
+;; [[file:Config.org::*Nix][Nix:1]]
+(-setup nix-mode
+  (:hook lsp-deferred))
+;; Nix:1 ends here
 
 ;; [[file:Config.org::*Rust][Rust:1]]
 (-setup rust-mode
@@ -2080,9 +2008,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
 
 (-setup rustic
   (:load-after rust-mode)
-  (:option rustic-cargo-use-last-stored-arguments t
-           rustic-format-on-save t
-           rustic-rustfmt-args "--edition 2021")
+  (:option rustic-format-on-save t
+           rustic-rustfmt-args "--edition 2021"
+           rustic-cargo-use-last-stored-arguments t)
 
   (:with-map rustic-mode-map
     (:bind "C-c C-c M-r" rustic-cargo-comint-run
@@ -2104,9 +2032,8 @@ _SPC_ cancel	_o_nly this   	_d_elete
                             company-minimum-prefix-length 2)))))
 ;; Rust:1 ends here
 
-;; [[file:Config.org::*lsp-mode version][lsp-mode version:1]]
+;; [[file:Config.org::*lsp-mode integration][lsp-mode integration:1]]
 (setup rustic
-  (:only-if my/use-lsp-mode?)
   (:load-after rustic lsp-mode)
   (:when-loaded
     (:option lsp-rust-analyzer-cargo-watch-command "clippy"
@@ -2130,758 +2057,14 @@ _SPC_ cancel	_o_nly this   	_d_elete
                             lsp-ui-doc-enable t      ; def: t (ui-popup docs)
                             lsp-ui-doc-max-height 14 ; def: 13
                             )))))
-;; lsp-mode version:1 ends here
+;; lsp-mode integration:1 ends here
 
-;; [[file:Config.org::*eglot version][eglot version:1]]
-(setup rustic
-  (:only-if my/use-eglot?)
-  (:load-after rustic eglot)
-  (:when-loaded
-    (:option rustic-lsp-client 'eglot)))
-
-;; (leaf rustic :ensure nil
-;;   ;; :disabled t
-;;   :if use-eglot?
-;;   :init
-;;   (setq rustic-lsp-client 'eglot)
-;;   (with-eval-after-load 'eglot
-;;     (let ((rust-init-options
-;;            `(
-;;              :cargo       ( :buildScripts (:enable t) :features "all" )
-;;              :procMacro   ( :enable t )
-;;              :checkOnSave ( :command "clippy" )
-;;              :inlayHints  ( :typeHints t
-;;                             :parameterHints t
-;;                             :closureReturnTypeHints t
-;;                             :lifetimeElisionHints (:enable "skip_trivial" :useParameterNames t)
-;;                             :reborrowHints "mutable"
-;;                             ;; :chainingHints t
-;;                             )
-;;              )))
-;;       (add-to-list 'eglot-server-programs
-;;                    `(rustic-mode . ("rust-analyzer"
-;;                                     :initializationOptions ,rust-init-options)))))
-;;   ;; :config
-
-;;   )
-;; eglot version:1 ends here
-
-;; [[file:Config.org::*rustowl (disabled)][rustowl (disabled):1]]
-;; Note: not compatible with Eglot
-;; - requires a second LSP server (eglot only supports one)
-
-;; ----
-
-;; will require tinkering with source code for eglot integration
-;; https://github.com/cordx56/rustowl/issues/16
-;; (-setup (rustowl :host github :repo "lispcat/rustowl-fork")
-;;   (:load-after eglot rust-mode)
-;;   (:when-loaded
-;;     ;; (add-to-list 'eglot-server-programs
-;;     ;;              '((rust-mode rust-ts-mode rustic-mode) . ("rustowl")))
-;;     ))
-;; rustowl (disabled):1 ends here
-
-;; [[file:Config.org::*C][C:1]]
-(setup cc-mode
-  (:when-loaded
-    (add-to-list 'c-default-style '(c-mode . "cc-mode"))
-    (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
-  (:with-hook c-mode-hook
-    (when my/use-lsp-mode?
-      (:hook lsp-deferred)
-      (:hook (lambda ()
-               (setq-local lsp-idle-delay 0.1
-                           lsp-enable-indentation nil
-                           lsp-enable-on-type-formatting nil)
-               (c-set-offset 'case-label '+))))
-    (when my/use-eglot?
-      (:hook eglot-ensure))))
-
-;; (leaf cc-mode :ensure nil
-;;   :if use-eglot?
-;;   :hook ((c-mode-hook . eglot-ensure)
-;;          (c-mode-hook . (lambda ()
-;;                           ;; (setq-local lsp-idle-delay 0.1
-;;                           ;;             lsp-enable-indentation nil
-;;                           ;;             lsp-enable-on-type-formatting nil)
-;;                           (c-set-offset 'case-label '+))))
-;;   :config
-;;   (add-to-list 'c-default-style '(c-mode . "cc-mode"))
-;;   (define-key c-mode-map (kbd "<f8>") #'project-compile-interactive))
-;; C:1 ends here
-
-;; [[file:Config.org::*Java][Java:1]]
-;; Java LSP support
-
-;; https://github.com/emacs-lsp/lsp-java
-
-;; (-setup lsp-java :disabled
-;;   (:option lsp-java-format-settings-url
-;;            (expand-file-name "no-search/java/eclipse-java-google-style.xml"
-;;                              my/emacs-src-dir)
-
-;;            lsp-java-format-settings-profile "GoogleStyle")
-
-;;   (:with-feature java-mode
-;;     (:when-loaded
-;;       ;; lsp
-;;       (:hook lsp-deferred)
-;;       ;; (:hook eglot-ensure)
-
-;;       ;; auto-fill
-;;       (:local-set fill-column 100)
-;;       (:hook auto-fill-mode)
-
-;;       ;; binds
-;;       (:bind "<f9>" #'projectile-compile-project)))
-
-;;   (:with-feature java-ts-mode
-;;     (:when-loaded
-;;       ;; lsp
-;;       (:hook lsp-deferred)
-;;       ;; (:hook eglot-ensure)
-
-;;       ;; auto-fill
-;;       (:hook auto-fill-mode)
-;;       (:local-set fill-column 100)
-
-;;       ; binds
-;;       (:bind "<f9>" #'projectile-compile-project))))
-
-(-setup eglot-java
-  (:load-after eglot)
-  (:hook-into java-mode-hook
-              java-ts-mode-hook)
-  (:with-map eglot-java-mode-map
-    (:bind "C-c l l n" eglot-java-file-new
-           "C-c l l x" eglot-java-run-main
-           "C-c l l t" eglot-java-run-test
-           "C-c l l N" eglot-java-project-new
-           "C-c l l T" eglot-java-project-build-task
-           "C-c l l R" eglot-java-project-build-refresh))
-  (:when-loaded
-    (setq eglot-java-user-init-opts-fn 'custom-eglot-java-init-opts)
-    (defun custom-eglot-java-init-opts (server eglot-java-eclipse-jdt)
-      "Custom options that will be merged with any default settings."
-      `(:settings
-        (:java
-         (:format
-          (:settings
-           (:url ,(concat "file://"
-                          (expand-file-name "no-search/java/eclipse-java-google-style.xml"
-                                            my/emacs-src-dir)))
-           :enabled t)))))
-    (add-hook 'eglot-managed-mode-hook
-              (defun eglot-connect-hook-cape-capf-fix ()
-                (when debug-on-error
-                  (message "Debug: running eglot-connect-hook-cape-capf-fix"))
-                (when (eq (nth 0 completion-at-point-functions)
-                          'eglot-completion-at-point)
-                  (pop completion-at-point-functions)))))
-
-  (with-eval-after-load 'eglot
-    (add-to-list 'my/eglot-override-syntax-checker '(java-ts-mode flymake))
-    (add-to-list 'my/eglot-override-syntax-checker '(java-mode flymake)))
-
-  (defun my/java-mode-setup (mode)
-    ;; lsp
-    (add-hook mode #'eglot-ensure)
-    ;; (add-hook mode #'lsp-deferred)
-
-    ;; auto-fill
-    (setq-local fill-column 100)
-    (add-hook mode #'auto-fill-mode)
-
-    ;; binds
-    (define-key (symbol-value (intern (format "%s-map" mode)))
-                (kbd "<f9>") #'projectile-compile-project))
-
-  (:with-feature java-mode
-    (:when-loaded
-      (my/java-mode-setup 'java-mode)))
-
-  (:with-feature java-ts-mode
-    (:when-loaded
-      (my/java-mode-setup 'java-ts-mode))))
-;; Java:1 ends here
-
-;; [[file:Config.org::*Markdown][Markdown:1]]
-(-setup markdown-mode
-  (:match-file "\\.md\\'")
-  (:with-mode gfm-mode
-    (:match-file "README\\.md\\'" ))
-  (:option markdown-fontify-code-blocks-natively t)
-  (:when-loaded
-    (defun my/setup-markdown-mode ()
-      ;; (visual-fill-column-mode 1)
-      (display-line-numbers-mode 0))
-
-    ;; (setq markdown-command "marked")
-    (add-hook 'markdown-mode-hook #'my/setup-markdown-mode)))
-;; Markdown:1 ends here
-
-;; [[file:Config.org::*Scala (disabled)][Scala (disabled):1]]
-(-setup scala-mode)
-;; (-setup scala-mode
-;;   (:hook-into (lambda ()
-;;                 (setq prettify-symbols-alist
-;;                       scala-prettify-symbols-alist))))
-;; Scala (disabled):1 ends here
-
-;; [[file:Config.org::*Zig (disabled)][Zig (disabled):1]]
-(-setup zig-mode :disabled
-        ;; :config
-        ;; (zig-format-on-save-mode 0)
-        )
-;; Zig (disabled):1 ends here
-
-;; [[file:Config.org::*Haskell][Haskell:1]]
-(-setup haskell-mode
-  (:match-file ".hs")
-  (:with-feature haskell-cabal
-    (:match-file ".cabal")))
-
-;; (-setup lsp-haskell
-;;   (add-hook 'haskell-mode-hook #'lsp-deferred)
-;;   (add-hook 'haskell-literate-mode-hook #'lsp-deferred))
-;; Haskell:1 ends here
-
-;; [[file:Config.org::*Nix][Nix:1]]
-(-setup nix-mode
-  (:hook eglot-ensure))
-;; Nix:1 ends here
-
-;; [[file:Config.org::*Yaml][Yaml:1]]
-(-setup yaml-mode)
-;; Yaml:1 ends here
-
-;; [[file:Config.org::*Ron (disabled)][Ron (disabled):1]]
-(-setup ron-mode :disabled)
-;; Ron (disabled):1 ends here
-
-;; [[file:Config.org::*Kerolox][Kerolox:1]]
-(-setup emacs
-  :disabled
-
-  ;; Major-mode for .rp1 files
-  (define-derived-mode kerolox-mode prog-mode "kerolox"
-    "Major mode for editing kerolox (.rp1) files."
-    :group 'kerolox)
-
-  (with-eval-after-load 'lsp-mode
-    ;; Register LSP server and setup LSP server
-    (add-to-list 'lsp-language-id-configuration '(kerolox-mode . "kerolox"))
-    (lsp-register-client
-     (make-lsp-client
-      :new-connection (lsp-stdio-connection '("/home/sui/Code/cloned/saturn-v/target/release/saturn-v" "lsp"))
-      :major-modes '(kerolox-mode)
-      :server-id 'saturn-v-lsp)))
-;; Kerolox:1 ends here
-
-;; [[file:Config.org::*Kerolox treesit mode and LSP][Kerolox treesit mode and LSP:1]]
-(define-derived-mode kerolox-ts-mode kerolox-mode "kerolox[ts]"
-  "Tree-sitter based major mode for editing kerolox (.rp1) files."
-  :group 'kerolox
-
-  (when (and (fboundp 'treesit-available-p)
-             (treesit-available-p))
-
-    ;; create parser for this buffer
-    (treesit-parser-create 'kerolox)
-
-    (setq-local treesit-font-lock-feature-list
-                '((comment)
-                  (keyword string)
-                  (constant type)
-                  (function variable module constructor)
-                  (operator punctuation)))
-
-    (setq-local font-lock-defaults nil)
-
-    ;; Set up face mapping for tree-sitter query capture names to Emacs faces
-    (defvar kerolox-ts-font-lock-settings
-      (treesit-font-lock-rules
-       :language 'kerolox
-       :feature 'comment
-       '((comment) @font-lock-comment-face)
-
-       :language 'kerolox
-       :feature 'constant
-       '((integer) @font-lock-constant-face
-         (value (symbol)) @font-lock-constant-face)
-
-       :language 'kerolox
-       :feature 'variable
-       '((variable) @font-lock-variable-name-face)
-
-       :language 'kerolox
-       :feature 'module
-       '((import (symbol)) @font-lock-preprocessor-face)
-
-       :language 'kerolox
-       :feature 'type
-       '((type (symbol)) @font-lock-type-face)
-
-       :language 'kerolox
-       :feature 'function
-       '((definition relation: (symbol)) @font-lock-function-name-face
-         (atom head: (symbol)) @font-lock-function-name-face)
-
-       :language 'kerolox
-       :feature 'constructor
-       '((rule relation: (symbol)) @font-lock-function-name-face)
-
-       :language 'kerolox
-       :feature 'punctuation
-       '(([":-" "," "."]) @font-lock-delimiter-face
-         (["(" ")"]) @font-lock-bracket-face)
-
-       :language 'kerolox
-       :feature 'operator
-       '((binary_expr op: (_)) @font-lock-builtin-face
-         (unary_expr op: (_)) @font-lock-builtin-face
-         (cardinality kind: (_)) @font-lock-builtin-face)
-
-       :language 'kerolox
-       :feature 'keyword
-       '((["constrain" "decision" "define" "import" "output" "soft"]) @font-lock-keyword-face
-         (constraint_kind) @font-lock-keyword-face))
-      "Font-lock settings for Kerolox.")
-
-    ;; Set font-lock settings from the defined rules
-    (setq-local treesit-font-lock-settings kerolox-ts-font-lock-settings)
-
-    (treesit-major-mode-setup)))
-
-;; Register LSP server and setup LSP server
-(with-eval-after-load 'lsp-mode
-  (add-to-list 'lsp-language-id-configuration '(kerolox-ts-mode . "kerolox"))
-  (lsp-register-client
-   (make-lsp-client
-    :new-connection (lsp-stdio-connection '("/home/sui/Code/cloned/saturn-v/target/release/saturn-v" "lsp"))
-    :major-modes '(kerolox-ts-mode)
-    :server-id 'saturn-v-ts-lsp)))
-;; Kerolox treesit mode and LSP:1 ends here
-
-;; [[file:Config.org::*kerolox - tree-sitter generic][kerolox - tree-sitter generic:1]]
-(with-eval-after-load 'treesit
-  ;; Configure the language grammar source and mapping
-  (when (and (fboundp 'treesit-available-p)
-             (treesit-available-p))
-    ;; Define grammar source
-    (add-to-list 'treesit-language-source-alist
-                 '(kerolox . ("https://github.com/marceline-cramer/saturn-v" nil "tree-sitter-kerolox/src")))
-
-    ;; ;; Set up language mapping
-    ;; (add-to-list 'treesit-language-remap-alist '(kerolox-ts-mode . kerolox))
-
-    ;; Only install if not already installed
-    ;; (unless (treesit-language-available-p 'kerolox)
-    ;;   (treesit-install-language-grammar 'kerolox))
-    (treesit-install-language-grammar 'kerolox)
-    ))
-
-;; Auto-start LSP when opening .rp1 files with tree-sitter mode
-(add-hook 'kerolox-ts-mode-hook #'lsp-deferred)
-;; kerolox - tree-sitter generic:1 ends here
-
-;; [[file:Config.org::*Kerolox misc][Kerolox misc:1]]
-;; Remap regular mode to tree-sitter mode
-(setq major-mode-remap-alist
-      '((kerolox-mode . kerolox-ts-mode)))
-;; Kerolox misc:1 ends here
-
-;; [[file:Config.org::*Kerolox - Auto-mode-alist][Kerolox - Auto-mode-alist:1]]
-;; Associate file name pattern with major-mode
-(add-to-list 'auto-mode-alist '("\\.rp1\\'" . kerolox-ts-mode)))
-;; Kerolox - Auto-mode-alist:1 ends here
-
-;; [[file:Config.org::*Lua-mode][Lua-mode:1]]
-(-setup lua-mode
-  (:when-loaded
-    (with-eval-after-load 'lsp-lua
-      ;; fix issue with externally installed server
-      (setq lsp-clients-lua-language-server-command
-            "lua-language-server")
-      ;; renoise lua api definitions
-      ;; (setq lsp-lua-workspace-library "'Lua.workspace.library': {'/home/sui/Music/prod/scripts/renoise-lua/definitions': true}")
-      (setq lsp-lua-workspace-library (ht ("/home/sui/Music/prod/scripts/renoise-lua/definitions" t)))
-      (setq lsp-lua-runtime-plugin "/home/sui/Music/prod/scripts/renoise-lua/definitions/plugin.lua")
-      )
-
-    ;; fix pt.2
-    (defun my/lsp-clients-lua-language-server-test ()
-      "(Improved) Test Lua language server binaries and files."
-      (or (and (f-exists? lsp-clients-lua-language-server-main-location)
-               (f-exists? lsp-clients-lua-language-server-bin))
-          (f-exists? (car (split-string lsp-clients-lua-language-server-command)))))
-
-    (advice-add #'lsp-clients-lua-language-server-test
-                :override
-                #'my/lsp-clients-lua-language-server-test)))
-;; Lua-mode:1 ends here
-
-;; [[file:Config.org::*Typst][Typst:1]]
-(-setup (typst-ts-mode :type git :host codeberg :repo "meow_king/typst-ts-mode")
-  (:option typst-ts-mode-grammar-location
-           (expand-file-name
-            "tree-sitter/libtree-sitter-typst.so"
-            user-emacs-directory))
-
-  ;; open output pdf in other window
-  (defun my/typst-ts-mode-open-pdf ()
-    (interactive)
-    (let* ((orig-win (selected-window))
-           (target-extension "pdf")
-           (current-path (buffer-file-name))
-           (target-path (file-name-with-extension current-path
-                                                  target-extension)))
-      (find-file-other-window target-path)
-      (select-window orig-win)))
-  ;; (add-hook 'typst-ts-mode-hook #'my/typst-ts-mode-open-pdf)
-  (:option typst-ts-preview-function #'my/typst-ts-mode-open-pdf)
-
-  ;; auto compile
-  ;; (add-hook 'typst-ts-mode-hook #'typst-ts-watch-mode)
-  )
-;; Typst:1 ends here
-
-;; [[file:Config.org::*Typescript][Typescript:1]]
-(-setup typescript-mode)
-;; Typescript:1 ends here
-
-;; [[file:Config.org::*HTML][HTML:1]]
-(setup sgml-mode
-  (:when-loaded
-    (:with-map html-mode-map
-      (:bind "M-o" nil))))
-
-;;;; Tooling
-;;;;; direnv
-
-(-setup direnv
-  (direnv-mode 1))
-;; HTML:1 ends here
-
-;; [[file:Config.org::*Rainbow mode][Rainbow mode:1]]
-;; Add color to hex codes in buffer.
-;; --
-
-(-setup rainbow-mode
-  (:diminish)
-  (:hook-into prog-mode-hook))
-;; Rainbow mode:1 ends here
-
-;; [[file:Config.org::*TODO: Ansi-color... not sure what this is for][TODO: Ansi-color... not sure what this is for:1]]
-(with-eval-after-load 'ansi-color
-  (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter))
-;; TODO: Ansi-color... not sure what this is for:1 ends here
-
-;; [[file:Config.org::*Auto-install treesitter backends][Auto-install treesitter backends:1]]
-(-setup treesit-auto
-  (:option treesit-auto-install 'prompt)
-  (:autoload global-treesit-auto-mode)
-  (global-treesit-auto-mode))
-
-;;;; Code formatting
-
-;;;; Code folding
-
-;; TODO: look into: https://github.com/tarsius/outline-minor-faces
-;; is this worth it? alternative of
-;; Auto-install treesitter backends:1 ends here
-
-;; [[file:Config.org::*Outline][Outline:1]]
-;; Optimal folding: https://github.com/jamescherti/outline-indent.el
-(-setup outline-indent
-  (:diminish outline-minor-mode)
-  (:diminish outline-indent-minor-mode)
-  (:autoload outline-indent-minor-mode)
-  (:option outline-indent-ellipsis " ‣")
-
-  ;; outline-cycle
-  (defun my/outline-toggle (&optional univ)
-    "Toggle previous heading.
-
-If hide, fold only current heading.
-If show, open only current heading.
-
-If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
-    (interactive "P")
-    ;; go to prev heading
-    (outline-back-to-heading)
-    ;; universal arg
-    (if current-prefix-arg
-        (my/outline-cycle-buffer)
-      ;; toggle
-      (let ((action
-             (if (outline-invisible-p (pos-eol))
-                 'to-show
-               'to-hide)))
-        (pcase action
-          ('to-hide
-           (outline-hide-entry))
-          ('to-show
-           (outline-show-entry))
-          (_ (error "bug"))))))
-
-  (my/defhydra-repeat my/outline-toggle
-                    (";" "<backtab>"))
-
-  (defun my/outline-toggle-meta (&optional univ)
-    "Toggle subtree at previous heading.
-
-If hide, fold current and all subheadings, and show tree.
-If show, open /everything/ under the heading.
-
-If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
-    (interactive "P")
-    ;; go to prev heading
-    (outline-back-to-heading)
-    ;; universal arg
-    (if current-prefix-arg
-        (my/outline-cycle-buffer)
-      ;; toggle
-      (let ((action
-             (if (outline-invisible-p (pos-eol))
-                 'to-show
-               'to-hide)))
-        (pcase action
-          ('to-hide
-           (outline-hide-subtree)
-           (outline-show-branches))
-          ('to-show
-           (outline-show-subtree))
-          (_ (error "bug"))))))
-
-  (my/defhydra-repeat my/outline-toggle-meta
-                    (";" "<backtab>"))
-
-  ;; outline-cycle buffer
-  (defun my/outline-cycle-buffer (&optional level)
-    (interactive (list (when current-prefix-arg
-                         (prefix-numeric-value current-prefix-arg))))
-    (let (top-level)
-      (save-excursion
-        (goto-char (point-min))
-        (while (not (or (eq top-level 1) (eobp)))
-          (when-let ((level (and (outline-on-heading-p t)
-                                 (funcall outline-level))))
-            (when (< level (or top-level most-positive-fixnum))
-              (setq top-level (max level 1))))
-          (outline-next-heading)))
-      (cond
-       (level
-        (outline-hide-sublevels level)
-        (setq outline--cycle-buffer-state 'all-heading)
-        (message "All headings up to level %s" level))
-       ((or (eq outline--cycle-buffer-state 'show-all)
-            (eq outline--cycle-buffer-state 'top-level))
-        (outline-show-all)
-        (outline-hide-region-body (point-min) (point-max))
-        (setq outline--cycle-buffer-state 'all-heading)
-        (message "All headings"))
-       (t
-        (outline-show-all)
-        (setq outline--cycle-buffer-state 'show-all)
-        (message "Show all")))))
-
-  (my/defhydra-repeat my/outline-cycle-buffer
-                    (";" "<backtab>"))
-
-  ;; special TAB, cycle if on heading
-  (defun my/indent-for-tab-command--outline-advice (orig-fn &rest args)
-    "Advice for alternative TAB behavior if over outline heading."
-    (if (and (eq major-mode 'emacs-lisp-mode)
-             (save-excursion
-               (beginning-of-line)
-               (looking-at "^;;;+ .*$")))
-        (my/outline-toggle)
-      (apply orig-fn args)))
-
-  (advice-add 'indent-for-tab-command :around
-              #'my/indent-for-tab-command--outline-advice)
-
-  ;; run outline-hide-body only after first focus (add to .dir-locals.el)
-  ;; (defun my/hide-outline-on-open (func &rest args)
-  ;;   "Hide outlines when opening files via dired or projectile."
-  ;;   (let ((result (apply func args)))
-  ;;     ;; After the file is opened, hide outlines if conditions are met
-  ;;     (when (and (buffer-file-name)
-  ;;                outline-indent-minor-mode)
-  ;;       (outline-hide-body))
-  ;;     result))
-
-  ;; (advice-add 'find-file :around #'my/hide-outline-on-open)
-  ;; (advice-add 'dired-find-file :around #'my/hide-outline-on-open)
-  ;; (advice-add 'projectile-find-file :around #'my/hide-outline-on-open)
-  ;; (advice-add 'projectile-find-file-dwim :around #'my/hide-outline-on-open)
-
-  (:with-map outline-minor-mode-map
-    (:bind "<backtab>" my/outline-toggle-meta))
-
-  (:with-map emacs-lisp-mode-map
-    (:bind "C-c C-n" outline-next-visible-heading
-           "C-c C-p" outline-previous-visible-heading))
-
-  (:when-loaded
-    (defun my/outline-faces-setup ()
-      (dolist (face-config
-               '((outline-1 1.9 nil)
-                 (outline-2 1.6 nil)
-                 (outline-3 1.3 t)
-                 (outline-4 1.1 t)
-                 (outline-5 1.0 t)
-                 (outline-6 1.0 t)
-                 (outline-7 1.0 t)
-                 (outline-8 1.0 t)))
-        (let ((face (nth 0 face-config))
-              (height (nth 1 face-config))
-              (over (nth 2 face-config)))
-          (set-face-attribute face nil :height height :overline over)))
-      ;; extras
-      (with-eval-after-load 'org
-        (set-face-attribute 'org-ellipsis nil :foreground 'unspecified)))
-    ;; run now
-    (my/outline-faces-setup)
-    ;; run after each theme load
-    (add-hook 'my/after-enable-theme-hook #'my/outline-faces-setup)
-
-    (progn
-
-      (defvar my-outline-map (make-sparse-keymap)
-        "Keymap for outline commands.")
-
-      (dolist (binding
-               '(;; buffer
-                 (";" . my/outline-cycle-buffer)
-                 ("s" . outline-show-all)
-                 ("h" . outline-hide-body)
-                 ;; subtree
-                 ("t" . outline-show-subtree)
-                 ("T" . outline-hide-subtree)
-                 ;; other/current
-                 ("O" . outline-hide-other)
-                 ;; children
-                 ("c" . outline-show-children)
-                 ("C" . outline-hide-children)
-                 ;; move
-                 ("<up>" . outline-indent-move-subtree-up)
-                 ("<down>" . outline-indent-move-subtree-down)
-                 ("<right>" . outline-indent-shift-right)
-                 ("<left>" . outline-indent-shift-left)
-                 ;; navigation
-                 ("p" . outline-previous-visible-heading)
-                 ("n" . outline-next-visible-heading)
-                 ("b" . outline-backward-same-level)
-                 ("f" . outline-forward-same-level)))
-        (define-key my-outline-map (kbd (car binding)) (cdr binding)))
-
-      ;; Bind the keymap to C-c ;
-      (global-set-key (kbd "C-c o o") my-outline-map)))
-
-  ;; buffer
-  (:global "C-c o ;" my/outline-cycle-buffer
-           "C-c o s" outline-show-all
-           "C-c o h" outline-hide-body)
-
-  (:with-hook emacs-lisp-mode-hook
-    (:hook (lambda ()
-             (outline-indent-minor-mode)
-             ;; (setq-local make-window-start-visible t) ;; TODO: see what commenting out does
-             (let ((header-comment-p "^\\(;;;+\\) .*"))
-               (setq-local outline-regexp header-comment-p)
-               (setq-local outline-level
-                           (lambda ()
-                             (if (looking-at "^\\(;;;+\\) .*")
-                                 (- (match-end 1) (match-beginning 1) 2)
-                               0)))
-               )))))
-;; Outline:1 ends here
-
-;; [[file:Config.org::*Outline faces][Outline faces:1]]
-(-setup outline-minor-faces
-  (:load-after outline outline-indent)
-  (:with-hook outline-minor-mode-hook
-    (:hook outline-minor-faces-mode))
-  ;; (progn
-  ;;   ;; exclude custom fontlocking for defuns
-  ;;   (defun my/outline-minor-faces--exclude-defuns (orig-fn arg)
-  ;;     "Remove ^( patterns from the regex argument."
-  ;;     (let ((filtered-regex
-  ;;            (or (let ((regex "\\|^("))   ; Fixed: escaped the backslash properly
-  ;;                  (and (string-search regex arg)
-  ;;                       (string-replace regex "" arg))) ; Fixed: "" instead of nil
-  ;;                (let ((regex "^(\\|"))                 ; Fixed: escaped properly
-  ;;                  (and (string-search regex arg)
-  ;;                       (replace-regexp-in-string regex "" arg))) ; Fixed: "" instead of nil
-  ;;                (let ((regex "^("))
-  ;;                  (and (string-search regex arg)
-  ;;                       (replace-regexp-in-string regex "" arg)))))) ; Fixed: "" instead of nil
-  ;;       (if filtered-regex
-  ;;           (funcall orig-fn filtered-regex)
-  ;;         (funcall orig-fn arg))))
-  ;;   (advice-add 'outline-minor-faces--syntactic-matcher :around
-  ;;               #'my/outline-minor-faces--exclude-defuns))
-  )
-
-(-setup backline
-  (:load-after outline outline-indent)
-  (:when-loaded
-    (advice-add 'outline-flag-region :after 'backline-update)))
-;; Outline faces:1 ends here
-
-;; [[file:Config.org::*Elide (hide license header)][Elide (hide license header):1]]
-(setup elide
-  (:with-hook emacs-lisp-mode-hook
-    (:hook #'elide-head-mode)))
-;; Elide (hide license header):1 ends here
-
-;; [[file:Config.org::*Org][Org:1]]
-;;; +org.el --- org mode setup                     -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2025  lispcat
-
-;; Author: lispcat <187922791+lispcat@users.noreply.github.com>
-;; Keywords: local
-
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-;;; Commentary:
-
-;; Configuration for Org-mode and friends.
-
-;; Org is a markup language and plain text file format, much like Markdown, but
-;; a lot more powerful.
-
-;;; Code:
-
-;; NOTE: ensure that the newest version of org is installed right after elpaca
-;; setup
-
-;;; TODO
-
+;; [[file:Config.org::*leader-o][leader-o:1]]
 (leader-bind
   "ol" '(consult-org-heading :wk "org-imenu"))
+;; leader-o:1 ends here
 
-;;; Org-mode
-
-;; General config options for org-mode.
-
-;; --
-
+;; [[file:Config.org::*basics][basics:1]]
 (setup org
   (:option org-directory "~/Notes/org"  ; default org directory
 
@@ -2908,20 +2091,17 @@ If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
            ;; " ⤵"
            ;; " ▾"
            )
-
-;;;; keys
-
-  (defun +org-meta-ret-meta-right ()
-    "Shortcut for M-RET M-<right>."
-    (interactive)
-    (org-meta-return)
-    (org-metaright))
-
   (:with-map org-mode-map
-    (:bind "C-M-<return>" +org-meta-ret-meta-right))
+    (:bind "C-M-<return>"
+           (defun +org-meta-ret-meta-right ()
+             "Shortcut for M-RET M-<right>."
+             (interactive)
+             (org-meta-return)
+             (org-metaright)))))
+;; basics:1 ends here
 
-;;;; fonts
-
+;; [[file:Config.org::*fonts][fonts:1]]
+(setup org
   (:when-loaded
     (defvar +org-fonts-alist
       '((org-document-title :height 1.9 :weight bold)
@@ -2972,58 +2152,52 @@ If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
 
     ;; (advice-add 'load-theme :after #'+org-fonts-setup)
     ;; (add-hook 'org-mode-hook #'+org-fonts-setup)
-    )
+    ))
+;; fonts:1 ends here
 
+;; [[file:Config.org::*colorize NEXT face][colorize NEXT face:1]]
+(setup org
   ;; colorize "NEXT" todo face
-
   (:when-loaded
     (defun +org-todo-color-override (&rest _)
       "Set org-todo-keyword-faces only if not already set by the theme."
       (setq org-todo-keyword-faces
             `(("NEXT" . ( :foreground ,(face-foreground 'font-lock-string-face nil)
                           :weight bold
-                          :inhert (org-todo)
-                          ))
+                          :inhert (org-todo)))
               ("PLAN" . ( :foreground ,(face-foreground 'font-lock-function-name-face nil)
                           :weight bold
-                          :inhert (org-todo)
-                          )))))
+                          :inhert (org-todo))))))
 
     (+org-todo-color-override)
-    (advice-add 'load-theme :after #'+org-todo-color-override))
+    (advice-add 'load-theme :after #'+org-todo-color-override)))
+;; colorize NEXT face:1 ends here
 
+;; [[file:Config.org::*exclude "<" ">" matching like parens][exclude "<" ">" matching like parens:1]]
+(setup org
   ;; fix syntax "<" ">" matching with paren
 
   (:when-loaded
     (add-hook 'org-mode-hook
               (lambda ()
                 (modify-syntax-entry ?< ".")
-                (modify-syntax-entry ?> "."))))
+                (modify-syntax-entry ?> ".")))))
+;; exclude "<" ">" matching like parens:1 ends here
 
-;;;; export
-
-  ;; org export options
-
+;; [[file:Config.org::*syntax highlighting on org-latex exports][syntax highlighting on org-latex exports:1]]
+(setup org
   (:option org-latex-src-block-backend 'minted
            org-latex-minted-langs
            '((python "python") (emacs-lisp "common-lisp") (cc "c++")
-             (shell-script "bash")))
+             (shell-script "bash"))))
+;; syntax highlighting on org-latex exports:1 ends here
 
-  )
-
-;; --
-
-;;; Functionality
-
-;;;; toc-org
-
+;; [[file:Config.org::*org-toc][org-toc:1]]
 (-setup toc-org
   (:hook-into org-mode-hook))
+;; org-toc:1 ends here
 
-;;; Integration
-
-;;;; anki-editor
-
+;; [[file:Config.org::*anki-editor][anki-editor:1]]
 (-setup anki-editor
   (:autoload anki-editor-push-note-at-point
              anki-editor-push-notes
@@ -3035,9 +2209,9 @@ If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
       (unless anki-editor-mode
         (anki-editor-mode 1)))
     (advice-add #'anki-editor--push-note :before #'+ensure-anki-editor-mode)))
+;; anki-editor:1 ends here
 
-;;;;; functions for anki-editor
-
+;; [[file:Config.org::*scripts][scripts:1]]
 (defun +org-priority-to-anki ()
   (interactive)
   ;; check connection with anki
@@ -3048,12 +2222,12 @@ If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
   (save-excursion
     (let ((points-no-priority
            (org-ql-query
-             :select #'point-marker
-             :from (current-buffer)
-             :where
-             '(and (not (priority))
-                   (or (property "ANKI_NOTE_ID")
-                       (property "ANKI_NOTE_TYPE"))))))
+            :select #'point-marker
+            :from (current-buffer)
+            :where
+            '(and (not (priority))
+                  (or (property "ANKI_NOTE_ID")
+                      (property "ANKI_NOTE_TYPE"))))))
       (dolist (p (reverse points-no-priority))
         (goto-char p)
         (when (org-find-property "ANKI_NOTE_ID")
@@ -3064,123 +2238,95 @@ If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
   (save-excursion
     (let ((points-yes-priority
            (org-ql-query
-             :select #'point-marker
-             :from (current-buffer)
-             :where '(priority))))
+            :select #'point-marker
+            :from (current-buffer)
+            :where '(priority))))
       (dolist (p (reverse points-yes-priority))
         (goto-char p)
         (unless (org-entry-get nil "ANKI_NOTE_TYPE")
           (anki-editor-set-note-type nil "Basic"))))))
+;; scripts:1 ends here
 
-;;; Quality of Life
+;; [[file:Config.org::*org-tempo (Disabled)][org-tempo (Disabled):1]]
+(setup org-tempo
+  :disabled
 
-;;;; org-tempo (disabled)
+  (:load-after org)
+  (:when-loaded
+    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("py" . "src python"))
+    (add-to-list 'org-structure-template-alist '("gcc" . "src c"))
+    (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
+    (add-to-list 'org-structure-template-alist '("conf" . "src conf"))
+    (add-to-list 'org-structure-template-alist '("java" . "src java"))
+    (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
+    (add-to-list 'org-structure-template-alist '("clang" . "src c"))))
+;; org-tempo (Disabled):1 ends here
 
-;; Ease the creation of src blocks (code blocks).
-
-;; To create src blocks, usually, you would press `C-c C-,` or run
-;; `org-insert-structure-template'.
-
-;; But with `org-tempo', with the config below, you can type `<sh TAB` to create
-;; an src block like this:
-;;
-;; ```
-;; #+begin_src shell
-;;
-;; #+end_src
-;; ```
-;;
-
-;; --
-
-;; (setup org-tempo
-;;   (:load-after org)
-;;   (:when-loaded
-;;     (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-;;     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-;;     (add-to-list 'org-structure-template-alist '("py" . "src python"))
-;;     (add-to-list 'org-structure-template-alist '("gcc" . "src c"))
-;;     (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
-;;     (add-to-list 'org-structure-template-alist '("conf" . "src conf"))
-;;     (add-to-list 'org-structure-template-alist '("java" . "src java"))
-;;     (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
-;;     (add-to-list 'org-structure-template-alist '("clang" . "src c"))))
-
-;; --
-
-;;;; org-auto-tangle
-
+;; [[file:Config.org::*auto-tangle][auto-tangle:1]]
 (-setup org-auto-tangle
   (:hook-into org-mode-hook))
+;; auto-tangle:1 ends here
 
-;;;; image-slicing
-
+;; [[file:Config.org::*image-slicing][image-slicing:1]]
 (-setup (image-slicing :host github :repo "ginqi7/image-slicing")
   (:autoload image-slicing-mode)
   (:hook-into org-mode-hook)
   (:option image-slicing-newline-trailing-text nil))
+;; image-slicing:1 ends here
 
-;;; Agenda (TODO)
-
-;; TODO: script to generate subtasks for each day for an assignment
-
-(defun +org-agenda-open-agenda-file ()
-  (interactive)
-  (find-file (car org-agenda-files)))
-
-(defun +org-agenda-mark-as-done ()
-  (interactive)
-  (org-agenda-todo 'done))
-
+;; [[file:Config.org::*Agenda (TODO: tweak, optimize workflow)][Agenda (TODO: tweak, optimize workflow):1]]
 (setup org-agenda
   (:load-after org)
 
-  ;; binds
+  (:option org-enforce-todo-dependencies t ; DONE iff all subtasks are DONE
 
-  (:global
-   "C-c o a" #'org-agenda
-   "C-c o A" #'+org-agenda-open-agenda-file)
+           ;; todo keywords
+           org-todo-keywords
+           `((sequence
+              "TODO(t)" "NEXT(n)" "PLAN(p)" "|" "DONE(d/!)"))
+
+           ;; agenda files
+           org-agenda-files
+           `("~/Notes/denote/20250728T235116--todo__todo.org")
+
+           ;; org tags
+           org-tag-alist
+           '(;; activities:
+             ("@task" . ?t)
+             ("@study" . ?s)
+             ;; type:
+             ("@ongoing" . ?o)
+             ;; classes:
+             ("@cs2" . ?S)
+             ("@bio" . ?B)
+             ("@calc2" . ?C)
+             ("@phy" . ?P))
+
+           ;; format specification for agenda view
+           org-agenda-prefix-format
+           `((agenda
+              . ,(concat " %i %?-12t "
+                         "%-10(+org-get-prop-default) "
+                         "% s"))
+             (todo . " %i ")
+             ;; (tags . " %i %-12:c")
+             (tags . " %i ")
+             (search . " %c")))
+
+  (defun my/org-agenda-open-agenda-file ()
+    (interactive)
+    (find-file (car org-agenda-files)))
+
+  (defun my/org-agenda-mark-as-done ()
+    (interactive)
+    (org-agenda-todo 'done))
+
+  (:global "C-c o a" #'org-agenda
+           "C-c o A" #'my/org-agenda-open-agenda-file)
   (:with-map org-agenda-mode-map
-    (:bind ")" #'+org-agenda-mark-as-done))
-
-  ;; options
-
-  (:option
-   ;; only DONE if TODO subtasks are DONE
-   org-enforce-todo-dependencies t
-
-   ;; todo keywords
-   org-todo-keywords
-   `((sequence
-      "TODO(t)" "NEXT(n)" "PLAN(p)" "|" "DONE(d/!)"))
-
-   ;; agenda files
-   org-agenda-files
-   `("~/Notes/denote/20250728T235116--todo__todo.org")
-
-   ;; org tags
-   org-tag-alist
-   '(;; activities:
-     ("@task" . ?t)
-     ("@study" . ?s)
-     ;; type:
-     ("@ongoing" . ?o)
-     ;; classes:
-     ("@cs2" . ?S)
-     ("@bio" . ?B)
-     ("@calc2" . ?C)
-     ("@phy" . ?P))
-
-   ;; format specification for agenda view
-   org-agenda-prefix-format
-   `((agenda
-      . ,(concat " %i %?-12t "
-                 "%-10(+org-get-prop-default) "
-                 "% s"))
-     (todo . " %i ")
-     ;; (tags . " %i %-12:c")
-     (tags . " %i ")
-     (search . " %c")))
+    (:bind ")" #'my/org-agenda-mark-as-done))
 
   ;; helper, used in var `org-agenda-prefix-format' above
   (defun +org-get-prop-default ()
@@ -3223,16 +2369,16 @@ If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
       (let ((val (org-entry-get nil prop)))
         (if (not val) nil
           (format "%s" (string-trim val)))))))
+;; Agenda (TODO: tweak, optimize workflow):1 ends here
 
-;;;; org-habit
-
+;; [[file:Config.org::*org-habit][org-habit:1]]
 (setup org-habit
   (:load-after org)
   (:when-loaded
     (add-to-list 'org-modules 'org-habit t)))
+;; org-habit:1 ends here
 
-;;;; org-super-agenda
-
+;; [[file:Config.org::*org-super-agenda][org-super-agenda:1]]
 (-setup org-super-agenda
   (:load-after org-agenda)
   (:when-loaded
@@ -3394,14 +2540,16 @@ If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
                         :anything t)))))))))
 
   )
+;; org-super-agenda:1 ends here
 
-;;;; org-ql (disabled)
+;; [[file:Config.org::*org-ql (disabled)][org-ql (disabled):1]]
+(-setup org-ql
+  :disabled
 
-(-setup org-ql :disabled
   (:load-after org))
+;; org-ql (disabled):1 ends here
 
-;;;; misc functions for org-agenda
-
+;; [[file:Config.org::*misc functions for org-agenda][misc functions for org-agenda:1]]
 (defun +org-clone-with-fraction (days time effort)
   "Clone subtree with time shifts, prefixing each subheading with fraction prefix."
   (interactive
@@ -3531,11 +2679,9 @@ If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
       ;; update counting fraction
       (call-interactively #'org-update-statistics-cookies)
       )))
+;; misc functions for org-agenda:1 ends here
 
-;;; Workflow
-
-;;;; org-noter
-
+;; [[file:Config.org::*org-noter][org-noter:1]]
 (-setup org-noter
   (:load-after org)
   (:global "C-c o n" #'org-noter
@@ -3556,9 +2702,9 @@ The property will be removed if ran with a \\[universal-argument]."
                               (format "%s" (aref vec 1)))))
            (message "meow: %s" num)
            (org-entry-put (point) "NOTER_PAGE" num)))))))
+;; org-noter:1 ends here
 
-;;;; org-capture (TODO)
-
+;; [[file:Config.org::*org-capture (TODO)][org-capture (TODO):1]]
 (setup org-capture
   (:load-after org)
   (leader-bind
@@ -3589,21 +2735,17 @@ The property will be removed if ran with a \\[universal-argument]."
               (file denote-last-path)
               #'denote-org-capture :no-save t :immediate-finish nil
               :kill-buffer t :jump-to-captured t))))
+;; org-capture (TODO):1 ends here
 
-;;;; org-download
-
+;; [[file:Config.org::*org-download][org-download:1]]
 (-setup org-download
   (:option org-download-image-dir "_images")
   (:load-after org)
   (:when-loaded
     (org-download-enable)))
+;; org-download:1 ends here
 
-;;; Prettify
-
-;; stuff to make org prettier.
-
-;;;; visual fill column
-
+;; [[file:Config.org::*visual fill column][visual fill column:1]]
 (-setup visual-fill-column
   (with-eval-after-load 'org
     (add-hook 'org-mode-hook
@@ -3611,9 +2753,9 @@ The property will be removed if ran with a \\[universal-argument]."
                 (setq visual-fill-column-width 100
                       visual-fill-column-center-text t)
                 (visual-fill-column-mode 1)))))
+;; visual fill column:1 ends here
 
-;;;; org-bullets
-
+;; [[file:Config.org::*org-bullets][org-bullets:1]]
 ;; TODO: replace with org-superstar
 (-setup org-bullets
   (:hook-into org-mode-hook)
@@ -3626,20 +2768,18 @@ The property will be removed if ran with a \\[universal-argument]."
              "✦"
              "✧"
              "✿")))
+;; org-bullets:1 ends here
 
-;;;; org-modern (disabled)
-
+;; [[file:Config.org::*org-modern (disabled)][org-modern (disabled):1]]
 (-setup org-modern :disabled
-  (:option org-modern-star nil)
-  (global-org-modern-mode 1))
+        (:option org-modern-star nil)
+        (global-org-modern-mode 1))
+;; org-modern (disabled):1 ends here
 
-;;; Misc
-
-;;;; pomodoro
-
+;; [[file:Config.org::*pomodoro][pomodoro:1]]
 (-setup org-pomodoro
   (:load-after org))
-;; Org:1 ends here
+;; pomodoro:1 ends here
 
 ;; [[file:Config.org::*Latex][Latex:1]]
 ;;; +latex.el --- latex setup                        -*- lexical-binding: t; -*-
@@ -4653,18 +3793,18 @@ After evaluating, it suspends all non-current activities."
 (-setup kaolin-themes
   (:require-self))
 (-setup ef-themes
-  (:require-self))
+  (:require-self)
+  (:option ef-dream-palette-overrides
+           '((bg-space "#2a272c"))))
 (-setup doom-themes
   (:require-self)
   (:option doom-themes-enable-bold t  ; if nil, bold is universally disabled
            doom-themes-enable-italic t)) ; if nil, italics is universally disabled
 
 (setup emacs
-  (:global "C-c T t" consult-theme
-           "C-c T r" +set-random-theme))
-
-(setup emacs
   (:load-after doom-themes kaolin-themes ef-themes)
+  (:global "C-c T t" consult-theme
+           "C-c T r" +set-random-theme)
   (:when-loaded
     (+set-random-theme)))
 
@@ -4755,7 +3895,8 @@ After evaluating, it suspends all non-current activities."
            (plist-put spacious-padding-widths :header-line-width 0)
            spacious-padding-widths
            (plist-put spacious-padding-widths :mode-line-width 0))
-  (spacious-padding-mode 1))
+  ;; (spacious-padding-mode 1)
+  )
 
 ;;;; Mode-line
 
@@ -4883,105 +4024,105 @@ After evaluating, it suspends all non-current activities."
 ;;;;; Doom Modeline
 
 (-setup doom-modeline :disabled
-  ;; configuration
-  (setq doom-modeline-height 30
-        doom-modeline-modal-icon t
-        doom-modeline-icon t
-        doom-modeline-persp-icon nil
-        doom-modeline-bar-width 4
+        ;; configuration
+        (setq doom-modeline-height 30
+              doom-modeline-modal-icon t
+              doom-modeline-icon t
+              doom-modeline-persp-icon nil
+              doom-modeline-bar-width 4
+              )
+
+        (add-hook 'after-init-hook #'doom-modeline-mode)
+
+        (:when-loaded
+          ;; hide bar
+          (set-face-attribute 'mode-line-inactive nil
+                              :foreground (face-background 'mode-line-inactive))
+
+          ;; custom modeline
+          (doom-modeline-def-modeline 'my-line
+            '(eldoc
+              bar
+              window-state
+              workspace-name
+              window-number
+              modals
+              matches
+              follow
+              buffer-info
+              remote-host
+              buffer-position
+              word-count
+              parrot
+              selection-info)
+            '(compilation
+              objed-state
+              misc-info
+              project-name
+              persp-name
+              battery
+              grip irc
+              mu4e
+              gnus
+              github
+              debug
+              repl
+              lsp
+              minor-modes
+              input-method
+              indent-info
+              ;; buffer-encoding
+              major-mode
+              process
+              vcs
+              check
+              time))
+          ;; enable
+          (add-hook 'doom-modeline-mode-hook
+                    (lambda ()
+                      (doom-modeline-set-modeline 'my-line 'default))))
+
+        ;; (:option doom-modeline-height 30
+        ;;          doom-modeline-icon nil)
+
+        ;; (:when-loaded
+        ;;   ;; custom modeline
+        ;;   (doom-modeline-def-modeline 'my-simple-line
+        ;;     '(eldoc window-state workspace-name window-number modals matches follow buffer-info remote-host buffer-position word-count parrot selection-info)
+        ;;     '(compilation objed-state misc-info project-name persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs check time))
+
+        ;;   ;; set
+        ;;   (add-hook 'doom-modeline-mode-hook
+        ;;             (lambda ()
+        ;;               (doom-modeline-set-modeline 'my-simple-line 'default)))
+
+        ;;   ;; enable
+        ;;   ;; (doom-modeline-mode 1)
+        ;;   )
+        ;; (setq-default header-line-format '("%e" (:eval (doom-modeline-format--main))))
+        ;; (setq-default mode-line-format nil)
+        ;; (add-hook 'doom-modeline-mode-hook
+        ;;           (lambda ()
+        ;;             (setq-default mode-line-format nil)
+        ;;             (dolist (buf (buffer-list))
+        ;;               (with-current-buffer buf
+        ;;                 (when mode-line-format
+        ;;                   (setq mode-line-format nil))))))
+
+        ;; (add-hook '+after-enable-theme-hook
+        ;;           (lambda ()
+        ;;             (unless mode-line-format
+        ;;               (setq-default mode-line-format nil))))
+
+        ;; :config
+        ;; (setq doom-modeline-modal-icon nil)
+        ;; (dolist (pair '((doom-modeline-vcs-default . "purple")
+        ;;                 (doom-modeline-vcs . "purple")
+        ;;                 (doom-modeline-meow-normal-state . "DarkOrchid4")))
+        ;;   (let ((face (car pair))
+        ;;         (color (cdr pair)))
+        ;;     (set-face-attribute face nil :foreground color)))
         )
-
-  (add-hook 'after-init-hook #'doom-modeline-mode)
-
-  (:when-loaded
-    ;; hide bar
-    (set-face-attribute 'mode-line-inactive nil
-                        :foreground (face-background 'mode-line-inactive))
-
-    ;; custom modeline
-    (doom-modeline-def-modeline 'my-line
-      '(eldoc
-        bar
-        window-state
-        workspace-name
-        window-number
-        modals
-        matches
-        follow
-        buffer-info
-        remote-host
-        buffer-position
-        word-count
-        parrot
-        selection-info)
-      '(compilation
-        objed-state
-        misc-info
-        project-name
-        persp-name
-        battery
-        grip irc
-        mu4e
-        gnus
-        github
-        debug
-        repl
-        lsp
-        minor-modes
-        input-method
-        indent-info
-        ;; buffer-encoding
-        major-mode
-        process
-        vcs
-        check
-        time))
-    ;; enable
-    (add-hook 'doom-modeline-mode-hook
-              (lambda ()
-                (doom-modeline-set-modeline 'my-line 'default))))
-
-  ;; (:option doom-modeline-height 30
-  ;;          doom-modeline-icon nil)
-
-  ;; (:when-loaded
-  ;;   ;; custom modeline
-  ;;   (doom-modeline-def-modeline 'my-simple-line
-  ;;     '(eldoc window-state workspace-name window-number modals matches follow buffer-info remote-host buffer-position word-count parrot selection-info)
-  ;;     '(compilation objed-state misc-info project-name persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs check time))
-
-  ;;   ;; set
-  ;;   (add-hook 'doom-modeline-mode-hook
-  ;;             (lambda ()
-  ;;               (doom-modeline-set-modeline 'my-simple-line 'default)))
-
-  ;;   ;; enable
-  ;;   ;; (doom-modeline-mode 1)
-  ;;   )
-  ;; (setq-default header-line-format '("%e" (:eval (doom-modeline-format--main))))
-  ;; (setq-default mode-line-format nil)
-  ;; (add-hook 'doom-modeline-mode-hook
-  ;;           (lambda ()
-  ;;             (setq-default mode-line-format nil)
-  ;;             (dolist (buf (buffer-list))
-  ;;               (with-current-buffer buf
-  ;;                 (when mode-line-format
-  ;;                   (setq mode-line-format nil))))))
-
-  ;; (add-hook '+after-enable-theme-hook
-  ;;           (lambda ()
-  ;;             (unless mode-line-format
-  ;;               (setq-default mode-line-format nil))))
-
-  ;; :config
-  ;; (setq doom-modeline-modal-icon nil)
-  ;; (dolist (pair '((doom-modeline-vcs-default . "purple")
-  ;;                 (doom-modeline-vcs . "purple")
-  ;;                 (doom-modeline-meow-normal-state . "DarkOrchid4")))
-  ;;   (let ((face (car pair))
-  ;;         (color (cdr pair)))
-  ;;     (set-face-attribute face nil :foreground color)))
-  )
 
 (-setup doom-modeline
   (:require-self))
@@ -5275,6 +4416,8 @@ After evaluating, it suspends all non-current activities."
 ;;;; Dashboard
 
 (-setup dashboard
+  :disabled
+
   (:require-self)
   (setq dashboard-items '((recents . 5)))
   (setq dashboard-center-content t)
