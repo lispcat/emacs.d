@@ -2012,7 +2012,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (:hook (defun my/emacs-lisp-mode-setup ()
            (auto-fill-mode 1)
            (setq-local fill-column 80)))
-
+  (:bind "C-c C-n" outline-next-visible-heading
+         "C-c C-p" outline-previous-visible-heading)
+  
   ;; flycheck tweak
   (with-eval-after-load 'flycheck
     (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc emacs-lisp)))
@@ -2105,6 +2107,11 @@ _SPC_ cancel	_o_nly this   	_d_elete
            "C-c C-c Q" lsp-workspace-shutdown
            "C-c C-c s" lsp-rust-analyzer-status
            "C-c C-c h" lsp-describe-thing-at-point))
+
+  ;; -- Playground --
+
+  (-setup rust-playground
+    (:require-self))
 
   ;; -- Company Integration --
 
@@ -2324,249 +2331,82 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (global-treesit-auto-mode))
 ;; Tree-sitter setup:1 ends here
 
-;; [[file:Config.org::*Outline][Outline:1]]
-;; Optimal folding: https://github.com/jamescherti/outline-indent.el
+;; [[file:Config.org::*Outline indent][Outline indent:1]]
 (-setup outline-indent
   (:diminish outline-minor-mode)
   (:diminish outline-indent-minor-mode)
-  (:autoload outline-indent-minor-mode)
+
   (:option outline-indent-ellipsis " ‣")
 
-  ;; outline-cycle
-  (defun my/outline-toggle (&optional univ)
-    "Toggle previous heading.
+  (leader-bind
+    "o <up>" '(outline-indent-move-subtree-up :wk "move-up")
+    "o <down>" '(outline-indent-move-subtree-down :wk "move-down")
+    "o <left>" '(outline-indent-shift-left :wk "move-left")
+    "o <right>" '(outline-indent-shift-right :wk "move-right")))
+;; Outline indent:1 ends here
 
-If hide, fold only current heading.
-If show, open only current heading.
+;; [[file:Config.org::*Enable per-mode][Enable per-mode:1]]
+(setup emacs
+  (:load-after outline-indent)
 
-If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
-    (interactive "P")
-    ;; go to prev heading
-    (outline-back-to-heading)
-    ;; universal arg
-    (if current-prefix-arg
-        (my/outline-cycle-buffer)
-      ;; toggle
-      (let ((action
-             (if (outline-invisible-p (pos-eol))
-                 'to-show
-               'to-hide)))
-        (pcase action
-          ('to-hide
-           (outline-hide-entry))
-          ('to-show
-           (outline-show-entry))
-          (_ (error "bug"))))))
+  ;; -- Global hook --
+  (:with-hook outline-minor-mode-hook
+    (:hook (lambda ()
+             (setq-local make-window-start-visible t))))
 
-  (my/defhydra-repeat my/outline-toggle
-                    (";" "<backtab>"))
-
-  (defun my/outline-toggle-meta (&optional univ)
-    "Toggle subtree at previous heading.
-
-If hide, fold current and all subheadings, and show tree.
-If show, open /everything/ under the heading.
-
-If ran with Universal Argument, run `my/outline-cycle-buffer' instead."
-    (interactive "P")
-    ;; go to prev heading
-    (outline-back-to-heading)
-    ;; universal arg
-    (if current-prefix-arg
-        (my/outline-cycle-buffer)
-      ;; toggle
-      (let ((action
-             (if (outline-invisible-p (pos-eol))
-                 'to-show
-               'to-hide)))
-        (pcase action
-          ('to-hide
-           (outline-hide-subtree)
-           (outline-show-branches))
-          ('to-show
-           (outline-show-subtree))
-          (_ (error "bug"))))))
-
-  (my/defhydra-repeat my/outline-toggle-meta
-                    (";" "<backtab>"))
-
-  ;; outline-cycle buffer
-  (defun my/outline-cycle-buffer (&optional level)
-    (interactive (list (when current-prefix-arg
-                         (prefix-numeric-value current-prefix-arg))))
-    (let (top-level)
-      (save-excursion
-        (goto-char (point-min))
-        (while (not (or (eq top-level 1) (eobp)))
-          (when-let ((level (and (outline-on-heading-p t)
-                                 (funcall outline-level))))
-            (when (< level (or top-level most-positive-fixnum))
-              (setq top-level (max level 1))))
-          (outline-next-heading)))
-      (cond
-       (level
-        (outline-hide-sublevels level)
-        (setq outline--cycle-buffer-state 'all-heading)
-        (message "All headings up to level %s" level))
-       ((or (eq outline--cycle-buffer-state 'show-all)
-            (eq outline--cycle-buffer-state 'top-level))
-        (outline-show-all)
-        (outline-hide-region-body (point-min) (point-max))
-        (setq outline--cycle-buffer-state 'all-heading)
-        (message "All headings"))
-       (t
-        (outline-show-all)
-        (setq outline--cycle-buffer-state 'show-all)
-        (message "Show all")))))
-
-  (my/defhydra-repeat my/outline-cycle-buffer
-                    (";" "<backtab>"))
-
-  ;; special TAB, cycle if on heading
-  (defun my/indent-for-tab-command--outline-advice (orig-fn &rest args)
-    "Advice for alternative TAB behavior if over outline heading."
-    (if (and (eq major-mode 'emacs-lisp-mode)
-             (save-excursion
-               (beginning-of-line)
-               (looking-at "^;;;+ .*$")))
-        (my/outline-toggle)
-      (apply orig-fn args)))
-
-  (advice-add 'indent-for-tab-command :around
-              #'my/indent-for-tab-command--outline-advice)
-
-  ;; run outline-hide-body only after first focus (add to .dir-locals.el)
-  ;; (defun my/hide-outline-on-open (func &rest args)
-  ;;   "Hide outlines when opening files via dired or projectile."
-  ;;   (let ((result (apply func args)))
-  ;;     ;; After the file is opened, hide outlines if conditions are met
-  ;;     (when (and (buffer-file-name)
-  ;;                outline-indent-minor-mode)
-  ;;       (outline-hide-body))
-  ;;     result))
-
-  ;; (advice-add 'find-file :around #'my/hide-outline-on-open)
-  ;; (advice-add 'dired-find-file :around #'my/hide-outline-on-open)
-  ;; (advice-add 'projectile-find-file :around #'my/hide-outline-on-open)
-  ;; (advice-add 'projectile-find-file-dwim :around #'my/hide-outline-on-open)
-
-  (:with-map outline-minor-mode-map
-    (:bind "<backtab>" my/outline-toggle-meta))
-
-  (:with-map emacs-lisp-mode-map
-    (:bind "C-c C-n" outline-next-visible-heading
-           "C-c C-p" outline-previous-visible-heading))
-
-  (:when-loaded
-    (defun my/outline-faces-setup ()
-      (dolist (face-config
-               '((outline-1 1.9 nil)
-                 (outline-2 1.6 nil)
-                 (outline-3 1.3 t)
-                 (outline-4 1.1 t)
-                 (outline-5 1.0 t)
-                 (outline-6 1.0 t)
-                 (outline-7 1.0 t)
-                 (outline-8 1.0 t)))
-        (let ((face (nth 0 face-config))
-              (height (nth 1 face-config))
-              (over (nth 2 face-config)))
-          (set-face-attribute face nil :height height :overline over)))
-      ;; extras
-      (with-eval-after-load 'org
-        (set-face-attribute 'org-ellipsis nil :foreground 'unspecified)))
-    ;; run now
-    (my/outline-faces-setup)
-    ;; run after each theme load
-    (add-hook 'my/after-enable-theme-hook #'my/outline-faces-setup)
-
-    (progn
-
-      (defvar my-outline-map (make-sparse-keymap)
-        "Keymap for outline commands.")
-
-      (dolist (binding
-               '(;; buffer
-                 (";" . my/outline-cycle-buffer)
-                 ("s" . outline-show-all)
-                 ("h" . outline-hide-body)
-                 ;; subtree
-                 ("t" . outline-show-subtree)
-                 ("T" . outline-hide-subtree)
-                 ;; other/current
-                 ("O" . outline-hide-other)
-                 ;; children
-                 ("c" . outline-show-children)
-                 ("C" . outline-hide-children)
-                 ;; move
-                 ("<up>" . outline-indent-move-subtree-up)
-                 ("<down>" . outline-indent-move-subtree-down)
-                 ("<right>" . outline-indent-shift-right)
-                 ("<left>" . outline-indent-shift-left)
-                 ;; navigation
-                 ("p" . outline-previous-visible-heading)
-                 ("n" . outline-next-visible-heading)
-                 ("b" . outline-backward-same-level)
-                 ("f" . outline-forward-same-level)))
-        (define-key my-outline-map (kbd (car binding)) (cdr binding)))
-
-      ;; Bind the keymap to C-c ;
-      (global-set-key (kbd "C-c o o") my-outline-map)))
-
-  ;; buffer
-  (:global "C-c o ;" my/outline-cycle-buffer
-           "C-c o s" outline-show-all
-           "C-c o h" outline-hide-body)
-
+  ;; -- Emacs Lisp mode --
   (:with-hook emacs-lisp-mode-hook
+    (defvar my/emacs-lisp-outline-regexp "^\\(;;;+\\) .*"
+      "The regexp to match for Elisp header comments.")
     (:hook (lambda ()
              (outline-indent-minor-mode)
-             ;; (setq-local make-window-start-visible t) ;; TODO: see what commenting out does
-             (let ((header-comment-p "^\\(;;;+\\) .*"))
-               (setq-local outline-regexp header-comment-p)
-               (setq-local outline-level
-                           (lambda ()
-                             (if (looking-at "^\\(;;;+\\) .*")
-                                 (- (match-end 1) (match-beginning 1) 2)
-                               0)))
-               )))))
-;; Outline:1 ends here
+             (setq-local outline-regexp my/emacs-lisp-outline-regexp
+                         outline-level
+                         (lambda ()
+                           (if (looking-at my/emacs-lisp-outline-regexp)
+                               (- (match-end 1) (match-beginning 1) 2)
+                             0)))))))
+;; Enable per-mode:1 ends here
 
-;; [[file:Config.org::*Outline faces][Outline faces:1]]
+;; [[file:Config.org::*Outline faces (disabled for now for testing)][Outline faces (disabled for now for testing):1]]
 (-setup outline-minor-faces
+  :disabled
+
   (:load-after outline outline-indent)
   (:with-hook outline-minor-mode-hook
-    (:hook outline-minor-faces-mode))
-  ;; (progn
-  ;;   ;; exclude custom fontlocking for defuns
-  ;;   (defun my/outline-minor-faces--exclude-defuns (orig-fn arg)
-  ;;     "Remove ^( patterns from the regex argument."
-  ;;     (let ((filtered-regex
-  ;;            (or (let ((regex "\\|^("))   ; Fixed: escaped the backslash properly
-  ;;                  (and (string-search regex arg)
-  ;;                       (string-replace regex "" arg))) ; Fixed: "" instead of nil
-  ;;                (let ((regex "^(\\|"))                 ; Fixed: escaped properly
-  ;;                  (and (string-search regex arg)
-  ;;                       (replace-regexp-in-string regex "" arg))) ; Fixed: "" instead of nil
-  ;;                (let ((regex "^("))
-  ;;                  (and (string-search regex arg)
-  ;;                       (replace-regexp-in-string regex "" arg)))))) ; Fixed: "" instead of nil
-  ;;       (if filtered-regex
-  ;;           (funcall orig-fn filtered-regex)
-  ;;         (funcall orig-fn arg))))
-  ;;   (advice-add 'outline-minor-faces--syntactic-matcher :around
-  ;;               #'my/outline-minor-faces--exclude-defuns))
-  )
+    (:hook outline-minor-faces-mode)))
 
 (-setup backline
+  :disabled
+
   (:load-after outline outline-indent)
   (:when-loaded
     (advice-add 'outline-flag-region :after 'backline-update)))
-;; Outline faces:1 ends here
+;; Outline faces (disabled for now for testing):1 ends here
 
 ;; [[file:Config.org::*leader-o][leader-o:1]]
-(leader-bind
-  "ol" '(consult-org-heading :wk "org-imenu"))
+(setup emacs
+  ;; org
+  (with-eval-after-load 'org
+    (leader-bind
+      "oi" '(consult-org-heading :wk "imenu-org")))
+
+  ;; outline
+  (with-eval-after-load 'outline
+    (leader-bind
+      ;; buffer
+      "os" '(outline-show-all :wk "show-all")
+      "oh" '(outline-hide-body :wk "hide-all")
+      ;; subtree
+      "ot" '(outline-show-subtree :wk "subtree-show")
+      "oT" '(outline-hide-subtree :wk "subtree-hide")
+      ;; other
+      "oO" '(outline-hide-other :wk "only")
+      ;; navigation
+      "op" '(outline-previous-visible-heading :wk "goto-prev")
+      "on" '(outline-next-visible-heading :wk "goto-next")
+      "ob" '(outline-backward-same-level :wk "goto-prev-same")
+      "of" '(outline-forward-same-level :wk "goto-next-same"))))
 ;; leader-o:1 ends here
 
 ;; [[file:Config.org::*basics][basics:1]]
