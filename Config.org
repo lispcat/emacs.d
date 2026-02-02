@@ -1,5 +1,5 @@
 #+TITLE: Emacs Configuration
-#+STARTUP: content
+#+STARTUP: fold
 #+PROPERTY: header-args :tangle config.el :comments link
 #+auto_tangle: t
 
@@ -124,35 +124,60 @@
 - [[#org][Org]]
   - [[#leader-o][leader-o]]
   - [[#basics][basics]]
-  - [[#fonts][fonts]]
-  - [[#colorize-next-face][colorize NEXT face]]
-  - [[#exclude---matching-like-parens][exclude "<" ">" matching like parens]]
-  - [[#syntax-highlighting-on-org-latex-exports][syntax highlighting on org-latex exports]]
-  - [[#org-toc][org-toc]]
-  - [[#anki-editor][anki-editor]]
-    - [[#scripts][scripts]]
-  - [[#org-tempo-disabled][org-tempo (Disabled)]]
-  - [[#auto-tangle][auto-tangle]]
-  - [[#image-slicing][image-slicing]]
-  - [[#agenda-todo-tweak-optimize-workflow][Agenda (TODO: tweak, optimize workflow)]]
-  - [[#org-habit][org-habit]]
-  - [[#org-super-agenda][org-super-agenda]]
-  - [[#org-ql-disabled][org-ql (disabled)]]
-  - [[#misc-functions-for-org-agenda][misc functions for org-agenda]]
-  - [[#org-noter][org-noter]]
-  - [[#org-capture-todo][org-capture (TODO)]]
-  - [[#org-download][org-download]]
-  - [[#visual-fill-column][visual fill column]]
-  - [[#org-bullets][org-bullets]]
-  - [[#org-modern-disabled][org-modern (disabled)]]
-  - [[#pomodoro][pomodoro]]
+  - [[#ui-tweaks][UI Tweaks]]
+    - [[#org-bullets][org-bullets]]
+    - [[#center-text-in-window][center text in window]]
+    - [[#colorize-next-face][colorize NEXT face]]
+    - [[#smooth-image-scrolling][smooth image scrolling]]
+    - [[#fonts][fonts]]
+    - [[#modernize-interface-disabled][modernize interface (disabled)]]
+  - [[#behavior][Behavior]]
+    - [[#auto-gen-toc][auto-gen TOC]]
+    - [[#exclude---matching][exclude "<" ">" matching]]
+    - [[#tangle-on-save][tangle on save]]
+  - [[#agenda][Agenda]]
+    - [[#backend][backend]]
+    - [[#agenda-view-ui][agenda view UI]]
+    - [[#workflow][workflow]]
+    - [[#org-habit][org-habit]]
+    - [[#org-super-agenda][org-super-agenda]]
+    - [[#org-ql-disabled][org-ql (disabled)]]
+    - [[#misc-functions-for-org-agenda][misc functions for org-agenda]]
+  - [[#workflow-optimization][Workflow Optimization]]
+    - [[#org-download][org-download]]
+    - [[#org-tempo-disabled][org-tempo (Disabled)]]
+    - [[#org-capture-todo][org-capture (TODO)]]
+  - [[#external-interoperability][External Interoperability]]
+    - [[#anki-editor][anki-editor]]
+  - [[#zettelkasten][Zettelkasten]]
+    - [[#org-noter][org-noter]]
+  - [[#misc-1][Misc]]
+    - [[#pomodoro][pomodoro]]
 - [[#latex][Latex]]
 - [[#workspaces][Workspaces]]
+  - [[#persp-mode][Persp-mode]]
+  - [[#activities][Activities]]
+  - [[#perspective][Perspective]]
 - [[#programs][Programs]]
 - [[#ui-1][UI]]
+  - [[#fonts-1][fonts]]
+  - [[#all-the-icons][all the icons]]
+  - [[#ligatures][ligatures]]
+  - [[#themes][themes]]
+  - [[#transparency][transparency]]
+  - [[#line-numbers][line numbers]]
+  - [[#visual-line-mode][visual line mode]]
+  - [[#show-whitespace][show whitespace]]
+  - [[#solaire-mode][solaire mode]]
+  - [[#spacious-padding][spacious padding]]
+  - [[#mode-line][mode line]]
+  - [[#scroll][scroll]]
+  - [[#dashboard][dashboard]]
+  - [[#prettify-symbols][prettify symbols]]
+  - [[#fun][fun]]
   - [[#leader-t][leader-T]]
   - [[#load-theme-hook][load-theme-hook]]
-- [[#misc-1][Misc]]
+- [[#misc-2][Misc]]
 - [[#to-sort][To-sort]]
 
 * TODO to add
@@ -161,7 +186,18 @@
 - create an org-src-elisp-mode-hook to hook paredit, raindow-paren, and etc.
 
 * early-init.el
-  
+
+The first file loaded at startup, before =init.el=.
+
+=early-init.el= is loaded before the Emacs GUI is created, making it a good time to disable unneeded GUI features.
+
+Below, I do the following:
+- Lower the gc (garbage collection) frequency.
+- Prevent loading the built-in package manager (to opt in for a different one).
+- Declare path variables.
+- Disable unneeded GUI elements.
+- and more...
+
 #+begin_src elisp :tangle early-init.el
 
 (eval-when-compile
@@ -169,7 +205,7 @@
 
 ;; settings
 
-(setq gc-cons-threshold (* 50 1000 1000)) ; gc freq
+(setq gc-cons-threshold (* 50 1000 1000)) ; lower gc freq
 (setq package-enable-at-startup nil)      ; dont load package.el
 
 ;; dir vars
@@ -220,6 +256,7 @@
         (fullscreen . maximized)        ; TODO: ???
         (left-fringe)                   ; set left fringe
         (right-fringe)                  ; set right fringe
+        (undecorated . t) ; fix river bar at top issue
         ))
 
 ;; transparency
@@ -1541,11 +1578,17 @@ https://github.com/Wilfred/helpful
   (:require-self)
   (:option meow-use-cursor-position-hack t   ; insert before/after
            meow-keypad-leader-dispatch "C-c" ; keypad support local temp maps (?)
-           meow-replace-state-name-list '((normal . "<N>") ; visuals
-                                          (motion . "<M>")
-                                          (keypad . "<K>")
-                                          (insert . "<I>")
-                                          (beacon . "<B>")))
+           ;; meow-replace-state-name-list '((normal . "<N>") ; visuals
+           ;;                                (motion . "<M>")
+           ;;                                (keypad . "<K>")
+           ;;                                (insert . "<I>")
+           ;;                                (beacon . "<B>"))
+           meow-replace-state-name-list '((normal . "[N]") ; visuals
+                                          (motion . "[M]")
+                                          (keypad . "[K]")
+                                          (insert . "[I]")
+                                          (beacon . "[B]"))
+           )
   (my/meow-setup)
 
   ;; --- Auto insert mode ---
@@ -2581,6 +2624,8 @@ https://github.com/jdtsmith/eglot-booster
 (-setup lsp-ui
   (:only-if (my/lsp-p))
   (:load-after lsp-mode)
+  ;; -- misc --
+  (:option lsp-eldoc-enable-hover nil)
   ;; -- Sideline --
   (:option lsp-ui-sideline-delay 0.2              ; sideline delay
            lsp-ui-sideline-show-hover nil         ; show hover mesgs
@@ -2722,7 +2767,8 @@ https://github.com/jdtsmith/eglot-booster
 (defvar my/lisp-mode-hooks
   '(emacs-lisp-mode-hook
     lisp-data-mode-hook
-    scheme-mode-hook))
+    scheme-mode-hook
+    clojure-mode-hook))
 
 ;; Colorize matching parens
 (-setup rainbow-delimiters
@@ -2786,12 +2832,25 @@ Scheme is a family of Lisp languages, which includes Guile Scheme, a Lisp used f
 
 #+end_src
 
-**** Clojure (disabled)
+**** Clojure
+
+https://github.com/clojure-emacs/clojure-mode
 
 #+begin_src elisp
 
 (-setup clojure-mode
-  :disabled)
+  (:option clojure-align-forms-automatically t)
+  (:when-loaded
+    (add-hook 'clojure-mode-hook #'subword-mode)))
+
+(-setup clojure-lsp
+  (:only-if (my/lsp-p))
+  (:load-after lsp-mode)
+  (:when-loaded
+    (add-hook 'clojure-mode-hook #'lsp)
+    (add-hook 'clojurec-mode-hook #'lsp)
+    (add-hook 'clojurescript-mode-hook #'lsp))
+  )
 
 #+end_src
 
@@ -3463,7 +3522,7 @@ For config specific to outline-mode, check out [[*leader-o][leader-o]].
 
   ;; -- Emacs Lisp mode --
   (:with-hook emacs-lisp-mode-hook
-    (defvar my/emacs-lisp-outline-regexp "^\\(;;;+\\) .*"
+    (defvar my/emacs-lisp-outline-regexp "^\\(;;;+ .*\\|(\\)" ; "^\\(;;;+\\) .*"
       "The regexp to match for Elisp header comments.")
     (:hook (lambda ()
              (outline-indent-minor-mode)
@@ -3543,31 +3602,31 @@ For code-folding by indent, check out [[*Outline indent][Outline indent]].
 #+begin_src elisp
 
 (setup org
-  (:option org-directory "~/Notes/org"  ; default org directory
+  (:option
+   ;; default org directory
+   org-directory "~/Notes/org"
 
-           ;; Startup:
-           org-startup-folded 'showall ; default folding mode (def: 'showeverything)
-           org-startup-indented t      ; indent with heading depth
+   ;; Startup:
+   org-startup-folded 'showall     ; default folding mode (def: 'showeverything)
+   org-startup-indented t          ; indent body to heading depth
 
-           ;; UI
-           org-src-window-setup 'current-window ; edit src blocks in the same window
-           org-src-preserve-indentation t ; remove leading whitespace in src-blocks
-           org-tags-column -45            ; tag indent column
-           org-cycle-hide-drawer-startup t ; hide drawers
+   ;; UI
+   org-src-window-setup 'current-window ; edit src blocks in the same window
+   org-src-preserve-indentation t      ; remove leading whitespace in src-blocks
+   org-tags-column -45                 ; tag column
 
-           ;; Keyboard:
-           org-special-ctrl-a/e t       ; better C-a/C-e
-           org-return-follows-link t    ; RET can open links
+   ;; Keyboard:
+   org-return-follows-link t            ; RET can open links
+   org-special-ctrl-a/e t               ; dwim C-a/C-e
 
-           ;; Visual:
-           org-hide-emphasis-markers t  ; hide formatting chars (* / ~ = etc)
-           org-ellipsis                 ; custom ellipses when folded
-           " ‣"
-           ;; " ›"
-           ;; " …"
-           ;; " ⤵"
-           ;; " ▾"
-           )
+   ;; Visual:
+   org-hide-emphasis-markers t          ; hide formatting chars (* / ~ = etc)
+   org-ellipsis " ‣"                    ; folding indicator
+   ;; " ›"
+   ;; " …"
+   ;; " ⤵"
+   ;; " ▾"
+   )
   (:with-map org-mode-map
     (:bind "C-M-<return>"
            (defun +org-meta-ret-meta-right ()
@@ -3578,66 +3637,44 @@ For code-folding by indent, check out [[*Outline indent][Outline indent]].
 
 #+end_src
 
-** fonts
+** UI Tweaks
+
+*** org-bullets
 
 #+begin_src elisp
 
-(setup org
-  (:when-loaded
-    (defvar +org-fonts-alist
-      '((org-document-title :height 1.9 :weight bold)
-        (org-level-1 :height 1.7)
-        (org-level-2 :height 1.4)
-        (org-level-3 :height 1.15)
-        (org-level-4 :height 1.1)))
-
-    ;; (with-eval-after-load 'ef-themes
-    ;;   (setq ef-themes-headings +org-fonts-alist))
-
-    ;; (with-eval-after-load 'modus-themes
-    ;;   (setq modus-themes-headings +org-fonts-alist))
-
-    ;; (with-eval-after-load 'kaolin-themes
-    ;;   (setq kaolin-themes-org-scale-headings nil))
-
-    ;; for each FACE, if not yet set to target, set.
-    (defun +org-fonts-setup (&rest _args)
-      (interactive)
-      (when (eq major-mode 'org-mode)
-        (dolist (lst-face +org-fonts-alist)
-          (-let* (((t-face . t-args) lst-face)
-                  ;; form: '((t-attr (c-val t-val)) ...)
-                  (t-attr-c-t-val-alist
-                   (->> t-args
-                        (-partition 2)
-                        (-map (lambda (pair)
-                                (-let* (((t-attr t-val) pair)
-                                        (c-val (face-attribute t-face t-attr)))
-                                  (list t-attr (list c-val t-val)))))))
-                  ;; form: '(bool ...)
-                  (eq-c-t-lst
-                   (->> t-attr-c-t-val-alist
-                        (-map (lambda (pair)
-                                (-let (((t-attr (c-val t-val)) pair))
-                                  (equal c-val t-val))))))
-                  ;; form: '(bool ...)
-                  (eq-c-t-every?
-                   (-all? #'identity eq-c-t-lst)))
-            ;; if all cur eq target, then ok
-            (if eq-c-t-every?
-                (when debug-on-error
-                  (message "Log: ok: %S, %S" t-face t-attr-c-t-val-alist))
-              ;; else, set to target
-              (message "Log: setting: %S, %S" t-face t-attr-c-t-val-alist)
-              (apply #'set-face-attribute t-face nil t-args))))))
-
-    ;; (advice-add 'load-theme :after #'+org-fonts-setup)
-    ;; (add-hook 'org-mode-hook #'+org-fonts-setup)
-    ))
+;; TODO: replace with org-superstar
+(-setup org-bullets
+  (:hook-into org-mode-hook)
+  (:option org-bullets-bullet-list
+           '("◉"
+             "●"
+             "○"
+             "■"
+             "□"
+             "✦"
+             "✧"
+             "✿")))
 
 #+end_src
 
-** colorize NEXT face
+*** center text in window
+
+#+begin_src elisp
+
+(-setup visual-fill-column
+  (defvar my/org-center-text-enabled nil)
+  (with-eval-after-load 'org
+    (add-hook 'org-mode-hook
+              (defun +org-visual-fill ()
+                (when my/org-center-text-enabled
+                  (setq visual-fill-column-width 100
+                        visual-fill-column-center-text t)
+                  (visual-fill-column-mode 1))))))
+
+#+end_src
+
+*** colorize NEXT face
 
 #+begin_src elisp
 
@@ -3659,7 +3696,149 @@ For code-folding by indent, check out [[*Outline indent][Outline indent]].
 
 #+end_src
 
-** exclude "<" ">" matching like parens
+*** smooth image scrolling
+
+Slices rendered images in org files such that keyboard scrolling is smooth.
+
+#+begin_src elisp
+
+(-setup (image-slicing :host github :repo "ginqi7/image-slicing")
+  (:autoload image-slicing-mode)
+  (:hook-into org-mode-hook)
+  (:option image-slicing-newline-trailing-text nil))
+
+#+end_src
+
+*** fonts
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
+
+*TODO: use different font for org headings! same with italicized text?*
+
+#+begin_src elisp
+
+(setup org
+  (:when-loaded
+    (funcall
+     (defun my/org-fonts-setup ()
+       (setq my/org-fonts-alist
+             '((org-document-title 2.0 nil)
+               (org-level-1        1.7 t)
+               (org-level-2        1.5 t)
+               (org-level-3        1.2 t)
+               (org-level-4        1.1 nil)))
+       (setq my/ef-theme-fonts-alist
+             '((ef-themes-heading-0 2.0 nil)
+               (ef-themes-heading-1 1.7 t)
+               (ef-themes-heading-2 1.5 t)
+               (ef-themes-heading-3 1.2 t)
+               (ef-themes-heading-4 1.1 nil)))
+       (let ((font "-*-Ttyp0-regular-*-*-*-16-*-*-*-*-*-*-*"))
+         (dolist (pair my/org-fonts-alist)
+           (let ((f (nth 0 pair))
+                 (h (nth 1 pair))
+                 (o (nth 2 pair)))
+             (set-face-attribute f 'nil :font font :height h :overline o :inherit nil)
+             ))
+         (with-eval-after-load 'ef-themes
+           (dolist (pair my/ef-theme-fonts-alist)
+             (let ((font "-*-Ttyp0-regular-*-*-*-16-*-*-*-*-*-*-*")
+                   (f (nth 0 pair))
+                   (h (nth 1 pair))
+                   (o (nth 2 pair)))
+               (set-face-attribute f 'nil :font font :overline o :inherit nil)
+               ))))))))
+
+;; (with-eval-after-load 'ef-themes
+;;   (setq ef-themes-headings
+;;         '(;; (org-document-title . (2.0))
+;;           (1        . (default 1.7 overline))
+;;           (2        . (default 1.5 ))
+;;           (3        . (default 1.2 ))
+;;           (4        . (default 1.1)))))
+
+;; (setup org
+;;   :disabled
+
+;;   (:when-loaded
+;;     ;; (defvar +org-fonts-alist
+;;     ;;   '((org-document-title :height 1.9 :weight bold)
+;;     ;;     (org-level-1 :height 1.7)
+;;     ;;     (org-level-2 :height 1.4)
+;;     ;;     (org-level-3 :height 1.15)
+;;     ;;     (org-level-4 :height 1.1)))
+
+;;     ;; (with-eval-after-load 'ef-themes
+;;     ;;   (setq ef-themes-headings +org-fonts-alist))
+
+;;     ;; (with-eval-after-load 'modus-themes
+;;     ;;   (setq modus-themes-headings +org-fonts-alist))
+
+;;     ;; (with-eval-after-load 'kaolin-themes
+;;     ;;   (setq kaolin-themes-org-scale-headings nil))
+
+;;     ;; for each FACE, if not yet set to target, set.
+;;     ;; (defun +org-fonts-setup (&rest _args)
+;;     ;;   (interactive)
+;;     ;;   (when (eq major-mode 'org-mode)
+;;     ;;     (dolist (lst-face +org-fonts-alist)
+;;     ;;       (-let* (((t-face . t-args) lst-face)
+;;     ;;               ;; form: '((t-attr (c-val t-val)) ...)
+;;     ;;               (t-attr-c-t-val-alist
+;;     ;;                (->> t-args
+;;     ;;                     (-partition 2)
+;;     ;;                     (-map (lambda (pair)
+;;     ;;                             (-let* (((t-attr t-val) pair)
+;;     ;;                                     (c-val (face-attribute t-face t-attr)))
+;;     ;;                               (list t-attr (list c-val t-val)))))))
+;;     ;;               ;; form: '(bool ...)
+;;     ;;               (eq-c-t-lst
+;;     ;;                (->> t-attr-c-t-val-alist
+;;     ;;                     (-map (lambda (pair)
+;;     ;;                             (-let (((t-attr (c-val t-val)) pair))
+;;     ;;                               (equal c-val t-val))))))
+;;     ;;               ;; form: '(bool ...)
+;;     ;;               (eq-c-t-every?
+;;     ;;                (-all? #'identity eq-c-t-lst)))
+;;     ;;         ;; if all cur eq target, then ok
+;;     ;;         (if eq-c-t-every?
+;;     ;;             (when debug-on-error
+;;     ;;               (message "Log: ok: %S, %S" t-face t-attr-c-t-val-alist))
+;;     ;;           ;; else, set to target
+;;     ;;           (message "Log: setting: %S, %S" t-face t-attr-c-t-val-alist)
+;;     ;;           (apply #'set-face-attribute t-face nil t-args))))))
+
+;;     ;; (advice-add 'load-theme :after #'+org-fonts-setup)
+;;     ;; (add-hook 'org-mode-hook #'+org-fonts-setup)
+;;     ))
+
+#+end_src
+
+*** modernize interface (disabled)
+
+#+begin_src elisp
+
+(-setup org-modern :disabled
+        (:option org-modern-star nil)
+        (global-org-modern-mode 1))
+
+#+end_src
+
+** Behavior
+
+*** auto-gen TOC
+
+Auto-generate table of contents in org-mode buffers.
+
+#+begin_src elisp
+
+(-setup toc-org
+  (:hook-into org-mode-hook))
+
+#+end_src
+
+*** exclude "<" ">" matching
 
 If using parenthesis-matching modes, usually "<" and ">" are treated as matching pairs. This below excludes them.
 
@@ -3676,114 +3855,7 @@ If using parenthesis-matching modes, usually "<" and ">" are treated as matching
 
 #+end_src
 
-** syntax highlighting on org-latex exports
-
-#+begin_src elisp
-
-(setup org
-  (:option org-latex-src-block-backend 'minted
-           org-latex-minted-langs
-           '((python "python") (emacs-lisp "common-lisp") (cc "c++")
-             (shell-script "bash"))))
-#+end_src
-
-** org-toc
-
-Auto-generate table of contents in org-mode buffers.
-
-#+begin_src elisp
-
-(-setup toc-org
-  (:hook-into org-mode-hook))
-
-#+end_src
-
-** anki-editor
-
-#+begin_src elisp
-
-(-setup anki-editor
-  (:autoload anki-editor-push-note-at-point
-             anki-editor-push-notes
-             anki-editor-push-new-notes)
-  (:option anki-editor-latex-style 'mathjax)
-  (:when-loaded
-    (defun +ensure-anki-editor-mode (note)
-      "Ensure `anki-editor-mode' is enabled before pushing notes."
-      (unless anki-editor-mode
-        (anki-editor-mode 1)))
-    (advice-add #'anki-editor--push-note :before #'+ensure-anki-editor-mode)))
-
-#+end_src
-
-*** scripts
-
-#+begin_src elisp
-
-(defun +org-priority-to-anki ()
-  (interactive)
-  ;; check connection with anki
-  (unless (or (boundp 'anki-editor-mode) anki-editor-mode)
-    (anki-editor-mode 1))
-  (anki-editor-api-check)
-  ;; delete anki_note_type and/or anki_note_id for each w/o a priority
-  (save-excursion
-    (let ((points-no-priority
-           (org-ql-query
-            :select #'point-marker
-            :from (current-buffer)
-            :where
-            '(and (not (priority))
-                  (or (property "ANKI_NOTE_ID")
-                      (property "ANKI_NOTE_TYPE"))))))
-      (dolist (p (reverse points-no-priority))
-        (goto-char p)
-        (when (org-find-property "ANKI_NOTE_ID")
-          (anki-editor-delete-note-at-point))
-        (when (org-find-property "ANKI_NOTE_TYPE")
-          (org-delete-property "ANKI_NOTE_TYPE")))))
-  ;; ensure all priority headings have anki_note_type set
-  (save-excursion
-    (let ((points-yes-priority
-           (org-ql-query
-            :select #'point-marker
-            :from (current-buffer)
-            :where '(priority))))
-      (dolist (p (reverse points-yes-priority))
-        (goto-char p)
-        (unless (org-entry-get nil "ANKI_NOTE_TYPE")
-          (anki-editor-set-note-type nil "Basic"))))))
-
-#+end_src
-
-** org-tempo (Disabled)
-
-Generate src blocks by typing "<el" then press TAB (but replace "el" with anything).
-
-Usually, src blocks are created with =C-c C-,= or ~org-insert-structure-template~, but that can be slow and tedious.
-
-Disabled for now since [[tempel][tempel]] provides an ~src~ snippet.
-
-#+begin_src elisp
-
-(setup org-tempo
-  :disabled
-
-  (:load-after org)
-  (:when-loaded
-    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-    (add-to-list 'org-structure-template-alist '("py" . "src python"))
-    (add-to-list 'org-structure-template-alist '("gcc" . "src c"))
-    (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
-    (add-to-list 'org-structure-template-alist '("conf" . "src conf"))
-    (add-to-list 'org-structure-template-alist '("java" . "src java"))
-    (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
-    (add-to-list 'org-structure-template-alist '("clang" . "src c"))))
-
-#+end_src
-
-** auto-tangle
+*** tangle on save
 
 By adding:
 : #+auto_tangle: t
@@ -3796,73 +3868,72 @@ to the top of an org buffer, automatically tangle source blocks on save.
 
 #+end_src
 
-** image-slicing
+** Agenda
 
-Slices rendered images in org files such that keyboard scrolling is smooth.
+- org functionality (keywords, tags, etc)
+- agenda backend (files, etc)
+- agenda view (UI, etc)
+- agenda features
+- agenda profiles
+- agenda misc
 
-#+begin_src elisp
-
-(-setup (image-slicing :host github :repo "ginqi7/image-slicing")
-  (:autoload image-slicing-mode)
-  (:hook-into org-mode-hook)
-  (:option image-slicing-newline-trailing-text nil))
-
-#+end_src
-
-** Agenda (TODO: tweak, optimize workflow)
+*** backend
 
 #+begin_src elisp
 
 (setup org-agenda
   (:load-after org)
 
-  (:option org-enforce-todo-dependencies t ; DONE iff all subtasks are DONE
+  (:global "C-c o a" #'org-agenda)
 
-           ;; todo keywords
-           org-todo-keywords
-           `((sequence
-              "TODO(t)" "NEXT(n)" "PLAN(p)" "|" "DONE(d/!)"))
+  (:option
+   ;; agenda files
+   org-agenda-files
+   `("~/Notes/denote/20250728T235116--todo__todo.org")
 
-           ;; agenda files
-           org-agenda-files
-           `("~/Notes/denote/20250728T235116--todo__todo.org")
+   ;; mark DONE only if all subtasks are DONE
+   org-enforce-todo-dependencies t
 
-           ;; org tags
-           org-tag-alist
-           '(;; activities:
-             ("@task" . ?t)
-             ("@study" . ?s)
-             ;; type:
-             ("@ongoing" . ?o)
-             ;; classes:
-             ("@cs2" . ?S)
-             ("@bio" . ?B)
-             ("@calc2" . ?C)
-             ("@phy" . ?P))
+   ;; todo keywords
+   org-todo-keywords `((sequence
+                        "TODO(t)"
+                        "NEXT(n)"
+                        "PLAN(p)"
+                        "|"
+                        "DONE(d/!)"))
 
-           ;; format specification for agenda view
-           org-agenda-prefix-format
-           `((agenda
-              . ,(concat " %i %?-12t "
-                         "%-10(+org-get-prop-default) "
-                         "% s"))
-             (todo . " %i ")
-             ;; (tags . " %i %-12:c")
-             (tags . " %i ")
-             (search . " %c")))
+   ;; tags
+   org-tag-alist '(;; activities:
+                   ("@task" . ?t)
+                   ("@study" . ?s)
+                   ;; type:
+                   ("@ongoing" . ?o)
+                   ;; classes:
+                   ("@cs2" . ?S)
+                   ("@bio" . ?B)
+                   ("@calc2" . ?C)
+                   ("@phy" . ?P))))
 
-  (defun my/org-agenda-open-agenda-file ()
-    (interactive)
-    (find-file (car org-agenda-files)))
+#+end_src
 
-  (defun my/org-agenda-mark-as-done ()
-    (interactive)
-    (org-agenda-todo 'done))
+*** agenda view UI
 
-  (:global "C-c o a" #'org-agenda
-           "C-c o A" #'my/org-agenda-open-agenda-file)
-  (:with-map org-agenda-mode-map
-    (:bind ")" #'my/org-agenda-mark-as-done))
+#+begin_src elisp
+
+(setup org-agenda
+  (:load-after org)
+
+  (:option
+   ;; format specification for agenda view
+   org-agenda-prefix-format
+   `((agenda
+      . ,(concat " %i %?-12t "
+                 "%-10(+org-get-prop-default) "
+                 "% s"))
+     (todo . " %i ")
+     ;; (tags . " %i %-12:c")
+     (tags . " %i ")
+     (search . " %c")))
 
   ;; helper, used in var `org-agenda-prefix-format' above
   (defun +org-get-prop-default ()
@@ -3883,6 +3954,8 @@ Slices rendered images in org files such that keyboard scrolling is smooth.
                        (days-behind-result
                         (cond ((> days-behind 0)
                                (format "-%s" days-behind))
+                              ((= days-behind 0)
+                               (format " %s" days-behind))
                               (t
                                (format "+%s" (abs days-behind))))))
                  (list days-behind-result fraction)
@@ -3898,7 +3971,7 @@ Slices rendered images in org files such that keyboard scrolling is smooth.
                    (calendar-absolute-from-gregorian)))
                 (days-left
                  (- deadline-abs-day today-abs-day)))
-      days-left))
+      (1+ days-left)))
 
   (defun +org-get-prop (prop)
     (when (eq major-mode 'org-mode)
@@ -3908,7 +3981,31 @@ Slices rendered images in org files such that keyboard scrolling is smooth.
 
 #+end_src
 
-** org-habit
+*** workflow
+
+#+begin_src elisp
+
+(setup org-agenda
+  ;; -- open agenda file --
+
+  (defun my/org-agenda-open-agenda-file ()
+    (interactive)
+    (find-file (car org-agenda-files)))
+
+  (:global "C-c o A" #'my/org-agenda-open-agenda-file)
+
+  ;; -- mark as done --
+
+  (defun my/org-agenda-mark-as-done ()
+    (interactive)
+    (org-agenda-todo 'done))
+
+  (:with-map org-agenda-mode-map
+    (:bind ")" #'my/org-agenda-mark-as-done)))
+
+#+end_src
+
+*** org-habit
 
 #+begin_src elisp
 
@@ -3919,7 +4016,7 @@ Slices rendered images in org files such that keyboard scrolling is smooth.
 
 #+end_src
 
-** org-super-agenda
+*** org-super-agenda
 
 #+begin_src elisp
 
@@ -4087,7 +4184,7 @@ Slices rendered images in org files such that keyboard scrolling is smooth.
 
 #+end_src
 
-** org-ql (disabled)
+*** org-ql (disabled)
 
 #+begin_src elisp
 
@@ -4098,7 +4195,7 @@ Slices rendered images in org files such that keyboard scrolling is smooth.
 
 #+end_src
 
-** misc functions for org-agenda
+*** misc functions for org-agenda
 
 #+begin_src elisp
 
@@ -4234,34 +4331,48 @@ Slices rendered images in org files such that keyboard scrolling is smooth.
 
 #+end_src
 
-** org-noter
+** Workflow Optimization
+
+*** org-download
 
 #+begin_src elisp
 
-(-setup org-noter
+(-setup org-download
+  (:option org-download-image-dir "_images")
   (:load-after org)
-  (:global "C-c o n" #'org-noter
-           "C-c d n" #'org-noter-start-from-dired
-           "C-c o p" #'+org-noter-set-prop-current-page)
-  (:option org-noter-doc-split-fraction '(0.6 . 0.6))
   (:when-loaded
-    (defun +org-noter-set-prop-current-page (arg)
-      "Set the property `NOTER_PAGE' of the current org heading to the current noter page.
-The property will be removed if ran with a \\[universal-argument]."
-      (interactive "P")
-      (org-noter--with-selected-notes-window
-       (if (equal arg '(4))
-           (org-delete-property "NOTER_PAGE")
-         (when-let ((vec (org-noter--get-current-view))
-                    (num (and (vectorp vec)
-                              (> (length vec) 1)
-                              (format "%s" (aref vec 1)))))
-           (message "meow: %s" num)
-           (org-entry-put (point) "NOTER_PAGE" num)))))))
+    (org-download-enable)))
 
 #+end_src
 
-** org-capture (TODO)
+*** org-tempo (Disabled)
+
+Generate src blocks by typing "<el" then press TAB (but replace "el" with anything).
+
+Usually, src blocks are created with =C-c C-,= or ~org-insert-structure-template~, but that can be slow and tedious.
+
+Disabled for now since [[tempel][tempel]] provides an ~src~ snippet.
+
+#+begin_src elisp
+
+(setup org-tempo
+  :disabled
+
+  (:load-after org)
+  (:when-loaded
+    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("py" . "src python"))
+    (add-to-list 'org-structure-template-alist '("gcc" . "src c"))
+    (add-to-list 'org-structure-template-alist '("scm" . "src scheme"))
+    (add-to-list 'org-structure-template-alist '("conf" . "src conf"))
+    (add-to-list 'org-structure-template-alist '("java" . "src java"))
+    (add-to-list 'org-structure-template-alist '("unix" . "src conf-unix"))
+    (add-to-list 'org-structure-template-alist '("clang" . "src c"))))
+
+#+end_src
+
+*** org-capture (TODO)
 
 #+begin_src elisp
 
@@ -4298,65 +4409,104 @@ The property will be removed if ran with a \\[universal-argument]."
 
 #+end_src
 
-** org-download
+** External Interoperability
+
+*** anki-editor
 
 #+begin_src elisp
 
-(-setup org-download
-  (:option org-download-image-dir "_images")
-  (:load-after org)
+(-setup anki-editor
+  (:autoload anki-editor-push-note-at-point
+             anki-editor-push-notes
+             anki-editor-push-new-notes)
+  (:option anki-editor-latex-style 'mathjax)
   (:when-loaded
-    (org-download-enable)))
+    (defun +ensure-anki-editor-mode (note)
+      "Ensure `anki-editor-mode' is enabled before pushing notes."
+      (unless anki-editor-mode
+        (anki-editor-mode 1)))
+    (advice-add #'anki-editor--push-note :before #'+ensure-anki-editor-mode)))
 
 #+end_src
 
-** visual fill column
+**** scripts
 
 #+begin_src elisp
 
-(-setup visual-fill-column
-  (with-eval-after-load 'org
-    (add-hook 'org-mode-hook
-              (defun +org-visual-fill ()
-                (setq visual-fill-column-width 100
-                      visual-fill-column-center-text t)
-                (visual-fill-column-mode 1)))))
+(defun +org-priority-to-anki ()
+  (interactive)
+  ;; check connection with anki
+  (unless (or (boundp 'anki-editor-mode) anki-editor-mode)
+    (anki-editor-mode 1))
+  (anki-editor-api-check)
+  ;; delete anki_note_type and/or anki_note_id for each w/o a priority
+  (save-excursion
+    (let ((points-no-priority
+           (org-ql-query
+            :select #'point-marker
+            :from (current-buffer)
+            :where
+            '(and (not (priority))
+                  (or (property "ANKI_NOTE_ID")
+                      (property "ANKI_NOTE_TYPE"))))))
+      (dolist (p (reverse points-no-priority))
+        (goto-char p)
+        (when (org-find-property "ANKI_NOTE_ID")
+          (anki-editor-delete-note-at-point))
+        (when (org-find-property "ANKI_NOTE_TYPE")
+          (org-delete-property "ANKI_NOTE_TYPE")))))
+  ;; ensure all priority headings have anki_note_type set
+  (save-excursion
+    (let ((points-yes-priority
+           (org-ql-query
+            :select #'point-marker
+            :from (current-buffer)
+            :where '(priority))))
+      (dolist (p (reverse points-yes-priority))
+        (goto-char p)
+        (unless (org-entry-get nil "ANKI_NOTE_TYPE")
+          (anki-editor-set-note-type nil "Basic"))))))
+
 #+end_src
 
-** org-bullets
+** Zettelkasten
+
+*** org-noter
 
 #+begin_src elisp
 
-;; TODO: replace with org-superstar
-(-setup org-bullets
-  (:hook-into org-mode-hook)
-  (:option org-bullets-bullet-list
-           '("◉"
-             "●"
-             "○"
-             "■"
-             "□"
-             "✦"
-             "✧"
-             "✿")))
+(-setup org-noter
+  (:load-after org)
+  (:global "C-c o n" #'org-noter
+           "C-c d n" #'org-noter-start-from-dired
+           "C-c o p" #'+org-noter-set-prop-current-page)
+  (:option org-noter-doc-split-fraction '(0.6 . 0.6))
+  (:when-loaded
+    (defun +org-noter-set-prop-current-page (arg)
+      "Set the property `NOTER_PAGE' of the current org heading to the current noter page.
+The property will be removed if ran with a \\[universal-argument]."
+      (interactive "P")
+      (org-noter--with-selected-notes-window
+       (if (equal arg '(4))
+           (org-delete-property "NOTER_PAGE")
+         (when-let ((vec (org-noter--get-current-view))
+                    (num (and (vectorp vec)
+                              (> (length vec) 1)
+                              (format "%s" (aref vec 1)))))
+           (message "meow: %s" num)
+           (org-entry-put (point) "NOTER_PAGE" num)))))))
+
 #+end_src
 
-** org-modern (disabled)
+** Misc
 
-#+begin_src elisp
-
-(-setup org-modern :disabled
-        (:option org-modern-star nil)
-        (global-org-modern-mode 1))
-
-#+end_src
-
-** pomodoro
+*** pomodoro
 
 #+begin_src elisp
 
 (-setup org-pomodoro
   (:load-after org))
+
 #+end_src
 
 * Latex
@@ -4469,9 +4619,21 @@ The property will be removed if ran with a \\[universal-argument]."
 (-setup ox-typst
   (:load-after org))
 
+;;;; syntax highlighting on org-latex exports
+
+(setup org
+  (:option org-latex-src-block-backend 'minted
+           org-latex-minted-langs
+           '((python "python")
+             (emacs-lisp "common-lisp")
+             (cc "c++")
+             (shell-script "bash"))))
+
 #+end_src
 
 * Workspaces
+
+** Persp-mode
 
 #+begin_src elisp
 ;; NOTE: modify #'persp-save-state-to-file arg (keep-others-in-non-parametric-file 'yes)
@@ -4487,6 +4649,8 @@ The property will be removed if ran with a \\[universal-argument]."
 ;; TODO: share my hack to the discussions of persp-mode github?
 
 (-setup persp-mode
+  :disabled
+
   ;; keys
   (:global "C-c y" persp-key-map)
 
@@ -4518,7 +4682,7 @@ The property will be removed if ran with a \\[universal-argument]."
   (:when-loaded
     (set-persp-parameter 'dont-save-to-file t nil))
 
-;;;; consult integration
+  ;; -- consult integration --
 
   (defvar persp-consult-source
     (list :name     "Persp"
@@ -4560,7 +4724,7 @@ The property will be removed if ran with a \\[universal-argument]."
     (add-to-list 'consult-buffer-sources persp-rest-consult-source)
     (add-to-list 'consult-buffer-sources persp-consult-source))
 
-;;;; fix treemacs compatibility bug
+  ;; -- fix treemacs compatibility bug --
 
   ;; https://github.com/Alexander-Miller/treemacs/issues/1165
   ;; https://github.com/doomemacs/doomemacs/issues/8455
@@ -4569,7 +4733,7 @@ The property will be removed if ran with a \\[universal-argument]."
               (defun +persp-treemacs-bug-advice (orig-fun &rest args)
                 (funcall orig-fun (car-safe args))))
 
-;;;; load and switch to persp by name
+  ;; -- load and switch to persp by name --
 
   ;; helper
   (defun my-persp--get-non-loaded-names (&optional fname savelist)
@@ -4582,7 +4746,7 @@ The property will be removed if ran with a \\[universal-argument]."
                         available)))
       non-loaded))
 
-  ;; load name from savefile
+  ;; -- load name from savefile --
   (cl-defun my-persp-load-name-from-latest
       (&optional (fname persp-auto-save-fname)
                  (phash *persp-hash*)
@@ -4611,7 +4775,7 @@ The property will be removed if ran with a \\[universal-argument]."
             ;; switch to persp
             (persp-frame-switch name))))))
 
-;;;; merge persps when saving to file
+  ;; merge persps when saving to file
 
   ;; don't overwrite backup file with current; merge.
   (advice-add 'persp-save-state-to-file :around
@@ -4629,7 +4793,7 @@ The property will be removed if ran with a \\[universal-argument]."
                            fname phash respect-persp-file-parameter
                            keep-others-in-non-parametric-file))))
 
-;;;; delete persp from savefile
+  ;; -- delete persp from savefile --
 
   ;; delete persp from file
   (cl-defun my-persp-delete-name-from-latest
@@ -4870,12 +5034,20 @@ The property will be removed if ran with a \\[universal-argument]."
 ;;                 (persp-add-ibuffer-group)
 ;;                 (ibuffer-switch-to-saved-filter-groups "persp-mode"))))
 
-;;; Activities
+#+end_src
 
-(-setup activities :disabled
+** Activities
+
+#+begin_src elisp
+
+(-setup activities
+  ;; :disabled
+
   (:option
    ;; only show tab bar if more than 3 activities open
-   tab-bar-show 3)
+   tab-bar-show 3
+
+   )
 
   (activities-mode)
   (activities-tabs-mode)
@@ -4888,55 +5060,81 @@ The property will be removed if ran with a \\[universal-argument]."
     (let ((current-prefix-arg '(4)))
       (call-interactively #'activities-define)))
 
-  (defvar activities-mode-map
-    (let ((map (make-sparse-keymap)))
-      ;; Define keys in bulk
-      (dolist
-          (binding
-           '(;; create new activity name.
-             ("N" . activities-new)
-             ;; define new activity's default with current frame state.
-             ;; (prefix) define pre-existing activity' default with current frame state.
-             ("d" . +activities-define-existing)
-             ;; resume suspended activity
-             ;; (prefix) resume activity with default state.
-             ("." . +activities-resume-custom)
-             ;; ("s" . +activities-resume-custom)
-             ("s" . activities-resume)
-             ;; save and close activity.
-             ;; ("k" . activities-suspend)
-             ;; reset to default state and close activity.
-             ("c" . activities-kill)
-             ;; switch to an opened activity
-             ;; ("s" . activities-switch)
-             ;; permanently delete activity
-             ("k" . activities-discard)
-             ;; switch to a buffer in the current activity.
-             ("b" . activities-switch-buffer)
-             ;; revert activity to default state.
-             ("g" . activities-revert)
-             ;; list activities in vtable buffer
-             ("l" . activities-list)
-             ;; rename activity
-             ("R" . activities-rename)
-             ;; next tab
-             ("n" . tab-next)
-             ;; previous tab
-             ("p" . tab-previous)))
-        (define-key map (kbd (car binding)) (cdr binding)))
-      ;; set up autoloads
-      (let ((cmds (mapcar #'cdr (cdr map))))
-        (dolist (c cmds)
-          (unless (fboundp c)
-            (autoload c "activities" nil t))))
-      ;; return map
-      map))
+  (leader-bind
+    "y" '(:ignore t :wk "Workspaces")
+    "yN" '(activities-new :wk "new")
+    "yd" '(+activities-define-existing :wk "save-as-default")
+    "yy" '(+activities-resume-custom :wk "resume-unopened") ; prefix: with default
+    "ys" '(activities-resume :wk "resume")
+    ;; save and close activity.
+    ;; ("k" . activities-suspend)
+    ;; reset to default state and close activity.
+    "yc" '(activities-kill :wk "kill")
+    ;; switch to an opened activity
+    ;; ("s" . activities-switch)
+    ;; permanently delete activity
+    "yk" '(activities-discard :wk "delete")
+    ;; switch to a buffer in the current activity.
+    "yb" '(activities-switch-buffer :wk "switch-buffer")
+    ;; revert activity to default state.
+    "yg" '(activities-revert :wk "revert-to-default")
+    ;; list activities in vtable buffer
+    "yl" '(activities-list :wk "list-all")
+    ;; rename activity
+    "yR" '(activities-rename :wk "rename")
+    ;; next tab
+    "yn" '(tab-next :wk "next")
+    ;; previous tab
+    "yp" '(tab-previous :wk "previous"))
+
+  ;; (defvar activities-mode-map
+  ;;   (let ((map (make-sparse-keymap)))
+  ;;     ;; Define keys in bulk
+  ;;     (dolist
+  ;;         (binding
+  ;;          '(;; create new activity name.
+  ;;            ("N" . activities-new)
+  ;;            ;; define new activity's default with current frame state.
+  ;;            ;; (prefix) define pre-existing activity' default with current frame state.
+  ;;            ("d" . +activities-define-existing)
+  ;;            ;; resume suspended activity
+  ;;            ;; (prefix) resume activity with default state.
+  ;;            ("y" . +activities-resume-custom)
+  ;;            ;; ("s" . +activities-resume-custom)
+  ;;            ("s" . activities-resume)
+  ;;            ;; save and close activity.
+  ;;            ;; ("k" . activities-suspend)
+  ;;            ;; reset to default state and close activity.
+  ;;            ("c" . activities-kill)
+  ;;            ;; switch to an opened activity
+  ;;            ;; ("s" . activities-switch)
+  ;;            ;; permanently delete activity
+  ;;            ("k" . activities-discard)
+  ;;            ;; switch to a buffer in the current activity.
+  ;;            ("b" . activities-switch-buffer)
+  ;;            ;; revert activity to default state.
+  ;;            ("g" . activities-revert)
+  ;;            ;; list activities in vtable buffer
+  ;;            ("l" . activities-list)
+  ;;            ;; rename activity
+  ;;            ("R" . activities-rename)
+  ;;            ;; next tab
+  ;;            ("n" . tab-next)
+  ;;            ;; previous tab
+  ;;            ("p" . tab-previous)))
+  ;;       (define-key map (kbd (car binding)) (cdr binding)))
+  ;;     ;; set up autoloads
+  ;;     (let ((cmds (mapcar #'cdr (cdr map))))
+  ;;       (dolist (c cmds)
+  ;;         (unless (fboundp c)
+  ;;           (autoload c "activities" nil t))))
+  ;;     ;; return map
+  ;;     map))
 
   ;; bind map
-  (global-set-key (kbd "C-c .") activities-mode-map)
-  (global-set-key (kbd "C-c x") activities-mode-map)
+  ;; (global-set-key (kbd "C-c y") activities-mode-map)
 
-;;;; consult integration
+  ;; -- consult integration --
 
   (defun activities-local-buffer-p (buffer)
     "Returns non-nil if BUFFER is present in `activities-current'."
@@ -5135,12 +5333,13 @@ After evaluating, it suspends all non-current activities."
                    (equal current (car active-lst)))
           (warn "expected 1 elem of %s, got %S"
                 current (car active-lst))))))
-
-;;;;; misc
-
   )
 
-;;; Perspective
+#+end_src
+
+** Perspective
+
+#+begin_src elisp
 
 (-setup perspective
   :disabled
@@ -5190,7 +5389,22 @@ After evaluating, it suspends all non-current activities."
   ;;                         " -c tmux"))
   (:global "C-c i a" eat)
   (:with-map eat-semi-char-mode-map
-    (:bind "M-o" ace-window)))
+    (:bind "M-o" ace-window))
+  ;; fix for zsh integration
+  (:when-loaded
+    (:option eat-term-shell-integration-directory
+             (replace-regexp-in-string
+              "/straight/build/eat"
+              "/straight/repos/eat"
+              eat-term-shell-integration-directory
+              t                         ; fixedcase
+              t                         ; literal, replace last match only
+              )))
+  ;; (with-eval-after-load 'tramp
+  ;;   (defun eat-tramp ()
+  ;;     (interactive)
+  ;;     (let ((eat-shell "/usr/bin/env bash")))))
+  )
 
 (setup eshell
   (:global "C-c i e" eshell))
@@ -5220,83 +5434,77 @@ After evaluating, it suspends all non-current activities."
 
 * UI
 
+** fonts
+
 #+begin_src elisp
-;;; +ui.el --- ui improvements                       -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2025  lispcat
-
-;; Author: lispcat <187922791+lispcat@users.noreply.github.com>
-;; Keywords: local
-
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
-
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-;;; Commentary:
-
-;; UI improvements.
-
-;;; Code:
 
 ;;;; Fontconfig
 
 ;; https://devfonts.gafi.dev/
 
-(defun +fontconfig ()
-  (set-face-attribute
-   'default nil :font
-   ;; "Hack"
-   ;; "-Misc-TamzenForPowerline-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1"
-   ;; "-UW  -Ttyp0-regular-normal-normal-*-17-*-*-*-m-*-iso8859-1"
-   ;; "-UW-Ttyp0-bold-normal-normal-*-17-*-*-*-c-90-iso8859-1"
-   ;; "-UW  -Ttyp0-regular-normal-normal-*-16-*-*-*-m-*-iso8859-1"
-   ;; "-UW  -Ttyp0-regular-italic-normal-*-16-*-*-*-m-*-iso10646-1"
-   ;; "-AW-Greybeard 16px-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1"
-   ;; "Fira Code"
-   ;; "Maple Mono"
-   ;; "Jetbrains Mono"
-   ;; "Iosevka"
-   ;; "Iosevka-11"
-   ;; "Iosevka-11"
-   ;; "Iosevka Custom"
-   "Iosevka Custom-11"
-   ;; "Iosevka NFM-11"
-   ;; "Iosevka NFP-11"
-   ;; "Iosevka Extended"
-   ;; "Aporetic Sans Mono"
-   ;; "Aporetic Sans Mono-11"
-   ;; "Aporetic Serif Mono"
-   ;; "Aporetic Serif Mono-11"
-   ;; "Rec Mono Casual"
-   ;; "Rec Mono Duotone"
-   ;; "Rec Mono Linear"
-   ;; "Rec Mono Semicasual"
-   ;; "Recursive"
-   ;; "Recursive Mn Csl St"
-   ;; "Recursive Mn Lnr St"
-   )
-  (set-face-attribute
-   'variable-pitch nil :font
-   ;; "Aporetic Sans-11"
-   ;; "Aporetic Serif-11"
-   ;; "Iosevka-11"
-   ;; "Iosevka NFP-13"
-   ;; "Iosevka Custom"
-   "Iosevka Custom-11"
-   ;; "Recursive Sn Csl St"
-   ;; "Recursive Sn Lnr St"
-   ))
+(progn
+  (defun +fontconfig ()
+    (set-face-attribute
+     'default nil :font
+     ;; "-*-tamzenforpowerline-medium-*-*-*-20-*-*-*-*-*-*-*"
+     "-*-tamzenforpowerline-regular-*-*-*-16-*-*-*-*-*-*-*"
+     ;; "-*-Ttyp0-regular-*-*-*-17-*-*-*-*-*-*-*"
+     ;; "-*-profont-*-*-*-*-15-*-*-*-*-*-*-*"
+     ;; "-*-Zpix-*-*-*-*-15-*-*-*-*-*-*-*"
 
-(+fontconfig)
+
+     ;; "-*-Greybeard 17px-*-*-*-*-*-*-*-*-*-*-*-*"
+
+     ;; "-Misc-TamzenForPowerline-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1"
+     ;; "-UW  -Ttyp0-regular-normal-normal-*-17-*-*-*-m-*-iso8859-1"
+     ;; "-UW-Ttyp0-bold-normal-normal-*-17-*-*-*-c-90-iso8859-1"
+     ;; "-UW  -Ttyp0-regular-normal-normal-*-16-*-*-*-m-*-iso8859-1"
+     ;; "-UW  -Ttyp0-regular-italic-normal-*-16-*-*-*-m-*-iso10646-1"
+     ;; "-AW-Greybeard 16px-regular-normal-normal-*-16-*-*-*-c-80-iso10646-1"
+     ;; "Fira Code"
+     ;; "Maple Mono"
+     ;; "Jetbrains Mono"
+     ;; "Hack"
+     ;; "Iosevka"
+     ;; "Iosevka-11"
+     ;; "Iosevka-11"
+     ;; "Iosevka Custom"
+     ;; "Iosevka Custom-11" ;;; PREV
+     ;; "Iosevka NFM-11"
+     ;; "Iosevka NFP-11"
+     ;; "Iosevka Extended"
+     ;; "Aporetic Sans Mono"
+     ;; "Aporetic Sans Mono-11"
+     ;; "Aporetic Serif Mono"
+     ;; "Aporetic Serif Mono-11"
+     ;; "Rec Mono Casual"
+     ;; "Rec Mono Duotone"
+     ;; "Rec Mono Linear"
+     ;; "Rec Mono Semicasual"
+     ;; "Recursive"
+     ;; "Recursive Mn Csl St"
+     ;; "Recursive Mn Lnr St"
+     )
+    (set-face-attribute
+     'variable-pitch nil :font
+     ;; "Aporetic Sans-11"
+     ;; "Aporetic Serif-11"
+     ;; "Iosevka-11"
+     ;; "Iosevka NFP-13"
+     ;; "Iosevka Custom"
+     ;; "Iosevka Custom-11" ;;; PREV
+     "-*-tamzenforpowerline-regular-*-*-*-16-*-*-*-*-*-*-*"
+     ;; "-*-Ttyp0-regular-*-*-*-16-*-*-*-*-*-*-*"
+     ;; "Recursive Sn Csl St"
+     ;; "Recursive Sn Lnr St"
+     )
+
+    ;; fallback for unicode
+    (set-fontset-font t 'unicode
+                      (font-spec :name "-*-unifont-regular-*-*-*-16-*-*-*-*-*-*-*")
+                      nil 'append))
+
+  (+fontconfig))
 
 ;; Hack: fix bitmap fonts on emacsclient frames
 (add-hook 'server-after-make-frame-hook #'+fontconfig)
@@ -5304,6 +5512,12 @@ After evaluating, it suspends all non-current activities."
 ;; enable variable-pitch-mode by default in org-mode
 (with-eval-after-load 'org
   (add-hook 'org-mode-hook #'variable-pitch-mode))
+
+#+end_src
+
+** all the icons
+
+#+begin_src elisp
 
 ;;;; All the icons
 
@@ -5317,6 +5531,12 @@ After evaluating, it suspends all non-current activities."
     (set-fontset-font t 'unicode (font-spec :family "github-octicons") nil 'append)
     (set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'append)
     (set-fontset-font t 'unicode (font-spec :family "Weather Icons") nil 'append)))
+
+#+end_src
+
+** ligatures
+
+#+begin_src elisp
 
 ;;;; Ligatures
 
@@ -5352,6 +5572,12 @@ After evaluating, it suspends all non-current activities."
   ;; per mode with `ligature-mode'.
   (global-ligature-mode t))
 
+#+end_src
+
+** themes
+
+#+begin_src elisp
+
 ;;;; Themes
 
 ;;;;; Function: sets a random theme.
@@ -5378,6 +5604,7 @@ After evaluating, it suspends all non-current activities."
 ;; fav themes:
 ;; - ef-owl
 ;; - ef-dream
+;; - doom-feather-dark
 
 (-setup kaolin-themes
   (:require-self))
@@ -5396,6 +5623,12 @@ After evaluating, it suspends all non-current activities."
            "C-c T r" +set-random-theme)
   (:when-loaded
     (+set-random-theme)))
+
+#+end_src
+
+** transparency
+
+#+begin_src elisp
 
 ;;;; Transparency
 
@@ -5429,6 +5662,12 @@ After evaluating, it suspends all non-current activities."
   (when (+native-transparency-supported?)
     (set-frame-parameter (selected-frame) 'alpha-background value)))
 
+#+end_src
+
+** line numbers
+
+#+begin_src elisp
+
 ;;;; Line numbers
 
 ;; list of programming modes to disable line-numbers on
@@ -5442,10 +5681,22 @@ After evaluating, it suspends all non-current activities."
 
 (setq display-line-numbers-type 'relative)
 
+#+end_src
+
+** visual line mode
+
+#+begin_src elisp
+
 ;;;; Visual line mode
 
 (global-visual-line-mode 1)
 (diminish 'visual-line-mode) ; hide "Wrap" in mode-line
+
+#+end_src
+
+** show whitespace
+
+#+begin_src elisp
 
 ;;;; show whitespace
 
@@ -5465,6 +5716,12 @@ After evaluating, it suspends all non-current activities."
   (add-hook 'org-mode-hook #'+org-mode-whitespace)
   (add-hook 'text-mode-hook #'+org-mode-whitespace))
 
+#+end_src
+
+** solaire mode
+
+#+begin_src elisp
+
 ;;;; Solaire mode
 
 ;; (leaf solaire-mode
@@ -5476,6 +5733,12 @@ After evaluating, it suspends all non-current activities."
 
 ;;   (solaire-global-mode +1))
 
+#+end_src
+
+** spacious padding
+
+#+begin_src elisp
+
 ;;;; Spacious padding
 
 (-setup spacious-padding
@@ -5486,6 +5749,12 @@ After evaluating, it suspends all non-current activities."
            (plist-put spacious-padding-widths :mode-line-width 0))
   ;; (spacious-padding-mode 1)
   )
+
+#+end_src
+
+** mode line
+
+#+begin_src elisp
 
 ;;;; Mode-line
 
@@ -5612,106 +5881,108 @@ After evaluating, it suspends all non-current activities."
 
 ;;;;; Doom Modeline
 
-(-setup doom-modeline :disabled
-        ;; configuration
-        (setq doom-modeline-height 30
-              doom-modeline-modal-icon t
-              doom-modeline-icon t
-              doom-modeline-persp-icon nil
-              doom-modeline-bar-width 4
-              )
-
-        (add-hook 'after-init-hook #'doom-modeline-mode)
-
-        (:when-loaded
-          ;; hide bar
-          (set-face-attribute 'mode-line-inactive nil
-                              :foreground (face-background 'mode-line-inactive))
-
-          ;; custom modeline
-          (doom-modeline-def-modeline 'my-line
-            '(eldoc
-              bar
-              window-state
-              workspace-name
-              window-number
-              modals
-              matches
-              follow
-              buffer-info
-              remote-host
-              buffer-position
-              word-count
-              parrot
-              selection-info)
-            '(compilation
-              objed-state
-              misc-info
-              project-name
-              persp-name
-              battery
-              grip irc
-              mu4e
-              gnus
-              github
-              debug
-              repl
-              lsp
-              minor-modes
-              input-method
-              indent-info
-              ;; buffer-encoding
-              major-mode
-              process
-              vcs
-              check
-              time))
-          ;; enable
-          (add-hook 'doom-modeline-mode-hook
-                    (lambda ()
-                      (doom-modeline-set-modeline 'my-line 'default))))
-
-        ;; (:option doom-modeline-height 30
-        ;;          doom-modeline-icon nil)
-
-        ;; (:when-loaded
-        ;;   ;; custom modeline
-        ;;   (doom-modeline-def-modeline 'my-simple-line
-        ;;     '(eldoc window-state workspace-name window-number modals matches follow buffer-info remote-host buffer-position word-count parrot selection-info)
-        ;;     '(compilation objed-state misc-info project-name persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs check time))
-
-        ;;   ;; set
-        ;;   (add-hook 'doom-modeline-mode-hook
-        ;;             (lambda ()
-        ;;               (doom-modeline-set-modeline 'my-simple-line 'default)))
-
-        ;;   ;; enable
-        ;;   ;; (doom-modeline-mode 1)
-        ;;   )
-        ;; (setq-default header-line-format '("%e" (:eval (doom-modeline-format--main))))
-        ;; (setq-default mode-line-format nil)
-        ;; (add-hook 'doom-modeline-mode-hook
-        ;;           (lambda ()
-        ;;             (setq-default mode-line-format nil)
-        ;;             (dolist (buf (buffer-list))
-        ;;               (with-current-buffer buf
-        ;;                 (when mode-line-format
-        ;;                   (setq mode-line-format nil))))))
-
-        ;; (add-hook '+after-enable-theme-hook
-        ;;           (lambda ()
-        ;;             (unless mode-line-format
-        ;;               (setq-default mode-line-format nil))))
-
-        ;; :config
-        ;; (setq doom-modeline-modal-icon nil)
-        ;; (dolist (pair '((doom-modeline-vcs-default . "purple")
-        ;;                 (doom-modeline-vcs . "purple")
-        ;;                 (doom-modeline-meow-normal-state . "DarkOrchid4")))
-        ;;   (let ((face (car pair))
-        ;;         (color (cdr pair)))
-        ;;     (set-face-attribute face nil :foreground color)))
+(-setup doom-modeline
+  ;; configuration
+  (setq doom-modeline-height 30
+        doom-modeline-modal-icon t
+        doom-modeline-icon t
+        doom-modeline-persp-icon nil
+        doom-modeline-bar-width 4
         )
+
+  (add-hook 'after-init-hook #'doom-modeline-mode)
+
+  (:when-loaded
+    ;; hide bar
+    (set-face-attribute 'mode-line-inactive nil
+                        :foreground (face-background 'mode-line-inactive))
+
+    ;; custom modeline
+    (doom-modeline-def-modeline 'my-line
+      '(eldoc
+        bar
+        window-state
+        workspace-name
+        window-number
+        modals
+        matches
+        follow
+        buffer-info
+        remote-host
+        buffer-position
+        word-count
+        parrot
+        selection-info)
+      '(compilation
+        objed-state
+        misc-info
+        project-name
+        persp-name
+        battery
+        grip irc
+        mu4e
+        gnus
+        github
+        debug
+        repl
+        lsp
+        minor-modes
+        input-method
+        indent-info
+        ;; buffer-encoding
+        major-mode
+        process
+        vcs
+        check
+        time))
+    ;; enable
+    (add-hook 'doom-modeline-mode-hook
+              (lambda ()
+                ;; (doom-modeline-set-modeline 'my-line 'default)
+                (doom-modeline-set-modeline 'main 'default)
+                )))
+
+  ;; (:option doom-modeline-height 30
+  ;;          doom-modeline-icon nil)
+
+  ;; (:when-loaded
+  ;;   ;; custom modeline
+  ;;   (doom-modeline-def-modeline 'my-simple-line
+  ;;     '(eldoc window-state workspace-name window-number modals matches follow buffer-info remote-host buffer-position word-count parrot selection-info)
+  ;;     '(compilation objed-state misc-info project-name persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs check time))
+
+  ;;   ;; set
+  ;;   (add-hook 'doom-modeline-mode-hook
+  ;;             (lambda ()
+  ;;               (doom-modeline-set-modeline 'my-simple-line 'default)))
+
+  ;;   ;; enable
+  ;;   ;; (doom-modeline-mode 1)
+  ;;   )
+  ;; (setq-default header-line-format '("%e" (:eval (doom-modeline-format--main))))
+  ;; (setq-default mode-line-format nil)
+  ;; (add-hook 'doom-modeline-mode-hook
+  ;;           (lambda ()
+  ;;             (setq-default mode-line-format nil)
+  ;;             (dolist (buf (buffer-list))
+  ;;               (with-current-buffer buf
+  ;;                 (when mode-line-format
+  ;;                   (setq mode-line-format nil))))))
+
+  ;; (add-hook '+after-enable-theme-hook
+  ;;           (lambda ()
+  ;;             (unless mode-line-format
+  ;;               (setq-default mode-line-format nil))))
+
+  ;; :config
+  ;; (setq doom-modeline-modal-icon nil)
+  ;; (dolist (pair '((doom-modeline-vcs-default . "purple")
+  ;;                 (doom-modeline-vcs . "purple")
+  ;;                 (doom-modeline-meow-normal-state . "DarkOrchid4")))
+  ;;   (let ((face (car pair))
+  ;;         (color (cdr pair)))
+  ;;     (set-face-attribute face nil :foreground color)))
+  )
 
 (-setup doom-modeline
   (:require-self))
@@ -5978,6 +6249,12 @@ After evaluating, it suspends all non-current activities."
 
 ;;   (force-mode-line-update))
 
+#+end_src
+
+** scroll
+
+#+begin_src elisp
+
 ;;;; Scroll
 
 ;; Improve scroll
@@ -6002,6 +6279,12 @@ After evaluating, it suspends all non-current activities."
            ;; auto-window-vscroll nil ; TODO: what does this do?
            ))
 
+#+end_src
+
+** dashboard
+
+#+begin_src elisp
+
 ;;;; Dashboard
 
 (-setup dashboard
@@ -6021,14 +6304,27 @@ After evaluating, it suspends all non-current activities."
                   (dashboard-insert-startupify-lists)
                   (dashboard-initialize))))))
 
+#+end_src
+
+** prettify symbols
+
+#+begin_src elisp
+
 ;;;; prettify symbols
 
 (setup prog-mode
   (global-prettify-symbols-mode 1))
 
+#+end_src
+
+** fun
+
+#+begin_src elisp
+
 ;;;; fireplace
 
 (-setup fireplace)
+
 #+end_src
 
 ** leader-T
@@ -6048,7 +6344,8 @@ A hook that runs after enabling a theme.
 #+begin_src elisp
 
 (setup emacs
-  (defvar my/load-theme-hook nil)
+  (defvar my/load-theme-hook
+    '(my/org-fonts-setup))
 
   (defun my/run-load-theme-hook (&rest _args)
     (run-hooks 'my/load-theme-hook))
@@ -6079,6 +6376,7 @@ A hook that runs after enabling a theme.
 (-setup simple-httpd)
 
 (-setup impatient-mode)
+
 #+end_src
 
 * To-sort
@@ -6632,7 +6930,8 @@ a buffer-local variable `emms-playlistedit-orig-path'."
     (setq denote-rename-buffer-format "%t%b %k")
     ;; (setq denote-rename-buffer-format "%D")
     (setq denote-rename-buffer-backlinks-indicator " :")
-    (setq denote-buffer-name-prefix "<D> ")
+    ;; (setq denote-buffer-name-prefix "<D> ")
+    (setq denote-buffer-name-prefix "[D] ")
     (denote-rename-buffer-mode 1)
 
     ;; dired fontify
@@ -6802,3 +7101,20 @@ a buffer-local variable `emms-playlistedit-orig-path'."
 ;;   "nNn" 'denote
 ;;   "")
 #+end_src
+Saturday   17 January 2026
+
+ DUE TODAY
+   [ 0] 0/1   Deadline:   TODO set up notes and begin writing (30m) :todo:@physics::
+   [ 0] 0/1   Deadline:   TODO Quiz 1 - intro to OS/process (1h) :todo:@systems::
+   [ 0] 0/1   Deadline:   TODO Discussion post (30m)      :todo:@software::
+
+ TODAY'S WORK
+   [ 0] 0/2   In   1 d.:  TODO 1.1 hmwk (2hrs)              :todo:@matrix::
+   [-1] 0/4   In   2 d.:  TODO 1.2 hmwk (4hrs)              :todo:@matrix::
+   [-1] 0/4   In   2 d.:  TODO Part 1 of SQL setup (2h)   :todo:@software::
+   [ 0] 0/4   In   3 d.:  TODO 1.3 hmwk (4hrs)              :todo:@matrix::
+
+ Habit
+   [  ] _/_   TODO subahibi                             :todo::
+   [  ] _/_   TODO draw                                 :todo::
+   [  ] _/_   TODO music                                :todo::

@@ -4,7 +4,7 @@
 
 ;; settings
 
-(setq gc-cons-threshold (* 50 1000 1000)) ; gc freq
+(setq gc-cons-threshold (* 50 1000 1000)) ; lower gc freq
 (setq package-enable-at-startup nil)      ; dont load package.el
 
 ;; dir vars
@@ -55,6 +55,7 @@
         (fullscreen . maximized)        ; TODO: ???
         (left-fringe)                   ; set left fringe
         (right-fringe)                  ; set right fringe
+        (undecorated . t) ; fix river bar at top issue
         ))
 
 ;; transparency
