@@ -2843,14 +2843,14 @@ https://github.com/clojure-emacs/clojure-mode
   (:when-loaded
     (add-hook 'clojure-mode-hook #'subword-mode)))
 
-(-setup clojure-lsp
-  (:only-if (my/lsp-p))
-  (:load-after lsp-mode)
-  (:when-loaded
-    (add-hook 'clojure-mode-hook #'lsp)
-    (add-hook 'clojurec-mode-hook #'lsp)
-    (add-hook 'clojurescript-mode-hook #'lsp))
-  )
+;; (-setup clojure-lsp
+;;   (:only-if (my/lsp-p))
+;;   (:load-after lsp-mode)
+;;   (:when-loaded
+;;     (add-hook 'clojure-mode-hook #'lsp)
+;;     (add-hook 'clojurec-mode-hook #'lsp)
+;;     (add-hook 'clojurescript-mode-hook #'lsp))
+;;   )
 
 #+end_src
 

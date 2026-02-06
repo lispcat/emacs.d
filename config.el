@@ -2061,14 +2061,14 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (:when-loaded
     (add-hook 'clojure-mode-hook #'subword-mode)))
 
-(-setup clojure-lsp
-  (:only-if (my/lsp-p))
-  (:load-after lsp-mode)
-  (:when-loaded
-    (add-hook 'clojure-mode-hook #'lsp)
-    (add-hook 'clojurec-mode-hook #'lsp)
-    (add-hook 'clojurescript-mode-hook #'lsp))
-  )
+;; (-setup clojure-lsp
+;;   (:only-if (my/lsp-p))
+;;   (:load-after lsp-mode)
+;;   (:when-loaded
+;;     (add-hook 'clojure-mode-hook #'lsp)
+;;     (add-hook 'clojurec-mode-hook #'lsp)
+;;     (add-hook 'clojurescript-mode-hook #'lsp))
+;;   )
 ;; Clojure:1 ends here
 
 ;; [[file:Config.org::*Nix][Nix:1]]
