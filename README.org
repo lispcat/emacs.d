@@ -4,7 +4,6 @@
 * Table of Contents :TOC_2:
 - [[#preface][Preface]]
 - [[#acknowledgments][Acknowledgments]]
-- [[#notes][Notes]]
 
 * Preface
 
@@ -15,11 +14,8 @@ This is my full Emacs configuration.
 - 5 years in the making.
 - The full literate configuration is available here: [[file:Config.org]].
 
+- Note that this repo is no longer maintained. I've migrated the project to here [TODO]. The new one does not use a literate configuration, which greatly increases maintainability and hackability, but at the cost of reduced readability. This repo will be kept primarily for others who wish to read and take inspiration from my configuration.
+
 * Acknowledgments
 
 - TODO: add inspirations: systemcrafters, etc
-
-* Notes
-
-- TODO: completion: TAB for complete, use fuzzy completion style
-

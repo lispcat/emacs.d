@@ -82,7 +82,7 @@
     - [[#company-disabled][Company (Disabled)]]
   - [[#templates][templates]]
     - [[#tempel][Tempel]]
-    - [[#yasnippet-disabled][Yasnippet (Disabled)]]
+    - [[#yasnippet][Yasnippet]]
   - [[#cape][Cape]]
   - [[#hippie-expand][Hippie-expand]]
   - [[#isearch-todo-move][Isearch (TODO: move)]]
@@ -153,6 +153,8 @@
     - [[#org-noter][org-noter]]
   - [[#misc-1][Misc]]
     - [[#pomodoro][pomodoro]]
+  - [[#flashcards][Flashcards]]
+    - [[#org-srs][org-srs]]
 - [[#latex][Latex]]
 - [[#workspaces][Workspaces]]
   - [[#persp-mode][Persp-mode]]
@@ -261,7 +263,7 @@ Below, I do the following:
 
 ;; transparency
 
-(let ((value 95))
+(let ((value 100))
   (unless (assoc 'alpha-background default-frame-alist)
     (add-to-list 'default-frame-alist
                  `(alpha-background . ,value))))
@@ -2059,17 +2061,15 @@ Disabled in favor of [[corfu][corfu]].
 
 #+end_src
 
-*** Yasnippet (Disabled)
+*** Yasnippet
 
 TODO: [[https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for-yasnippets-when-using-eglot][on yasnippet x eglot integration]]
 
 #+begin_src elisp
 
-(-setup yasnippet-snippets
-  :disabled)
+(-setup yasnippet-snippets)
 
 (-setup yasnippet
-  :disabled
 
   (:require-self)
   (:diminish yas-minor-mode)
@@ -2093,9 +2093,8 @@ TODO: [[https://stackoverflow.com/questions/72601990/how-to-show-suggestions-for
 ;; may cause freezing?
 ;; using cape, lsp + yasnippet capf
 
-;; (-setup yasnippet-capf
-;;   :disabled
-;;   (:load-after yasnippet))
+(-setup yasnippet-capf
+  (:load-after yasnippet))
 
 #+end_src
 
@@ -2221,7 +2220,7 @@ TODO: tweak, verify it works
              (message "Debug: capf local default: %S" my/capf-local-default)
              (message "Debug: capf now: %S" completion-at-point-functions)))
          (my/capf-prepend-local
-          (list (cape-capf-super ;; #'yasnippet-capf
+          (list (cape-capf-super #'yasnippet-capf
                  #'tempel-expand
                  #'cape-keyword)))
          (when debug-on-error
@@ -3647,15 +3646,22 @@ For code-folding by indent, check out [[*Outline indent][Outline indent]].
 (-setup org-bullets
   (:hook-into org-mode-hook)
   (:option org-bullets-bullet-list
-           '("◉"
+           '(
+             ;; "✦"
+             ;; "❖"
+             "✧"
+             "❍"
+             ;; "✿"
+             ;; "◉"
              "●"
              "○"
              "■"
              "□"
-             "✦"
-             "✧"
-             "✿")))
+             "⊹"
+             "⊱"
+             )))
 
+;; ⋄  ·  ˚  ∘  ❖  ❍  ⊹  ⊱
 #+end_src
 
 *** center text in window
@@ -3722,6 +3728,9 @@ Slices rendered images in org files such that keyboard scrolling is smooth.
   (:when-loaded
     (funcall
      (defun my/org-fonts-setup ()
+       ;; (let ((font "-*-Ttyp0-regular-*-*-*-16-*-*-*-*-*-*-*"))
+       ;;   (set-face-attribute 'org-level-1 nil :font font :height 1.7)):inherit nil
+
        (setq my/org-fonts-alist
              '((org-document-title 2.0 nil)
                (org-level-1        1.7 t)
@@ -3739,7 +3748,7 @@ Slices rendered images in org files such that keyboard scrolling is smooth.
            (let ((f (nth 0 pair))
                  (h (nth 1 pair))
                  (o (nth 2 pair)))
-             (set-face-attribute f 'nil :font font :height h :overline o :inherit nil)
+             (set-face-attribute f 'nil :font font :height h :overline o)
              ))
          (with-eval-after-load 'ef-themes
            (dolist (pair my/ef-theme-fonts-alist)
@@ -3747,7 +3756,7 @@ Slices rendered images in org files such that keyboard scrolling is smooth.
                    (f (nth 0 pair))
                    (h (nth 1 pair))
                    (o (nth 2 pair)))
-               (set-face-attribute f 'nil :font font :overline o :inherit nil)
+               (set-face-attribute f 'nil :font font :overline o)
                ))))))))
 
 ;; (with-eval-after-load 'ef-themes
@@ -4506,6 +4515,23 @@ The property will be removed if ran with a \\[universal-argument]."
 
 (-setup org-pomodoro
   (:load-after org))
+
+#+end_src
+
+** Flashcards
+
+*** org-srs
+
+#+begin_src elisp
+
+(setup (:pkg org-srs)
+  (:require-self)
+  (add-hook 'org-mode #'org-srs-embed-overlay-mode)
+  (:with-map org-mode-map
+    (:bind "<f5>" org-srs-review-rate-easy
+           "<f6>" org-srs-review-rate-good
+           "<f7>" org-srs-review-rate-hard
+           "<f8>" org-srs-review-rate-again)))
 
 #+end_src
 
@@ -5605,6 +5631,7 @@ After evaluating, it suspends all non-current activities."
 ;; - ef-owl
 ;; - ef-dream
 ;; - doom-feather-dark
+;; - modus-vivendi-deuteranopia
 
 (-setup kaolin-themes
   (:require-self))
@@ -5703,10 +5730,27 @@ After evaluating, it suspends all non-current activities."
 (setup whitespace
   (:diminish whitespace-mode)
   (:option whitespace-trailing 'whitespace-hspace)
+  (:when-loaded
+    (add-hook 'my/load-theme-hook
+              (defun my/whitespace-bg-theme-fix ()
+                (set-face-attribute 'whitespace-tab nil :background 'unspecified))))
 
   (defvar +base-whitespace-style '(face trailing tabs missing-newline-at-eof))
   (defun +prog-mode-whitespace ()
     (setq whitespace-style (append +base-whitespace-style '(tab-mark)))
+    ;; (setq whitespace-style (append +base-whitespace-style '(tab)))
+    (setq whitespace-display-mappings
+          `((space-mark 32 [183] [46]) (space-mark 160 [164] [95])
+            (newline-mark 10 [36 10]) (tab-mark 9 [
+                                                   ,?·
+                                                   ;; ,?˙
+                                                   ;; ,?ˍ
+                                                   ;; ,?▁
+                                                   ;; ,?̲
+                                                   ;; ,?»
+                                                   ;; ,?▄
+                                                   9]
+                                                [92 9])))
     (whitespace-mode 1))
   (defun +org-mode-whitespace ()
     (setq whitespace-style (append +base-whitespace-style '()))
@@ -5882,6 +5926,7 @@ After evaluating, it suspends all non-current activities."
 ;;;;; Doom Modeline
 
 (-setup doom-modeline
+  :disabled
   ;; configuration
   (setq doom-modeline-height 30
         doom-modeline-modal-icon t
@@ -5993,7 +6038,13 @@ After evaluating, it suspends all non-current activities."
 
 (-setup mood-line
   (:require-self)
-  ;; (mood-line-mode 1) ;; DISABLED
+  (mood-line-mode 1)
+  (setq mood-line-glyph-alist mood-line-glyphs-unicode))
+
+(-setup mood-line
+  :disabled
+  (:require-self)
+  (mood-line-mode 1)
 
   ;; if broken, run this:
   ;; (mood-line--process-format mood-line-format)

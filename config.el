@@ -1425,12 +1425,10 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;;   (eglot-tempel-mode t))
 ;; Tempel:1 ends here
 
-;; [[file:Config.org::*Yasnippet (Disabled)][Yasnippet (Disabled):1]]
-(-setup yasnippet-snippets
-  :disabled)
+;; [[file:Config.org::*Yasnippet][Yasnippet:1]]
+(-setup yasnippet-snippets)
 
 (-setup yasnippet
-  :disabled
 
   (:require-self)
   (:diminish yas-minor-mode)
@@ -1454,10 +1452,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
 ;; may cause freezing?
 ;; using cape, lsp + yasnippet capf
 
-;; (-setup yasnippet-capf
-;;   :disabled
-;;   (:load-after yasnippet))
-;; Yasnippet (Disabled):1 ends here
+(-setup yasnippet-capf
+  (:load-after yasnippet))
+;; Yasnippet:1 ends here
 
 ;; [[file:Config.org::*Cape][Cape:1]]
 (-setup cape
@@ -1573,7 +1570,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
              (message "Debug: capf local default: %S" my/capf-local-default)
              (message "Debug: capf now: %S" completion-at-point-functions)))
          (my/capf-prepend-local
-          (list (cape-capf-super ;; #'yasnippet-capf
+          (list (cape-capf-super #'yasnippet-capf
                  #'tempel-expand
                  #'cape-keyword)))
          (when debug-on-error
@@ -2470,14 +2467,22 @@ _SPC_ cancel	_o_nly this   	_d_elete
 (-setup org-bullets
   (:hook-into org-mode-hook)
   (:option org-bullets-bullet-list
-           '("◉"
+           '(
+             ;; "✦"
+             ;; "❖"
+             "✧"
+             "❍"
+             ;; "✿"
+             ;; "◉"
              "●"
              "○"
              "■"
              "□"
-             "✦"
-             "✧"
-             "✿")))
+             "⊹"
+             "⊱"
+             )))
+
+;; ⋄  ·  ˚  ∘  ❖  ❍  ⊹  ⊱
 ;; org-bullets:1 ends here
 
 ;; [[file:Config.org::*center text in window][center text in window:1]]
@@ -2522,6 +2527,9 @@ _SPC_ cancel	_o_nly this   	_d_elete
   (:when-loaded
     (funcall
      (defun my/org-fonts-setup ()
+       ;; (let ((font "-*-Ttyp0-regular-*-*-*-16-*-*-*-*-*-*-*"))
+       ;;   (set-face-attribute 'org-level-1 nil :font font :height 1.7)):inherit nil
+
        (setq my/org-fonts-alist
              '((org-document-title 2.0 nil)
                (org-level-1        1.7 t)
@@ -2539,7 +2547,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
            (let ((f (nth 0 pair))
                  (h (nth 1 pair))
                  (o (nth 2 pair)))
-             (set-face-attribute f 'nil :font font :height h :overline o :inherit nil)
+             (set-face-attribute f 'nil :font font :height h :overline o)
              ))
          (with-eval-after-load 'ef-themes
            (dolist (pair my/ef-theme-fonts-alist)
@@ -2547,7 +2555,7 @@ _SPC_ cancel	_o_nly this   	_d_elete
                    (f (nth 0 pair))
                    (h (nth 1 pair))
                    (o (nth 2 pair)))
-               (set-face-attribute f 'nil :font font :overline o :inherit nil)
+               (set-face-attribute f 'nil :font font :overline o)
                ))))))))
 
 ;; (with-eval-after-load 'ef-themes
@@ -3202,6 +3210,17 @@ The property will be removed if ran with a \\[universal-argument]."
 (-setup org-pomodoro
   (:load-after org))
 ;; pomodoro:1 ends here
+
+;; [[file:Config.org::*org-srs][org-srs:1]]
+(setup (:pkg org-srs)
+  (:require-self)
+  (add-hook 'org-mode #'org-srs-embed-overlay-mode)
+  (:with-map org-mode-map
+    (:bind "<f5>" org-srs-review-rate-easy
+           "<f6>" org-srs-review-rate-good
+           "<f7>" org-srs-review-rate-hard
+           "<f8>" org-srs-review-rate-again)))
+;; org-srs:1 ends here
 
 ;; [[file:Config.org::*Latex][Latex:1]]
 ;;; +latex.el --- latex setup                        -*- lexical-binding: t; -*-
@@ -4263,6 +4282,7 @@ After evaluating, it suspends all non-current activities."
 ;; - ef-owl
 ;; - ef-dream
 ;; - doom-feather-dark
+;; - modus-vivendi-deuteranopia
 
 (-setup kaolin-themes
   (:require-self))
@@ -4345,10 +4365,27 @@ After evaluating, it suspends all non-current activities."
 (setup whitespace
   (:diminish whitespace-mode)
   (:option whitespace-trailing 'whitespace-hspace)
+  (:when-loaded
+    (add-hook 'my/load-theme-hook
+              (defun my/whitespace-bg-theme-fix ()
+                (set-face-attribute 'whitespace-tab nil :background 'unspecified))))
 
   (defvar +base-whitespace-style '(face trailing tabs missing-newline-at-eof))
   (defun +prog-mode-whitespace ()
     (setq whitespace-style (append +base-whitespace-style '(tab-mark)))
+    ;; (setq whitespace-style (append +base-whitespace-style '(tab)))
+    (setq whitespace-display-mappings
+          `((space-mark 32 [183] [46]) (space-mark 160 [164] [95])
+            (newline-mark 10 [36 10]) (tab-mark 9 [
+                                                   ,?·
+                                                   ;; ,?˙
+                                                   ;; ,?ˍ
+                                                   ;; ,?▁
+                                                   ;; ,?̲
+                                                   ;; ,?»
+                                                   ;; ,?▄
+                                                   9]
+                                                [92 9])))
     (whitespace-mode 1))
   (defun +org-mode-whitespace ()
     (setq whitespace-style (append +base-whitespace-style '()))
@@ -4512,6 +4549,7 @@ After evaluating, it suspends all non-current activities."
 ;;;;; Doom Modeline
 
 (-setup doom-modeline
+  :disabled
   ;; configuration
   (setq doom-modeline-height 30
         doom-modeline-modal-icon t
@@ -4623,7 +4661,13 @@ After evaluating, it suspends all non-current activities."
 
 (-setup mood-line
   (:require-self)
-  ;; (mood-line-mode 1) ;; DISABLED
+  (mood-line-mode 1)
+  (setq mood-line-glyph-alist mood-line-glyphs-unicode))
+
+(-setup mood-line
+  :disabled
+  (:require-self)
+  (mood-line-mode 1)
 
   ;; if broken, run this:
   ;; (mood-line--process-format mood-line-format)

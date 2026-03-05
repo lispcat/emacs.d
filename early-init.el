@@ -60,7 +60,7 @@
 
 ;; transparency
 
-(let ((value 95))
+(let ((value 100))
   (unless (assoc 'alpha-background default-frame-alist)
     (add-to-list 'default-frame-alist
                  `(alpha-background . ,value))))
